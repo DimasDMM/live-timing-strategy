@@ -1,0 +1,33 @@
+version: '3.6'
+
+services:
+    database:
+        container_name: database_${PROJECT_USER}
+        image: mysql:5.6
+        ports:
+            - ${DB_EXTERNAL_PORT}:${DB_INTERNAL_PORT}
+        env_file:
+            - .env
+        volumes:
+            - ./code/database:/code
+        networks:
+            - backend
+    api:
+        container_name: api_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        ports:
+            - ${API_EXTERNAL_PORT}:${API_INTERNAL_PORT}
+        env_file:
+            - .env
+        volumes:
+            - ./code/api:/var/www/html/code
+            - ./artifacts:/var/www/html/artifacts
+        depends_on:
+            - database
+        networks:
+            - backend
+
+networks:
+    backend:
