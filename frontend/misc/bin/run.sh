@@ -8,3 +8,6 @@ $SCRIPT_PATH/down.sh
 cd $SCRIPT_PATH/../../
 docker-compose -f docker-compose.yml -p $PROJECT_USER up -d --build
 cd -
+
+# Addons
+idocker website_${PROJECT_USER} bash ./misc/dockerfiles/php/container-dependencies.sh

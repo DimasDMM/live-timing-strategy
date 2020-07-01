@@ -17,7 +17,5 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql dba intl && \
 
 # Finish dependencies installation
 COPY ./php.ini /usr/local/etc/php/conf.d/php.ini
-COPY ./container-dependencies.sh $WORKDIR/container-dependencies.sh
-RUN bash $WORKDIR/container-dependencies.sh
 
 RUN echo export PATH=$PATH:./vendor/bin > $HOME/.bashrc

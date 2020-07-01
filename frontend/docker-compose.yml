@@ -9,7 +9,7 @@ services:
         ports:
             - ${FRONTEND_EXTERNAL_PORT}:${FRONTEND_INTERNAL_PORT}
         volumes:
-            - ./app:/var/www/html
+            - .:/var/www/html
         links:
             - website
         networks:
@@ -25,7 +25,7 @@ services:
         env_file:
             - .env
         volumes:
-            - ./app:/var/www/html
+            - .:/var/www/html
         networks:
             - backend
         restart: always

@@ -1,3 +1,5 @@
 #!/bin/bash
 
-# Nothing yet
+cd /var/www/html
+composer install
+cd -
