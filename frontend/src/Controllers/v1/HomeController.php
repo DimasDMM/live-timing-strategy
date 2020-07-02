@@ -8,7 +8,7 @@ class HomeController extends AbstractController
 {
     public function get(Request $request, Response $response, array $args)
     {
-        $html = $this->view->render($response, 'home.html.twig', []);
+        $html = $this->view->render($response, 'home.html', []);
         return $html;
     }
 }
