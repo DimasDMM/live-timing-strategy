@@ -1,0 +1,63 @@
+<!-- SIDEBAR -->
+<aside id="aside-main" class="aside-start bg-gradient-dark aside-hide-xs d-flex align-items-stretch justify-content-lg-between align-items-start flex-column">
+    <!-- LOGO visibility : desktop only -->
+    <div class="align-self-baseline w-100">
+        <div class="clearfix d-flex justify-content-between">
+            <a class="w-100 align-self-center navbar-brand px-3" href="index.html">
+                <img src="assets/images/logo.png" width="100%" alt="Logo" class="no-max">
+            </a>
+        </div>
+    </div>
+    <!-- /LOGO -->
+
+    <div class="aside-wrapper scrollable-vertical scrollable-styled-light align-self-baseline h-100 w-100">
+        <!--
+            All parent open navs are closed on click!
+            To ignore this feature, add .js-ignore to .nav-deep
+
+            Links height (paddings):
+                .nav-deep-xs
+                .nav-deep-sm
+                .nav-deep-md  	(default, ununsed class)
+
+            .nav-deep-hover 	hover background slightly different
+            .nav-deep-bordered	bordered links
+        -->
+        <nav class="nav-deep nav-deep-dark nav-deep-hover">
+            <ul class="nav flex-column">
+                <li class="nav-item {% if uri['path'] == routes['_HOME'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_HOME'] %}font-weight-bold{% endif %}" href="{{ routes['HOME'] }}">
+                        <i class="fi fi-menu-dots"></i>
+                        Inicio
+                    </a>
+                </li>
+
+                <li class="nav-item {% if uri['path'] == routes['_KARTS_IN_BOX'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_KARTS_IN_BOX'] %}font-weight-bold{% endif %}" href="{{ routes['KARTS_IN_BOX'] }}">
+                        <i class="fi fi-code"></i>
+                        <span class="badge badge-success float-end fs--11 mt-1">IN</span>
+                        Karts en boxes
+                    </a>
+                </li>
+
+                <li class="nav-item {% if uri['path'] == routes['_TRAFFIC_PREDICTION'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_TRAFFIC_PREDICTION'] %}font-weight-bold{% endif %}" href="{{ routes['TRAFFIC_PREDICTION'] }}">
+                        <i class="fi fi-shape-3dots"></i>
+                        Predicción de tráfico
+                    </a>
+                </li>
+
+                <li class="nav-title mt-5">
+                    <h6 class="fs--15 mb-1 text-white font-weight-normal">Sistema</h6>
+                </li>
+                <li class="nav-item {% if uri['path'] == routes['_CONFIGURATION'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_CONFIGURATION'] %}font-weight-bold{% endif %}" href="{{ routes['CONFIGURATION'] }}">
+                        <i class="nav-icon fi fi-shape-star"></i>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+<!-- /SIDEBAR -->

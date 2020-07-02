@@ -1,0 +1,37 @@
+.stripped-blue-success {
+    background: repeating-linear-gradient(
+        45deg,
+        #4285F4,
+        #4285F4 10px,
+        #6dbb30 10px,
+        #6dbb30 20px
+    );
+}
+.stripped-blue-warning {
+    background: repeating-linear-gradient(
+        45deg,
+        #4285F4,
+        #4285F4 10px,
+        #fad776 10px,
+        #fad776 20px
+    );
+}
+.stripped-blue-danger {
+    background: repeating-linear-gradient(
+        45deg,
+        #4285F4,
+        #4285F4 10px,
+        #f64e60 10px,
+        #f64e60 20px
+    );
+}
+
+.margin-bottom-1rem {
+    margin-bottom: 1rem!important;
+}
+
+.table-disable-dark {
+    color: #212529;
+    background: #fff !important;
+    border-top: 1px solid #eaf0f5;
+}

@@ -1,19 +1,8 @@
 ﻿{% extends "base.html" %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}Predicción de tráfico{% endblock %}
 
 {% block content %}
-	<div class="bg-white shadow-xs p-2 mb-4 rounded col-12 col-xl-6 col-lg-6 col-sm-12">
-		<div class="clearfix bg-light p-2 rounded d-flex align-items-center">
-			<span class="d-block px-2 text-muted text-truncate">
-				Estado de la pista:
-			</span>
-			<span class="btn row-pill btn-sm bg-gradient-warning b-0 py-1 mb-0 float-start">
-				+0.780 seg
-			</span>
-		</div>
-	</div>
-
     <!-- WIDGETS -->
 	<div class="row gutters-sm">
 		
@@ -22,10 +11,22 @@
 			<div class="portlet">
 				<div class="portlet-header">
 					<span class="d-block text-muted text-truncate font-weight-medium">
-						Ranking real
+						Predicción de tráfico
 					</span>
 				</div>
 				<div class="portlet-body">
+					<div id="clipboard_7" class="p--15 bg-white rounded">
+						<div class="form-label-group mb-3">
+							<select id="select_options" class="form-control bs-select">
+								<option value="">- Ninguno -</option>
+								<option value="">Nombre equipo 1</option>
+								<option value="">Nombre equipo 2</option>
+								<option value="">Nombre equipo 3</option>
+							</select>
+							<label for="select_options">Selector de equipo</label>
+						</div>
+					</div>
+
 					<div id="clipboard_7" class="p--15 bg-white rounded">
 						<table class="table table-striped table-dark table-sm">
 							<thead>
@@ -85,6 +86,15 @@
 									<td>1:06.506</td>
 									<td>+3.143 seg</td>
 									<td>+0.088 seg/v</td>
+								</tr>
+								<tr class="table-disable-dark">
+									<th scope="row" class="badge-default">&nbsp;</th>
+									<th>#</th>
+									<td>CKM Vimesa</td>
+									<td>1:06.506</td>
+									<td>1:06.506</td>
+									<td>+3.143 seg</td>
+									<td>-</td>
 								</tr>
 								<tr>
 									<th scope="row" class="badge-success">&nbsp;</th>

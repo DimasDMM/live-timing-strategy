@@ -1,7 +1,9 @@
 <?php
 namespace CkmTiming\Controllers\v1;
 
+use CkmTiming\Enumerations\Routes;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class AbstractController
 {
@@ -11,9 +13,48 @@ abstract class AbstractController
     /** @var \Slim\Views\Twig */
     protected $view;
 
-    // constructor receives container instance
-    public function __construct(ContainerInterface $c) {
+    /**
+     * @param ContainerInterface $c
+     */
+    public function __construct(ContainerInterface $c)
+    {
         $this->container = $c;
         $this->view = $c->get('view');
+    }
+
+    /**
+     * Returns the basic params to use in the HTML view.
+     * 
+     * @param Request $request
+     * @return array
+     */
+    protected function getViewParams(Request $request, $addPortRoute = true) : array
+    {
+        $uri = $request->getUri();
+        $uri = [
+            'scheme' => $uri->getScheme(),
+            'host' => $uri->getHost(),
+            'port' => $uri->getPort(),
+            'path' => $uri->getPath(),
+        ];
+
+        $hostname = $uri['scheme'] . '://' . $uri['host'];
+        $hostname .= $addPortRoute ? ':' . $uri['port'] : '';
+
+        $routes = array_map(
+            function ($route) use ($hostname) {
+                return $hostname . $route;
+            },
+            Routes::getConstants()
+        );
+        foreach (Routes::getConstants() as $routeName => $routeValue) {
+            $routes['_' . $routeName] = $routeValue;
+        }
+
+        $params = [
+            'routes' => $routes,
+            'uri' => $uri,
+        ];
+        return $params;
     }
 }
