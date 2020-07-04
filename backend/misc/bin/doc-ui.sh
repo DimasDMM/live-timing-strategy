@@ -20,6 +20,6 @@ docker pull $swagger_image
 docker ps -q --filter "name=$container_name" | grep -q . && docker rm -fv $container_name
 
 # Note: 8080 is the internal port of Swagger
-docker run -p $SWAGGER_UI_PORT:8080 -e SWAGGER_JSON=./doc/api-description.json -d --name $container_name $swagger_image
+docker run -p $SWAGGER_UI_PORT:8080 -e API_URL=$api_doc_url -d --name $container_name $swagger_image
 
 echo -e "\n$PROJECT_NAME API documentation:\n$swagger_url"
