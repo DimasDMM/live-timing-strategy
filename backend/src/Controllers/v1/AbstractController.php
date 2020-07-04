@@ -21,17 +21,38 @@ abstract class AbstractController
     /**
      * @param Request $request
      * @param Response $response
-     * @param array $data Optional
+     * @param mixed $data Optional
      * @return mixed
      */
-    protected function buildResponse(Request $request, Response $response, array $data = [])
+    protected function buildResponse(Request $request, Response $response, $data = null)
+    {
+        return $this->buildJsonResponse($request, $response, $data);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param mixed $data Optional
+     * @return mixed
+     */
+    protected function buildJsonResponse(Request $request, Response $response, $data = null)
     {
         $response->getBody()->write(json_encode($data));
-        $response = $response
-            //->withHeader('Access-Control-Allow-Origin', '*')
-            //->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, PATCH, OPTIONS')
-            //->withHeader('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization')
-            ->withHeader('Content-type', 'application/json');
+        $response = $response->withHeader('Content-type', 'application/json');
+        
+        return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param mixed $data Optional
+     * @return mixed
+     */
+    protected function buildYamlResponse(Request $request, Response $response, $data = null)
+    {
+        $response->getBody()->write($data);
+        $response = $response->withHeader('Content-type', 'text/yaml');
         
         return $response;
     }

@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DocumentationController extends AbstractController
 {
-    const API_DOC_PATH = __DIR__ . '/../../../doc/api-description.json';
+    const API_DOC_PATH = __DIR__ . '/../../../doc/api-description.yaml';
 
     /**
      * Get the yml documentation of the API
@@ -17,8 +17,8 @@ class DocumentationController extends AbstractController
      */
     public function get(Request $request, Response $response) : Response
     {
-        $data = json_decode(file_get_contents(self::API_DOC_PATH), true);
-        return $this->buildResponse(
+        $data = file_get_contents(self::API_DOC_PATH);
+        return $this->buildYamlResponse(
             $request,
             $response,
             $data
