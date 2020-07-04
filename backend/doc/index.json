@@ -1,0 +1,23 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "CKM Timing API",
+        "description": "CKM Timing API",
+        "version": "1.0"
+    },
+    "tags": {
+        "$ref": "./tags/index.json"
+    },
+    "consumes": [
+        "application/json;charset=utf-8"
+    ],
+    "produces": [
+        "application/json;charset=utf-8"
+    ],
+    "paths": {
+        "$ref": "./paths/index.json"
+    },
+    "definitions": {
+        "$ref": "./definitions/index.json"
+    }
+}

@@ -9,21 +9,34 @@ services:
         env_file:
             - .env
         volumes:
-            - ./code/database:/code
+            - ./misc/bin:/bin/init_database
         networks:
             - backend
+    nginx:
+        container_name: nginx_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/nginx
+            dockerfile: Dockerfile
+        ports:
+            - ${API_EXTERNAL_PORT}:${API_INTERNAL_PORT}
+        volumes:
+            - .:/var/www/html
+        links:
+            - api
+        networks:
+            - backend
+        depends_on:
+            - api
+        restart: always
     api:
         container_name: api_${PROJECT_USER}
         build:
             context: ./misc/dockerfiles/php
             dockerfile: Dockerfile
-        ports:
-            - ${API_EXTERNAL_PORT}:${API_INTERNAL_PORT}
         env_file:
             - .env
         volumes:
-            - ./code/api:/var/www/html/code
-            - ./artifacts:/var/www/html/artifacts
+            - .:/var/www/html
         depends_on:
             - database
         networks:

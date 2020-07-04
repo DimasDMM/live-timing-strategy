@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "string"
+    },
+    "params": {
+      "type": "array",
+      "items": {
+        "type" : "object"
+      }
+    }
+  }
+}

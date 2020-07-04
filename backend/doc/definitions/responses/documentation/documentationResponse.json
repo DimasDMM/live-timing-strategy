@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+      "swagger": {
+        "type": "string"
+      },
+      "info": {
+        "type": "object"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type" : "object"
+        }
+      },
+      "consumes": {
+        "type": "array",
+        "items": {
+          "type" : "string"
+        }
+      },
+      "produces": {
+        "type": "array",
+        "items": {
+          "type" : "string"
+        }
+      },
+      "paths": {
+        "type": "object"
+      },
+      "definitions": {
+        "type": "object"
+      }
+    }
+  }

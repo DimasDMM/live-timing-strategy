@@ -1,0 +1,5 @@
+{
+  "healthResponse": {
+    "$ref": "./responses/health/healthResponse.json"
+  }
+}
