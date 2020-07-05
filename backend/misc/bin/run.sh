@@ -14,5 +14,5 @@ cd -
 
 # Initialize database and import datasets
 idocker api_${PROJECT_USER} bash ./misc/dockerfiles/php/container-dependencies.sh
-idocker database_${PROJECT_USER} bash ./bin/init_database/wait-database.sh
-idocker database_${PROJECT_USER} bash ./bin/init_database/database-creation.sh
+idocker database_${PROJECT_USER} bash ./bin/init_database/scripts/wait-database.sh
+idocker database_${PROJECT_USER} bash ./bin/init_database/scripts/database-creation.sh
