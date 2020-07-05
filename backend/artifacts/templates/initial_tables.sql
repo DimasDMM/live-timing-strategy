@@ -11,9 +11,12 @@ CREATE TABLE `api_tokens` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `token` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `is_admin` TINYINT(1) NOT NULL DEFAULT 0,
+  `role` ENUM('admin', 'batch', 'user') NOT NULL DEFAULT 'user',
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
   UNIQUE KEY `token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `api_tokens` (`token`, `name`, `role`) VALUES
+  ('d265aed699f7409ac0ec6fe07ee9cb11', 'Batch', 'batch'),
+  ('f9a23e776e199b52f12f60cd1ea0dfc3', 'Dimas', 'admin');
