@@ -20,12 +20,12 @@ class TokenMiddleware extends AbstractMiddleware
     {
         $headers = $request->getHeaders();
         if (!isset($headers[self::HEADER_TOKEN])) {
-            throw new HttpUnauthorizedException($request, 'Token not valid.');
+            throw new HttpUnauthorizedException($request, 'Empty header ' . self::HEADER_TOKEN . '.');
         }
 
         $tokenData = $this->getTokenData($headers[self::HEADER_TOKEN][0]);
         if (empty($tokenData)) {
-            throw new HttpUnauthorizedException($request, 'Token not valid.');
+            throw new HttpUnauthorizedException($request, 'Token in ' . self::HEADER_TOKEN . ' not valid.');
         }
 
         $this->container->set('logged', $tokenData);
@@ -42,13 +42,13 @@ class TokenMiddleware extends AbstractMiddleware
     {
         $connection = $this->container->get('db');
         $query = "
-            SELECT at.token, at.name
+            SELECT at.token, at.name, at.role
             FROM " . Tables::API_TOKENS . " at
             WHERE token = :token";
 
         $params = [':token' => $token];
         $results = $connection->executeQuery($query, $params)->fetch();
 
-        return empty($results) ? [] : $results;
+        return $results ?? [];
     }
 }

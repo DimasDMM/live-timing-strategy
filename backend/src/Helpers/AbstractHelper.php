@@ -1,9 +1,9 @@
 <?php
-namespace CkmTiming\Middlewares;
+namespace CkmTiming\Helpers;
 
 use Psr\Container\ContainerInterface as Container;
 
-abstract class AbstractMiddleware
+abstract class AbstractHelper
 {
     /** @var Container */
     protected $container;

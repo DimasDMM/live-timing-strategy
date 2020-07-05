@@ -1,5 +1,7 @@
 <?php
 
+use CkmTiming\Handlers\HttpErrorHandler;
+
 /**
  * Add Error Handling Middleware
  *
@@ -9,4 +11,6 @@
  *             which can be replaced by a callable of your choice.
  */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+
+$customErrorHandler = new HttpErrorHandler($app->getCallableResolver(), $app->getResponseFactory());
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);

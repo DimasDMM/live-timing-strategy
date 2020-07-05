@@ -16,6 +16,7 @@ $app = AppFactory::create();
 
 // Register middlewares, routes and services.
 require realpath(__DIR__ . '/services.php');
+require realpath(__DIR__ . '/dependencies.php');
 require realpath(__DIR__ . '/routes.php');
 require realpath(__DIR__ . '/middlewares.php');
 

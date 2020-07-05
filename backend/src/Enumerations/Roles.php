@@ -1,10 +1,11 @@
 <?php
 namespace CkmTiming\Enumerations;
 
-final class Tables
+final class Roles
 {
-    const EVENTS_INDEX = 'events_index';
-    const API_TOKENS = 'api_tokens';
+    const ADMIN = 'admin';
+    const USER = 'user';
+    const BATCH = 'batch';
 
     public static function getConstants() : array
     {

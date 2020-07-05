@@ -8,6 +8,8 @@ final class Routes
     const DOCUMENTATION = '/documentation';
 
     const VALIDATE_TOKEN = '/validate-token';
+    
+    const EVENT = '/event';
 
     public static function getConstants() : array
     {

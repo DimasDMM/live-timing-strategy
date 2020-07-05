@@ -1,9 +1,10 @@
 <?php
-namespace CkmTiming\Middlewares;
+namespace CkmTiming\Storages\v1;
 
+use Doctrine\DBAL\Connection;
 use Psr\Container\ContainerInterface as Container;
 
-abstract class AbstractMiddleware
+abstract class AbstractStorage
 {
     /** @var Container */
     protected $container;
@@ -14,5 +15,13 @@ abstract class AbstractMiddleware
     public function __construct(Container $container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * @return Connection
+     */
+    protected function getConnection() : Connection
+    {
+        return $this->container->get('db');
     }
 }

@@ -1,21 +1,45 @@
 <?php
 namespace CkmTiming\Controllers\v1;
 
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpForbiddenException;
 
 abstract class AbstractController
 {
-    /** @var ContainerInterface */
+    /** @var Container */
     protected $container;
 
     /**
-     * @param ContainerInterface $c
+     * @param Container $container
      */
-    public function __construct(ContainerInterface $c)
+    public function __construct(Container $container)
     {
-        $this->container = $c;
+        $this->container = $container;
+    }
+
+    /**
+     * @param Request $request
+     * @param array $roles
+     * @return void
+     */
+    protected function validateRole(Request $request, array $roles) : void
+    {
+        $data = $this->container->get('logged');
+        if (!in_array($data['role'], $roles)) {
+            throw new HttpForbiddenException($request, 'No permissions.');
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    protected function getParsedBody(Request $request) : array
+    {
+        $content = $request->getParsedBody();
+        return !empty($content) ? $content : json_decode(file_get_contents('php://input'), true);
     }
 
     /**
