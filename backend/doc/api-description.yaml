@@ -12,7 +12,7 @@ tags:
 paths:
   /validate-token:
     get:
-      summary: Validates whether the X-Request-ID token is valid or not.
+      summary: Validates whether the X-Request-Id token is valid or not.
       tags:
       - System
       parameters:
@@ -25,8 +25,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  role:
+                  message:
                     type: string
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      role:
+                        type: string
   /events:
     get:
       summary: Returns list of available events to monitor.
@@ -505,6 +512,73 @@ paths:
                     type: string
                   data:
                     type: object
+  /events/{event-name}/configuration:
+    get:
+      summary: Returns configuration values.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      track_name:
+                        type: string
+                      race_type:
+                        type: string
+                      race_length:
+                        type: string
+                      race_length_unit:
+                        type: string
+                      reference_top_teams:
+                        type: string
+  /events/{event-name}/configuration/{config-name}:
+    put:
+      summary: Returns configuration values.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: config-name
+        in: path
+        required: true
+        description: Name of the configuration item.
+        schema:
+          type: string
+          enum: ['track_name', 'race_type', 'race_length', 'race_length_unit', 'reference_top_teams']
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /events/{event-name}/health:
     get:
       summary: Returns health of components of backend.
@@ -591,7 +665,7 @@ components:
   parameters:
     HeaderRequestID:
       in: header
-      name: X-Request-ID
+      name: X-Request-Id
       description: Works as auth token to use the API endpoints.
       schema:
         type: string
