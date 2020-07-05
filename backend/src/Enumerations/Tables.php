@@ -1,13 +1,9 @@
 <?php
 namespace CkmTiming\Enumerations;
 
-final class Routes
+final class Tables
 {
-    const API_VERSION = '/v1';
-    const HEALTH = '/health';
-    const DOCUMENTATION = '/documentation';
-
-    const VALIDATE_TOKEN = '/validate-token';
+    const API_TOKENS = 'api_tokens';
 
     public static function getConstants() : array
     {

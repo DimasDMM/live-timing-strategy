@@ -35,9 +35,14 @@ abstract class AbstractController
      * @param mixed $data Optional
      * @return mixed
      */
-    protected function buildJsonResponse(Request $request, Response $response, $data = null)
+    protected function buildJsonResponse(Request $request, Response $response, $data = null, $message = 'ok')
     {
-        $response->getBody()->write(json_encode($data));
+        $responseData = [
+            'message' => 'ok',
+            'data' => $data,
+        ];
+
+        $response->getBody()->write(json_encode($responseData));
         $response = $response->withHeader('Content-type', 'application/json');
         
         return $response;
