@@ -1,5 +1,6 @@
-# PHP
+# PHP and JS
 vendor/
+node_modules/
 
 # MacOS
 .DS_Store
