@@ -102,6 +102,31 @@ paths:
                     items:
                       $ref: '#/components/schemas/EventStat'
   /events/{event-name}/stats/{stat-name}:
+    get:
+      summary: Returns the current stats of the event.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: stat-name
+        in: path
+        required: true
+        description: Name of the parameter to obtain its values.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/EventStat'
     put:
       summary: Updates the value of a specific stat.
       tags:
@@ -109,6 +134,12 @@ paths:
       parameters:
       - $ref: '#/components/parameters/HeaderRequestID'
       - $ref: '#/components/parameters/EventName'
+      - name: stat-name
+        in: path
+        required: true
+        description: Name of the parameter to obtain its values.
+        schema:
+          type: string
       requestBody:
         required: true
         content:
