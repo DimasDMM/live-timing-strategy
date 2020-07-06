@@ -16,6 +16,10 @@ swagger_image=swaggerapi/swagger-ui:v3.20.4
 # Setup docker container
 docker pull $swagger_image
 
+# Stop old containers
+docker stop $container_name
+docker rm $container_name
+
 # Remove swagger-ui container without failing if container doesn't exist
 docker ps -q --filter "name=$container_name" | grep -q . && docker rm -fv $container_name
 
