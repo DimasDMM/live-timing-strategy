@@ -10,7 +10,7 @@ tags:
 - name: Santos Endurance Event
   description: Endpoints for endurance events in Karting Los Santos.
 paths:
-  /validate-token:
+  /token/validate:
     get:
       summary: Validates whether the X-Request-Id token is valid or not.
       tags:
@@ -535,7 +535,7 @@ paths:
                     properties:
                       track_name:
                         type: string
-                      race_type:
+                      event_type:
                         type: string
                       race_length:
                         type: string
@@ -557,7 +557,7 @@ paths:
         description: Name of the configuration item.
         schema:
           type: string
-          enum: ['track_name', 'race_type', 'race_length', 'race_length_unit', 'reference_top_teams']
+          enum: ['track_name', 'event_type', 'race_length', 'race_length_unit', 'reference_top_teams']
       requestBody:
         required: true
         content:
@@ -688,11 +688,14 @@ components:
     SantosEnduranceEventSimple:
       type: object
       properties:
+        event_name:
+          type: string
+          example: Resistencia Los Santos 26-06-2020
         track_name:
           type: string
           enum: [santos]
           example: santos
-        race_type:
+        event_type:
           type: string
           enum: [endurance]
           example: endurance
