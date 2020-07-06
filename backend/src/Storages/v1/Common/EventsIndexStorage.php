@@ -14,8 +14,9 @@ class EventsIndexStorage extends AbstractStorage
         $connection = $this->getConnection();
         $stmt = "
             SELECT
+                ei.id,
                 ei.name,
-                ei.table_prefix,
+                ei.tables_prefix,
                 ei.track_name,
                 ei.event_type,
                 ei.update_date
@@ -34,8 +35,9 @@ class EventsIndexStorage extends AbstractStorage
         $connection = $this->getConnection();
         $stmt = "
             SELECT
+                ei.id,
                 ei.name,
-                ei.table_prefix,
+                ei.tables_prefix,
                 ei.track_name,
                 ei.event_type,
                 ei.update_date
@@ -57,11 +59,11 @@ class EventsIndexStorage extends AbstractStorage
     {
         $connection = $this->getConnection();
         $stmt = "
-            INSERT INTO `" . Tables::EVENTS_INDEX . "` (`name`, `table_prefix`, `track_name`, `event_type`)
-            VALUES (:name, :table_prefix, :track_name, :event_type)";
+            INSERT INTO `" . Tables::EVENTS_INDEX . "` (`name`, `tables_prefix`, `track_name`, `event_type`)
+            VALUES (:name, :tables_prefix, :track_name, :event_type)";
         $params = [
             ':name' => $eventName,
-            ':table_prefix' => $tablePrefix,
+            ':tables_prefix' => $tablePrefix,
             ':track_name' => $trackName,
             ':event_type' => $eventType,
         ];

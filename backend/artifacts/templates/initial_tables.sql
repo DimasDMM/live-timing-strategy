@@ -1,7 +1,7 @@
 CREATE TABLE `events_index` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,
-  `table_prefix` VARCHAR(255) NOT NULL,
+  `tables_prefix` VARCHAR(255) NOT NULL,
   `track_name` VARCHAR(255) NOT NULL,
   `event_type` VARCHAR(255) NOT NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,

@@ -51,7 +51,7 @@ class EventCreator extends AbstractHelper
     public function createEventTables(string $trackName, string $eventType, string $tablesPrefix) : bool
     {
         $sqlContent = file_get_contents($this->getTemplatePath($trackName, $eventType));
-        $sqlContent = preg_replace('/\{table_prefix\}/', $tablesPrefix, $sqlContent);
+        $sqlContent = preg_replace('/\{tables_prefix\}/', $tablesPrefix, $sqlContent);
 
         $connection = $this->getConnection();
         $stmt = $connection->prepare($sqlContent);
