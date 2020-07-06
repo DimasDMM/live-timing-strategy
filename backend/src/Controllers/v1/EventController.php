@@ -64,9 +64,9 @@ class EventController extends AbstractController
             // Set config items
             $eventConfigStorage = $this->container->get('storages')['santos_endurance']['event_config']();
             $eventConfigStorage->setTablesPrefix($tablesPrefix);
-            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$content['race_length']);
-            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$content['race_length_unit']);
-            $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$content['reference_time_top_teams']);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$content['configuration']['race_length']);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$content['configuration']['race_length_unit']);
+            $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$content['configuration']['reference_time_top_teams']);
 
             $connection->commit();
         } catch (Exception $e) {
@@ -90,17 +90,20 @@ class EventController extends AbstractController
         $validatorTypes->empty('event_name', $event['event_name'] ?? null);
         $validatorTypes->empty('track_name', $event['track_name'] ?? null);
         $validatorTypes->empty('event_type', $event['event_type'] ?? null);
-        $validatorTypes->empty('race_length', $event['race_length'] ?? null);
-        $validatorTypes->empty('race_length_unit', $event['race_length_unit'] ?? null);
-        $validatorTypes->empty('reference_time_top_teams', $event['reference_time_top_teams'] ?? null);
+        $validatorTypes->empty('configuration', $event['configuration'] ?? null);
+        
+        $validatorTypes->empty('configuration->race_length', $event['configuration']['race_length'] ?? null);
+        $validatorTypes->empty('configuration->race_length_unit', $event['configuration']['race_length_unit'] ?? null);
+        $validatorTypes->empty('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams'] ?? null);
 
         // Values has correct format
+        $validatorTypes->isString('configuration', $event['configuration']);
         $validatorTypes->isString('event_name', $event['event_name']);
         $validatorTypes->isString('track_name', $event['track_name']);
         $validatorTypes->isString('event_type', $event['event_type']);
-        $validatorTypes->isInteger('race_length', $event['race_length']);
-        $validatorTypes->isString('race_length_unit', $event['race_length_unit']);
-        $validatorTypes->isInteger('reference_time_top_teams', $event['reference_time_top_teams']);
+        $validatorTypes->isInteger('configuration->race_length', $event['configuration']['race_length']);
+        $validatorTypes->isString('configuration->race_length_unit', $event['configuration']['race_length_unit']);
+        $validatorTypes->isInteger('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
     }
 
     /**
@@ -115,8 +118,8 @@ class EventController extends AbstractController
         // Values has correct format
         $validatorRanges->isValidTrackName('track_name', $event['track_name']);
         $validatorRanges->isValidRaceType('event_type', $event['event_type']);
-        $validatorRanges->isPositiveNumber('race_length', $event['race_length']);
-        $validatorRanges->isValidRaceLengthUnit('race_length_unit', $event['race_length_unit']);
-        $validatorRanges->isPositiveNumber('reference_time_top_teams', $event['reference_time_top_teams']);
+        $validatorRanges->isPositiveNumber('configuration->race_length', $event['configuration']['race_length']);
+        $validatorRanges->isValidRaceLengthUnit('configuration->race_length_unit', $event['configuration']['race_length_unit']);
+        $validatorRanges->isPositiveNumber('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
     }
 }

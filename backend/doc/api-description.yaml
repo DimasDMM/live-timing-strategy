@@ -54,7 +54,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SantosEnduranceEvent'
+                      $ref: '#/components/schemas/Event'
     post:
       summary: Creates a new event.
       tags:
@@ -533,10 +533,6 @@ paths:
                   data:
                     type: object
                     properties:
-                      track_name:
-                        type: string
-                      event_type:
-                        type: string
                       race_length:
                         type: string
                       race_length_unit:
@@ -683,9 +679,30 @@ components:
       - type: object
         properties:
           id:
-            type: string
+            type: integer
       - $ref: '#/components/schemas/SantosEnduranceEventSimple'
     SantosEnduranceEventSimple:
+      allOf:
+      - $ref: '#/components/schemas/EventSimple'
+      - type: object
+        properties:
+          configuration:
+            type: object
+            properties:
+              race_length:
+                type: string
+              race_length_unit:
+                type: string
+              reference_top_teams:
+                type: string
+    Event:
+      allOf:
+      - type: object
+        properties:
+          id:
+            type: integer
+      - $ref: '#/components/schemas/EventSimple'
+    EventSimple:
       type: object
       properties:
         event_name:
@@ -699,16 +716,6 @@ components:
           type: string
           enum: [endurance]
           example: endurance
-        race_length:
-          type: integer
-          example: 3
-        race_length_unit:
-          type: string
-          enum: [laps, hours]
-          example: hours
-        reference_time_top_teams:
-          type: integer
-          example: 10
     DriverSimple:
       type: object
       properties:
