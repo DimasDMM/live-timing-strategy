@@ -1,7 +1,6 @@
 <?php
 namespace CkmTiming\Middlewares;
 
-use CkmTiming\Enumerations\Tables;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;

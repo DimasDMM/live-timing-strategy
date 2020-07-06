@@ -14,6 +14,7 @@ final class Routes
 
     // Endpoints of Santos Endurance events
     const EVENT_SE_STATS = '/stats';
+    const EVENT_SE_STATS_NAME = '/stats/{stat-name}';
 
     public static function getConstants() : array
     {
