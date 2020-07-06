@@ -33,22 +33,4 @@ class EventMiddleware extends AbstractMiddleware
         $response = $handler->handle($request);
         return $response;
     }
-
-    /**
-     * @param string $token
-     * @return array
-     */
-    protected function getTokenData(string $token) : array
-    {
-        $connection = $this->container->get('db');
-        $query = "
-            SELECT at.token, at.name, at.role
-            FROM " . Tables::API_TOKENS . " at
-            WHERE token = :token";
-
-        $params = [':token' => $token];
-        $results = $connection->executeQuery($query, $params)->fetch();
-
-        return $results ?? [];
-    }
 }
