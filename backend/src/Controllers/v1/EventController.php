@@ -2,8 +2,10 @@
 namespace CkmTiming\Controllers\v1;
 
 use CkmTiming\Enumerations\Roles;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpBadRequestException;
 
 class EventController extends AbstractController
 {
@@ -28,6 +30,7 @@ class EventController extends AbstractController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws HttpBadRequestException
      */
     public function post(Request $request, Response $response) : Response
     {
@@ -35,18 +38,43 @@ class EventController extends AbstractController
         $eventsIndexStorage = $this->container->get('storages')['common']['events_index']();
 
         $content = $this->getParsedBody($request);
-        var_dump($content);
 
         $this->validateEventValueTypes($request, $content);
         $this->validateEventValueRanges($request, $content);
-        die();
+        
+        $event = $eventsIndexStorage->getByName($content['event_name']);
+        if (!empty($event)) {
+            throw new HttpBadRequestException($request, 'Event name already exists.');
+        }
 
-        $data = $this->container->get('logged');
-        return $this->buildJsonResponse(
-            $request,
-            $response,
-            $data
-        );
+        // Start transaction
+        $connection = $this->getConnection();
+        $connection->beginTransaction();
+        try {
+            $eventCreator = $this->container->get('event_creator');
+            if (!$eventCreator->isEventSupported($content['track_name'], $content['event_type'])) {
+                throw new HttpBadRequestException($request, 'The event type is not supported in this track.');
+            }
+
+            $tablesPrefix = $eventCreator->getTablesPrefix($content['event_name']);
+            $eventCreator->createEventTables($content['track_name'], $content['event_type'], $tablesPrefix);
+
+            $eventsIndexStorage->insert($content['event_name'], $tablesPrefix, $content['track_name'], $content['event_type']);
+            
+            // Set config items
+            $eventConfigStorage = $this->container->get('storages')['santos_endurance']['event_config']();
+            $eventConfigStorage->setTablesPrefix($tablesPrefix);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$content['race_length']);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$content['race_length_unit']);
+            $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$content['reference_time_top_teams']);
+
+            $connection->commit();
+        } catch (Exception $e) {
+            $connection->rollBack();
+            throw $e;
+        }
+
+        return $this->buildJsonResponse($request, $response);
     }
 
     /**
@@ -59,15 +87,17 @@ class EventController extends AbstractController
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
 
         // Values are set and not empty
+        $validatorTypes->empty('event_name', $event['event_name'] ?? null);
         $validatorTypes->empty('track_name', $event['track_name'] ?? null);
-        $validatorTypes->empty('race_type', $event['race_type'] ?? null);
+        $validatorTypes->empty('event_type', $event['event_type'] ?? null);
         $validatorTypes->empty('race_length', $event['race_length'] ?? null);
         $validatorTypes->empty('race_length_unit', $event['race_length_unit'] ?? null);
         $validatorTypes->empty('reference_time_top_teams', $event['reference_time_top_teams'] ?? null);
 
         // Values has correct format
+        $validatorTypes->isString('event_name', $event['event_name']);
         $validatorTypes->isString('track_name', $event['track_name']);
-        $validatorTypes->isString('race_type', $event['race_type']);
+        $validatorTypes->isString('event_type', $event['event_type']);
         $validatorTypes->isInteger('race_length', $event['race_length']);
         $validatorTypes->isString('race_length_unit', $event['race_length_unit']);
         $validatorTypes->isInteger('reference_time_top_teams', $event['reference_time_top_teams']);
@@ -84,7 +114,7 @@ class EventController extends AbstractController
 
         // Values has correct format
         $validatorRanges->isValidTrackName('track_name', $event['track_name']);
-        $validatorRanges->isValidRaceType('race_type', $event['race_type']);
+        $validatorRanges->isValidRaceType('event_type', $event['event_type']);
         $validatorRanges->isPositiveNumber('race_length', $event['race_length']);
         $validatorRanges->isValidRaceLengthUnit('race_length_unit', $event['race_length_unit']);
         $validatorRanges->isPositiveNumber('reference_time_top_teams', $event['reference_time_top_teams']);

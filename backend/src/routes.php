@@ -14,7 +14,7 @@ $app->group(Routes::API_VERSION, function (RouteCollectorProxy $group) {
 
 $app->group('', function (RouteCollectorProxy $group) {
     $group->get(Routes::HEALTH, HealthController::class . ':get');
-    $group->get(Routes::VALIDATE_TOKEN, TokenController::class . ':get');
+    $group->get(Routes::TOKEN_VALIDATE, TokenController::class . ':get');
 
     $group->group(Routes::API_VERSION, function (RouteCollectorProxy $group) {
         $group->get(Routes::EVENT, EventController::class . ':get');

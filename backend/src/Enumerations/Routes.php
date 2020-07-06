@@ -7,7 +7,7 @@ final class Routes
     const HEALTH = '/health';
     const DOCUMENTATION = '/documentation';
 
-    const VALIDATE_TOKEN = '/validate-token';
+    const TOKEN_VALIDATE = '/token/validate';
     
     const EVENT = '/event';
 

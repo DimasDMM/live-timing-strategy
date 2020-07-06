@@ -5,6 +5,7 @@ use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpForbiddenException;
+use Doctrine\DBAL\Connection;
 
 abstract class AbstractController
 {
@@ -30,6 +31,14 @@ abstract class AbstractController
         if (!in_array($data['role'], $roles)) {
             throw new HttpForbiddenException($request, 'No permissions.');
         }
+    }
+
+    /**
+     * @return Connection
+     */
+    protected function getConnection() : Connection
+    {
+        return $this->container->get('db');
     }
 
     /**
@@ -63,7 +72,7 @@ abstract class AbstractController
     {
         $responseData = [
             'message' => 'ok',
-            'data' => $data,
+            'data' => $data ?? [],
         ];
 
         $response->getBody()->write(json_encode($responseData));
