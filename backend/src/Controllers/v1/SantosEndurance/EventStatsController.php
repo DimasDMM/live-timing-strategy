@@ -3,10 +3,14 @@ namespace CkmTiming\Controllers\v1\SantosEndurance;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Routing\RouteContext;
 
 class EventStatsController extends AbstractSantosEnduranceController
 {
+    protected $validStatus = ['offline', 'online', 'error'];
+    protected $validStages = ['classification', 'race'];
+
     /**
      * @param Request $request
      * @param Response $response
@@ -27,6 +31,7 @@ class EventStatsController extends AbstractSantosEnduranceController
             $data
         );
     }
+    
     /**
      * @param Request $request
      * @param Response $response
@@ -50,5 +55,70 @@ class EventStatsController extends AbstractSantosEnduranceController
             $response,
             $data
         );
+    }
+    
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws HttpBadRequestException
+     */
+    public function putByName(Request $request, Response $response) : Response
+    {
+        $eventIndex = $this->container->get('event-index');
+        $tablesPrefix = $eventIndex['tables_prefix'];
+        
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $statName = $route->getArgument('stat-name');
+        
+        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['event_stats']();
+        $eventStatsStorage->setTablesPrefix($tablesPrefix);
+        $stat = $eventStatsStorage->getByName($statName);
+
+        if (empty($stat)) {
+            throw new HttpBadRequestException($request, 'The stat does not exist.');
+        }
+
+        $content = $this->getParsedBody($request);
+        $this->validateStatValue($request, $content, $statName);
+
+        $eventStatsStorage->updateByName($statName, $content['value']);
+
+        return $this->buildJsonResponse($request, $response);
+    }
+
+    /**
+     * @param Request $request
+     * @param array $stat
+     * @param string $statName
+     * @return void
+     */
+    protected function validateStatValue(Request $request, array $stat, string $statName) : void
+    {
+        $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
+
+        // Value is set
+        $validatorTypes->isNull('value', $stat['value'] ?? null);
+        
+        // Values has correct format
+        switch ($statName) {
+            case 'reference_time':
+                $validatorTypes->isNumeric('reference_time', $stat['value']);
+                break;
+            case 'reference_current_offset':
+                $validatorTypes->isNumeric('reference_current_offset', $stat['value']);
+                break;
+            case 'status':
+                $validatorRanges->inArray('status', $stat['value'], $this->validStatus);
+                break;
+            case 'stage':
+                $validatorRanges->inArray('stage', $stat['value'], $this->validStages);
+                break;
+            case 'remaining_event':
+                $validatorTypes->isNumeric('remaining_event', $stat['value']);
+                break;
+        }
     }
 }

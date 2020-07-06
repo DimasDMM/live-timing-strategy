@@ -28,6 +28,7 @@ $app->group('', function (RouteCollectorProxy $group) {
             // Santos Endurance endpoints
             $group->get(Routes::EVENT_SE_STATS, EventStatsController::class . ':get');
             $group->get(Routes::EVENT_SE_STATS_NAME, EventStatsController::class . ':getByName');
+            $group->put(Routes::EVENT_SE_STATS_NAME, EventStatsController::class . ':putByName');
         })->add(new EventMiddleware($container));
     });
 })->add(new TokenMiddleware($container));

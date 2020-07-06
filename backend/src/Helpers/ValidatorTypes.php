@@ -25,6 +25,19 @@ class ValidatorTypes extends AbstractHelper
      * @return void
      * @throws HttpBadRequestException
      */
+    public function isNull(string $paramName, $value) : void
+    {
+        if (is_null($value)) {
+            throw new HttpBadRequestException($this->request, "Param $paramName is not set.");
+        }
+    }
+
+    /**
+     * @param string $paramName
+     * @param mixed $value
+     * @return void
+     * @throws HttpBadRequestException
+     */
     public function empty(string $paramName, $value) : void
     {
         if (empty($value)) {
@@ -68,6 +81,19 @@ class ValidatorTypes extends AbstractHelper
     {
         if (!is_integer($value)) {
             throw new HttpBadRequestException($this->request, "Param $paramName must be an integer.");
+        }
+    }
+
+    /**
+     * @param string $paramName
+     * @param mixed $value
+     * @return void
+     * @throws HttpBadRequestException
+     */
+    public function isNumeric(string $paramName, $value) : void
+    {
+        if (!is_numeric($value)) {
+            throw new HttpBadRequestException($this->request, "Param $paramName must be a numeric.");
         }
     }
 }

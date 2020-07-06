@@ -9,10 +9,6 @@ class ValidatorRanges extends AbstractHelper
     /** @var Request */
     protected $request;
 
-    protected $trackNames = ['santos'];
-    protected $raceTypes = ['endurance'];
-    protected $raceLengthUnits = ['laps', 'hours'];
-
     /**
      * @param Request $request
      * @return self
@@ -40,40 +36,14 @@ class ValidatorRanges extends AbstractHelper
     /**
      * @param string $paramName
      * @param mixed $value
+     * @param array $set
      * @return void
      * @throws HttpBadRequestException
      */
-    public function isValidTrackName(string $paramName, $value)
+    public function inArray(string $paramName, $value, array $set)
     {
-        if (!in_array($value, $this->trackNames)) {
-            throw new HttpBadRequestException($this->request, "Param $paramName is not a valid track name.");
+        if (!in_array($value, $set)) {
+            throw new HttpBadRequestException($this->request, "Param $paramName has not a valid value.");
         }
     }
-
-    /**
-     * @param string $paramName
-     * @param mixed $value
-     * @return void
-     * @throws HttpBadRequestException
-     */
-    public function isValidRaceType(string $paramName, $value)
-    {
-        if (!in_array($value, $this->raceTypes)) {
-            throw new HttpBadRequestException($this->request, "Param $paramName is not a valid race type.");
-        }
-    }
-
-    /**
-     * @param string $paramName
-     * @param mixed $value
-     * @return void
-     * @throws HttpBadRequestException
-     */
-    public function isValidRaceLengthUnit(string $paramName, $value)
-    {
-        if (!in_array($value, $this->raceLengthUnits)) {
-            throw new HttpBadRequestException($this->request, "Param $paramName is not a valid race length unit.");
-        }
-    }
-
 }

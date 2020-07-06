@@ -9,6 +9,10 @@ use Slim\Exception\HttpBadRequestException;
 
 class EventController extends AbstractController
 {
+    protected $validTrackNames = ['santos'];
+    protected $validEventTypes = ['endurance'];
+    protected $validRaceLengthUnits = ['laps', 'hours'];
+
     /**
      * @param Request $request
      * @param Response $response
@@ -38,7 +42,6 @@ class EventController extends AbstractController
         $eventsIndexStorage = $this->container->get('storages')['common']['events_index']();
 
         $content = $this->getParsedBody($request);
-
         $this->validateEventValueTypes($request, $content);
         $this->validateEventValueRanges($request, $content);
         
@@ -116,10 +119,10 @@ class EventController extends AbstractController
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
         // Values has correct format
-        $validatorRanges->isValidTrackName('track_name', $event['track_name']);
-        $validatorRanges->isValidRaceType('event_type', $event['event_type']);
+        $validatorRanges->inArray('track_name', $event['track_name'], $this->validTrackNames);
+        $validatorRanges->inArray('event_type', $event['event_type'], $this->validEventTypes);
         $validatorRanges->isPositiveNumber('configuration->race_length', $event['configuration']['race_length']);
-        $validatorRanges->isValidRaceLengthUnit('configuration->race_length_unit', $event['configuration']['race_length_unit']);
+        $validatorRanges->inArray('configuration->race_length_unit', $event['configuration']['race_length_unit'], $this->validRaceLengthUnits);
         $validatorRanges->isPositiveNumber('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
     }
 }
