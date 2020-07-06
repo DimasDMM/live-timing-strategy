@@ -53,9 +53,6 @@ class EventCreator extends AbstractHelper
         $sqlContent = file_get_contents($this->getTemplatePath($trackName, $eventType));
         $sqlContent = preg_replace('/\{table_prefix\}/', $tablesPrefix, $sqlContent);
 
-        print_r($sqlContent);
-        echo "<br>";
-
         $connection = $this->getConnection();
         $stmt = $connection->prepare($sqlContent);
         $stmt->execute();

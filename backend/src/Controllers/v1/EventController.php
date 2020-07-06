@@ -97,7 +97,7 @@ class EventController extends AbstractController
         $validatorTypes->empty('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams'] ?? null);
 
         // Values has correct format
-        $validatorTypes->isString('configuration', $event['configuration']);
+        $validatorTypes->isArray('configuration', $event['configuration']);
         $validatorTypes->isString('event_name', $event['event_name']);
         $validatorTypes->isString('track_name', $event['track_name']);
         $validatorTypes->isString('event_type', $event['event_type']);

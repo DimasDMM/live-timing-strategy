@@ -38,6 +38,19 @@ class ValidatorTypes extends AbstractHelper
      * @return void
      * @throws HttpBadRequestException
      */
+    public function isArray(string $paramName, $value) : void
+    {
+        if (!is_array($value)) {
+            throw new HttpBadRequestException($this->request, "Param $paramName must be an array.");
+        }
+    }
+
+    /**
+     * @param string $paramName
+     * @param mixed $value
+     * @return void
+     * @throws HttpBadRequestException
+     */
     public function isString(string $paramName, $value) : void
     {
         if (!is_string($value)) {
