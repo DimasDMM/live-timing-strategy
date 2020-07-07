@@ -333,6 +333,37 @@ paths:
                   data:
                     type: object
   /events/{event-name}/teams/{team-name}/{driver-name}:
+    get:
+      summary: Returns a driver data.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: team-name
+        in: path
+        required: true
+        description: Name of the team (must be url encoded).
+        schema:
+          type: string
+      - name: driver-name
+        in: path
+        required: true
+        description: Name of the driver (must be url encoded).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Driver'
     put:
       summary: Updates a driver data.
       tags:
