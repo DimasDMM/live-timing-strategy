@@ -102,9 +102,9 @@ INSERT INTO `{tables_prefix}_event_config` (`name`, `value`) VALUES
 INSERT INTO `{tables_prefix}_event_stats` (`name`, `value`) VALUES
   ('reference_time', 0),
   ('reference_current_offset', 0),
-  ('status', 'Offline'),
-  ('stage', NULL),
-  ('remaining_event', NULL);
+  ('status', 'offline'),
+  ('stage', 'unknown'),
+  ('remaining_event', 'unknown');
 
 INSERT INTO `{tables_prefix}_event_health` (`category`, `name`, `status`) VALUES
   ('database', 'connection', 'offline'),
