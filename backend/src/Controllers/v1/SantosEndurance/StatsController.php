@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Routing\RouteContext;
 
-class EventStatsController extends AbstractSantosEnduranceController
+class StatsController extends AbstractSantosEnduranceController
 {
     protected $validStatus = ['offline', 'online', 'error'];
     protected $validStages = ['classification', 'race'];
@@ -21,7 +21,7 @@ class EventStatsController extends AbstractSantosEnduranceController
         $eventIndex = $this->container->get('event-index');
         $tablesPrefix = $eventIndex['tables_prefix'];
         
-        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['event_stats']();
+        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['stats']();
         $eventStatsStorage->setTablesPrefix($tablesPrefix);
         $data = $eventStatsStorage->getAll();
 
@@ -46,7 +46,7 @@ class EventStatsController extends AbstractSantosEnduranceController
         $route = $routeContext->getRoute();
         $statName = $route->getArgument('stat-name');
         
-        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['event_stats']();
+        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['stats']();
         $eventStatsStorage->setTablesPrefix($tablesPrefix);
         $data = $eventStatsStorage->getByName($statName);
 
@@ -72,7 +72,7 @@ class EventStatsController extends AbstractSantosEnduranceController
         $route = $routeContext->getRoute();
         $statName = $route->getArgument('stat-name');
         
-        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['event_stats']();
+        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['stats']();
         $eventStatsStorage->setTablesPrefix($tablesPrefix);
         $stat = $eventStatsStorage->getByName($statName);
 

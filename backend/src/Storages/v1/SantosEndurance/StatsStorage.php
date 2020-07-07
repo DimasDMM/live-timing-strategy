@@ -3,11 +3,13 @@ namespace CkmTiming\Storages\v1\SantosEndurance;
 
 use CkmTiming\Enumerations\Tables;
 
-class EventConfigStorage extends AbstractSantosEnduranceStorage
+class StatsStorage extends AbstractSantosEnduranceStorage
 {
-    const RACE_LENGTH = 'race_length';
-    const RACE_LENGTH_UNIT = 'race_length_unit';
-    const REFERENCE_TIME_TOP_TEAMS = 'reference_time_top_teams';
+    const REFERENCE_CURRENT_OFFSET = 'reference_current_offset';
+    const REFERENCE_TIME = 'reference_time';
+    const REMAINING_EVENT = 'remaining_event';
+    const STAGE = 'stage';
+    const STATUS = 'status';
 
     /**
      * @return array
@@ -21,7 +23,7 @@ class EventConfigStorage extends AbstractSantosEnduranceStorage
                 ec.name,
                 ec.value,
                 ec.update_date
-            FROM " . $tablePrefix . Tables::SE_EVENT_CONFIG . " ec
+            FROM " . $tablePrefix . Tables::SE_EVENT_STATS . " ec
             ORDER BY update_date DESC";
         $results = $connection->executeQuery($stmt)->fetchAll();
         return empty($results) ? [] : $results;
@@ -40,7 +42,7 @@ class EventConfigStorage extends AbstractSantosEnduranceStorage
                 ec.name,
                 ec.value,
                 ec.update_date
-            FROM `" . $tablePrefix . Tables::SE_EVENT_CONFIG . "` ec
+            FROM `" . $tablePrefix . Tables::SE_EVENT_STATS . "` ec
             WHERE ec.name = :name";
         $params = [':name' => $name];
         $results = $connection->executeQuery($stmt, $params)->fetch();
@@ -57,7 +59,7 @@ class EventConfigStorage extends AbstractSantosEnduranceStorage
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
         $stmt = "
-            UPDATE `" . $tablePrefix . Tables::SE_EVENT_CONFIG . "`
+            UPDATE `" . $tablePrefix . Tables::SE_EVENT_STATS . "`
             SET `value` = :value
             WHERE `name` = :name";
         $params = [

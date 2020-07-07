@@ -4,8 +4,9 @@ use CkmTiming\Helpers\EventCreator;
 use CkmTiming\Helpers\ValidatorTypes;
 use CkmTiming\Helpers\ValidatorRanges;
 use CkmTiming\Storages\v1\Common\EventsIndexStorage;
-use CkmTiming\Storages\v1\SantosEndurance\EventConfigStorage;
-use CkmTiming\Storages\v1\SantosEndurance\EventStatsStorage;
+use CkmTiming\Storages\v1\SantosEndurance\ConfigurationStorage;
+use CkmTiming\Storages\v1\SantosEndurance\StatsStorage;
+use CkmTiming\Storages\v1\SantosEndurance\TimingStorage;
 use Psr\Container\ContainerInterface as Container;
 
 // Storages
@@ -14,8 +15,9 @@ $callbacks = [
         'events_index' => function () use ($container) { return new EventsIndexStorage($container); },
     ],
     'santos_endurance' => [
-        'event_config' => function () use ($container) { return new EventConfigStorage($container); },
-        'event_stats' => function () use ($container) { return new EventStatsStorage($container); },
+        'configuration' => function () use ($container) { return new ConfigurationStorage($container); },
+        'stats' => function () use ($container) { return new StatsStorage($container); },
+        'timing' => function () use ($container) { return new TimingStorage($container); },
     ],
 ];
 $container->set('storages', $callbacks);
