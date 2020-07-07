@@ -158,7 +158,7 @@ paths:
                     type: string
                   data:
                     type: object
-  /events/{event-name}/timing/{timing-type}/{limit}:
+  /events/{event-name}/timing/all/{timing-type}/{limit}:
     get:
       summary: Returns the live timing information w/o the real positions.
       tags:
@@ -825,8 +825,16 @@ components:
           minimum: 1
         team_name:
           type: string
+        team_number:
+          type: integer
+        team_reference_time_offset:
+          type: integer
         driver_name:
           type: string
+        driver_reference_time_offset:
+          type: integer
+        driver_driving_time:
+          type: integer
         lap:
           type: integer
         time:
@@ -837,6 +845,8 @@ components:
           $ref: '#/components/schemas/Stage'
         number_stops:
           type: integer
+        is_stop:
+          type: boolean
         kart_status:
           type: string
           enum: ['unknown', 'good', 'medium', 'bad']
