@@ -24,4 +24,28 @@ abstract class AbstractStorage
     {
         return $this->container->get('db');
     }
+
+    /**
+     * @param array $row
+     * @param string $table
+     * @return void
+     */
+    protected function simpleInsert(array $row, string $table) : void
+    {
+        $queryBuilder = $this->getConnection()->createQueryBuilder();
+
+        $rowValues = [];
+        $rowParams = [];
+        foreach ($row as $name => $value) {
+            $paramName = ':' . $name;
+            $rowParams[$paramName] = $value;
+            $rowValues[$name] = $paramName;
+        }
+
+        $queryBuilder
+            ->insert($table)
+            ->values($rowValues)
+            ->setParameters($rowParams);
+        $queryBuilder->execute();
+    }
 }

@@ -80,10 +80,10 @@ class StatsController extends AbstractSantosEnduranceController
             throw new HttpBadRequestException($request, 'The stat does not exist.');
         }
 
-        $content = $this->getParsedBody($request);
-        $this->validateStatValue($request, $content, $statName);
+        $data = $this->getParsedBody($request);
+        $this->validateStatValue($request, $data, $statName);
 
-        $eventStatsStorage->updateByName($statName, $content['value']);
+        $eventStatsStorage->updateByName($statName, $data['value']);
 
         return $this->buildJsonResponse($request, $response);
     }
@@ -96,7 +96,9 @@ class StatsController extends AbstractSantosEnduranceController
      */
     protected function validateStatValue(Request $request, array $stat, string $statName) : void
     {
+        /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
         // Value is set

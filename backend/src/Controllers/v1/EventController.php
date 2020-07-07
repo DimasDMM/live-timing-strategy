@@ -41,11 +41,11 @@ class EventController extends AbstractController
         $this->validateRole($request, [Roles::ADMIN, Roles::BATCH]);
         $eventsIndexStorage = $this->container->get('storages')['common']['events_index']();
 
-        $content = $this->getParsedBody($request);
-        $this->validateEventValueTypes($request, $content);
-        $this->validateEventValueRanges($request, $content);
+        $data = $this->getParsedBody($request);
+        $this->validateEventValueTypes($request, $data);
+        $this->validateEventValueRanges($request, $data);
         
-        $event = $eventsIndexStorage->getByName($content['event_name']);
+        $event = $eventsIndexStorage->getByName($data['name']);
         if (!empty($event)) {
             throw new HttpBadRequestException($request, 'Event name already exists.');
         }
@@ -55,21 +55,27 @@ class EventController extends AbstractController
         $connection->beginTransaction();
         try {
             $eventCreator = $this->container->get('event_creator');
-            if (!$eventCreator->isEventSupported($content['track_name'], $content['event_type'])) {
+            if (!$eventCreator->isEventSupported($data['track_name'], $data['event_type'])) {
                 throw new HttpBadRequestException($request, 'The event type is not supported in this track.');
             }
 
-            $tablesPrefix = $eventCreator->getTablesPrefix($content['event_name']);
-            $eventCreator->createEventTables($content['track_name'], $content['event_type'], $tablesPrefix);
+            $tablesPrefix = $eventCreator->getTablesPrefix($data['name']);
+            $eventCreator->createEventTables($data['track_name'], $data['event_type'], $tablesPrefix);
 
-            $eventsIndexStorage->insert($content['event_name'], $tablesPrefix, $content['track_name'], $content['event_type']);
+            $event = [
+                'name' => $data['name'],
+                'tables_prefix' => $tablesPrefix,
+                'track_name' => $data['track_name'],
+                'event_type' => $data['event_type'],
+            ];
+            $eventsIndexStorage->insert($event);
             
             // Set config items
-            $eventConfigStorage = $this->container->get('storages')['santos_endurance']['event_config']();
+            $eventConfigStorage = $this->container->get('storages')['santos_endurance']['configuration']();
             $eventConfigStorage->setTablesPrefix($tablesPrefix);
-            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$content['configuration']['race_length']);
-            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$content['configuration']['race_length_unit']);
-            $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$content['configuration']['reference_time_top_teams']);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$data['configuration']['race_length']);
+            $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$data['configuration']['race_length_unit']);
+            $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$data['configuration']['reference_time_top_teams']);
 
             $connection->commit();
         } catch (Exception $e) {
@@ -87,10 +93,11 @@ class EventController extends AbstractController
      */
     protected function validateEventValueTypes(Request $request, array $event) : void
     {
+        /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
 
         // Values are set and not empty
-        $validatorTypes->empty('event_name', $event['event_name'] ?? null);
+        $validatorTypes->empty('name', $event['name'] ?? null);
         $validatorTypes->empty('track_name', $event['track_name'] ?? null);
         $validatorTypes->empty('event_type', $event['event_type'] ?? null);
         $validatorTypes->empty('configuration', $event['configuration'] ?? null);
@@ -101,7 +108,7 @@ class EventController extends AbstractController
 
         // Values has correct format
         $validatorTypes->isArray('configuration', $event['configuration']);
-        $validatorTypes->isString('event_name', $event['event_name']);
+        $validatorTypes->isString('name', $event['name']);
         $validatorTypes->isString('track_name', $event['track_name']);
         $validatorTypes->isString('event_type', $event['event_type']);
         $validatorTypes->isInteger('configuration->race_length', $event['configuration']['race_length']);
@@ -116,6 +123,7 @@ class EventController extends AbstractController
      */
     protected function validateEventValueRanges(Request $request, array $event) : void
     {
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
         // Values has correct format

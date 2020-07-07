@@ -43,16 +43,6 @@ abstract class AbstractController
 
     /**
      * @param Request $request
-     * @return array
-     */
-    protected function getParsedBody(Request $request) : array
-    {
-        $content = $request->getParsedBody();
-        return !empty($content) ? $content : json_decode(file_get_contents('php://input'), true);
-    }
-
-    /**
-     * @param Request $request
      * @param Response $response
      * @param mixed $data Optional
      * @return mixed
@@ -93,5 +83,24 @@ abstract class AbstractController
         $response = $response->withHeader('Content-type', 'text/yaml');
         
         return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    protected function getParsedBody(Request $request) : array
+    {
+        $content = $request->getParsedBody();
+        return !empty($content) ? $content : json_decode($this->fileGetContentsUtf8('php://input'), true);
+    }
+    
+    private function fileGetContentsUtf8($fn) {
+        $content = file_get_contents($fn);
+        return mb_convert_encoding(
+            $content,
+            'UTF-8',
+            mb_detect_encoding($content)
+        );
     }
 }

@@ -287,7 +287,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamSimple'
+              $ref: '#/components/schemas/TeamWithDriversSimple'
       responses:
         '200':
           description: Correct response
@@ -301,6 +301,31 @@ paths:
                   data:
                     type: object
   /events/{event-name}/teams/{team-name}:
+    get:
+      summary: Returns a team data.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: team-name
+        in: path
+        required: true
+        description: Name of the team (must be url encoded).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/TeamWithDrivers'
     put:
       summary: Updates a team data.
       tags:
@@ -767,7 +792,7 @@ components:
     EventSimple:
       type: object
       properties:
-        event_name:
+        name:
           type: string
           example: Resistencia Los Santos 26-06-2020
         track_name:
@@ -803,25 +828,9 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Driver'
-    TeamWithDriversSimple:
-      allOf:
-      - $ref: '#/components/schemas/TeamSimple'
-      - type: object
-        properties:
-          reference_time_offset:
-            type: integer
-          kart_status:
-            type: string
-            enum: ['unknown', 'good', 'medium', 'bad']
-          kart_status_guess:
-            type: string
-            enum: ['good', 'medium', 'bad']
-          forced_kart_status:
-            type: string
-            enum: ['good', 'medium', 'bad']
           update_date:
             $ref: '#/components/schemas/Datetime'
-    TeamSimple:
+    TeamWithDriversSimple:
       type: object
       properties:
         name:
@@ -831,7 +840,9 @@ components:
         drivers:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/DriverSimple'
+        reference_time_offset:
+          type: integer
     TimingItem:
       type: object
       properties:

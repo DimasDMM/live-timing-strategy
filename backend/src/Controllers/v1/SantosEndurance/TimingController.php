@@ -3,7 +3,6 @@ namespace CkmTiming\Controllers\v1\SantosEndurance;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Routing\RouteContext;
 
 class TimingController extends AbstractSantosEnduranceController

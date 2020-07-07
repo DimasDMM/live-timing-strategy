@@ -46,4 +46,34 @@ class ValidatorRanges extends AbstractHelper
             throw new HttpBadRequestException($this->request, "Param $paramName has not a valid value.");
         }
     }
+
+    /**
+     * @param string $paramName
+     * @param mixed $items
+     * @param array $expectedAttributes
+     * @return void
+     * @throws HttpBadRequestException
+     */
+    public function itemsHasAttributes(string $paramName, $items, array $expectedAttributes) : void
+    {
+        $mandatory = [];
+        foreach ($expectedAttributes as $attrName => $isMandatory) {
+            if ($isMandatory) {
+                $mandatory[] = $attrName;
+            }
+        }
+
+        foreach ($items as $item) {
+            $intersect = array_intersect(array_keys($item), array_keys($mandatory));
+            if (!empty($intersect)) {
+                throw new HttpBadRequestException($this->request, "There are missing mandatory attributes in the param $paramName.");
+            }
+            
+            foreach (array_keys($item) as $attrName) {
+                if (!isset($expectedAttributes[$attrName])) {
+                    throw new HttpBadRequestException($this->request, "There are unknown attributes in the param $paramName.");
+                }
+            }
+        }
+    }
 }

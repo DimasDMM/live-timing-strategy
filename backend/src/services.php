@@ -8,5 +8,6 @@ $connection = DriverManager::getConnection([
     'password' => getenv('DB_PASS'),
     'dbname' => getenv('DB_DATABASE'),
     'driver' => 'pdo_mysql',
+    'charset' => 'utf8',
 ]);
 $container->set('db', $connection);

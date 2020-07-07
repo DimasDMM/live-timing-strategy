@@ -2,7 +2,6 @@
 namespace CkmTiming\Helpers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Exception\HttpBadRequestException;
 
 class EventCreator extends AbstractHelper
 {
@@ -39,7 +38,7 @@ class EventCreator extends AbstractHelper
     {
         $fixedName = preg_replace('/[^a-zA-Z_]/', '', $eventName);
         $fixedName = strtolower($fixedName);
-        return $fixedName . '_' . hash('crc32', time());
+        return $fixedName . '_' . hash('crc32', microtime());
     }
 
     /**
