@@ -44,6 +44,29 @@ class DriversStorage extends AbstractSantosEnduranceStorage
             FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d
             WHERE se_d.name = :name";
         $params = [':name' => $name];
+        $results = $connection->executeQuery($stmt, $params)->fetch();
+        return empty($results) ? [] : $results;
+    }
+
+    /**
+     * @param int $teamId
+     * @return array
+     */
+    public function getByTeamId(int $teamId) : array
+    {
+        $connection = $this->getConnection();
+        $tablePrefix = $this->getTablesPrefix();
+        $stmt = "
+            SELECT
+                se_d.id id,
+                se_d.name name,
+                se_d.time_driving time_driving,
+                se_d.reference_time_offset reference_time_offset,
+                se_d.update_date update_date
+            FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d
+            JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_d. team_id
+            WHERE se_d.team_id = :team_id";
+        $params = [':team_id' => $teamId];
         $results = $connection->executeQuery($stmt, $params)->fetchAll();
         return empty($results) ? [] : $results;
     }

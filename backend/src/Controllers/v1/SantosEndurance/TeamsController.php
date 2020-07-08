@@ -107,10 +107,17 @@ class TeamsController extends AbstractSantosEnduranceController
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $teamName = $route->getArgument('team-name');
-        
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
         $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
         $teamsStorage->setTablesPrefix($tablesPrefix);
         $data = $teamsStorage->getByName($teamName);
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\DriversStorage $driversStorage */
+        $driversStorage = $this->container->get('storages')['santos_endurance']['drivers']();
+        $driversStorage->setTablesPrefix($tablesPrefix);
+        $drivers = $driversStorage->getByTeamId($data['id']);
+        $data['drivers'] = $drivers;
 
         return $this->buildJsonResponse(
             $request,
