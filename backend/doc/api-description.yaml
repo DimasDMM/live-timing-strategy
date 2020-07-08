@@ -54,7 +54,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Event'
+                      $ref: '#/components/schemas/EventGet'
     post:
       summary: Creates a new event.
       tags:
@@ -66,7 +66,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SantosEnduranceEventSimple'
+              $ref: '#/components/schemas/SantosEnduranceEventPost'
       responses:
         '200':
           description: Correct response
@@ -100,7 +100,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/EventStat'
+                      $ref: '#/components/schemas/EventStatGet'
   /events/{event-name}/stats/{stat-name}:
     get:
       summary: Returns the current stats of the event.
@@ -126,7 +126,7 @@ paths:
                   message:
                     type: string
                   data:
-                    $ref: '#/components/schemas/EventStat'
+                    $ref: '#/components/schemas/EventStatGet'
     put:
       summary: Updates the value of a specific stat.
       tags:
@@ -145,7 +145,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EventStatSimple'
+              $ref: '#/components/schemas/EventStatPut'
       responses:
         '200':
           description: Correct response
@@ -192,7 +192,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TimingTeam'
+                      $ref: '#/components/schemas/TimingTeamGet'
   /events/{event-name}/timing/teams/{team-name}/{limit}:
     get:
       summary: Returns the teams and their timing data.
@@ -226,7 +226,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TimingTeam'
+                      $ref: '#/components/schemas/TimingTeamGet'
   /events/{event-name}/timing:
     post:
       summary: Adds a lap time of a driver/team in the event.
@@ -240,7 +240,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TimingItem'
+              $ref: '#/components/schemas/TimingItemPost'
       responses:
         '200':
           description: Correct response
@@ -274,7 +274,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TeamWithDrivers'
+                      $ref: '#/components/schemas/TeamGet'
     post:
       summary: Adds a new team.
       tags:
@@ -287,7 +287,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamWithDriversSimple'
+              $ref: '#/components/schemas/TeamPost'
       responses:
         '200':
           description: Correct response
@@ -325,7 +325,7 @@ paths:
                   message:
                     type: string
                   data:
-                    $ref: '#/components/schemas/TeamWithDrivers'
+                    $ref: '#/components/schemas/TeamGet'
     put:
       summary: Updates a team data.
       tags:
@@ -344,7 +344,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamWithDriversSimple'
+              $ref: '#/components/schemas/TeamPut'
       responses:
         '200':
           description: Correct response
@@ -388,7 +388,7 @@ paths:
                   message:
                     type: string
                   data:
-                    $ref: '#/components/schemas/Driver'
+                    $ref: '#/components/schemas/DriverGet'
     put:
       summary: Updates a driver data.
       tags:
@@ -413,7 +413,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Driver'
+              $ref: '#/components/schemas/DriverPut'
       responses:
         '200':
           description: Correct response
@@ -460,7 +460,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/KartBox'
+                      $ref: '#/components/schemas/KartBoxGet'
   /events/{event-name}/karts-box/{kart-action}:
     post:
       summary: Adds a kart which has entered/left to the box.
@@ -481,7 +481,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KartBox'
+              $ref: '#/components/schemas/KartBoxPost'
       responses:
         '200':
           description: Correct response
@@ -514,7 +514,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KartBox'
+              $ref: '#/components/schemas/KartBoxPut'
       responses:
         '200':
           description: Correct response
@@ -548,7 +548,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/KartProb'
+                      $ref: '#/components/schemas/KartProbGet'
     post:
       summary: Adds the probability of getting a kart from box.
       tags:
@@ -561,7 +561,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KartProbSimple'
+              $ref: '#/components/schemas/KartProbPost'
       responses:
         '200':
           description: Correct response
@@ -586,7 +586,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KartProbSimple'
+              $ref: '#/components/schemas/KartProbPut'
       responses:
         '200':
           description: Correct response
@@ -684,27 +684,27 @@ paths:
                     type: object
                     properties:
                       event_status:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       event_stage:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       database_connection:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       crawler_internet:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       crawler_apex:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       crawler_parse_teams:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       crawler_parse_drivers:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       crawler_parse_timing:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       batch_karts_box_probs:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       batch_karts_status:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
                       batch_time_references:
-                        $ref: '#/components/schemas/HealthItem'
+                        $ref: '#/components/schemas/HealthItemGet'
   /events/{event-name}/health/{health-category}/{health-name}:
     put:
       summary: Updates the status of an element.
@@ -730,7 +730,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HealthItemSimple'
+              $ref: '#/components/schemas/HealthItemPut'
       responses:
         '200':
           description: Correct response
@@ -761,16 +761,9 @@ components:
       schema:
         type: string
   schemas:
-    SantosEnduranceEvent:
+    SantosEnduranceEventPost:
       allOf:
-      - type: object
-        properties:
-          id:
-            type: integer
-      - $ref: '#/components/schemas/SantosEnduranceEventSimple'
-    SantosEnduranceEventSimple:
-      allOf:
-      - $ref: '#/components/schemas/EventSimple'
+      - $ref: '#/components/schemas/EventPost'
       - type: object
         properties:
           configuration:
@@ -782,14 +775,14 @@ components:
                 type: string
               reference_top_teams:
                 type: string
-    Event:
+    EventGet:
       allOf:
       - type: object
         properties:
           id:
             type: integer
-      - $ref: '#/components/schemas/EventSimple'
-    EventSimple:
+      - $ref: '#/components/schemas/EventPost'
+    EventPost:
       type: object
       properties:
         name:
@@ -803,47 +796,64 @@ components:
           type: string
           enum: [endurance]
           example: endurance
-    DriverSimple:
+    DriverPost:
       type: object
       properties:
         name:
           type: string
-    Driver:
+    DriverPut:
+      type: object
+      properties:
+        reference_time_offset:
+          type: integer
+        time_driving:
+          type: integer
+    DriverGet:
       allOf:
-      - $ref: '#/components/schemas/DriverSimple'
       - type: object
         properties:
-          reference_time_offset:
+          id:
             type: integer
-          time_driving:
-            type: integer
+      - $ref: '#/components/schemas/DriverPost'
+      - $ref: '#/components/schemas/DriverPut'
+      - type: object
+        properties:
           update_date:
             $ref: '#/components/schemas/Datetime'
-    TeamWithDrivers:
+    TeamGet:
       allOf:
-      - $ref: '#/components/schemas/TeamWithDriversSimple'
+      - type: object
+        properties:
+          id:
+            type: integer
+      - $ref: '#/components/schemas/TeamPost'
       - type: object
         properties:
           drivers:
             type: array
             items:
-              $ref: '#/components/schemas/Driver'
+              $ref: '#/components/schemas/DriverGet'
           update_date:
             $ref: '#/components/schemas/Datetime'
-    TeamWithDriversSimple:
+    TeamPut:
       type: object
       properties:
-        name:
-          type: string
-        number:
-          type: integer
-        drivers:
-          type: array
-          items:
-            $ref: '#/components/schemas/DriverSimple'
         reference_time_offset:
           type: integer
-    TimingItem:
+    TeamPost:
+      allOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          number:
+            type: integer
+          drivers:
+            type: array
+            items:
+              $ref: '#/components/schemas/DriverPost'
+      - $ref: '#/components/schemas/TeamPut'
+    TimingItemPost:
       type: object
       properties:
         position:
@@ -859,7 +869,7 @@ components:
           type: integer
         number_stops:
           type: integer
-    TimingTeam:
+    TimingTeamGet:
       type: object
       properties:
         position:
@@ -900,18 +910,16 @@ components:
           enum: ['good', 'medium', 'bad']
         update_date:
           $ref: '#/components/schemas/Datetime'
-    KartBox:
+    KartBoxGet:
       allOf:
-      - $ref: '#/components/schemas/KartBoxSimple'
+      - $ref: '#/components/schemas/KartBoxPost'
       - type: object
         properties:
           update_date:
             $ref: '#/components/schemas/Datetime'
-    KartBoxSimple:
+    KartBoxPut:
       type: object
       properties:
-        team_name:
-          type: string
         kart_status:
           type: string
           enum: ['unknown', 'good', 'medium', 'bad']
@@ -921,14 +929,30 @@ components:
         forced_kart_status:
           type: string
           enum: ['good', 'medium', 'bad']
-    KartProb:
+    KartBoxPost:
       allOf:
-      - $ref: '#/components/schemas/KartProbSimple'
+      - $ref: '#/components/schemas/KartBoxPut'
+      - type: object
+        properties:
+          team_name:
+            type: string
+          kart_status:
+            type: string
+            enum: ['unknown', 'good', 'medium', 'bad']
+          kart_status_guess:
+            type: string
+            enum: ['good', 'medium', 'bad']
+          forced_kart_status:
+            type: string
+            enum: ['good', 'medium', 'bad']
+    KartProbGet:
+      allOf:
+      - $ref: '#/components/schemas/KartProbPost'
       - type: object
         properties:
           update_date:
             $ref: '#/components/schemas/Datetime'
-    KartProbSimple:
+    KartProbPut:
       type: object
       properties:
         step:
@@ -939,14 +963,18 @@ components:
         probability:
           type: number
           format: float
-    HealthCategory:
+    KartProbPost:
       type: object
       properties:
-        name:
+        step:
+          type: integer
+        kart_status:
           type: string
-        status:
-          type: string
-    HealthItem:
+          enum: ['unknown', 'good', 'medium', 'bad']
+        probability:
+          type: number
+          format: float
+    HealthItemGet:
       allOf:
       - type: object
         properties:
@@ -957,14 +985,14 @@ components:
           update_date:
             $ref: '#/components/schemas/Datetime'
       - $ref: '#/components/schemas/HealthItemSimple'
-    HealthItemSimple:
+    HealthItemPut:
       type: object
       properties:
         status:
           type: string
         message:
           type: string
-    EventStat:
+    EventStatGet:
       allOf:
       - type: object
         properties:
@@ -972,8 +1000,8 @@ components:
             type: string
           update_date:
             $ref: '#/components/schemas/Datetime'
-      - $ref: '#/components/schemas/EventStatSimple'
-    EventStatSimple:
+      - $ref: '#/components/schemas/EventStatPut'
+    EventStatPut:
       type: object
       properties:
         value:
