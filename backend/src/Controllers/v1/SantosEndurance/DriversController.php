@@ -1,7 +1,6 @@
 <?php
 namespace CkmTiming\Controllers\v1\SantosEndurance;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpBadRequestException;
@@ -9,8 +8,6 @@ use Slim\Routing\RouteContext;
 
 class DriversController extends AbstractSantosEnduranceController
 {
-    protected $validDriverAttributes = ['name' => true];
-
     /**
      * @param Request $request
      * @param Response $response
