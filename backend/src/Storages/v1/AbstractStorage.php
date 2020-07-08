@@ -26,26 +26,51 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param array $row
+     * @param array $data
      * @param string $table
      * @return void
      */
-    protected function simpleInsert(array $row, string $table) : void
+    protected function simpleInsert(array $data, string $table) : void
     {
         $queryBuilder = $this->getConnection()->createQueryBuilder();
 
         $rowValues = [];
         $rowParams = [];
-        foreach ($row as $name => $value) {
-            $paramName = ':' . $name;
+        foreach ($data as $column => $value) {
+            $paramName = ':' . $column;
             $rowParams[$paramName] = $value;
-            $rowValues[$name] = $paramName;
+            $rowValues[$column] = $paramName;
         }
 
         $queryBuilder
             ->insert($table)
             ->values($rowValues)
             ->setParameters($rowParams);
+        $queryBuilder->execute();
+    }
+
+    /**
+     * @param array $data
+     * @param string $table
+     * @param string|int $id
+     * @param string $colId
+     * @return void
+     */
+    protected function simpleUpdate(array $data, string $table, $id, string $colId = 'id') : void
+    {
+        $queryBuilder = $this->getConnection()->createQueryBuilder();
+        $queryBuilder->update($table, 'u');
+
+        foreach ($data as $column => $value) {
+            $paramName = ':' . $column;
+            $queryBuilder
+                ->set("u.$column", $paramName)
+                ->setParameter($column, $value);
+        }
+
+        $queryBuilder->where($queryBuilder->expr()->eq("u.$colId", ':id_column'));
+        $queryBuilder->setParameter(':id_column', $id);
+
         $queryBuilder->execute();
     }
 }

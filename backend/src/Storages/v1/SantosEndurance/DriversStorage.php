@@ -27,9 +27,10 @@ class DriversStorage extends AbstractSantosEnduranceStorage
 
     /**
      * @param string $name
+     * @param int $teamId
      * @return array
      */
-    public function getByName(string $name) : array
+    public function getByName(string $name, int $teamId) : array
     {
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
@@ -42,8 +43,13 @@ class DriversStorage extends AbstractSantosEnduranceStorage
                 se_d.reference_time_offset reference_time_offset,
                 se_d.update_date update_date
             FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d
-            WHERE se_d.name = :name";
-        $params = [':name' => $name];
+            WHERE
+                se_d.name = :name AND
+                se_d.team_id = :team_id";
+        $params = [
+            ':name' => $name,
+            ':team_id' => $teamId,
+        ];
         $results = $connection->executeQuery($stmt, $params)->fetch();
         return empty($results) ? [] : $results;
     }
@@ -80,5 +86,17 @@ class DriversStorage extends AbstractSantosEnduranceStorage
         $tablePrefix = $this->getTablesPrefix();
         $table = $tablePrefix . Tables::SE_DRIVERS;
         parent::simpleInsert($row, $table);
+    }
+
+    /**
+     * @param int $id
+     * @param array $data
+     * @return void
+     */
+    public function update(int $id, array $data) : void
+    {
+        $tablePrefix = $this->getTablesPrefix();
+        $table = $tablePrefix . Tables::SE_DRIVERS;
+        parent::simpleUpdate($data, $table, $id);
     }
 }

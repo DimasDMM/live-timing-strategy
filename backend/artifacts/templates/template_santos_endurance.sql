@@ -6,7 +6,7 @@ CREATE TABLE `{tables_prefix}_teams` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `team_name` (`name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_drivers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -18,7 +18,7 @@ CREATE TABLE `{tables_prefix}_drivers` (
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `team_driver` (`name`, `team_id`),
   CONSTRAINT `{tables_prefix}_drivers__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_timing_historic` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_timing__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`),
   CONSTRAINT `{tables_prefix}_timing__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `{tables_prefix}_drivers` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_karts_in` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +48,7 @@ CREATE TABLE `{tables_prefix}_karts_in` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_karts_in__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_karts_out` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -58,7 +58,7 @@ CREATE TABLE `{tables_prefix}_karts_out` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_karts_out__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_karts_probs` (
   `step` INT UNSIGNED NOT NULL,
@@ -67,21 +67,21 @@ CREATE TABLE `{tables_prefix}_karts_probs` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`step`, `kart_status`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_event_config` (
   `name` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` VARCHAR(255) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_event_stats` (
   `name` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` VARCHAR(255) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_event_health` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -92,7 +92,7 @@ CREATE TABLE `{tables_prefix}_event_health` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `category_name` (`category`, `name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `{tables_prefix}_event_config` (`name`, `value`) VALUES
   ('race_length', NULL),

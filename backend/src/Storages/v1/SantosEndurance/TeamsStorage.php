@@ -47,13 +47,25 @@ class TeamsStorage extends AbstractSantosEnduranceStorage
     }
 
     /**
-     * @param array $row
+     * @param array $data
      * @return void
      */
-    public function insert(array $row) : void
+    public function insert(array $data) : void
     {
         $tablePrefix = $this->getTablesPrefix();
         $table = $tablePrefix . Tables::SE_TEAMS;
-        parent::simpleInsert($row, $table);
+        parent::simpleInsert($data, $table);
+    }
+
+    /**
+     * @param int $id
+     * @param array $data
+     * @return void
+     */
+    public function update(int $id, array $data) : void
+    {
+        $tablePrefix = $this->getTablesPrefix();
+        $table = $tablePrefix . Tables::SE_TEAMS;
+        parent::simpleUpdate($data, $table, $id);
     }
 }

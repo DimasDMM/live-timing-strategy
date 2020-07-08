@@ -44,8 +44,8 @@ class TeamsController extends AbstractSantosEnduranceController
         $tablesPrefix = $eventIndex['tables_prefix'];
 
         $data = $this->getParsedBody($request);
-        $this->validateTeamValueTypes($request, $data);
-        $this->validateTeamValueRanges($request, $data);
+        $this->validatePostTeamValueTypes($request, $data);
+        $this->validatePostTeamValueRanges($request, $data);
 
         // Get storages
         $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
@@ -130,8 +130,9 @@ class TeamsController extends AbstractSantosEnduranceController
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws HttpBadRequestException
      */
-    public function getByDriverName(Request $request, Response $response) : Response
+    public function putByName(Request $request, Response $response) : Response
     {
         $eventIndex = $this->container->get('event-index');
         $tablesPrefix = $eventIndex['tables_prefix'];
@@ -139,16 +140,23 @@ class TeamsController extends AbstractSantosEnduranceController
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $teamName = $route->getArgument('team-name');
-        
+
+        $data = $this->getParsedBody($request);
+        $this->validatePutTeamValue($request, $data);
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
         $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
         $teamsStorage->setTablesPrefix($tablesPrefix);
-        $data = $teamsStorage->getByName($teamName);
+        $teamData = $teamsStorage->getByName($teamName);
 
-        return $this->buildJsonResponse(
-            $request,
-            $response,
-            $data
-        );
+        if (empty($teamData)) {
+            throw new HttpBadRequestException($request, 'The team does not exists.');
+        }
+
+        // Update team
+        $teamsStorage->update($teamData['id'], $data);
+
+        return $this->buildJsonResponse($request, $response);
     }
 
     /**
@@ -156,7 +164,27 @@ class TeamsController extends AbstractSantosEnduranceController
      * @param array $team
      * @return void
      */
-    protected function validateTeamValueTypes(Request $request, array $team) : void
+    protected function validatePutTeamValue(Request $request, array $team) : void
+    {
+        /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
+        $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
+
+        // Value is set
+        $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
+        
+        // Values has correct format
+        $validatorTypes->isInteger('reference_time_offset', $team['reference_time_offset']);
+        $validatorRanges->isPositiveNumber('reference_time_offset', $team['reference_time_offset'], true);
+    }
+
+    /**
+     * @param Request $request
+     * @param array $team
+     * @return void
+     */
+    protected function validatePostTeamValueTypes(Request $request, array $team) : void
     {
         /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
@@ -179,7 +207,7 @@ class TeamsController extends AbstractSantosEnduranceController
      * @param array $team
      * @return void
      */
-    protected function validateTeamValueRanges(Request $request, array $team) : void
+    protected function validatePostTeamValueRanges(Request $request, array $team) : void
     {
         /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);

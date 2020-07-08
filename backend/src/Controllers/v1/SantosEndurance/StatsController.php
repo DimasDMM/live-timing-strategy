@@ -81,7 +81,7 @@ class StatsController extends AbstractSantosEnduranceController
         }
 
         $data = $this->getParsedBody($request);
-        $this->validateStatValue($request, $data, $statName);
+        $this->validatePutStatValue($request, $data, $statName);
 
         $eventStatsStorage->updateByName($statName, $data['value']);
 
@@ -94,7 +94,7 @@ class StatsController extends AbstractSantosEnduranceController
      * @param string $statName
      * @return void
      */
-    protected function validateStatValue(Request $request, array $stat, string $statName) : void
+    protected function validatePutStatValue(Request $request, array $stat, string $statName) : void
     {
         /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);

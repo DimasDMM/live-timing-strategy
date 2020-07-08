@@ -52,9 +52,9 @@ class StatsStorage extends AbstractSantosEnduranceStorage
     /**
      * @param string $name
      * @param string $value
-     * @return boolean
+     * @return void
      */
-    public function updateByName(string $name, string $value) : bool
+    public function updateByName(string $name, string $value) : void
     {
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
@@ -67,6 +67,5 @@ class StatsStorage extends AbstractSantosEnduranceStorage
             ':value' => $value,
         ];
         $connection->executeUpdate($stmt, $params);
-        return true;
     }
 }
