@@ -7,11 +7,12 @@ final class Tables
     const API_TOKENS = 'api_tokens';
 
     // Santos Endurance
+    const SE_DRIVERS = '_drivers';
+    const SE_KARTS_PROBS = '_karts_probs';
     const SE_EVENT_CONFIG = '_event_config';
     const SE_EVENT_STATS = '_event_stats';
     const SE_TIMING_HISTORIC = '_timing_historic';
     const SE_TEAMS = '_teams';
-    const SE_DRIVERS = '_drivers';
 
     public static function getConstants() : array
     {

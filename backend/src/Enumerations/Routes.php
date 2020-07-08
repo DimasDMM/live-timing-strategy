@@ -13,6 +13,7 @@ final class Routes
     const EVENT_NAME = '/events/{event-name}';
 
     // Endpoints of Santos Endurance events
+    const SE_KARTS_BOX_PROBS = '/karts-box/probs';
     const SE_STATS = '/stats';
     const SE_STATS_NAME = '/stats/{stat-name}';
     const SE_TEAMS = '/teams';

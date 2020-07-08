@@ -63,7 +63,7 @@ CREATE TABLE `{tables_prefix}_karts_out` (
 CREATE TABLE `{tables_prefix}_karts_probs` (
   `step` INT UNSIGNED NOT NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
-  `probability` DECIMAL(30, 30) NOT NULL,
+  `probability` FLOAT NOT NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`step`, `kart_status`)
