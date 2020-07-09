@@ -21,6 +21,18 @@ class TeamsStorage extends AbstractSantosEnduranceStorage
                 se_t.update_date update_date
             FROM `" . $tablePrefix . Tables::SE_TEAMS . "` se_t";
         $results = $connection->executeQuery($stmt)->fetchAll();
+        $results = array_map(
+            function ($row) {
+                return [
+                    'id' => (int)$row['id'],
+                    'name' => $row['name'],
+                    'number' => (int)$row['number'],
+                    'reference_time_offset' => (int)$row['reference_time_offset'],
+                    'update_date' => $row['update_date'],
+                ];
+            },
+            $results
+        );
         return empty($results) ? [] : $results;
     }
 
@@ -43,7 +55,17 @@ class TeamsStorage extends AbstractSantosEnduranceStorage
             WHERE se_t.name = :name";
         $params = [':name' => $name];
         $results = $connection->executeQuery($stmt, $params)->fetch();
-        return empty($results) ? [] : $results;
+        if (empty($results)) {
+            return [];
+        }
+
+        return [
+            'id' => (int)$results['id'],
+            'name' => $results['name'],
+            'number' => (int)$results['number'],
+            'reference_time_offset' => (int)$results['reference_time_offset'],
+            'update_date' => $results['update_date'],
+        ];
     }
 
     /**

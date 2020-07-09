@@ -4,7 +4,7 @@ use CkmTiming\Controllers\v1\HealthController;
 use CkmTiming\Controllers\v1\DocumentationController;
 use CkmTiming\Controllers\v1\EventController;
 use CkmTiming\Controllers\v1\SantosEndurance\DriversController;
-use CkmTiming\Controllers\v1\SantosEndurance\KartsBoxProbsController;
+use CkmTiming\Controllers\v1\SantosEndurance\KartsBoxController;
 use CkmTiming\Controllers\v1\SantosEndurance\StatsController;
 use CkmTiming\Controllers\v1\SantosEndurance\TeamsController;
 use CkmTiming\Controllers\v1\TokenController;
@@ -29,9 +29,9 @@ $app->group('', function (RouteCollectorProxy $group) {
 
         $group->group(Routes::EVENT_NAME, function (RouteCollectorProxy $group) {
             // Santos Endurance endpoints
-            $group->get(Routes::SE_KARTS_BOX_PROBS, KartsBoxProbsController::class . ':get');
-            $group->put(Routes::SE_KARTS_BOX_PROBS, KartsBoxProbsController::class . ':put');
-            $group->post(Routes::SE_KARTS_BOX_PROBS, KartsBoxProbsController::class . ':post');
+            $group->get(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':get');
+            $group->put(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':put');
+            $group->post(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':post');
 
             $group->get(Routes::SE_STATS, StatsController::class . ':get');
             $group->get(Routes::SE_STATS_NAME, StatsController::class . ':getByName');

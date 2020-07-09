@@ -494,39 +494,6 @@ paths:
                     type: string
                   data:
                     type: object
-    put:
-      summary: Updates data of a kart which has entered/left to the box.
-      description: Note that this endpoint only updates the last kart-team in the history.
-      tags:
-      - Santos Endurance Event
-      parameters:
-      - $ref: '#/components/parameters/HeaderRequestID'
-      - $ref: '#/components/parameters/EventName'
-      - name: kart-action
-        in: path
-        required: true
-        description: If "in", it indicates that the kart has entered to the box. Otherwise, if the kart has left the box, it must be "out".
-        schema:
-          type: string
-          enum: ['in', 'out']
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/KartBoxPut'
-      responses:
-        '200':
-          description: Correct response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
   /events/{event-name}/karts-box/probs:
     get:
       summary: Returns the probabilities of getting a kart from box.
@@ -923,9 +890,6 @@ components:
         kart_status:
           type: string
           enum: ['unknown', 'good', 'medium', 'bad']
-        kart_status_guess:
-          type: string
-          enum: ['good', 'medium', 'bad']
         forced_kart_status:
           type: string
           enum: ['good', 'medium', 'bad']

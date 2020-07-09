@@ -8,6 +8,8 @@ final class Tables
 
     // Santos Endurance
     const SE_DRIVERS = '_drivers';
+    const SE_KARTS_IN = '_karts_in';
+    const SE_KARTS_OUT = '_karts_out';
     const SE_KARTS_PROBS = '_karts_probs';
     const SE_EVENT_CONFIG = '_event_config';
     const SE_EVENT_STATS = '_event_stats';

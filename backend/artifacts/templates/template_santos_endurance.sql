@@ -44,7 +44,7 @@ CREATE TABLE `{tables_prefix}_karts_in` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `team_id` INT UNSIGNED NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
-  `forced_kart_status` TINYINT(1) NOT NULL DEFAULT 0,
+  `forced_kart_status` ENUM('good', 'medium', 'bad') NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_karts_in__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`)
@@ -54,7 +54,7 @@ CREATE TABLE `{tables_prefix}_karts_out` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `team_id` INT UNSIGNED NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
-  `forced_kart_status` TINYINT(1) NOT NULL DEFAULT 0,
+  `forced_kart_status` ENUM('good', 'medium', 'bad') NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_karts_out__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`)
