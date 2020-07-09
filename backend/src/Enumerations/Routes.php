@@ -5,7 +5,6 @@ final class Routes
 {
     // Common endpoints
     const API_VERSION = '/v1';
-    const HEALTH = '/health';
     const DOCUMENTATION = '/documentation';
 
     const TOKEN_VALIDATE = '/token/validate';
@@ -15,6 +14,8 @@ final class Routes
     // Endpoints of Santos Endurance events
     const SE_CONFIGURATION = '/configuration';
     const SE_CONFIGURATION_NAME = '/configuration/{config-name}';
+    const SE_HEALTH = '/health';
+    const SE_HEALTH_NAME = '/health/{health-category}/{health-name}';
     const SE_KARTS_BOX_ACTION = '/karts-box/{kart-action}[/{limit}]';
     const SE_STATS = '/stats';
     const SE_STATS_NAME = '/stats/{stat-name}';

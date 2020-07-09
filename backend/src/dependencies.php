@@ -6,6 +6,7 @@ use CkmTiming\Helpers\ValidatorRanges;
 use CkmTiming\Storages\v1\Common\EventsIndexStorage;
 use CkmTiming\Storages\v1\SantosEndurance\ConfigurationStorage;
 use CkmTiming\Storages\v1\SantosEndurance\DriversStorage;
+use CkmTiming\Storages\v1\SantosEndurance\HealthStorage;
 use CkmTiming\Storages\v1\SantosEndurance\KartsBoxInStorage;
 use CkmTiming\Storages\v1\SantosEndurance\KartsBoxOutStorage;
 use CkmTiming\Storages\v1\SantosEndurance\KartsBoxProbsStorage;
@@ -22,6 +23,7 @@ $callbacks = [
     'santos_endurance' => [
         'configuration' => function () use ($container) { return new ConfigurationStorage($container); },
         'drivers' => function () use ($container) { return new DriversStorage($container); },
+        'health' => function () use ($container) { return new HealthStorage($container); },
         'karts-box-in' => function () use ($container) { return new KartsBoxInStorage($container); },
         'karts-box-out' => function () use ($container) { return new KartsBoxOutStorage($container); },
         'karts-box-probs' => function () use ($container) { return new KartsBoxProbsStorage($container); },

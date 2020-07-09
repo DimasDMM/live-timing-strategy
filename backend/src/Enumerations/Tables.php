@@ -12,6 +12,7 @@ final class Tables
     const SE_KARTS_OUT = '_karts_out';
     const SE_KARTS_PROBS = '_karts_probs';
     const SE_EVENT_CONFIG = '_event_config';
+    const SE_EVENT_HEALTH = '_event_health';
     const SE_EVENT_STATS = '_event_stats';
     const SE_TIMING_HISTORIC = '_timing_historic';
     const SE_TEAMS = '_teams';
