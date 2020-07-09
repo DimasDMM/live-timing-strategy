@@ -3,6 +3,7 @@
 use CkmTiming\Controllers\v1\HealthController;
 use CkmTiming\Controllers\v1\DocumentationController;
 use CkmTiming\Controllers\v1\EventController;
+use CkmTiming\Controllers\v1\SantosEndurance\ConfigurationController;
 use CkmTiming\Controllers\v1\SantosEndurance\DriversController;
 use CkmTiming\Controllers\v1\SantosEndurance\KartsBoxController;
 use CkmTiming\Controllers\v1\SantosEndurance\StatsController;
@@ -29,6 +30,9 @@ $app->group('', function (RouteCollectorProxy $group) {
 
         $group->group(Routes::EVENT_NAME, function (RouteCollectorProxy $group) {
             // Santos Endurance endpoints
+            $group->get(Routes::SE_CONFIGURATION, ConfigurationController::class . ':get');
+            $group->put(Routes::SE_CONFIGURATION_NAME, ConfigurationController::class . ':putByName');
+
             $group->get(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':get');
             $group->put(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':put');
             $group->post(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':post');

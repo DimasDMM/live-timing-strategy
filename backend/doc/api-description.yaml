@@ -444,7 +444,7 @@ paths:
       - name: limit
         in: path
         required: false
-        description: Optionally limit to the latest <number> karts.
+        description: Optionally limit to the latest <number> karts (only for "in" and "out" karts).
         schema:
           type: integer
       responses:

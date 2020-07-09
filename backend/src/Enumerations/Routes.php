@@ -13,6 +13,8 @@ final class Routes
     const EVENT_NAME = '/events/{event-name}';
 
     // Endpoints of Santos Endurance events
+    const SE_CONFIGURATION = '/configuration';
+    const SE_CONFIGURATION_NAME = '/configuration/{config-name}';
     const SE_KARTS_BOX_ACTION = '/karts-box/{kart-action}[/{limit}]';
     const SE_STATS = '/stats';
     const SE_STATS_NAME = '/stats/{stat-name}';
