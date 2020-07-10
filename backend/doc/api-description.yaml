@@ -158,7 +158,7 @@ paths:
                     type: string
                   data:
                     type: object
-  /events/{event-name}/timing/all/{timing-type}/{limit}:
+  /events/{event-name}/timing/all/{timing-type}:
     get:
       summary: Returns the live timing information w/o the real positions.
       tags:
@@ -173,12 +173,6 @@ paths:
         schema:
           type: string
           enum: ['onlap', 'real']
-      - name: limit
-        in: path
-        required: false
-        description: Optionally limit to the latest <number> of times.
-        schema:
-          type: integer
       responses:
         '200':
           description: Correct response
@@ -737,11 +731,16 @@ components:
             type: object
             properties:
               race_length:
-                type: string
+                type: number
               race_length_unit:
                 type: string
+                enum: ['laps', 'hours']
               reference_top_teams:
-                type: string
+                type: number
+              stop_time:
+                type: number
+              min_number_stops:
+                type: number
     EventGet:
       allOf:
       - type: object

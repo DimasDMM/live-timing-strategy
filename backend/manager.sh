@@ -19,6 +19,9 @@ case $1 in
   code:style)
     ${MANAGER_DIR}/misc/bin/code-style.sh -p
     ;;
+  python)
+    ${MANAGER_DIR}/misc/bin/python-container.sh
+    ;;
   *)
     echo "Error: The command does not exist!!"
     exit 1
