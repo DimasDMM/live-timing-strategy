@@ -8,6 +8,7 @@ use CkmTiming\Controllers\v1\SantosEndurance\HealthController;
 use CkmTiming\Controllers\v1\SantosEndurance\KartsBoxController;
 use CkmTiming\Controllers\v1\SantosEndurance\StatsController;
 use CkmTiming\Controllers\v1\SantosEndurance\TeamsController;
+use CkmTiming\Controllers\v1\SantosEndurance\TimingController;
 use CkmTiming\Controllers\v1\TokenController;
 use CkmTiming\Middlewares\TokenMiddleware;
 use CkmTiming\Enumerations\Routes;
@@ -50,6 +51,7 @@ $app->group('', function (RouteCollectorProxy $group) {
             $group->get(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':getByName');
             $group->put(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':putByName');
 
+            $group->post(Routes::SE_TIMING, TimingController::class . ':post');
             $group->get(Routes::SE_TIMING_TEAM, TimingController::class . ':getByTeamName');
         })->add(new EventMiddleware($container));
     });

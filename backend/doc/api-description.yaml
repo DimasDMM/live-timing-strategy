@@ -834,6 +834,8 @@ components:
           type: integer
         gap:
           type: integer
+        lap:
+          type: integer
         number_stops:
           type: integer
     TimingTeamGet:
@@ -852,7 +854,7 @@ components:
           type: string
         driver_reference_time_offset:
           type: integer
-        driver_driving_time:
+        driver_time_driving:
           type: integer
         lap:
           type: integer
