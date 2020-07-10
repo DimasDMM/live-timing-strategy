@@ -25,9 +25,9 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `team_id` INT UNSIGNED NULL,
   `driver_id` INT UNSIGNED NULL,
   `position` INT UNSIGNED NOT NULL,
-  `time` INT NOT NULL,
-  `lap` INT NOT NULL,
-  `gap` INT NOT NULL,
+  `time` INT UNSIGNED NOT NULL,
+  `lap` INT UNSIGNED NOT NULL,
+  `gap` INT UNSIGNED NOT NULL,
   `stage` ENUM('classification', 'race') NOT NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
   `kart_status_guess` ENUM('good', 'medium', 'bad') NULL,
@@ -97,7 +97,9 @@ CREATE TABLE `{tables_prefix}_event_health` (
 INSERT INTO `{tables_prefix}_event_config` (`name`, `value`) VALUES
   ('race_length', NULL),
   ('race_length_unit', NULL),
-  ('reference_time_top_teams', NULL);
+  ('reference_time_top_teams', NULL),
+  ('stop_time', NULL),
+  ('min_number_stops', NULL);
 
 INSERT INTO `{tables_prefix}_event_stats` (`name`, `value`) VALUES
   ('reference_time', 0),

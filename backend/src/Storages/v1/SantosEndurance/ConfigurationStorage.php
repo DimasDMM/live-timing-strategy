@@ -8,6 +8,8 @@ class ConfigurationStorage extends AbstractSantosEnduranceStorage
     const RACE_LENGTH = 'race_length';
     const RACE_LENGTH_UNIT = 'race_length_unit';
     const REFERENCE_TIME_TOP_TEAMS = 'reference_time_top_teams';
+    const MIN_NUMBER_STOPS = 'min_number_stops';
+    const STOP_TIME = 'stop_time';
 
     /**
      * @return array

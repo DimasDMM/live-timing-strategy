@@ -8,7 +8,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
     /**
      * @return array
      */
-    public function getAll() : array
+    public function getLastLap() : array
     {
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
@@ -22,7 +22,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                 se_d.time_driving driver_time_driving,
                 se_th.position,
                 se_th.time,
-                se_th.lap,
+                MAX(se_th.lap) lap,
                 se_th.gap,
                 se_th.stage,
                 se_th.kart_status,
@@ -33,6 +33,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             FROM `" . $tablePrefix . Tables::SE_TIMING_HISTORIC . "` se_th
             LEFT JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_th.team_id
             LEFT JOIN `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d ON se_th.driver_id = se_d.id
+            GROUP BY se_t.name
             ORDER BY se_th.lap DESC";
         $results = $connection->executeQuery($stmt)->fetchAll();
         return empty($results) ? [] : $results;

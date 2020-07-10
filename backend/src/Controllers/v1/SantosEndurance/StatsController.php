@@ -73,6 +73,7 @@ class StatsController extends AbstractSantosEnduranceController
         $route = $routeContext->getRoute();
         $statName = $route->getArgument('stat-name');
         
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\StatsStorage $statsStorage */
         $eventStatsStorage = $this->container->get('storages')['santos_endurance']['stats']();
         $eventStatsStorage->setTablesPrefix($tablesPrefix);
         $stat = $eventStatsStorage->getByName($statName);

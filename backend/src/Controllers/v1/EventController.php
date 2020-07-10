@@ -45,6 +45,13 @@ class EventController extends AbstractController
         $this->validateEventValueTypes($request, $data);
         $this->validateEventValueRanges($request, $data);
         
+        if ($data['track_name'] == 'santos' && $data['event_type'] == 'endurance') {
+            $this->validateSEValueTypes($request, $data);
+            $this->validateSEValueRanges($request, $data);
+        } else {
+            throw new HttpBadRequestException($request, 'The event type is not supported on this track.');
+        }
+        
         $event = $eventsIndexStorage->getByName($data['name']);
         if (!empty($event)) {
             throw new HttpBadRequestException($request, 'Event name already exists.');
@@ -76,6 +83,8 @@ class EventController extends AbstractController
             $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$data['configuration']['race_length']);
             $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH_UNIT, (string)$data['configuration']['race_length_unit']);
             $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$data['configuration']['reference_time_top_teams']);
+            $eventConfigStorage->updateByName($eventConfigStorage::MIN_NUMBER_STOPS, (string)$data['configuration']['min_number_stops']);
+            $eventConfigStorage->updateByName($eventConfigStorage::STOP_TIME, (string)$data['configuration']['stop_time']);
 
             $connection->commit();
         } catch (Exception $e) {
@@ -100,20 +109,11 @@ class EventController extends AbstractController
         $validatorTypes->empty('name', $event['name'] ?? null);
         $validatorTypes->empty('track_name', $event['track_name'] ?? null);
         $validatorTypes->empty('event_type', $event['event_type'] ?? null);
-        $validatorTypes->empty('configuration', $event['configuration'] ?? null);
-        
-        $validatorTypes->empty('configuration->race_length', $event['configuration']['race_length'] ?? null);
-        $validatorTypes->empty('configuration->race_length_unit', $event['configuration']['race_length_unit'] ?? null);
-        $validatorTypes->empty('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams'] ?? null);
 
         // Values has correct format
-        $validatorTypes->isArray('configuration', $event['configuration']);
         $validatorTypes->isString('name', $event['name']);
         $validatorTypes->isString('track_name', $event['track_name']);
         $validatorTypes->isString('event_type', $event['event_type']);
-        $validatorTypes->isInteger('configuration->race_length', $event['configuration']['race_length']);
-        $validatorTypes->isString('configuration->race_length_unit', $event['configuration']['race_length_unit']);
-        $validatorTypes->isInteger('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
     }
 
     /**
@@ -129,8 +129,50 @@ class EventController extends AbstractController
         // Values has correct format
         $validatorRanges->inArray('track_name', $event['track_name'], $this->validTrackNames);
         $validatorRanges->inArray('event_type', $event['event_type'], $this->validEventTypes);
+    }
+
+    /**
+     * @param Request $request
+     * @param array $event
+     * @return void
+     */
+    protected function validateSEValueTypes(Request $request, array $event) : void
+    {
+        /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
+        $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+
+        // Values are set and not empty
+        $validatorTypes->empty('configuration', $event['configuration'] ?? null);
+        $validatorTypes->empty('configuration->race_length', $event['configuration']['race_length'] ?? null);
+        $validatorTypes->empty('configuration->race_length_unit', $event['configuration']['race_length_unit'] ?? null);
+        $validatorTypes->empty('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams'] ?? null);
+        $validatorTypes->empty('configuration->min_number_stops', $event['configuration']['min_number_stops'] ?? null);
+        $validatorTypes->empty('configuration->stop_time', $event['configuration']['stop_time'] ?? null);
+
+        // Values has correct format
+        $validatorTypes->isArray('configuration', $event['configuration']);
+        $validatorTypes->isInteger('configuration->race_length', $event['configuration']['race_length']);
+        $validatorTypes->isString('configuration->race_length_unit', $event['configuration']['race_length_unit']);
+        $validatorTypes->isInteger('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
+        $validatorTypes->isInteger('configuration->min_number_stops', $event['configuration']['min_number_stops']);
+        $validatorTypes->isInteger('configuration->stop_time', $event['configuration']['stop_time']);
+    }
+
+    /**
+     * @param Request $request
+     * @param array $event
+     * @return void
+     */
+    protected function validateSEValueRanges(Request $request, array $event) : void
+    {
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
+
+        // Values has correct format
         $validatorRanges->isPositiveNumber('configuration->race_length', $event['configuration']['race_length']);
         $validatorRanges->inArray('configuration->race_length_unit', $event['configuration']['race_length_unit'], $this->validRaceLengthUnits);
         $validatorRanges->isPositiveNumber('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
+        $validatorRanges->isPositiveNumber('configuration->min_number_stops', $event['configuration']['min_number_stops']);
+        $validatorRanges->isPositiveNumber('configuration->stop_time', $event['configuration']['stop_time']);
     }
 }

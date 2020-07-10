@@ -23,6 +23,7 @@ final class Routes
     const SE_TEAMS_NAME = '/teams/{team-name}';
     const SE_TEAMS_DRIVER_NAME = '/teams/{team-name}/{driver-name}';
     const SE_TIMING = '/timing';
+    const SE_TIMING_ALL = '/timing/all/{timing-type}';
     const SE_TIMING_TEAM = '/timing/teams/{team-name}[/{limit}]';
 
     public static function getConstants() : array

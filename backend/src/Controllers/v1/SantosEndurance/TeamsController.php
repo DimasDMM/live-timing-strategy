@@ -47,10 +47,11 @@ class TeamsController extends AbstractSantosEnduranceController
         $this->validatePostTeamValueTypes($request, $data);
         $this->validatePostTeamValueRanges($request, $data);
 
-        // Get storages
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
         $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
         $teamsStorage->setTablesPrefix($tablesPrefix);
 
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\DriversStorage $driversStorage */
         $driversStorage = $this->container->get('storages')['santos_endurance']['drivers']();
         $driversStorage->setTablesPrefix($tablesPrefix);
 

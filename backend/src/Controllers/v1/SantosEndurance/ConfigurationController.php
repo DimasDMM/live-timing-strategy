@@ -46,6 +46,7 @@ class ConfigurationController extends AbstractSantosEnduranceController
         $route = $routeContext->getRoute();
         $configName = $route->getArgument('config-name');
         
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\ConfigurationStorage $configurationStorage */
         $configurationStorage = $this->container->get('storages')['santos_endurance']['configuration']();
         $configurationStorage->setTablesPrefix($tablesPrefix);
         $configData = $configurationStorage->getByName($configName);
