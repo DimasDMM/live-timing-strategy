@@ -20,11 +20,12 @@ if not os.path.exists(abs_logs_path):
     os.makedirs(abs_logs_path)
 
 def on_message(ws, message):
+    abs_logs_file = abs_logs_path + '/' + '%s_rd%d.txt' % (current_time(), random.randint(0, 100))
     print('#' * 20, 'MESSAGE', '#' * 20)
-    print(message)
+    print('Stored in: %s' % abs_logs_file)
     print('')
-    abs_logs_file = abs_logs_path + '/' + '%d_rd%d.txt' % (current_time(), random.randint(0, 100))
-    f = open(abs_logs_file, "a")
+    print(message)
+    f = open(abs_logs_file, "w")
     f.write(message)
     f.close()
 
@@ -53,4 +54,6 @@ if __name__ == '__main__':
                                 on_error = on_error,
                                 on_close = on_close)
     ws.on_open = on_open
-    ws.run_forever()
+    while True:
+        ws.run_forever()
+        time.sleep(1)

@@ -49,6 +49,6 @@ class TokenMiddleware extends AbstractMiddleware
         $params = [':token' => $token];
         $results = $connection->executeQuery($query, $params)->fetch();
 
-        return $results ?? [];
+        return empty($results) ? [] : $results;
     }
 }
