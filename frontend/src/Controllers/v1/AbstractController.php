@@ -54,6 +54,10 @@ abstract class AbstractController
         $params = [
             'routes' => $routes,
             'uri' => $uri,
+            'env' => [
+                'API_HOST' => getenv('API_HOST'),
+                'API_PORT' => getenv('API_PORT'),
+            ],
         ];
         return $params;
     }

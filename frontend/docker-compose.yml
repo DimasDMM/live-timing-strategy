@@ -13,7 +13,7 @@ services:
         links:
             - website
         networks:
-            - backend
+            - frontend
         depends_on:
             - website
         restart: always
@@ -27,8 +27,8 @@ services:
         volumes:
             - .:/var/www/html
         networks:
-            - backend
+            - frontend
         restart: always
 
 networks:
-    backend:
+    frontend:

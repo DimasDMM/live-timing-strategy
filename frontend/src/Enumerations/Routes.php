@@ -3,10 +3,15 @@ namespace CkmTiming\Enumerations;
 
 final class Routes
 {
-    const HOME = '/';
-    const KARTS_IN_BOX = '/karts-in-box';
-    const TRAFFIC_PREDICTION = '/traffic-prediction';
+    // Initial routes
+    const INDEX = '/';
+    const TOKEN = '/token-validation';
+
+    // Data pages
     const CONFIGURATION = '/configuration';
+    const KARTS_IN_BOX = '/karts-in-box';
+    const OVERVIEW = '/overview';
+    const TRAFFIC_PREDICTION = '/traffic-prediction';
 
     public static function getConstants() : array
     {
