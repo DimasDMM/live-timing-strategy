@@ -44,19 +44,14 @@
 
 				<div class="col-12 col-lg-7 d-lg-flex">
 					<div class="w-100 align-self-center text-center-md text-center-xs py-2">
-						<form novalidate action="#" method="post" class="bs-validate p-5 py-6 rounded d-inline-block bg-white text-dark w-100 max-w-600">
-
-							<!--
-							<p class="text-danger">
+						<form class="bs-validate p-5 py-6 rounded d-inline-block bg-white text-dark w-100 max-w-600">
+							<p class="text-danger hide" id="msg-error">
 								Ups! Please check again
 							</p>
-							-->
-
 							<div class="form-label-group mb-3">
 								<input required placeholder="Token" id="account_token" name="account_token" type="text" class="form-control">
 								<label for="account_token">Token</label>
 							</div>
-
 							<div class="row">
 								<div class="col-12 col-md-12 mt-4">
 									<button type="submit" class="btn btn-primary btn-block" id="btn-validate-token">
@@ -71,6 +66,7 @@
 
 		</div><!-- /#wrapper -->
 
+		<script src="assets/js/jquery-3.5.1.min.js"></script>
 		<script src="assets/js/core.min.js"></script>
 		<script src="assets/js/vendor_bundle.min.js"></script>
 		<script src="assets/js/pages/page.js"></script>

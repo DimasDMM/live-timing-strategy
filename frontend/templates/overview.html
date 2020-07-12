@@ -116,3 +116,14 @@
 	</div>
 	<!-- /WIDGETS -->
 {% endblock %}
+
+{% block javascript %}
+<script src="assets/js/pages/page.js"></script>
+<script src="assets/js/pages/overview.js"></script>
+<script type="text/javascript">
+window.onload = function() {
+	let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+	let page = new OverviewPage(apiUrl);
+};
+</script>
+{% endblock %}

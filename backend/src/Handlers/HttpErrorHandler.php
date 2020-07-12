@@ -1,7 +1,7 @@
 <?php
 namespace CkmTiming\Handlers;
 
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpForbiddenException;
@@ -23,7 +23,7 @@ class HttpErrorHandler extends ErrorHandler
     public const SERVER_ERROR = 'SERVER_ERROR';
     public const UNAUTHENTICATED = 'UNAUTHENTICATED';
     
-    protected function respond(): ResponseInterface
+    protected function respond() : Response
     {
         $exception = $this->exception;
         $statusCode = 500;
@@ -69,8 +69,21 @@ class HttpErrorHandler extends ErrorHandler
         
         $response = $this->responseFactory->createResponse($statusCode);        
         $response = $response->withHeader('Content-type', 'application/json');
+        $response = $this->addDefaultHeaders($response);
         $response->getBody()->write($payload);
         
         return $response;
+    }
+
+    /**
+     * @param Response $response
+     * @return Response
+     */
+    private function addDefaultHeaders(Response $response) : Response
+    {
+        return $response
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
+            ->withHeader('Access-Control-Allow-Headers', 'DNT,User-Agent,X-Requested-With,X-Request-ID,If-Modified-Since,Cache-Control,Content-Type,Range');
     }
 }
