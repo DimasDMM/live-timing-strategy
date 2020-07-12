@@ -11,6 +11,7 @@ class TimingController extends AbstractSantosEnduranceController
 {
     protected $validStages = ['classification', 'race'];
     protected $validTimingTypes = ['onlap', 'real'];
+    protected $validKartStatus = ['good', 'medium', 'bad'];
 
     /**
      * @param Request $request
@@ -77,6 +78,63 @@ class TimingController extends AbstractSantosEnduranceController
             $response,
             $data
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function putKartStatus(Request $request, Response $response) : Response
+    {
+        $eventIndex = $this->container->get('event-index');
+        $tablesPrefix = $eventIndex['tables_prefix'];
+        
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $teamName = $route->getArgument('team-name');
+
+        $data = $this->getParsedBody($request);
+        $this->validatePutKartStatusValueTypes($request, $data);
+        $this->validatePutKartStatusValueRanges($request, $data);
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TimingStorage $timingStorage */
+        $timingStorage = $this->container->get('storages')['santos_endurance']['timing']();
+        $timingStorage->setTablesPrefix($tablesPrefix);
+
+        // Get team and driver data
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
+        $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
+        $teamsStorage->setTablesPrefix($tablesPrefix);
+        $teamData = $teamsStorage->getByName($teamName);
+        if (empty($teamData)) {
+            throw new HttpBadRequestException($request, 'The team does not exist.');
+        }
+        $teamId = $teamData['id'];
+
+        // Get stage
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\StatsStorage $eventStatsStorage */
+        $eventStatsStorage = $this->container->get('storages')['santos_endurance']['stats']();
+        $eventStatsStorage->setTablesPrefix($tablesPrefix);
+        $stage = $eventStatsStorage->getByName('stage')['value'];
+        if (!in_array($stage, $this->validStages)) {
+            throw new HttpBadRequestException($request, 'Cannot insert the time due to the stage is unknown.');
+        }
+
+        // Get last known kart status
+        $lastKnown = $timingStorage->getLastKnownKartStatus($teamId, (int)$data['number_stops']);
+        if (empty($lastKnown)) {
+            throw new HttpBadRequestException($request, 'No time found for this team.');
+        }
+
+        $timingStorage->updateLastKartStatus(
+            $stage,
+            $teamId,
+            $lastKnown['number_stops'],
+            $data['forced_kart_status']
+        );
+
+        return $this->buildJsonResponse($request, $response);
     }
 
     /**
@@ -217,6 +275,38 @@ class TimingController extends AbstractSantosEnduranceController
         $validatorRanges->isPositiveNumber('gap', $data['gap'], true);
         $validatorRanges->isPositiveNumber('lap', $data['lap']);
         $validatorRanges->isPositiveNumber('number_stops', $data['number_stops'], true);
+    }
+
+    /**
+     * @param Request $request
+     * @param array $data
+     * @return void
+     */
+    protected function validatePutKartStatusValueTypes(Request $request, array $data) : void
+    {
+        /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
+        $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+
+        if (!is_null($data['forced_kart_status'])) {
+            // Values has correct format
+            $validatorTypes->isString('forced_kart_status', $data['forced_kart_status']);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param array $data
+     * @return void
+     */
+    protected function validatePutKartStatusValueRanges(Request $request, array $data) : void
+    {
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
+
+        // Values has correct format
+        if (!is_null($data['forced_kart_status'])) {
+            $validatorRanges->inArray('forced_kart_status', $data['forced_kart_status'], $this->validKartStatus);
+        }
     }
 
     protected function getRealTiming(array $data) : array

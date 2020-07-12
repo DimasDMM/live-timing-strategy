@@ -54,6 +54,7 @@ $app->group('', function (RouteCollectorProxy $group) {
             $group->post(Routes::SE_TIMING, TimingController::class . ':post');
             $group->get(Routes::SE_TIMING_ALL, TimingController::class . ':getAll');
             $group->get(Routes::SE_TIMING_TEAM, TimingController::class . ':getByTeamName');
+            $group->put(Routes::SE_TIMING_KART_STATUS, TimingController::class . ':putKartStatus');
         })->add(new EventMiddleware($container));
     });
 })->add(new TokenMiddleware($container));

@@ -123,15 +123,34 @@ class TimingStorage extends AbstractSantosEnduranceStorage
     }
 
     /**
-     * @param int $id
-     * @param array $data
+     * @param string $stage
+     * @param int $teamId
+     * @param int $numberStops
+     * @param string $forcedKartStatus
      * @return void
      */
-    public function update(int $id, array $data) : void
-    {
+    public function updateLastKartStatus(
+        string $stage,
+        int $teamId,
+        int $numberStops,
+        string $forcedKartStatus = null
+    ) : void {
+        $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
-        $table = $tablePrefix . Tables::SE_TIMING_HISTORIC;
-        parent::simpleUpdate($data, $table, $id);
+        $stmt = "
+            UPDATE `" . $tablePrefix . Tables::SE_TIMING_HISTORIC . "`
+            SET `forced_kart_status` = :forced_kart_status
+            WHERE
+                `stage` = :stage AND
+                `team_id` = :team_id AND
+                `number_stops` = :number_stops";
+        $params = [
+            ':stage' => $stage,
+            ':team_id' => $teamId,
+            ':number_stops' => $numberStops,
+            ':forced_kart_status' => $forcedKartStatus,
+        ];
+        $connection->executeUpdate($stmt, $params);
     }
 
     /**
