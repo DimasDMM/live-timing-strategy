@@ -35,9 +35,6 @@ class TimingController extends AbstractSantosEnduranceController
         $timingStorage->setTablesPrefix($tablesPrefix);
         $data = $timingStorage->getLastLap();
 
-        // Cast integer and boolean values
-        $data = $this->castTimingRows($data);
-
         if ($timingType == 'real') {
             // TO DO
             throw new HttpNotImplementedException($request);
@@ -74,9 +71,6 @@ class TimingController extends AbstractSantosEnduranceController
         $timingStorage = $this->container->get('storages')['santos_endurance']['timing']();
         $timingStorage->setTablesPrefix($tablesPrefix);
         $data = $timingStorage->getByTeamName($teamName, $limit);
-
-        // Cast integer and boolean values
-        $data = $this->castTimingRows($data);
 
         return $this->buildJsonResponse(
             $request,
@@ -269,37 +263,6 @@ class TimingController extends AbstractSantosEnduranceController
                     'forced_kart_status' => $row['forced_kart_status'],
                     'number_stops' => $row['number_stops'],
                     'is_stop' => $row['is_stop'],
-                ];
-            },
-            $data
-        );
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function castTimingRows(array $data) : array
-    {
-        return array_map(
-            function ($row) {
-                return [
-                    'team_name' => $row['team_name'],
-                    'team_number' => (int)$row['team_number'],
-                    'team_reference_time_offset' => (int)$row['team_reference_time_offset'],
-                    'driver_name' => $row['driver_name'],
-                    'driver_reference_time_offset' => isset($row['driver_reference_time_offset']) ? (int)$row['driver_reference_time_offset'] : null,
-                    'driver_time_driving' =>  isset($row['driver_time_driving']) ? (int)$row['driver_time_driving'] : null,
-                    'position' => (int)$row['position'],
-                    'time' => (int)$row['time'],
-                    'lap' => (int)$row['lap'],
-                    'gap' => (int)$row['gap'],
-                    'stage' => $row['stage'],
-                    'kart_status' => $row['kart_status'],
-                    'kart_status_guess' => $row['kart_status_guess'],
-                    'forced_kart_status' => $row['forced_kart_status'],
-                    'number_stops' => (int)$row['number_stops'],
-                    'is_stop' => (bool)$row['is_stop'],
                 ];
             },
             $data

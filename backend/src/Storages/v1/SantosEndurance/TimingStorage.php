@@ -5,6 +5,8 @@ use CkmTiming\Enumerations\Tables;
 
 class TimingStorage extends AbstractSantosEnduranceStorage
 {
+    protected $defaultKartStatus = 'unknown';
+
     /**
      * @return array
      */
@@ -36,7 +38,9 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             GROUP BY se_t.name
             ORDER BY se_th.lap DESC";
         $results = $connection->executeQuery($stmt)->fetchAll();
-        return empty($results) ? [] : $results;
+        $results = empty($results) ? [] : $results;
+        $results = $this->castTimingRows($results);
+        return $results;
     }
 
     /**
@@ -72,7 +76,9 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             ORDER BY se_th.lap DESC";
         $params = [':name' => $name];
         $results = $connection->executeQuery($stmt, $params)->fetchAll();
-        return empty($results) ? [] : $results;
+        $results = empty($results) ? [] : $results;
+        $results = $this->castTimingRows($results);
+        return $results;
     }
 
     /**
@@ -126,5 +132,36 @@ class TimingStorage extends AbstractSantosEnduranceStorage
         $tablePrefix = $this->getTablesPrefix();
         $table = $tablePrefix . Tables::SE_TIMING_HISTORIC;
         parent::simpleUpdate($data, $table, $id);
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function castTimingRows(array $data) : array
+    {
+        return array_map(
+            function ($row) {
+                return [
+                    'team_name' => $row['team_name'],
+                    'team_number' => (int)$row['team_number'],
+                    'team_reference_time_offset' => (int)$row['team_reference_time_offset'],
+                    'driver_name' => $row['driver_name'],
+                    'driver_reference_time_offset' => isset($row['driver_reference_time_offset']) ? (int)$row['driver_reference_time_offset'] : null,
+                    'driver_time_driving' =>  isset($row['driver_time_driving']) ? (int)$row['driver_time_driving'] : null,
+                    'position' => (int)$row['position'],
+                    'time' => (int)$row['time'],
+                    'lap' => (int)$row['lap'],
+                    'gap' => (int)$row['gap'],
+                    'stage' => $row['stage'],
+                    'kart_status' => $row['kart_status'] ?? $this->defaultKartStatus,
+                    'kart_status_guess' => $row['kart_status_guess'],
+                    'forced_kart_status' => $row['forced_kart_status'],
+                    'number_stops' => (int)$row['number_stops'],
+                    'is_stop' => (bool)$row['is_stop'],
+                ];
+            },
+            $data
+        );
     }
 }
