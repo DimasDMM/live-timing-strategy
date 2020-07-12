@@ -158,6 +158,64 @@ paths:
                     type: string
                   data:
                     type: object
+  /events/{event-name}/timing:
+    post:
+      summary: Adds a lap time of a driver/team in the event.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimingItemPost'
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+  /events/{event-name}/timing/kart/{team-name}:
+    put:
+      summary: Updates the force status of a kart.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: team-name
+        in: path
+        required: true
+        description: Name of the team (must be url encoded).
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KartStatusPut'
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
   /events/{event-name}/timing/all/{timing-type}:
     get:
       summary: Returns the live timing information w/o the real positions.
@@ -221,32 +279,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/TimingTeamGet'
-  /events/{event-name}/timing:
-    post:
-      summary: Adds a lap time of a driver/team in the event.
-      tags:
-      - Santos Endurance Event
-      parameters:
-      - $ref: '#/components/parameters/HeaderRequestID'
-      - $ref: '#/components/parameters/EventName'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TimingItemPost'
-      responses:
-        '200':
-          description: Correct response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
   /events/{event-name}/teams/:
     get:
       summary: Returns the teams and their data.
@@ -819,6 +851,12 @@ components:
             items:
               $ref: '#/components/schemas/DriverPost'
       - $ref: '#/components/schemas/TeamPut'
+    KartStatusPut:
+      type: object
+      properties:
+        forced_kart_status:
+          type: string
+          enum: ['good', 'medium', 'bad', '']
     TimingItemPost:
       type: object
       properties:
@@ -872,10 +910,10 @@ components:
           enum: ['unknown', 'good', 'medium', 'bad']
         kart_status_guess:
           type: string
-          enum: ['good', 'medium', 'bad']
+          enum: ['good', 'medium', 'bad', '']
         forced_kart_status:
           type: string
-          enum: ['good', 'medium', 'bad']
+          enum: ['good', 'medium', 'bad', '']
         update_date:
           $ref: '#/components/schemas/Datetime'
     KartBoxGet:
@@ -893,7 +931,7 @@ components:
           enum: ['unknown', 'good', 'medium', 'bad']
         forced_kart_status:
           type: string
-          enum: ['good', 'medium', 'bad']
+          enum: ['good', 'medium', 'bad', '']
     KartBoxPost:
       allOf:
       - $ref: '#/components/schemas/KartBoxPut'
@@ -906,10 +944,10 @@ components:
             enum: ['unknown', 'good', 'medium', 'bad']
           kart_status_guess:
             type: string
-            enum: ['good', 'medium', 'bad']
+            enum: ['good', 'medium', 'bad', '']
           forced_kart_status:
             type: string
-            enum: ['good', 'medium', 'bad']
+            enum: ['good', 'medium', 'bad', '']
     KartProbGet:
       allOf:
       - $ref: '#/components/schemas/KartProbPost'
