@@ -38,8 +38,9 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             GROUP BY se_t.name
             ORDER BY se_th.lap DESC";
         $results = $connection->executeQuery($stmt)->fetchAll();
+        $results = empty($results) ? [] : $results;
         $results = $this->castTimingRows($results);
-        return empty($results) ? [] : $results;
+        return $results;
     }
 
     /**
@@ -75,8 +76,9 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             ORDER BY se_th.lap DESC";
         $params = [':name' => $name];
         $results = $connection->executeQuery($stmt, $params)->fetchAll();
+        $results = empty($results) ? [] : $results;
         $results = $this->castTimingRows($results);
-        return empty($results) ? [] : $results;
+        return $results;
     }
 
     /**
