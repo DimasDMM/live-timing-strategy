@@ -7,11 +7,14 @@ final class Routes
     const INDEX = '/';
     const TOKEN = '/token-validation';
 
-    // Data pages
-    const CONFIGURATION = '/configuration';
-    const KARTS_IN_BOX = '/karts-in-box';
-    const OVERVIEW = '/overview';
-    const TRAFFIC_PREDICTION = '/traffic-prediction';
+    // Common event pages
+    const EVENT_INDEX = '/event-index';
+    const EVENT_OVERVIEW = '/event/{event-name}';
+    const CONFIGURATION = '/event/{event-name}/configuration';
+
+    // SE pages
+    const SE_KARTS_IN_BOX = '/event/{event-name}/karts-in-box';
+    const SE_TRAFFIC_PREDICTION = '/event/{event-name}/traffic-prediction';
 
     public static function getConstants() : array
     {

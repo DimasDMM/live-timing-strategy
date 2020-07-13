@@ -52,6 +52,7 @@ abstract class AbstractController
         }
 
         $params = [
+            'base_route' => $hostname,
             'routes' => $routes,
             'uri' => $uri,
             'env' => [

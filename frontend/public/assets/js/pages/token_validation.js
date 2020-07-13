@@ -29,7 +29,7 @@ class TokenValidationPage extends Page {
     successCallbackToken(data, textStatus, jqXHR, that) {
         super.setCookiesData(data['data']);
         $('#btn-validate-token').html('Redirigiendo...');
-        window.location.href = '/overview';
+        window.location.href = '/event-index';
     }
 
     errorCallbackToken(jqXHR, textStatus, errorThrown, that) {

@@ -1,7 +1,20 @@
 class Page {
-    constructor(apiUrl) {
+    constructor(apiUrl, tokenValidation = false) {
         this.apiUrl = 'http://' + apiUrl;
+        // Validate token and redirect if not valid
+        this.tokenValidation = tokenValidation;
+        // Timeout for callbacks
+        this.timeout = 3000;
+
+        this.loadCookiesData();
         this.initDefaultEvents();
+        this.initDefaultTokenValidation();
+    }
+
+    loadCookiesData() {
+        this.token = Cookies.get('user_token');
+        this.userName = Cookies.get('user_name');
+        this.userRole = Cookies.get('user_role');
     }
 
     initDefaultEvents() {
@@ -11,16 +24,35 @@ class Page {
         }
     }
 
-    setToken(token) {
-        this.token = token;
+    initDefaultTokenValidation() {
+        if (!this.tokenValidation) {
+            return;
+        }
+
+        if (this.getToken()) {
+            let that = this;
+            this.sendGetRequest(
+                '/token/validate',
+                function (data, textStatus, jqXHR) { that.successCallbackDefaultToken(data, textStatus, jqXHR, that); },
+                function (jqXHR, textStatus, errorThrown) { that.errorCallbackDefaultToken(jqXHR, textStatus, errorThrown, that); }
+            );
+        }
     }
 
-    getToken() {
-        return this.token;
+    successCallbackDefaultToken(data, textStatus, jqXHR, that) {
+        that.setCookiesData(data['data']);
+    }
+
+    errorCallbackDefaultToken(jqXHR, textStatus, errorThrown, that) {
+        if (errorThrown == 'Unauthorized') {
+            that.setToken(null);
+            that.unsetCookiesData();
+        } else {
+            that.redirectOffline();
+        }
     }
 
     sendGetRequest(path, successCallback, errorCallback) {
-        let that = this
         $.ajax({
             url: this.apiUrl + path,
             contentType: 'application/json; charset=utf-8',
@@ -34,6 +66,14 @@ class Page {
         })
         .done(successCallback)
         .fail(errorCallback);
+    }
+
+    setToken(token) {
+        this.token = token;
+    }
+
+    getToken() {
+        return this.token;
     }
 
     setCookiesData(data) {
@@ -51,6 +91,10 @@ class Page {
     eventLogout(e, that) {
         $(e.target).html('<i class="fi fi-power"></i> Saliendo...').attr('disabled', 'disabled');
         that.unsetCookiesData();
+        that.redirectOffline();
+    }
+
+    redirectOffline() {
         window.location.href = '/';
     }
 }

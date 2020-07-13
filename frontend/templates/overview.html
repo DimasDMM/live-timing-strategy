@@ -1,6 +1,17 @@
 ﻿{% extends "base.html" %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}
+<h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
+	Inicio
+</h1>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
+		<li class="breadcrumb-item" id="info-last-update">
+			Actualizando...
+		</li>
+	</ol>
+</nav>
+{% endblock %}
 
 {% block content %}
 	<div class="bg-white shadow-xs p-2 mb-4 rounded col-12 col-xl-6 col-lg-6 col-sm-12">
@@ -118,8 +129,8 @@
 {% endblock %}
 
 {% block javascript %}
-<script src="assets/js/pages/page.js"></script>
-<script src="assets/js/pages/overview.js"></script>
+<script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
+<script src="{{ base_route }}/assets/js/pages/overview.js?{{ date().timestamp }}"></script>
 <script type="text/javascript">
 window.onload = function() {
 	let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
