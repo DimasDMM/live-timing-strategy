@@ -243,7 +243,7 @@ class TimingController extends AbstractSantosEnduranceController
         $validatorTypes->empty('position', $data['position'] ?? null);
         $validatorTypes->empty('team_name', $data['team_name'] ?? null);
         $validatorTypes->empty('time', $data['time'] ?? null);
-        $validatorTypes->empty('gap', $data['gap'] ?? null);
+        $validatorTypes->isNull('gap', $data['gap'] ?? null);
         $validatorTypes->empty('lap', $data['lap'] ?? null);
         $validatorTypes->isNull('number_stops', $data['number_stops'] ?? null);
 
