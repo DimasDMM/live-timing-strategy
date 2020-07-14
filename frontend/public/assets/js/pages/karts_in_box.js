@@ -9,6 +9,8 @@ class KartsInBoxPage extends Page {
         // Time for callbacks
         this.timeoutRequests = 5000;
         this.timeoutUpdateMsg = 50;
+        // Limit results
+        this.limitLastBox = 10;
         // Counter to know how many process are updating data
         this.counterLoadingData = 0;
         this.queueLoadingData = 0;
@@ -36,10 +38,11 @@ class KartsInBoxPage extends Page {
                 } else {
                     $('#info-last-update').html('Actualizado');
                     if (that.queueLoadingData == 0) {
-                        that.queueLoadingData = 1;
+                        that.queueLoadingData = 2;
                         setTimeout(
                             function() {
                                 that.updateKartsProbs(that);
+                                that.updateLastKartsBox(that);
                             },
                             timeoutRequests
                         );
@@ -57,6 +60,15 @@ class KartsInBoxPage extends Page {
             '/v1/events/' + encodeURIComponent(that.eventName) + '/karts-box/probs',
             function (data, textStatus, jqXHR) { that.successCallbackKartsProbs(data, textStatus, jqXHR, that); },
             function (jqXHR, textStatus, errorThrown) { that.errorCallbackKartsProbs(jqXHR, textStatus, errorThrown, that); }
+        );
+    }
+
+    updateLastKartsBox(that) {
+        that.counterLoadingData++;
+        that.sendGetRequest(
+            '/v1/events/' + encodeURIComponent(that.eventName) + '/karts-box/in/' + that.limitLastBox,
+            function (data, textStatus, jqXHR) { that.successCallbackLastKartsBox(data, textStatus, jqXHR, that); },
+            function (jqXHR, textStatus, errorThrown) { that.errorCallbackLastKartsBox(jqXHR, textStatus, errorThrown, that); }
         );
     }
 
@@ -110,6 +122,39 @@ class KartsInBoxPage extends Page {
         $('#msg-error-karts-probs').removeClass('hide');
     }
 
+    successCallbackLastKartsBox(data, textStatus, jqXHR, that) {
+        that.counterLoadingData--;
+        that.queueLoadingData--;
+        $('#msg-loading-last-box').addClass('hide');
+        $('#msg-error-last-box').addClass('hide');
+        
+        let hasTableData = false;
+        let tableHtml = that.getTableLastBoxStart();
+        for (let lastBoxData of data['data']) {
+            hasTableData = true;
+            tableHtml += that.getTableLastBoxRow(
+                that,
+                lastBoxData['kart_status'],
+                lastBoxData['forced_kart_status'],
+                lastBoxData['team_name']
+            );
+        }
+        tableHtml += that.getTableLastBoxEnd();
+
+        if (hasTableData) {
+            $('#msg-no-data-last-box').addClass('hide');
+            $('#last-box-table').html(tableHtml);
+        } else {
+            $('#msg-no-data-last-box').removeClass('hide');
+        }
+    }
+
+    errorCallbackLastKarsuccessCallbackLastKartsBox(jqXHR, textStatus, errorThrown, that) {
+        that.counterLoadingData--;
+        that.queueLoadingData--;
+        $('#msg-error-last-box').removeClass('hide');
+    }
+
     updateLastTime(that) {
         that.lastTime = new Date().getTime();
     }
@@ -157,6 +202,47 @@ class KartsInBoxPage extends Page {
     }
 
     getTableProbsEnd() {
+        return '</tbody></table>';
+    }
+
+    getTableLastBoxStart() {
+        return '' +
+            '<table class="table table-striped table-dark table-sm">' +
+            '    <thead>' +
+            '        <tr>' +
+            '            <th scope="col">&nbsp;</th>' +
+            '            <th scope="col">Equipo</th>' +
+            '        </tr>' +
+            '    </thead>' +
+            '<tbody>';
+    }
+
+    getTableLastBoxRow(that, kartStatus, forcedKartStatus, teamName) {
+        kartStatus = forcedKartStatus != null ? forcedKartStatus : kartStatus;
+
+        let badgeClass = ''
+        switch (kartStatus) {
+            case 'good':
+                badgeClass = 'badge-success';
+                break;
+            case 'medium':
+                badgeClass = 'badge-warning';
+                break;
+            case 'bad':
+                badgeClass = 'badge-danger';
+                break;
+            default:
+                badgeClass = 'badge-primary';
+        }
+        
+        return '' +
+            '<tr>' +
+            '    <th scope="row" class="' + badgeClass + '">&nbsp;</th>' +
+            '    <td>' + teamName + '</td>' +
+            '</tr>';
+    }
+
+    getTableLastBoxEnd() {
         return '</tbody></table>';
     }
 }
