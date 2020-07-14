@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require realpath('./../vendor/autoload.php');
 
 use DI\Container;

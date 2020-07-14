@@ -6,9 +6,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class OverviewController extends AbstractController
 {
-    public function get(Request $request, Response $response, array $args)
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args Optional
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args = []) : Response
     {
+        $eventName = $args['event-name'];
+
         $viewParams = $this->getViewParams($request);
+        $viewParams['event_name'] = $eventName;
 
         $html = $this->view->render($response, 'overview.html', $viewParams);
         return $html;

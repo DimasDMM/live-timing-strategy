@@ -1,7 +1,6 @@
 class EventIndexPage extends Page {
     constructor(apiUrl) {
         super(apiUrl, true);
-        console.log('CHILD CONS');
         this.initEvents();
         this.initData();
     }
@@ -26,7 +25,9 @@ class EventIndexPage extends Page {
 
     successCallbackEventIndex(data, textStatus, jqXHR, that) {
         $('#event-index').html('');
+        let hasEventData = false;
         for (let eventData of data['data']) {
+            hasEventData = true;
             $('#event-index').append(
                 '<div class="col-12 col-lg-4">' +
                 '    <div class="card shadow-md shadow-lg-hover border-primary bl-0 br-0 bb-0 bw--2">' +
@@ -38,6 +39,13 @@ class EventIndexPage extends Page {
                 '            </a>' +
                 '        </div>' +
                 '    </div>' +
+                '</div>'
+            );
+        }
+        if (!hasEventData) {
+            $('#event-index').html(
+                '<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">' +
+                '    No hay eventos disponibles ¯\\_(ツ)_/¯' +
                 '</div>'
             );
         }
