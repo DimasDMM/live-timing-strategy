@@ -124,7 +124,7 @@ class OverviewPage extends Page {
         }
     }
 
-    errorCallbackTiming(jqXHR, textStatus, errorThrown, that) {
+    errorCallbackStats(jqXHR, textStatus, errorThrown, that) {
         that.counterLoadingData--;
         that.queueLoadingData--;
         $('#stats-track-offset').html('--');
@@ -147,7 +147,7 @@ class OverviewPage extends Page {
             '<table class="table table-striped table-dark table-sm">' +
             '    <thead>' +
             '        <tr>' +
-            '            <th scope="col">Cal.</th>' +
+            '            <th scope="col">&nbsp;</th>' +
             '            <th scope="col">Pos.</th>' +
             '            <th scope="col">Equipo</th>' +
             '            <th scope="col">Última vuelta</th>' +
@@ -188,35 +188,11 @@ class OverviewPage extends Page {
             '    <td>' + teamName + '</td>' +
             '    <td>' + that.getFormattedTime(lapTime) + '</td>' +
             '    <td>' + (gap > 0 ? '+' + that.getFormattedTime(gap) : '-') + '</td>' +
-            '</tr>'
+            '</tr>';
     }
 
     getTableEnd() {
         return '</tbody></table>';
-    }
-
-    getFormattedTime(time) {
-        let milli = time % 1000;
-        time = Math.trunc(time / 1000);
-        let seconds = time % 60;
-        let minutes = Math.trunc(time / 60);
-        
-        let formatted = '';
-        let hasPrev = false;
-        if (minutes > 0) {
-            formatted += minutes + ':';
-            hasPrev = true;
-        }
-
-        if (hasPrev) {
-            formatted += (seconds >= 10 ? seconds : ('0' + seconds)) + '.';
-        } else {
-            formatted += seconds + '.';
-        }
-
-        formatted += milli >= 100 ? milli : (milli >= 10 ? '0' + milli : '00' + milli);
-
-        return formatted;
     }
 }
 

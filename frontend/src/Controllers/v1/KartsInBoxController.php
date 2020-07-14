@@ -6,9 +6,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class KartsInBoxController extends AbstractController
 {
-    public function get(Request $request, Response $response, array $args)
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args Optional
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args = []) : Response
     {
-        $viewParams = $this->getViewParams($request);
+        $eventName = $args['event-name'];
+
+        $viewParams = $this->getViewParams($request, $args);
+        $viewParams['event_name'] = $eventName;
 
         $html = $this->view->render($response, 'karts_in_box.html', $viewParams);
         return $html;

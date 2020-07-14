@@ -16,7 +16,7 @@ class OverviewController extends AbstractController
     {
         $eventName = $args['event-name'];
 
-        $viewParams = $this->getViewParams($request);
+        $viewParams = $this->getViewParams($request, $args);
         $viewParams['event_name'] = $eventName;
 
         $html = $this->view->render($response, 'overview.html', $viewParams);

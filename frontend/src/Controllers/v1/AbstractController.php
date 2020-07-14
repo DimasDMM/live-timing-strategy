@@ -26,9 +26,11 @@ abstract class AbstractController
      * Returns the basic params to use in the HTML view.
      * 
      * @param Request $request
+     * @param array $args Optional
+     * @param bool $addPortRoute Optional
      * @return array
      */
-    protected function getViewParams(Request $request, $addPortRoute = true) : array
+    protected function getViewParams(Request $request, $args = [], $addPortRoute = true) : array
     {
         $uri = $request->getUri();
         $uri = [
@@ -51,6 +53,8 @@ abstract class AbstractController
             $routes['_' . $routeName] = $routeValue;
         }
 
+        $routes = $this->replacePlaceholders($routes, $args);
+
         $params = [
             'base_route' => $hostname,
             'routes' => $routes,
@@ -61,5 +65,27 @@ abstract class AbstractController
             ],
         ];
         return $params;
+    }
+
+    /**
+     * @param array $routes
+     * @param array $args
+     * @return array
+     */
+    protected function replacePlaceholders(array $routes, array $args) : array
+    {
+        if (empty($args)) {
+            return $routes;
+        }
+
+        return array_map(
+            function ($route) use ($args) {
+                foreach ($args as $varName => $varValue) {
+                    $route = preg_replace('/\{' . $varName . '\}/', $varValue, $route);
+                }
+                return $route;
+            },
+            $routes
+        );
     }
 }

@@ -6,9 +6,15 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class TrafficPredictionController extends AbstractController
 {
-    public function get(Request $request, Response $response, array $args)
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args Optional
+     * @return Response
+     */
+    public function get(Request $request, Response $response, array $args = []) : Response
     {
-        $viewParams = $this->getViewParams($request);
+        $viewParams = $this->getViewParams($request, $args);
 
         $html = $this->view->render($response, 'traffic_prediction.html', $viewParams);
         return $html;

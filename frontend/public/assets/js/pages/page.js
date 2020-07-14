@@ -97,4 +97,28 @@ class Page {
     redirectOffline() {
         window.location.href = '/';
     }
+    
+    getFormattedTime(time) {
+        let milli = time % 1000;
+        time = Math.trunc(time / 1000);
+        let seconds = time % 60;
+        let minutes = Math.trunc(time / 60);
+        
+        let formatted = '';
+        let hasPrev = false;
+        if (minutes > 0) {
+            formatted += minutes + ':';
+            hasPrev = true;
+        }
+
+        if (hasPrev) {
+            formatted += (seconds >= 10 ? seconds : ('0' + seconds)) + '.';
+        } else {
+            formatted += seconds + '.';
+        }
+
+        formatted += milli >= 100 ? milli : (milli >= 10 ? '0' + milli : '00' + milli);
+
+        return formatted;
+    }
 }

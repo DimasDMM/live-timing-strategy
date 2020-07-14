@@ -2,6 +2,19 @@
 
 {% block title %}Karts en boxes{% endblock %}
 
+{% block content_title %}
+<h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
+	Karts en boxes
+</h1>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
+		<li class="breadcrumb-item" id="info-last-update">
+			Actualizando...
+		</li>
+	</ol>
+</nav>
+{% endblock %}
+
 {% block content %}
     <!-- WIDGETS -->
 	<div class="row gutters-sm">
@@ -16,48 +29,19 @@
 				</div>
 				<div class="portlet-body">
 					<div id="clipboard_7" class="p--15 bg-white rounded">
-						<table class="table table-striped table-dark table-sm">
-							<thead>
-								<tr>
-									<th scope="col">&nbsp;</th>
-									<th scope="col" class="badge-success">&nbsp;</th>
-									<th scope="col" class="badge-warning">&nbsp;</th>
-									<th scope="col" class="badge-danger">&nbsp;</th>
-									<th scope="col" class="badge-primary">&nbsp;</th>
-								</tr>
-							</thead>
+						<div class="alert alert-danger hide" id="msg-error-karts-probs">
+							<b>Error.</b> No se han podido actualizar los datos.
+						</div>
 
-							<tbody>
-								<tr>
-									<th scope="row">Ahora</th>
-									<td>10%</td>
-									<td>30%</td>
-									<td>50%</td>
-									<td>10%</td>
-								</tr>
-								<tr>
-									<th scope="row">+1 parada</th>
-									<td>30%</td>
-									<td>30%</td>
-									<td>20%</td>
-									<td>20%</td>
-								</tr>
-								<tr>
-									<th scope="row">+2 paradas</th>
-									<td>60%</td>
-									<td>5%</td>
-									<td>30%</td>
-									<td>5%</td>
-								</tr>
-								<tr>
-									<th scope="row">+3 paradas</th>
-									<td>40%</td>
-									<td>10%</td>
-									<td>40%</td>
-									<td>10%</td>
-								</tr>
-							</tbody>
-						</table>
+						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-karts-probs">
+							Cargando datos...
+						</div>
+
+						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-karts-probs">
+						    No hay datos disponibles ¯\\_(ツ)_/¯
+						</div>
+
+						<div id="karts-probs-table"></div>
 					</div>
 				</div>
 			</div>
@@ -138,4 +122,16 @@
 		{% include 'static/legend.html' %}
 	</div>
 	<!-- /WIDGETS -->
+{% endblock %}
+
+{% block javascript %}
+<script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
+<script src="{{ base_route }}/assets/js/pages/karts_in_box.js?{{ date().timestamp }}"></script>
+<script type="text/javascript">
+window.onload = function() {
+	let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+	let eventName = '{{ event_name }}';
+	let page = new KartsInBoxPage(apiUrl, eventName);
+};
+</script>
 {% endblock %}
