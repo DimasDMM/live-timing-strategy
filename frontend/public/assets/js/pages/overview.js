@@ -116,7 +116,7 @@ class OverviewPage extends Page {
         }
 
         if (statsData['status'] == 'offline') {
-            $('#stats-track-offset').html('--');
+            $('#stats-track-offset').html('offline');
         } else {
             let offsetTime = that.getFormattedTime(statsData['reference_current_offset']);
             let symbol = statsData['reference_current_offset'] >= 0 ? '+' : '-';
