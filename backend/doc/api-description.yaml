@@ -613,15 +613,22 @@ paths:
                   data:
                     type: object
                     properties:
+                      karts_in_box:
+                        type: integer
                       race_length:
-                        type: string
+                        type: number
                       race_length_unit:
                         type: string
-                      reference_top_teams:
-                        type: string
+                        enum: ['laps', 'hours']
+                      reference_time_top_teams:
+                        type: integer
+                      stop_time:
+                        type: number
+                      min_number_stops:
+                        type: integer
   /events/{event-name}/configuration/{config-name}:
     put:
-      summary: Returns configuration values.
+      summary: Updates a configuration item.
       tags:
       - Santos Endurance Event
       parameters:
@@ -633,7 +640,7 @@ paths:
         description: Name of the configuration item.
         schema:
           type: string
-          enum: ['track_name', 'event_type', 'race_length', 'race_length_unit', 'reference_top_teams']
+          enum: ['karts_in_box', 'stop_time', 'min_number_stops', 'race_length', 'race_length_unit', 'reference_time_top_teams']
       requestBody:
         required: true
         content:
@@ -762,17 +769,19 @@ components:
           configuration:
             type: object
             properties:
+              karts_in_box:
+                type: integer
               race_length:
                 type: number
               race_length_unit:
                 type: string
                 enum: ['laps', 'hours']
-              reference_top_teams:
-                type: number
+              reference_time_top_teams:
+                type: integer
               stop_time:
                 type: number
               min_number_stops:
-                type: number
+                type: integer
     EventGet:
       allOf:
       - type: object
