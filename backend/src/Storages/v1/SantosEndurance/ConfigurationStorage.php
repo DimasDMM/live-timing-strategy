@@ -10,6 +10,7 @@ class ConfigurationStorage extends AbstractSantosEnduranceStorage
     const REFERENCE_TIME_TOP_TEAMS = 'reference_time_top_teams';
     const MIN_NUMBER_STOPS = 'min_number_stops';
     const STOP_TIME = 'stop_time';
+    const KARTS_IN_BOX = 'karts_in_box';
 
     /**
      * @return array

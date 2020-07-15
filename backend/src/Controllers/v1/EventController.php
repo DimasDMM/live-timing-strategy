@@ -77,7 +77,7 @@ class EventController extends AbstractController
             ];
             $eventsIndexStorage->insert($event);
             
-            // Set config items
+            /** @var \CkmTiming\Storages\v1\SantosEndurance\ConfigurationStorage $eventConfigStorage */
             $eventConfigStorage = $this->container->get('storages')['santos_endurance']['configuration']();
             $eventConfigStorage->setTablesPrefix($tablesPrefix);
             $eventConfigStorage->updateByName($eventConfigStorage::RACE_LENGTH, (string)$data['configuration']['race_length']);
@@ -85,6 +85,7 @@ class EventController extends AbstractController
             $eventConfigStorage->updateByName($eventConfigStorage::REFERENCE_TIME_TOP_TEAMS, (string)$data['configuration']['reference_time_top_teams']);
             $eventConfigStorage->updateByName($eventConfigStorage::MIN_NUMBER_STOPS, (string)$data['configuration']['min_number_stops']);
             $eventConfigStorage->updateByName($eventConfigStorage::STOP_TIME, (string)$data['configuration']['stop_time']);
+            $eventConfigStorage->updateByName($eventConfigStorage::KARTS_IN_BOX, (string)$data['configuration']['karts_in_box']);
 
             $connection->commit();
         } catch (Exception $e) {
@@ -148,6 +149,7 @@ class EventController extends AbstractController
         $validatorTypes->empty('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams'] ?? null);
         $validatorTypes->empty('configuration->min_number_stops', $event['configuration']['min_number_stops'] ?? null);
         $validatorTypes->empty('configuration->stop_time', $event['configuration']['stop_time'] ?? null);
+        $validatorTypes->empty('configuration->karts_in_box', $event['configuration']['karts_in_box'] ?? null);
 
         // Values has correct format
         $validatorTypes->isArray('configuration', $event['configuration']);
@@ -156,6 +158,7 @@ class EventController extends AbstractController
         $validatorTypes->isInteger('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
         $validatorTypes->isInteger('configuration->min_number_stops', $event['configuration']['min_number_stops']);
         $validatorTypes->isInteger('configuration->stop_time', $event['configuration']['stop_time']);
+        $validatorTypes->isInteger('configuration->karts_in_box', $event['configuration']['karts_in_box']);
     }
 
     /**
@@ -174,5 +177,6 @@ class EventController extends AbstractController
         $validatorRanges->isPositiveNumber('configuration->reference_time_top_teams', $event['configuration']['reference_time_top_teams']);
         $validatorRanges->isPositiveNumber('configuration->min_number_stops', $event['configuration']['min_number_stops']);
         $validatorRanges->isPositiveNumber('configuration->stop_time', $event['configuration']['stop_time']);
+        $validatorRanges->isPositiveNumber('configuration->karts_in_box', $event['configuration']['karts_in_box']);
     }
 }
