@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta charset="utf-8">
-		<title>CKM Timing | Índice</title>
+		<title>CKM Timing | Creador de eventos</title>
 
         <meta name="viewport" content="width=device-width, maximum-scale=5, initial-scale=1, user-scalable=0">
         <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
@@ -41,7 +41,7 @@
 
 					<div class="page-title bg-transparent b-0">
 						<h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-							Índice de eventos
+							Creador de eventos
 						</h1>
 					</div>
 
@@ -51,25 +51,6 @@
 						<!-- WIDGET -->
 						<div class="col-12 col-xl-12 col-lg-12 mb-3">
 
-							<!-- start:portlet -->
-							<div class="portlet">
-								<div class="portlet-body">
-									<div class="container py-6">
-										<div class="row" id="event-index">
-											<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">
-												Cargando eventos...
-											</div>
-										</div>
-									</div>
-
-									<a href="{{ routes['EVENT_CREATOR'] }}" class="btn btn-dark rounded-xl transition-hover-top hide" id="btn-event-creator">
-										<i class="fi fi-plus"></i>
-										<span class="float-start text-align-start px-2">
-											<span class="d-block line-height-1 fs--20 pt-1">Añadir evento</span>
-										</span>
-									</a>
-								</div>
-							</div>
 						</div>
 						<!--/WIDGET -->
 					</div>
@@ -82,11 +63,11 @@
 		<script src="{{ base_route }}/assets/js/core.min.js"></script>
 		<script src="{{ base_route }}/assets/js/vendor_bundle.min.js"></script>
 		<script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
-		<script src="{{ base_route }}/assets/js/pages/event_index.js?{{ date().timestamp }}"></script>
+		<script src="{{ base_route }}/assets/js/pages/event_creator.js?{{ date().timestamp }}"></script>
 		<script type="text/javascript">
 		window.onload = function() {
 			let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-			let page = new EventIndexPage(apiUrl);
+			let page = new EventCreatorPage(apiUrl);
 		};
 		</script>
 

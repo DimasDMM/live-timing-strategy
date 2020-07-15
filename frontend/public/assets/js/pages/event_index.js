@@ -1,12 +1,14 @@
 class EventIndexPage extends Page {
     constructor(apiUrl) {
         super(apiUrl, true);
-        this.initEvents();
+        this.initElements();
         this.initData();
     }
 
-    initEvents() {
-        // Nothing
+    initElements() {
+        if (Cookies.get('user_role') == 'admin') {
+            $('#btn-event-creator').removeClass('hide');
+        }
     }
 
     initData() {
@@ -58,18 +60,4 @@ class EventIndexPage extends Page {
             '</div>'
         );
     }
-
-    updateLastTime(that) {
-        that.lastTime = new Date().getTime();
-    }
-
-    displayLoadingData() {
-        $('#info-last-update').html('Actualizando...');
-    }
-
-    displayLastTimeLoadedData() {
-
-    }
 }
-
-

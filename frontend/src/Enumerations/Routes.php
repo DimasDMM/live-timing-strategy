@@ -9,6 +9,7 @@ final class Routes
 
     // Common event pages
     const EVENT_INDEX = '/event-index';
+    const EVENT_CREATOR = '/event-creator';
     const EVENT_OVERVIEW = '/event/{event-name}';
     const CONFIGURATION = '/event/{event-name}/configuration';
 

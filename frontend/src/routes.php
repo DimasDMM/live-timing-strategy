@@ -1,5 +1,6 @@
 <?php
 
+use CkmTiming\Controllers\v1\EventCreatorController;
 use CkmTiming\Controllers\v1\EventIndexController;
 use CkmTiming\Controllers\v1\OverviewController;
 use CkmTiming\Controllers\v1\KartsInBoxController;
@@ -14,7 +15,10 @@ $app->redirect(Routes::INDEX, Routes::TOKEN, 301);
 $app->group('', function (RouteCollectorProxy $group) {
     // Initial pages
     $group->get(Routes::TOKEN, TokenValidationController::class . ':get');
+    
+    // Common event pages
     $group->get(Routes::EVENT_INDEX, EventIndexController::class . ':get');
+    $group->get(Routes::EVENT_CREATOR, EventCreatorController::class . ':get');
     $group->get(Routes::EVENT_OVERVIEW, OverviewController::class . ':get');
 
     // SE pages
