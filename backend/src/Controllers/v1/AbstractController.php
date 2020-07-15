@@ -92,7 +92,8 @@ abstract class AbstractController
     protected function getParsedBody(Request $request) : array
     {
         $content = $request->getParsedBody();
-        return !empty($content) ? $content : json_decode($this->fileGetContentsUtf8('php://input'), true);
+        $content = !empty($content) ? $content : json_decode($this->fileGetContentsUtf8('php://input'), true);
+        return empty($content) ? [] : $content;
     }
     
     private function fileGetContentsUtf8($fn) {

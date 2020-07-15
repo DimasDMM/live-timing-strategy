@@ -208,6 +208,7 @@ class TimingController extends AbstractSantosEnduranceController
             'time' => (int)$data['time'],
             'lap' => (int)$data['lap'],
             'gap' => (int)$data['gap'],
+            'number_stops' => (int)$data['number_stops'],
             'stage' => $stage,
             'kart_status' => $kartStatus,
             'kart_status_guess' => $kartStatusGuess,
