@@ -4,64 +4,64 @@
 
 {% block content_title %}
 <h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-	Inicio
+    Inicio
 </h1>
 <nav aria-label="breadcrumb">
-	<ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
-		<li class="breadcrumb-item" id="info-last-update">
-			Actualizando...
-		</li>
-	</ol>
+    <ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
+        <li class="breadcrumb-item" id="info-last-update">
+            Actualizando...
+        </li>
+    </ol>
 </nav>
 {% endblock %}
 
 {% block content %}
-	<div class="bg-white shadow-xs p-2 mb-4 rounded col-12 col-xl-6 col-lg-6 col-sm-12">
-		<div class="clearfix bg-light p-2 rounded d-flex align-items-center">
-			<span class="d-block px-2 text-muted text-truncate">
-				Estado de la pista:
-			</span>
-			<span class="btn row-pill btn-sm bg-gradient-warning b-0 py-1 mb-0 float-start" id="stats-track-offset">
-				--
-			</span>
-		</div>
-	</div>
+    <div class="bg-white shadow-xs p-2 mb-4 rounded col-12 col-xl-6 col-lg-6 col-sm-12">
+        <div class="clearfix bg-light p-2 rounded d-flex align-items-center">
+            <span class="d-block px-2 text-muted text-truncate">
+                Estado de la pista:
+            </span>
+            <span class="btn row-pill btn-sm bg-gradient-warning b-0 py-1 mb-0 float-start" id="stats-track-offset">
+                --
+            </span>
+        </div>
+    </div>
 
     <!-- WIDGETS -->
-	<div class="row gutters-sm">
-		
-		<!-- WIDGET -->
-		<div class="col-12 col-xl-12 col-lg-12 mb-3">
-			<div class="portlet">
-				<div class="portlet-header">
-					<span class="d-block text-muted text-truncate font-weight-medium">
-						Ranking
-					</span>
-				</div>
-				<div class="portlet-body">
-					<div id="clipboard_7" class="p--15 bg-white rounded">
-						<div class="alert alert-danger hide" id="msg-error-timing">
-							<b>Error.</b> No se han podido actualizar los tiempos.
-						</div>
+    <div class="row gutters-sm">
+        
+        <!-- WIDGET -->
+        <div class="col-12 col-xl-12 col-lg-12 mb-3">
+            <div class="portlet">
+                <div class="portlet-header">
+                    <span class="d-block text-muted text-truncate font-weight-medium">
+                        Ranking
+                    </span>
+                </div>
+                <div class="portlet-body">
+                    <div id="clipboard_7" class="p--15 bg-white rounded">
+                        <div class="alert alert-danger hide" id="msg-error-timing">
+                            <b>Error.</b> No se han podido actualizar los tiempos.
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-timing">
-							Cargando tiempos...
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-timing">
+                            Cargando tiempos...
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-timing">
-						    No hay tiempos disponibles ¯\\_(ツ)_/¯
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-timing">
+                            No hay tiempos disponibles ¯\\_(ツ)_/¯
+                        </div>
 
-						<div id="timing-table"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /WIDGET -->
+                        <div id="timing-table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /WIDGET -->
 
-		{% include 'static/legend.html' %}
-	</div>
-	<!-- /WIDGETS -->
+        {% include 'static/legend.html' %}
+    </div>
+    <!-- /WIDGETS -->
 {% endblock %}
 
 {% block javascript %}
@@ -69,9 +69,9 @@
 <script src="{{ base_route }}/assets/js/pages/overview.js?{{ date().timestamp }}"></script>
 <script type="text/javascript">
 window.onload = function() {
-	let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-	let eventName = '{{ event_name }}';
-	let page = new OverviewPage(apiUrl, eventName);
+    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+    let eventName = '{{ event_name }}';
+    let page = new OverviewPage(apiUrl, eventName);
 };
 </script>
 {% endblock %}

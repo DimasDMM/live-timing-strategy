@@ -1,8 +1,8 @@
 ﻿<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta charset="utf-8">
-		<title>CKM Timing | Índice</title>
+    <head>
+        <meta charset="utf-8">
+        <title>CKM Timing | Índice</title>
 
         <meta name="viewport" content="width=device-width, maximum-scale=5, initial-scale=1, user-scalable=0">
         <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
@@ -21,75 +21,75 @@
         <link rel="stylesheet" href="{{ base_route }}/assets/css/vendor_bundle.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap">
 
-		<!-- favicon -->
-		<link rel="shortcut icon" href="{{ base_route }}/assets/images/favicon.ico">
-		<link rel="apple-touch-icon" href="{{ base_route }}/assets/images/favicon.ico">
+        <!-- favicon -->
+        <link rel="shortcut icon" href="{{ base_route }}/assets/images/favicon.ico">
+        <link rel="apple-touch-icon" href="{{ base_route }}/assets/images/favicon.ico">
 
-		<link rel="manifest" href="{{ base_route }}/assets/images/manifest/manifest.json">
-		<meta name="theme-color" content="#313131">
-	</head>
+        <link rel="manifest" href="{{ base_route }}/assets/images/manifest/manifest.json">
+        <meta name="theme-color" content="#313131">
+    </head>
 
-	<body class="layout-admin layout-padded">
-		<div id="wrapper" class="d-flex align-items-stretch flex-column">
-			<div id="wrapper_content" class="d-flex flex-fill">
+    <body class="layout-admin layout-padded">
+        <div id="wrapper" class="d-flex align-items-stretch flex-column">
+            <div id="wrapper_content" class="d-flex flex-fill">
 
-				<!-- MIDDLE -->
-				<div id="middle" class="flex-fill">
-					<div class="p-2 mb-4 rounded col-12 col-xl-12 col-lg-12 col-sm-12 text-center">
-						<img src="{{ base_route }}/assets/images/logo.png" width="250" alt="Logo" class="no-max">
-					</div>
+                <!-- MIDDLE -->
+                <div id="middle" class="flex-fill">
+                    <div class="p-2 mb-4 rounded col-12 col-xl-12 col-lg-12 col-sm-12 text-center">
+                        <img src="{{ base_route }}/assets/images/logo.png" width="250" alt="Logo" class="no-max">
+                    </div>
 
-					<div class="page-title bg-transparent b-0">
-						<h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-							Índice de eventos
-						</h1>
-					</div>
+                    <div class="page-title bg-transparent b-0">
+                        <h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
+                            Índice de eventos
+                        </h1>
+                    </div>
 
-					<!-- WIDGETS -->
-					<div class="row gutters-sm">
-						
-						<!-- WIDGET -->
-						<div class="col-12 col-xl-12 col-lg-12 mb-3">
+                    <!-- WIDGETS -->
+                    <div class="row gutters-sm">
+                        
+                        <!-- WIDGET -->
+                        <div class="col-12 col-xl-12 col-lg-12 mb-3">
 
-							<!-- start:portlet -->
-							<div class="portlet">
-								<div class="portlet-body">
-									<div class="container py-6">
-										<div class="row" id="event-index">
-											<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">
-												Cargando eventos...
-											</div>
-										</div>
-									</div>
+                            <!-- start:portlet -->
+                            <div class="portlet">
+                                <div class="portlet-body">
+                                    <div class="container py-6">
+                                        <div class="row" id="event-index">
+                                            <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">
+                                                Cargando eventos...
+                                            </div>
+                                        </div>
+                                    </div>
 
-									<a href="{{ routes['EVENT_CREATOR'] }}" class="btn btn-dark rounded-xl transition-hover-top hide" id="btn-event-creator">
-										<i class="fi fi-plus"></i>
-										<span class="float-start text-align-start px-2">
-											<span class="d-block line-height-1 fs--20 pt-1">Añadir evento</span>
-										</span>
-									</a>
-								</div>
-							</div>
-						</div>
-						<!--/WIDGET -->
-					</div>
-					<!-- /WIDGETS -->
-				</div>
-			</div>
-		</div><!-- /#wrapper -->
+                                    <a href="{{ routes['EVENT_CREATOR'] }}" class="btn btn-dark rounded-xl transition-hover-top hide" id="btn-event-creator">
+                                        <i class="fi fi-plus"></i>
+                                        <span class="float-start text-align-start px-2">
+                                            <span class="d-block line-height-1 fs--20 pt-1">Añadir evento</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/WIDGET -->
+                    </div>
+                    <!-- /WIDGETS -->
+                </div>
+            </div>
+        </div><!-- /#wrapper -->
 
-		<script src="{{ base_route }}/assets/js/jquery-3.5.1.min.js"></script>
-		<script src="{{ base_route }}/assets/js/core.min.js"></script>
-		<script src="{{ base_route }}/assets/js/vendor_bundle.min.js"></script>
-		<script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
-		<script src="{{ base_route }}/assets/js/pages/event_index.js?{{ date().timestamp }}"></script>
-		<script type="text/javascript">
-		window.onload = function() {
-			let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-			let page = new EventIndexPage(apiUrl);
-		};
-		</script>
+        <script src="{{ base_route }}/assets/js/jquery-3.5.1.min.js"></script>
+        <script src="{{ base_route }}/assets/js/core.min.js"></script>
+        <script src="{{ base_route }}/assets/js/vendor_bundle.min.js"></script>
+        <script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
+        <script src="{{ base_route }}/assets/js/pages/event_index.js?{{ date().timestamp }}"></script>
+        <script type="text/javascript">
+        window.onload = function() {
+            let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+            let page = new EventIndexPage(apiUrl);
+        };
+        </script>
 
-		<div id="page_js_files"><!-- specific page javascript files here --></div>
-	</body>
+        <div id="page_js_files"><!-- specific page javascript files here --></div>
+    </body>
 </html>

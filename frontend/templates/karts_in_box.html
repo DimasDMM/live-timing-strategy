@@ -4,82 +4,82 @@
 
 {% block content_title %}
 <h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-	Karts en boxes
+    Karts en boxes
 </h1>
 <nav aria-label="breadcrumb">
-	<ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
-		<li class="breadcrumb-item" id="info-last-update">
-			Actualizando...
-		</li>
-	</ol>
+    <ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
+        <li class="breadcrumb-item" id="info-last-update">
+            Actualizando...
+        </li>
+    </ol>
 </nav>
 {% endblock %}
 
 {% block content %}
     <!-- WIDGETS -->
-	<div class="row gutters-sm">
-		
-		<!-- WIDGET -->
-		<div class="col-12 col-xl-6 col-md-12 mb-3">
-			<div class="portlet">
-				<div class="portlet-header">
-					<span class="d-block text-muted text-truncate font-weight-medium">
-						Prob. karts
-					</span>
-				</div>
-				<div class="portlet-body">
-					<div id="clipboard_7" class="p--15 bg-white rounded">
-						<div class="alert alert-danger hide" id="msg-error-karts-probs">
-							<b>Error.</b> No se han podido actualizar los datos.
-						</div>
+    <div class="row gutters-sm">
+        
+        <!-- WIDGET -->
+        <div class="col-12 col-xl-6 col-md-12 mb-3">
+            <div class="portlet">
+                <div class="portlet-header">
+                    <span class="d-block text-muted text-truncate font-weight-medium">
+                        Prob. karts
+                    </span>
+                </div>
+                <div class="portlet-body">
+                    <div id="clipboard_7" class="p--15 bg-white rounded">
+                        <div class="alert alert-danger hide" id="msg-error-karts-probs">
+                            <b>Error.</b> No se han podido actualizar los datos.
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-karts-probs">
-							Cargando datos...
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-karts-probs">
+                            Cargando datos...
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-karts-probs">
-						    No hay datos disponibles ¯\\_(ツ)_/¯
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-karts-probs">
+                            No hay datos disponibles ¯\\_(ツ)_/¯
+                        </div>
 
-						<div id="karts-probs-table"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /WIDGET -->
-		
-		<!-- WIDGET -->
-		<div class="col-12 col-xl-6 col-md-12 mb-3">
-			<div class="portlet">
-				<div class="portlet-header">
-					<span class="d-block text-muted text-truncate font-weight-medium">
-						Últimos en entrar
-					</span>
-				</div>
-				<div class="portlet-body">
-					<div id="clipboard_7" class="p--15 bg-white rounded">
-						<div class="alert alert-danger hide" id="msg-error-last-box">
-							<b>Error.</b> No se han podido actualizar los datos.
-						</div>
+                        <div id="karts-probs-table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /WIDGET -->
+        
+        <!-- WIDGET -->
+        <div class="col-12 col-xl-6 col-md-12 mb-3">
+            <div class="portlet">
+                <div class="portlet-header">
+                    <span class="d-block text-muted text-truncate font-weight-medium">
+                        Últimos en entrar
+                    </span>
+                </div>
+                <div class="portlet-body">
+                    <div id="clipboard_7" class="p--15 bg-white rounded">
+                        <div class="alert alert-danger hide" id="msg-error-last-box">
+                            <b>Error.</b> No se han podido actualizar los datos.
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-last-box">
-							Cargando datos...
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" id="msg-loading-last-box">
+                            Cargando datos...
+                        </div>
 
-						<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-last-box">
-						    No hay datos disponibles ¯\\_(ツ)_/¯
-						</div>
+                        <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2 hide" id="msg-no-data-last-box">
+                            No hay datos disponibles ¯\\_(ツ)_/¯
+                        </div>
 
-						<div id="last-box-table"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /WIDGET -->
+                        <div id="last-box-table"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /WIDGET -->
 
-		{% include 'static/legend.html' %}
-	</div>
-	<!-- /WIDGETS -->
+        {% include 'static/legend.html' %}
+    </div>
+    <!-- /WIDGETS -->
 {% endblock %}
 
 {% block javascript %}
@@ -87,9 +87,9 @@
 <script src="{{ base_route }}/assets/js/pages/karts_in_box.js?{{ date().timestamp }}"></script>
 <script type="text/javascript">
 window.onload = function() {
-	let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-	let eventName = '{{ event_name }}';
-	let page = new KartsInBoxPage(apiUrl, eventName);
+    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+    let eventName = '{{ event_name }}';
+    let page = new KartsInBoxPage(apiUrl, eventName);
 };
 </script>
 {% endblock %}
