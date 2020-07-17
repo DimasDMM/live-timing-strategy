@@ -1,17 +1,23 @@
 # CKM Timing: Frontend
 
-## Introducción
+## Introduction
 
 To do
 
-## Comandos
+## Commands
 
-> Nota: Estos comandos funcionan tanto en la terminal de cualquier distribución Unix (MaxOS o Linux) o en la terminal Git Bash de Windows.
+> Note: These commands have been tested only in MacOS, but they should work in Git Bash (Windows) too.
 
-Para encender o apagar los contenedores docker, hay que usar los siguientes comandos:
+You can control the docker containers with these two commands:
 ```sh
 sh manager.sh docker:run
 sh manager.sh docker:down
 ```
 
-A divertirse! ᕙ (° ~ ° ~)
+Have fun! ᕙ (° ~ ° ~)
+
+## Application
+
+You can access to the main application by opening `http://localhost:8000`.
+
+> Note: The ports depend on the settings of the file `.env`.
