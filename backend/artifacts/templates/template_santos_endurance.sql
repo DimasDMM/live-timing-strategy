@@ -36,6 +36,7 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `is_stop` TINYINT(1) NOT NULL DEFAULT 0,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `timing_team_lap` (`team_id`, `lap`),
   CONSTRAINT `{tables_prefix}_timing__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`),
   CONSTRAINT `{tables_prefix}_timing__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `{tables_prefix}_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;

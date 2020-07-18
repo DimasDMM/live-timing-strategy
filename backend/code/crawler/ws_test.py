@@ -9,7 +9,7 @@ try:
 except ImportError:
     import _thread as thread
 
-LOGS_PATH = '../../artifacts/logs'
+LOGS_PATH = '../../artifacts/logs/se'
 
 current_time = lambda: datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S.%f')
 

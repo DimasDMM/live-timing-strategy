@@ -194,7 +194,7 @@ class TeamsController extends AbstractSantosEnduranceController
         $validatorTypes->empty('name', $team['name'] ?? null);
         $validatorTypes->empty('number', $team['number'] ?? null);
         $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
-        $validatorTypes->empty('drivers', $team['drivers'] ?? null);
+        $validatorTypes->isNull('drivers', $team['drivers'] ?? null);
 
         // Values has correct format
         $validatorTypes->isString('name', $team['name']);
