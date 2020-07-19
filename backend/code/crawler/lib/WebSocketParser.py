@@ -10,7 +10,7 @@ import pandas as pd
 import json
 import os
 
-class TimingParser(ParserInterface):
+class WebSocketParser:
     def __init__(self, timing: Timing, api: ApiRequests, debug=False):
         self.timing = timing
         self.api = api
