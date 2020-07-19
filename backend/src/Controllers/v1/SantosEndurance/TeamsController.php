@@ -172,12 +172,23 @@ class TeamsController extends AbstractSantosEnduranceController
         /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
-        // Value is set
-        $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
-        
         // Values has correct format
-        $validatorTypes->isInteger('reference_time_offset', $team['reference_time_offset']);
-        $validatorRanges->isPositiveNumber('reference_time_offset', $team['reference_time_offset'], true);
+        if (isset($team['name'])) {
+            $validatorTypes->empty('name', $team['name'] ?? null);
+            $validatorTypes->isString('name', $team['name']);
+        }
+        
+        if (isset($team['number'])) {
+            $validatorTypes->empty('number', $team['number'] ?? null);
+            $validatorTypes->isInteger('number', $team['number']);
+            $validatorRanges->isPositiveNumber('number', $team['number']);
+        }
+        
+        if (isset($team['reference_time_offset'])) {
+            $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
+            $validatorTypes->isInteger('reference_time_offset', $team['reference_time_offset']);
+            $validatorRanges->isPositiveNumber('reference_time_offset', $team['reference_time_offset'], true);
+        }
     }
 
     /**
