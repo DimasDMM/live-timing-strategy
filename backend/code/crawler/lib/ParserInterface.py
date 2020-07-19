@@ -1,6 +1,6 @@
 class ParserInterface:
-    def on_message(self, message):
+    def parse_message(self, message: str):
         pass
 
-    def on_error(self, error):
+    def parse_error(self, error: str):
         pass
