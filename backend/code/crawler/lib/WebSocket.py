@@ -6,7 +6,7 @@ from datetime import datetime
 
 import websocket
 
-from .ParserInterface import ParserInterface
+from .WebSocketParser import WebSocketParser
 
 try:
     import thread
@@ -14,11 +14,13 @@ except ImportError:
     import _thread as thread
 
 class WebSocket:
-    def __init__(self, url: str, parser: ParserInterface, save_messages=None, ws=None):
+    def __init__(self, url: str, parser: WebSocketParser, save_messages=None, ws=None):
         self.url = url
         self.parser = parser
         self.save_messages = save_messages
-        self._load_settings()
+
+        # Last timing object
+        self.timing = None
 
         # Build web socket
         self.ws = websocket.WebSocketApp(self.url,
@@ -39,10 +41,10 @@ class WebSocket:
             f = open(file_path, 'w')
             f.write(message)
             f.close()
-        self.parser.on_message(message)
+        self.timing = self.parser.parse_message(message)
 
     def on_error(self, ws, error):
-        self.parser.on_error(error)
+        self.parser.parse_error(error)
 
     def on_close(self, ws):
         pass
@@ -56,15 +58,6 @@ class WebSocket:
             ws.close()
             print('thread terminating...')
         thread.start_new_thread(run, ())
-
-    def _load_settings(self):
-        if self.file_settings is not None:
-            try:
-                with open(self.file_settings, 'r') as fp:
-                    self.settings = json.load(fp)
-            except Exception as e:
-                print('Error: %s' % str(e))
-                raise e
 
     def _current_time(self):
         return datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S.%f')

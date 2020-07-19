@@ -5,9 +5,11 @@ from datetime import datetime
 import random
 import json
 
-from lib.TimingParser import TimingParser
+from lib.Timing import Timing
+from lib.WebSocketParser import WebSocketParser
 from lib.ApiRequests import ApiRequests
 from lib.WebSocket import WebSocket
+from lib.WebSocketSim import WebSocketSim
 from lib.TimingUpdater import TimingUpdater
 
 try:
@@ -27,17 +29,16 @@ def get_settings():
         raise e
 
 def get_last_timing():
-    if os.path.isfile(FILE_TIMING):
-        save_last_timing([])
+    if not os.path.isfile(FILE_TIMING):
+        timing = Timing()
+        save_last_timing(timing.to_object())
 
     try:
         with open(FILE_TIMING, 'r') as fp:
-            return json.load(fp)
+            return Timing().from_dict(json.load(fp))
     except Exception as e:
         print('Error: %s' % str(e))
         raise e
-    else:
-        return []
 
 def save_last_timing(timing):
     try:
@@ -50,19 +51,22 @@ def save_last_timing(timing):
 if __name__ == '__main__':
     settings = get_settings()
 
-    last_timing = get_last_timing()
+    timing = get_last_timing()
+
+    # Build initial objects
+    api_requests = ApiRequests(settings['api_url'], settings['api_token'])
+    ws_parser = WebSocketParser(timing, api_requests)
+    #ws = WebSocket(settings['ws_url'], ws_parser, save_messages=settings['save_messages'])
+    ws = WebSocketSim(settings['ws_url'], ws_parser, '../../artifacts/logs/se_combined/*.txt')
     
     # Get configuration of event
     configuration_url_path = '/v1/events/%s/configuration' % (settings['event_name'])
     configuration = api_requests.get(configuration_url_path)
     configuration = {x['name']:x['value'] for x in configuration['data']}
+    timing.set_configuration(configuration)
 
-    # Build objects
-    api_requests = ApiRequests(settings['api_url'])
-    parser = TimingParser(last_timing, api_requests)
-    ws = WebSocket(settings['ws_url'], parser, save_messages=settings['save_messages'])
-
-    updater = TimingUpdater(api_requests, settings['event_name'], configuration, last_timing)
+    # Timing updater class
+    updater = TimingUpdater(api_requests, settings['event_name'], configuration, timing)
 
     # Start crawling process
     while True:
@@ -73,29 +77,22 @@ if __name__ == '__main__':
         stats_url_path = '/v1/events/%s/stats' % (settings['event_name'])
         stats = api_requests.get(stats_url_path)
         stats = {x['name']:x['value'] for x in stats['data']}
+        timing.set_stats(stats)
         
         # Skip if status is offline or stage is "pause"
-        if stats['status'] == 'offline' or stats['stage'] in ['pause', 'unknown']:
+        if stats['status'] == 'offline':
             print('Event status is offline or stage is paused')
             time.sleep(5)
             continue
 
         print('Status: %s - Stage: %s' % (stats['status'], stats['stage']))
 
-        #ws.run()
-        ## Debug ##
-        with open('../../artifacts/logs/race/test_grid.txt', 'r') as fp:
-            message = fp.read()
-            parser.on_message(message)
-        ## -- ##
+        ws_timing = ws.run()
+        if ws_timing is None:
+            print('Finished!')
+            # To do: set event offline
 
-        exit(0)
+        print(timing.to_object()) # To do: remove, debug
 
-        timing = parser.get_timing()
+        updater.update_timing(timing)
         save_last_timing(timing)
-
-        updater.update_timing(timing, stats)
-
-        path = '/v1/events/%s/timing' % (settings['event_name'])
-        for row in data:
-            api.post(path, row)

@@ -9,7 +9,7 @@ try:
 except ImportError:
     import _thread as thread
 
-LOGS_PATH = '../../artifacts/logs/se'
+LOGS_PATH = '../../artifacts/logs/se_race'
 
 current_time = lambda: datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S.%f')
 
@@ -23,8 +23,6 @@ def on_message(ws, message):
     abs_logs_file = abs_logs_path + '/' + '%s_rd%d.txt' % (current_time(), random.randint(0, 100))
     print('#' * 20, 'MESSAGE', '#' * 20)
     print('Stored in: %s' % abs_logs_file)
-    print('')
-    print(message)
     f = open(abs_logs_file, "w")
     f.write(message)
     f.close()
