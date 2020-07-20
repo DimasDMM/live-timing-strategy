@@ -151,7 +151,7 @@ class TeamsController extends AbstractSantosEnduranceController
         $teamData = $teamsStorage->getByName($teamName);
 
         if (empty($teamData)) {
-            throw new HttpBadRequestException($request, 'The team does not exists.');
+            throw new HttpBadRequestException($request, 'The team does not exist.');
         }
 
         // Update team

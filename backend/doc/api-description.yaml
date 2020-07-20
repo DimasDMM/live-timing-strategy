@@ -415,6 +415,43 @@ paths:
                     type: string
                   data:
                     $ref: '#/components/schemas/DriverGet'
+    post:
+      summary: Adds a driver to the team.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      - name: team-name
+        in: path
+        required: true
+        description: Name of the team (must be url encoded).
+        schema:
+          type: string
+      - name: driver-name
+        in: path
+        required: true
+        description: Name of the driver (must be url encoded).
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverPost'
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
     put:
       summary: Updates a driver data.
       tags:
@@ -805,9 +842,6 @@ components:
           example: endurance
     DriverPost:
       type: object
-      properties:
-        name:
-          type: string
     DriverPut:
       type: object
       properties:
@@ -821,7 +855,8 @@ components:
         properties:
           id:
             type: integer
-      - $ref: '#/components/schemas/DriverPost'
+          name:
+            type: string
       - $ref: '#/components/schemas/DriverPut'
       - type: object
         properties:
@@ -862,7 +897,10 @@ components:
           drivers:
             type: array
             items:
-              $ref: '#/components/schemas/DriverPost'
+              type: object
+              properties:
+                name:
+                  type: string
       - $ref: '#/components/schemas/TeamPut'
     KartStatusPut:
       type: object

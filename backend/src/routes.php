@@ -37,8 +37,8 @@ $app->group('', function (RouteCollectorProxy $group) {
             $group->put(Routes::SE_HEALTH_NAME, HealthController::class . ':putByName');
 
             $group->get(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':get');
-            $group->put(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':put');
             $group->post(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':post');
+            $group->put(Routes::SE_KARTS_BOX_ACTION, KartsBoxController::class . ':put');
 
             $group->get(Routes::SE_STATS, StatsController::class . ':get');
             $group->get(Routes::SE_STATS_NAME, StatsController::class . ':getByName');
@@ -48,8 +48,9 @@ $app->group('', function (RouteCollectorProxy $group) {
             $group->post(Routes::SE_TEAMS, TeamsController::class . ':post');
             $group->get(Routes::SE_TEAMS_NAME, TeamsController::class . ':getByName');
             $group->put(Routes::SE_TEAMS_NAME, TeamsController::class . ':putByName');
-            $group->get(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':getByName');
-            $group->put(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':putByName');
+            $group->get(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':get');
+            $group->post(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':post');
+            $group->put(Routes::SE_TEAMS_DRIVER_NAME, DriversController::class . ':put');
 
             $group->post(Routes::SE_TIMING, TimingController::class . ':post');
             $group->get(Routes::SE_TIMING_ALL, TimingController::class . ':getAll');

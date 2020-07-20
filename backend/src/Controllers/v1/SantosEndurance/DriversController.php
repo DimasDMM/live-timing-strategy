@@ -13,7 +13,7 @@ class DriversController extends AbstractSantosEnduranceController
      * @param Response $response
      * @return Response
      */
-    public function getByName(Request $request, Response $response) : Response
+    public function get(Request $request, Response $response) : Response
     {
         $eventIndex = $this->container->get('event-index');
         $tablesPrefix = $eventIndex['tables_prefix'];
@@ -47,7 +47,51 @@ class DriversController extends AbstractSantosEnduranceController
      * @return Response
      * @throws HttpBadRequestException
      */
-    public function putByName(Request $request, Response $response) : Response
+    public function post(Request $request, Response $response) : Response
+    {
+        $eventIndex = $this->container->get('event-index');
+        $tablesPrefix = $eventIndex['tables_prefix'];
+        
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $teamName = $route->getArgument('team-name');
+        $driverName = $route->getArgument('driver-name');
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
+        $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
+        $teamsStorage->setTablesPrefix($tablesPrefix);
+        $teamData = $teamsStorage->getByName($teamName);
+        
+        if (empty($teamData)) {
+            throw new HttpBadRequestException($request, 'The team does not exist.');
+        }
+
+        /** @var \CkmTiming\Storages\v1\SantosEndurance\DriversStorage $driversStorage */
+        $driversStorage = $this->container->get('storages')['santos_endurance']['drivers']();
+        $driversStorage->setTablesPrefix($tablesPrefix);
+        $driverData = $driversStorage->getByName($driverName, $teamData['id']);
+
+        if (!empty($driverData)) {
+            throw new HttpBadRequestException($request, 'The driver already exists.');
+        }
+
+        // Add driver
+        $driverData = [
+            'team_id' => $teamData['id'],
+            'name' => $driverName,
+        ];
+        $driversStorage->insert($driverData);
+
+        return $this->buildJsonResponse($request, $response);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws HttpBadRequestException
+     */
+    public function put(Request $request, Response $response) : Response
     {
         $eventIndex = $this->container->get('event-index');
         $tablesPrefix = $eventIndex['tables_prefix'];
@@ -66,7 +110,7 @@ class DriversController extends AbstractSantosEnduranceController
         $teamData = $teamsStorage->getByName($teamName);
         
         if (empty($teamData)) {
-            throw new HttpBadRequestException($request, 'The team does not exists.');
+            throw new HttpBadRequestException($request, 'The team does not exist.');
         }
 
         /** @var \CkmTiming\Storages\v1\SantosEndurance\DriversStorage $driversStorage */
@@ -75,7 +119,7 @@ class DriversController extends AbstractSantosEnduranceController
         $driverData = $driversStorage->getByName($driverName, $teamData['id']);
 
         if (empty($driverData)) {
-            throw new HttpBadRequestException($request, 'The driver does not exists.');
+            throw new HttpBadRequestException($request, 'The driver does not exist.');
         }
 
         // Update driver
