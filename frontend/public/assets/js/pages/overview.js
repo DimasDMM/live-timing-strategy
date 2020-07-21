@@ -87,7 +87,8 @@ class OverviewPage extends Page {
                 timingData['position'],
                 timingData['team_name'],
                 timingData['time'],
-                timingData['gap']
+                timingData['interval'],
+                timingData['interval_unit']
             );
         }
         tableHtml += that.getTableEnd();
@@ -151,13 +152,13 @@ class OverviewPage extends Page {
             '            <th scope="col">Pos.</th>' +
             '            <th scope="col">Equipo</th>' +
             '            <th scope="col">Última vuelta</th>' +
-            '            <th scope="col">Gap</th>' +
+            '            <th scope="col">Interv.</th>' +
             '        </tr>' +
             '    </thead>' +
             '<tbody>';
     }
 
-    getTableRow(that, kartStatus, kartStatusGuess, position, teamName, lapTime, gap) {
+    getTableRow(that, kartStatus, kartStatusGuess, position, teamName, lapTime, interval, interval_unit) {
         let badgeClass = ''
         switch (kartStatus) {
             case 'good':
@@ -187,12 +188,24 @@ class OverviewPage extends Page {
             '    <th>' + position + '</th>' +
             '    <td>' + teamName + '</td>' +
             '    <td>' + that.getFormattedTime(lapTime) + '</td>' +
-            '    <td>' + (gap > 0 ? '+' + that.getFormattedTime(gap) : '-') + '</td>' +
+            '    <td>' + (interval > 0 ? that.getFormattedInterval(interval, interval_unit) : '-') + '</td>' +
             '</tr>';
     }
 
     getTableEnd() {
         return '</tbody></table>';
+    }
+    
+    getFormattedInterval(interval, interval_unit) {
+        if (interval_unit == 'milli') {
+            return this.getFormattedTime(interval);
+        } else if (interval_unit == 'laps') {
+            str_interval = '+' + interval;
+            str_interval += (interval > 1 ? 'vueltas' : 'vuelta');
+            return str_interval;
+        } else {
+            return '??';
+        }
     }
 }
 

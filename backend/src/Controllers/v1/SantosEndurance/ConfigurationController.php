@@ -8,7 +8,7 @@ use Slim\Routing\RouteContext;
 
 class ConfigurationController extends AbstractSantosEnduranceController
 {
-    protected $validLengthUnits = ['laps', 'hours'];
+    protected $validLengthUnits = ['laps', 'milli'];
 
     /**
      * @param Request $request

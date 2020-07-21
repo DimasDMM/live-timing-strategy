@@ -11,7 +11,7 @@ class EventController extends AbstractController
 {
     protected $validTrackNames = ['santos'];
     protected $validEventTypes = ['endurance'];
-    protected $validRaceLengthUnits = ['laps', 'hours'];
+    protected $validRaceLengthUnits = ['laps', 'milli'];
 
     /**
      * @param Request $request

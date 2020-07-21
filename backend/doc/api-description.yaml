@@ -812,7 +812,7 @@ components:
                 type: number
               race_length_unit:
                 type: string
-                enum: ['laps', 'hours']
+                enum: ['laps', 'milli']
               reference_time_top_teams:
                 type: integer
               stop_time:
@@ -920,8 +920,11 @@ components:
           type: string
         time:
           type: integer
-        gap:
+        interval:
           type: integer
+        interval_unit:
+          type: string
+          enum: ['milli', 'laps']
         lap:
           type: integer
         number_stops:
@@ -948,8 +951,11 @@ components:
           type: integer
         time:
           type: integer
-        gap:
+        interval:
           type: integer
+        interval_unit:
+          type: string
+          enum: ['milli', 'laps']
         stage:
           $ref: '#/components/schemas/Stage'
         number_stops:

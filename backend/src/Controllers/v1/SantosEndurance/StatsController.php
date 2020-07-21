@@ -10,6 +10,7 @@ class StatsController extends AbstractSantosEnduranceController
 {
     protected $validStatus = ['offline', 'online', 'error'];
     protected $validStages = ['classification', 'race'];
+    protected $validRemainingEventUnits = ['laps', 'milli'];
 
     /**
      * @param Request $request
@@ -122,6 +123,13 @@ class StatsController extends AbstractSantosEnduranceController
                 break;
             case 'remaining_event':
                 $validatorTypes->isNumeric('remaining_event', $stat['value']);
+                break;
+            case 'remaining_event_unit':
+                $validatorRanges->inArray(
+                    'remaining_event_unit',
+                    $stat['remaining_event_unit'],
+                    $this->validRemainingEventUnits
+                );
                 break;
         }
     }

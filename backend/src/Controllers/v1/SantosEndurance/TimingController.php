@@ -12,6 +12,7 @@ class TimingController extends AbstractSantosEnduranceController
     protected $validStages = ['classification', 'race'];
     protected $validTimingTypes = ['onlap', 'real'];
     protected $validKartStatus = ['good', 'medium', 'bad'];
+    protected $validIntervalUnits = ['laps', 'milli'];
 
     /**
      * @param Request $request
@@ -207,7 +208,8 @@ class TimingController extends AbstractSantosEnduranceController
             'position' => (int)$data['position'],
             'time' => (int)$data['time'],
             'lap' => (int)$data['lap'],
-            'gap' => (int)$data['gap'],
+            'interval' => (int)$data['interval'],
+            'interval_unit' => $data['interval_unit'],
             'number_stops' => (int)$data['number_stops'],
             'stage' => $stage,
             'kart_status' => $kartStatus,
@@ -244,7 +246,8 @@ class TimingController extends AbstractSantosEnduranceController
         $validatorTypes->empty('position', $data['position'] ?? null);
         $validatorTypes->empty('team_name', $data['team_name'] ?? null);
         $validatorTypes->empty('time', $data['time'] ?? null);
-        $validatorTypes->isNull('gap', $data['gap'] ?? null);
+        $validatorTypes->isNull('interval', $data['interval'] ?? null);
+        $validatorTypes->empty('interval_unit', $data['interval_unit'] ?? null);
         $validatorTypes->empty('lap', $data['lap'] ?? null);
         $validatorTypes->isNull('number_stops', $data['number_stops'] ?? null);
 
@@ -255,7 +258,8 @@ class TimingController extends AbstractSantosEnduranceController
         $validatorTypes->isInteger('position', $data['position']);
         $validatorTypes->isString('team_name', $data['team_name']);
         $validatorTypes->isInteger('time', $data['time']);
-        $validatorTypes->isInteger('gap', $data['gap']);
+        $validatorTypes->isInteger('interval', $data['interval']);
+        $validatorTypes->isString('interval_unit', $data['interval_unit']);
         $validatorTypes->isInteger('lap', $data['lap']);
         $validatorTypes->isInteger('number_stops', $data['number_stops']);
     }
@@ -273,7 +277,8 @@ class TimingController extends AbstractSantosEnduranceController
         // Values has correct format
         $validatorRanges->isPositiveNumber('position', $data['position']);
         $validatorRanges->isPositiveNumber('time', $data['time']);
-        $validatorRanges->isPositiveNumber('gap', $data['gap'], true);
+        $validatorRanges->isPositiveNumber('interval', $data['interval'], true);
+        $validatorRanges->inArray('interval_unit', $data['interval_unit'], $this->validIntervalUnits);
         $validatorRanges->isPositiveNumber('lap', $data['lap']);
         $validatorRanges->isPositiveNumber('number_stops', $data['number_stops'], true);
     }
@@ -347,7 +352,8 @@ class TimingController extends AbstractSantosEnduranceController
                     'position' => $row['position'],
                     'time' => $row['time'],
                     'lap' => $row['lap'],
-                    'gap' => $row['gap'],
+                    'interval' => $row['interval'],
+                    'interval_unit' => $row['interval_unit'],
                     'stage' => $row['stage'],
                     'kart_status' => $row['kart_status'],
                     'kart_status_guess' => $row['kart_status_guess'],

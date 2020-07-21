@@ -38,6 +38,12 @@ class EventCreatorPage extends Page {
             }
         }
 
+        // Specific parsing
+        if (parsedData['configuration']['race_length_unit'] == 'hours') {
+            parsedData['configuration']['race_length_unit'] = 'milli';
+            parsedData['configuration']['race_length'] = parsedData['configuration']['race_length'] * 60 * 60 * 1000;
+        }
+
         super.sendPostRequest(
             '/v1/events',
             parsedData,
@@ -55,7 +61,7 @@ class EventCreatorPage extends Page {
         if (errorThrown == 'Unauthorized') {
             window.location.href = '/'; // 401
         } else {
-            that.displayError('Algo salió mal ¯\\_(ツ)_/¯');
+            that.displayError('Algo salió mal ¯\_(ツ)_/¯');
         }
 
         $('#btn-create-event').removeAttr('disabled').html('Crear evento');

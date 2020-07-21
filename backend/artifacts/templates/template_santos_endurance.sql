@@ -27,7 +27,8 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `position` INT UNSIGNED NOT NULL,
   `time` INT UNSIGNED NOT NULL,
   `lap` INT UNSIGNED NOT NULL,
-  `gap` INT UNSIGNED NOT NULL,
+  `interval` INT UNSIGNED NOT NULL,
+  `interval_unit` ENUM('milli', 'laps') NOT NULL,
   `stage` ENUM('classification', 'race') NOT NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
   `kart_status_guess` ENUM('good', 'medium', 'bad') NULL,
@@ -107,7 +108,8 @@ INSERT INTO `{tables_prefix}_event_stats` (`name`, `value`) VALUES
   ('reference_current_offset', 0),
   ('status', 'offline'),
   ('stage', 'unknown'),
-  ('remaining_event', 'unknown');
+  ('remaining_event', 'unknown'),
+  ('remaining_event_unit', 'unknown');
 
 INSERT INTO `{tables_prefix}_event_health` (`category`, `name`, `status`) VALUES
   ('database', 'connection', 'offline'),
