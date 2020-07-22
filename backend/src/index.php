@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-// $start = microtime(true); // TODO
-
 require realpath('./../vendor/autoload.php');
 
 use CkmTiming\Utils\BasicContainer as Container;
@@ -24,10 +22,6 @@ require realpath(__DIR__ . '/middlewares.php');
 
 // This middleware should be added last. It will not handle any exceptions/errors for middleware added after it.
 require realpath(__DIR__ . '/errorHandlers.php');
-
-// $timeTotal = microtime(true) - $start; // TODO
-// echo $timeTotal; // TODO
-// exit(0); // TODO
 
 // Run app
 $app->run();
