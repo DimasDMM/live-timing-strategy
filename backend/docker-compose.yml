@@ -23,25 +23,18 @@ services:
         volumes:
             - .:/var/www/html
         links:
-            - api
+            - api_1
+            - api_2
+            - api_3
+            - api_4
         networks:
             - backend
         depends_on:
-            - api
+            - api_1
+            - api_2
+            - api_3
+            - api_4
         restart: always
-    api:
-        container_name: api_${PROJECT_USER}
-        build:
-            context: ./misc/dockerfiles/php
-            dockerfile: Dockerfile
-        env_file:
-            - .env
-        volumes:
-            - .:/var/www/html
-        depends_on:
-            - database
-        networks:
-            - backend
     python:
         container_name: python_${PROJECT_USER}
         build:
@@ -53,6 +46,58 @@ services:
             - database
         volumes:
             - .:/App/code
+        networks:
+            - backend
+    api_1:
+        container_name: api_1_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_2:
+        container_name: api_2_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_3:
+        container_name: api_3_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_4:
+        container_name: api_4_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
         networks:
             - backend
 

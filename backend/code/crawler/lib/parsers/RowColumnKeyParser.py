@@ -40,15 +40,8 @@ class RowColumnKeyParser(BaseParser):
                         'reference_time_offset': 0,
                         'active': True
                     }
-                
-                if data[1] == 'in':
-                    driving_time = self._cast_time_to_int(team_driver_name[1], stats)
-                    grid[team_key]['drivers'][driver_name]['driving_time'] = driving_time
+                else:
                     grid[team_key]['drivers'][driver_name]['active'] = True
-                    grid[team_key]['in_box'] = False
-                elif data[1] == 'to':
-                    # Driver in box
-                    grid[team_key]['in_box'] = True
             else:
                 raise Exception('UNKNOWN TEAM-ROW UPDATE')
         elif column_name == 'interval':
@@ -69,6 +62,18 @@ class RowColumnKeyParser(BaseParser):
                 else:
                     grid[team_key]['interval'] = self._cast_time_to_int(column_value, stats)
                     grid[team_key]['interval_unit'] = 'milli'
+        elif column_name == 'driving_time':
+            for name in grid[team_key]['drivers']:
+                if grid[team_key]['drivers'][name]['active']:
+                    driving_time = self._cast_time_to_int(data[2], stats)
+                    grid[team_key]['drivers'][name]['driving_time'] = driving_time
+                    break
+
+            if data[1] == 'in':
+                grid[team_key]['in_box'] = False
+            elif data[1] == 'to':
+                grid[team_key]['in_box'] = True
+                
         elif column_name != '':
             # Update of any other column value
             column_value = data[2].strip()

@@ -11,6 +11,7 @@ class RequestWorker(threading.Thread):
         self._base_url = base_url
         self._api_token = api_token
         self._request_data = request_data
+
         super().__init__(*args, **kwargs)
 
     def run(self):

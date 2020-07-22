@@ -68,21 +68,15 @@ class GridParser(BaseParser):
                 raw_column_name = raw_column_names[i].strip()
                 
                 column_class = column_data[0].strip()
+                
                 column_value = column_data[1].strip()
+                column_value = self._clean_html(column_value)
 
                 # Ignore column or map it
                 if raw_column_name not in self.map_columns:
                     continue
                 else:
                     column_name = self.map_columns[raw_column_name]
-                
-                # If driver in box, ignore driving time
-                if column_name == 'driving_time' and column_class == 'to':
-                    column_value = None
-                    grid[team_key]['in_box'] = True
-                else:
-                    column_value = self._clean_html(column_value)
-                    grid[team_key]['in_box'] = False
                 
                 if column_name == 'team_name' and column_class == 'drteam':
                     # Driver name, not team name
@@ -102,13 +96,15 @@ class GridParser(BaseParser):
                     else:
                         grid[team_key]['drivers'][driver_name]['active'] = True
                 elif column_name == 'driving_time':
-                    if column_value is None:
+                    if column_class == 'to':
                         # Driver in box
-                        pass
+                        grid[team_key]['in_box'] = True
                     else:
                         # Set driving time to active driver too
                         driving_time = self.cast_columns[column_name](column_value, timing.get_stats())
                         driving_time = 0 if driving_time is None else driving_time
+                        
+                        grid[team_key]['in_box'] = False
                         
                         grid[team_key]['driving_time'] = driving_time
                         for driver_name in grid[team_key]['drivers']:

@@ -13,6 +13,6 @@ docker-compose -f docker-compose.yml -p $PROJECT_USER up -d --build
 cd -
 
 # Initialize database and import datasets
-idocker api_${PROJECT_USER} bash ./misc/dockerfiles/php/container-dependencies.sh
+idocker api_1_${PROJECT_USER} bash ./misc/dockerfiles/php/container-dependencies.sh
 idocker database_${PROJECT_USER} bash ./bin/init_database/scripts/wait-database.sh
 idocker database_${PROJECT_USER} bash ./bin/init_database/scripts/database-creation.sh

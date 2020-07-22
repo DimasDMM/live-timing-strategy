@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 import random
 import json
+import signal
 
 from lib.Timing import Timing
 from lib.MessagesParser import MessagesParser
@@ -94,10 +95,12 @@ if __name__ == '__main__':
     api_requests = ApiRequests(API_URL, API_TOKEN, MAX_WORKERS_PRIMARY, MAX_WORKERS_SECONDARY)
     messages_parser = MessagesParser(timing, api_requests)
     
+    current_path = os.path.dirname(os.path.realpath(__file__))
+    messages_path = '%s/%s' % (current_path, MESSAGES_PATH)
     if USE_WEBHOOK_LISTENER:
-        ws = WebSocketListener(WS_URL, messages_parser, MESSAGES_PATH)
+        ws = WebSocketListener(WS_URL, messages_parser, messages_path)
     else:
-        ws = WebSocketParser(messages_parser, MESSAGES_PATH)
+        ws = WebSocketParser(messages_parser, messages_path)
     
     # Get configuration of event
     print('Setting initial variables...')
@@ -150,7 +153,7 @@ if __name__ == '__main__':
             data = str(e)
             print(data)
 
-            with open('%s/%s' % (ERRORS_PATH, get_random_filename()), 'w') as fp:
+            with open('%s/%s/%s' % (current_path, ERRORS_PATH, get_random_filename()), 'w') as fp:
                 fp.write(data)
 
             if STOP_IF_ERROR:
@@ -166,6 +169,7 @@ if __name__ == '__main__':
             else:
                 print('No more messages!')
                 update_status(api_requests, EVENT_NAME, 'offline')
+                api_requests.close()
                 exit(0)
 
         print('Updating data...')
