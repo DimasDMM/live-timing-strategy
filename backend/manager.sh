@@ -22,6 +22,9 @@ case $1 in
   python)
     ${MANAGER_DIR}/misc/bin/python-container.sh
     ;;
+  crawler)
+    ${MANAGER_DIR}/misc/bin/python-container.sh crawler
+    ;;
   *)
     echo "Error: The command does not exist!!"
     exit 1

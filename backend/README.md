@@ -37,7 +37,12 @@ To do
 
 ### Crawler
 
-To do
+Run the crawler task using the following command:
+```sh
+sh manager.sh crawler
+```
+
+> Note: the process does not run in the background by default.
 
 ### Data analysis
 

@@ -24,6 +24,8 @@ API_TOKEN = 'd265aed699f7409ac0ec6fe07ee9cb11'
 
 TEMP_FILE_TIMING = 'temp_timing.json'
 MESSAGES_PATH = '../../artifacts/logs/se_race'
+USE_WEBHOOK_LISTENER = False # True: use webhook; False: use files in MESSAGES_PATH
+
 GET_STATS_INTERVAL = 50
 MAX_WORKERS_PRIMARY = 15
 MAX_WORKERS_SECONDARY = 15
@@ -85,14 +87,17 @@ def get_random_filename():
 if __name__ == '__main__':
     create_dir(ERRORS_PATH)
     
-    save_last_timing(Timing()) # To do: debug, remove
+    save_last_timing(Timing())
     timing = get_last_timing()
 
     # Build initial objects
     api_requests = ApiRequests(API_URL, API_TOKEN, MAX_WORKERS_PRIMARY, MAX_WORKERS_SECONDARY)
     messages_parser = MessagesParser(timing, api_requests)
-    #ws = WebSocketListener(WS_URL, messages_parser, MESSAGES_PATH)
-    ws = WebSocketParser(messages_parser, MESSAGES_PATH)
+    
+    if USE_WEBHOOK_LISTENER:
+        ws = WebSocketListener(WS_URL, messages_parser, MESSAGES_PATH)
+    else:
+        ws = WebSocketParser(messages_parser, MESSAGES_PATH)
     
     # Get configuration of event
     print('Setting initial variables...')
