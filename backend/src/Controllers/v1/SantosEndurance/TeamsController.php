@@ -44,8 +44,7 @@ class TeamsController extends AbstractSantosEnduranceController
         $tablesPrefix = $eventIndex['tables_prefix'];
 
         $data = $this->getParsedBody($request);
-        $this->validatePostTeamValueTypes($request, $data);
-        $this->validatePostTeamValueRanges($request, $data);
+        $this->validatePostTeamValues($request, $data);
 
         /** @var \CkmTiming\Storages\v1\SantosEndurance\TeamsStorage $teamsStorage */
         $teamsStorage = $this->container->get('storages')['santos_endurance']['teams']();
@@ -196,10 +195,13 @@ class TeamsController extends AbstractSantosEnduranceController
      * @param array $team
      * @return void
      */
-    protected function validatePostTeamValueTypes(Request $request, array $team) : void
+    protected function validatePostTeamValues(Request $request, array $team) : void
     {
         /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
         // Values are set and not empty
         $validatorTypes->empty('name', $team['name'] ?? null);
@@ -209,24 +211,9 @@ class TeamsController extends AbstractSantosEnduranceController
 
         // Values has correct format
         $validatorTypes->isString('name', $team['name']);
-        $validatorTypes->isInteger('number', $team['number']);
-        $validatorTypes->isInteger('reference_time_offset', $team['reference_time_offset']);
-        $validatorTypes->isArray('drivers', $team['drivers']);
-    }
-
-    /**
-     * @param Request $request
-     * @param array $team
-     * @return void
-     */
-    protected function validatePostTeamValueRanges(Request $request, array $team) : void
-    {
-        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
-        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
-
-        // Values has correct format
         $validatorRanges->isPositiveNumber('number', $team['number']);
         $validatorRanges->isPositiveNumber('reference_time_offset', $team['reference_time_offset'], true);
+        $validatorTypes->isArray('drivers', $team['drivers']);
         $validatorRanges->itemsHasAttributes('drivers', $team['drivers'], $this->validDriverAttributes);
     }
 }

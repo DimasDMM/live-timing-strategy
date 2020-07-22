@@ -145,9 +145,9 @@ class DriversController extends AbstractSantosEnduranceController
             $validatorTypes->isInteger('reference_time_offset', $driver['reference_time_offset']);
             $validatorRanges->isPositiveNumber('reference_time_offset', $driver['reference_time_offset'], true);
         }
-        if (isset($driver['time_driving'])) {
-            $validatorTypes->isInteger('time_driving', $driver['time_driving']);
-            $validatorRanges->isPositiveNumber('time_driving', $driver['time_driving'], true);
+        if (isset($driver['driving_time'])) {
+            $validatorTypes->isInteger('driving_time', $driver['driving_time']);
+            $validatorRanges->isPositiveNumber('driving_time', $driver['driving_time'], true);
         }
     }
 }

@@ -20,11 +20,16 @@ class EventMiddleware extends AbstractMiddleware
         $route = $routeContext->getRoute();
         $eventName = $route->getArgument('event-name');
 
-        $eventsIndexStorage = $this->container->get('storages')['common']['events_index']();
-        $eventData = $eventsIndexStorage->getByName($eventName);
+        $key = $eventName . '-index';
+        $eventData = $this->container->get('memcached')->get($key);
 
         if (empty($eventData)) {
-            throw new HttpBadRequestException($request, 'Event does not exist.');
+            $eventsIndexStorage = $this->container->get('storages')['common']['events_index']();
+            $eventData = $eventsIndexStorage->getByName($eventName);
+
+            if (empty($eventData)) {
+                throw new HttpBadRequestException($request, 'Event does not exist.');
+            }
         }
 
         $this->container->set('event-index', $eventData);

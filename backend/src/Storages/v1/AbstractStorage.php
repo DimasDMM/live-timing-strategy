@@ -39,7 +39,7 @@ abstract class AbstractStorage
         foreach ($data as $column => $value) {
             $paramName = ':' . $column;
             $rowParams[$paramName] = $value;
-            $rowValues[$column] = $paramName;
+            $rowValues["`$column`"] = $paramName;
         }
 
         $queryBuilder

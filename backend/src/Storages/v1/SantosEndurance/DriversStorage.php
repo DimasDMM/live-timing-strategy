@@ -17,7 +17,7 @@ class DriversStorage extends AbstractSantosEnduranceStorage
                 se_d.id id,
                 se_d.team_id team_id,
                 se_d.name name,
-                se_d.time_driving time_driving,
+                se_d.driving_time,
                 se_d.reference_time_offset reference_time_offset,
                 se_d.update_date update_date
             FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d";
@@ -39,7 +39,7 @@ class DriversStorage extends AbstractSantosEnduranceStorage
                 se_d.id id,
                 se_d.team_id team_id,
                 se_d.name name,
-                se_d.time_driving time_driving,
+                se_d.driving_time,
                 se_d.reference_time_offset reference_time_offset,
                 se_d.update_date update_date
             FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d
@@ -66,7 +66,7 @@ class DriversStorage extends AbstractSantosEnduranceStorage
             SELECT
                 se_d.id id,
                 se_d.name name,
-                se_d.time_driving time_driving,
+                se_d.driving_time,
                 se_d.reference_time_offset reference_time_offset,
                 se_d.update_date update_date
             FROM `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d

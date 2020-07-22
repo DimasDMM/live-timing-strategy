@@ -146,10 +146,26 @@ class KartsBoxController extends AbstractSantosEnduranceController
             throw new HttpBadRequestException($request, 'The team does not exist.');
         }
 
+        $teamId = $teamData['id'];
+
+        if (empty($data['kart_status'])) {
+            // Inherit kart status from last lap time
+            /** @var \CkmTiming\Storages\v1\SantosEndurance\TimingStorage $timingStorage */
+            $timingStorage = $this->container->get('storages')['santos_endurance']['timing']();
+            $timingStorage->setTablesPrefix($tablesPrefix);
+
+            $lastKnown = $timingStorage->getLastKnownKartStatus($teamId);
+            $kartStatus = isset($lastKnown['kart_status']) ? $lastKnown['kart_status'] : 'unknown';
+            $forcedKartStatus = isset($lastKnown['forced_kart_status']) ? $lastKnown['forced_kart_status'] : null;
+        } else {
+            $kartStatus = $data['kart_status'];
+            $forcedKartStatus = $data['forced_kart_status'];
+        }
+
         $kartInOutData = [
-            'kart_status' => $data['kart_status'],
-            'forced_kart_status' => $data['forced_kart_status'] ?? null,
-            'team_id' => $teamData['id'],
+            'kart_status' => $kartStatus,
+            'forced_kart_status' => $forcedKartStatus,
+            'team_id' => $teamId,
         ];
 
         /** @var \CkmTiming\Storages\v1\SantosEndurance\KartsBoxInStorage $kartsInOutStorage */
@@ -197,11 +213,8 @@ class KartsBoxController extends AbstractSantosEnduranceController
         /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
-        // Value is set
-        $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
-        
         // Values has correct format
-        $validatorTypes->isInteger('reference_time_offset', $team['reference_time_offset']);
+        $validatorTypes->isNull('reference_time_offset', $team['reference_time_offset'] ?? null);
         $validatorRanges->isPositiveNumber('reference_time_offset', $team['reference_time_offset'], true);
     }
 
@@ -258,7 +271,9 @@ class KartsBoxController extends AbstractSantosEnduranceController
 
         // Values has correct format
         $validatorTypes->isString('team_name', $kartInOut['team_name']);
-        $validatorTypes->isString('kart_status', $kartInOut['kart_status']);
+        if (!empty($kartInOut['kart_status'])) {
+            $validatorTypes->isString('kart_status', $kartInOut['kart_status']);
+        }
         if (!empty($kartInOut['forced_kart_status'])) {
             $validatorTypes->isString('forced_kart_status', $kartInOut['forced_kart_status']);
         }

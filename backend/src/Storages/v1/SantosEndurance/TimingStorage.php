@@ -8,10 +8,15 @@ class TimingStorage extends AbstractSantosEnduranceStorage
     protected $defaultKartStatus = 'unknown';
 
     /**
+     * @param bool $orderFirstPosition Optional
      * @return array
      */
-    public function getLastLap() : array
+    public function getLastLap($orderFirstPosition = true) : array
     {
+        $orderClause = $orderFirstPosition
+            ? 'ORDER BY se_t.position ASC, se_t.lap DESC'
+            : 'ORDER BY se_t.lap DESC, se_t.position ASC';
+
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
         $stmt = "
@@ -23,9 +28,10 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                     se_t.reference_time_offset team_reference_time_offset,
                     se_d.name driver_name,
                     se_d.reference_time_offset driver_reference_time_offset,
-                    se_d.time_driving driver_time_driving,
+                    se_d.driving_time driver_driving_time,
                     se_th.position,
                     se_th.time,
+                    se_th.best_time,
                     se_th.lap,
                     se_th.interval,
                     se_th.interval_unit,
@@ -38,12 +44,14 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                 FROM `" . $tablePrefix . Tables::SE_TIMING_HISTORIC . "` se_th
                 LEFT JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_th.team_id
                 LEFT JOIN `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d ON se_th.driver_id = se_d.id
-                ORDER BY se_th.position ASC, se_th.lap DESC
+                ORDER BY se_th.insert_date DESC
             ) se_t
-            GROUP BY se_t.team_name";
+            GROUP BY se_t.team_name
+            $orderClause";
         $results = $connection->executeQuery($stmt)->fetchAll();
         $results = empty($results) ? [] : $results;
         $results = $this->castTimingRows($results);
+        $results = $this->getFixedPositions($results);
         return $results;
     }
 
@@ -62,9 +70,10 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                 se_t.reference_time_offset team_reference_time_offset,
                 se_d.name driver_name,
                 se_d.reference_time_offset driver_reference_time_offset,
-                se_d.time_driving driver_time_driving,
+                se_d.driving_time driver_driving_time,
                 se_th.position,
                 se_th.time,
+                se_th.best_time,
                 se_th.lap,
                 se_th.interval,
                 se_th.interval_unit,
@@ -88,10 +97,10 @@ class TimingStorage extends AbstractSantosEnduranceStorage
 
     /**
      * @param integer $teamId
-     * @param integer $numberStops
+     * @param integer $numberStops Optional
      * @return array
      */
-    public function getLastKnownKartStatus(int $teamId, int $numberStops) : array
+    public function getLastKnownKartStatus(int $teamId, int $numberStops = null) : array
     {
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
@@ -109,7 +118,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
         $params = [':id' => $teamId];
         $results = $connection->executeQuery($stmt, $params)->fetch();
 
-        if (empty($results) || $results['number_stops'] != $numberStops) {
+        if (empty($results) || (!is_null($numberStops) && $results['number_stops'] != $numberStops)) {
             return [];
         }
 
@@ -125,6 +134,37 @@ class TimingStorage extends AbstractSantosEnduranceStorage
         $tablePrefix = $this->getTablesPrefix();
         $table = $tablePrefix . Tables::SE_TIMING_HISTORIC;
         parent::simpleInsert($data, $table);
+    }
+
+    /**
+     * @param int $teamId
+     * @param string $stage
+     * @param int $lap
+     * @param array $data
+     * @return void
+     */
+    public function updateByTeamStageLap(int $teamId, string $stage, int $lap, array $data) : void
+    {
+        $tablePrefix = $this->getTablesPrefix();
+        
+        $queryBuilder = $this->getConnection()->createQueryBuilder();
+        $queryBuilder->update($tablePrefix . Tables::SE_TIMING_HISTORIC, 'u');
+
+        foreach ($data as $column => $value) {
+            $paramName = ':' . $column;
+            $queryBuilder
+                ->set("u.$column", $paramName)
+                ->setParameter($column, $value);
+        }
+
+        $queryBuilder->where('u.team_id = :team_id AND u.stage = :stage AND u.lap = :lap');
+        $queryBuilder->setParameters([
+            ':team_id' => $teamId,
+            ':stage' => $stage,
+            ':lap' => $lap,
+        ]);
+
+        $queryBuilder->execute();
     }
 
     /**
@@ -172,9 +212,10 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                     'team_reference_time_offset' => (int)$row['team_reference_time_offset'],
                     'driver_name' => $row['driver_name'],
                     'driver_reference_time_offset' => isset($row['driver_reference_time_offset']) ? (int)$row['driver_reference_time_offset'] : null,
-                    'driver_time_driving' =>  isset($row['driver_time_driving']) ? (int)$row['driver_time_driving'] : null,
+                    'driver_driving_time' => isset($row['driver_driving_time']) ? (int)$row['driver_driving_time'] : null,
                     'position' => (int)$row['position'],
                     'time' => (int)$row['time'],
+                    'best_time' => (int)$row['best_time'],
                     'lap' => (int)$row['lap'],
                     'interval' => (int)$row['interval'],
                     'interval_unit' => $row['interval_unit'],
@@ -188,5 +229,19 @@ class TimingStorage extends AbstractSantosEnduranceStorage
             },
             $data
         );
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function getFixedPositions(array $data) : array
+    {
+        $i = 0;
+        foreach ($data as &$row) {
+            $i++;
+            $row['position'] = $i;
+        }
+        return $data;
     }
 }

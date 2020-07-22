@@ -15,6 +15,11 @@ use CkmTiming\Storages\v1\SantosEndurance\TeamsStorage;
 use CkmTiming\Storages\v1\SantosEndurance\TimingStorage;
 use Psr\Container\ContainerInterface as Container;
 
+// Memcached
+$memcached = new \Memcached();
+$memcached->addServer('localhost', 11211);
+$container->set('memcached', $memcached);
+
 // Storages
 $callbacks = [
     'common' => [

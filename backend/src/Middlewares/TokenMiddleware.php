@@ -23,12 +23,22 @@ class TokenMiddleware extends AbstractMiddleware
             throw new HttpUnauthorizedException($request, 'Empty header ' . self::HEADER_TOKEN . '.');
         }
 
-        $tokenData = $this->getTokenData($headers[self::HEADER_TOKEN][0]);
-        if (empty($tokenData)) {
-            throw new HttpUnauthorizedException($request, 'Token in ' . self::HEADER_TOKEN . ' not valid.');
-        }
+        $authTokens = $this->container->get('memcached')->get('auth-tokens');
+        $authTokens = $authTokens ? $authTokens : [];
 
-        $this->container->set('logged', $tokenData);
+        $token = $headers[self::HEADER_TOKEN][0];
+
+        if (!in_array($token, $authTokens)) {
+            $tokenData = $this->getTokenData($token);
+            if (empty($tokenData)) {
+                throw new HttpUnauthorizedException($request, 'Token in ' . self::HEADER_TOKEN . ' not valid.');
+            }
+
+            $this->container->set('logged', $tokenData);
+
+            $authTokens[] = $token;
+            $this->container->get('memcached')->set('auth-tokens', $authTokens);
+        }
 
         $response = $handler->handle($request);
         return $response;
