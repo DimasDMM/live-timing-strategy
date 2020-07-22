@@ -1,1 +1,851 @@
-{}
+{
+    "configuration": {
+        "stop_time": "150000",
+        "race_length": "10800000",
+        "min_number_stops": "4",
+        "race_length_unit": "milli",
+        "reference_time_top_teams": "10"
+    },
+    "stats": {
+        "remaining_event": "3366456",
+        "stage": "race",
+        "status": "online",
+        "reference_time": "0",
+        "remaining_event_unit": "milli",
+        "reference_current_offset": "0"
+    },
+    "grid": {
+        "r1953": {
+            "position": 1,
+            "team_number": 11,
+            "team_name": "CKM VIMESA",
+            "time": 65931,
+            "best_time": 65878,
+            "interval": 0,
+            "interval_unit": "milli",
+            "lap": 109,
+            "number_stops": 1,
+            "driving_time": 1800000,
+            "in_box": false,
+            "drivers": {
+                "GUILLERMO PANIAGUA": {
+                    "driving_time": 5400000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "SITO LOPEZ": {
+                    "driving_time": 1800000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1959": {
+            "position": 5,
+            "team_number": 17,
+            "team_name": "CREATIA RACING TEAM",
+            "time": 65751,
+            "best_time": 65605,
+            "interval": 4348,
+            "interval_unit": "milli",
+            "lap": 107,
+            "number_stops": 2,
+            "driving_time": 2580000,
+            "in_box": false,
+            "drivers": {
+                "CRISTIAN BARTOLOME": {
+                    "driving_time": 4500000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JONATHAN CRESPO": {
+                    "driving_time": 2580000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1972": {
+            "position": 2,
+            "team_number": 30,
+            "team_name": "DAYTON",
+            "time": 69143,
+            "best_time": 65819,
+            "interval": 22811,
+            "interval_unit": "milli",
+            "lap": 109,
+            "number_stops": 1,
+            "driving_time": 1380000,
+            "in_box": false,
+            "drivers": {
+                "FRANCISCO PE\u00d1A": {
+                    "driving_time": 5880000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "RUBEN GALLEGO": {
+                    "driving_time": 1320000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1963": {
+            "position": 4,
+            "team_number": 21,
+            "team_name": "RX PRO KARTING",
+            "time": 66693,
+            "best_time": 65629,
+            "interval": 1,
+            "interval_unit": "laps",
+            "lap": 107,
+            "number_stops": 2,
+            "driving_time": 1200000,
+            "in_box": false,
+            "drivers": {
+                "ALBERTO SANCHEZ": {
+                    "driving_time": 5880000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "FERNANDO ZAMIT": {
+                    "driving_time": 1200000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1961": {
+            "position": 10,
+            "team_number": 19,
+            "team_name": "CREATIA DEPILSOFT",
+            "time": 214001,
+            "best_time": 65679,
+            "interval": 50663,
+            "interval_unit": "milli",
+            "lap": 105,
+            "number_stops": 3,
+            "driving_time": 1380000,
+            "in_box": false,
+            "drivers": {
+                "ROBERTO GARCIA": {
+                    "driving_time": 5520000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "VALENTIN APARICIO": {
+                    "driving_time": 1380000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1962": {
+            "position": 3,
+            "team_number": 20,
+            "team_name": "CREATIA KARTING TEAM",
+            "time": 66504,
+            "best_time": 65919,
+            "interval": 11605,
+            "interval_unit": "milli",
+            "lap": 108,
+            "number_stops": 1,
+            "driving_time": 1800000,
+            "in_box": false,
+            "drivers": {
+                "XAVI PUIGDELLIURA": {
+                    "driving_time": 5460000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "DAVID OREJUELA": {
+                    "driving_time": 1800000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1946": {
+            "position": 16,
+            "team_number": 4,
+            "team_name": "EQTOX",
+            "time": 68251,
+            "best_time": 65912,
+            "interval": 105959,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 4,
+            "driving_time": 61000,
+            "in_box": false,
+            "drivers": {
+                "DANIELE ANTRONACO": {
+                    "driving_time": 0,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "FEDERICO SEGUNDO": {
+                    "driving_time": 3000000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1947": {
+            "position": 11,
+            "team_number": 5,
+            "team_name": "LMKC ENDURANCE",
+            "time": 66600,
+            "best_time": 66010,
+            "interval": 165624,
+            "interval_unit": "milli",
+            "lap": 104,
+            "number_stops": 3,
+            "driving_time": 3120000,
+            "in_box": false,
+            "drivers": {
+                "GERMAN MU\u00d1OZ": {
+                    "driving_time": 0,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JOSE BURILLO": {
+                    "driving_time": 3060000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1955": {
+            "position": 14,
+            "team_number": 13,
+            "team_name": "CKM GREPPITEX",
+            "time": 67905,
+            "best_time": 66754,
+            "interval": 46313,
+            "interval_unit": "milli",
+            "lap": 103,
+            "number_stops": 3,
+            "driving_time": 120000,
+            "in_box": false,
+            "drivers": {
+                "ALBERTO ANDRES": {
+                    "driving_time": 3060000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALFONSO ARBETETA": {
+                    "driving_time": 3660000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALEJANDRO SANCHEZ": {
+                    "driving_time": 120000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1968": {
+            "position": 18,
+            "team_number": 26,
+            "team_name": "CRF TEAM",
+            "time": 66920,
+            "best_time": 66308,
+            "interval": 19422,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 3,
+            "driving_time": 900000,
+            "in_box": false,
+            "drivers": {
+                "SAMUEL GARCIA": {
+                    "driving_time": 2880000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALVARO SOTRES": {
+                    "driving_time": 900000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1949": {
+            "position": 8,
+            "team_number": 7,
+            "team_name": "LMKC TOP FUEL",
+            "time": 66146,
+            "best_time": 66146,
+            "interval": 13352,
+            "interval_unit": "milli",
+            "lap": 106,
+            "number_stops": 2,
+            "driving_time": 2160000,
+            "in_box": false,
+            "drivers": {
+                "MIGUEL CUENCA": {
+                    "driving_time": 4920000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAVI FERRER": {
+                    "driving_time": 2160000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1951": {
+            "position": 13,
+            "team_number": 9,
+            "team_name": "AFFI KART",
+            "time": 67649,
+            "best_time": 66200,
+            "interval": 3851,
+            "interval_unit": "milli",
+            "lap": 103,
+            "number_stops": 3,
+            "driving_time": 1860000,
+            "in_box": false,
+            "drivers": {
+                "ZANTEDDESCHI ALESSANDRO": {
+                    "driving_time": 60000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "MARGU TTI SIMONE": {
+                    "driving_time": 1860000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1952": {
+            "position": 24,
+            "team_number": 10,
+            "team_name": "DEBRA",
+            "time": 66582,
+            "best_time": 66411,
+            "interval": 3549,
+            "interval_unit": "milli",
+            "lap": 101,
+            "number_stops": 4,
+            "driving_time": 2220000,
+            "in_box": false,
+            "drivers": {
+                "OSCAR ROMERO": {
+                    "driving_time": 4560000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "AITOR RINCON": {
+                    "driving_time": 2220000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1964": {
+            "position": 12,
+            "team_number": 22,
+            "team_name": "RX MIRADOM",
+            "time": 66798,
+            "best_time": 66145,
+            "interval": 63066,
+            "interval_unit": "milli",
+            "lap": 103,
+            "number_stops": 3,
+            "driving_time": 1980000,
+            "in_box": false,
+            "drivers": {
+                "SAMUEL GOMEZ": {
+                    "driving_time": 1560000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JOSE COBOS": {
+                    "driving_time": 3300000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "BUSIAN FONTAN": {
+                    "driving_time": 1980000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1954": {
+            "position": 17,
+            "team_number": 12,
+            "team_name": "CKM TABUENCA",
+            "time": 216057,
+            "best_time": 66718,
+            "interval": 51055,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 3,
+            "driving_time": 60000,
+            "in_box": false,
+            "drivers": {
+                "DIEGO PEREZ": {
+                    "driving_time": 3300000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALBERTO PEREZ": {
+                    "driving_time": 3540000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "OSCAR ARIAS": {
+                    "driving_time": 60000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1942": {
+            "position": 9,
+            "team_number": 1,
+            "team_name": "HART",
+            "time": 68204,
+            "best_time": 66418,
+            "interval": 35731,
+            "interval_unit": "milli",
+            "lap": 105,
+            "number_stops": 2,
+            "driving_time": 1740000,
+            "in_box": false,
+            "drivers": {
+                "FRANCISCO BRACO": {
+                    "driving_time": 5340000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "MARTIN FERNANDEZ": {
+                    "driving_time": 1740000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1957": {
+            "position": 21,
+            "team_number": 15,
+            "team_name": "CKM FUOKO",
+            "time": 70451,
+            "best_time": 66283,
+            "interval": 3127,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 3,
+            "driving_time": 120000,
+            "in_box": false,
+            "drivers": {
+                "GONZALO PEREZ": {
+                    "driving_time": 3780000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALBERTO SAZ": {
+                    "driving_time": 3000000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "LUIS GALLARDO": {
+                    "driving_time": 120000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1960": {
+            "position": 6,
+            "team_number": 18,
+            "team_name": "CREATIA ENDURANCE TEAM",
+            "time": 65895,
+            "best_time": 65783,
+            "interval": 855,
+            "interval_unit": "milli",
+            "lap": 107,
+            "number_stops": 2,
+            "driving_time": 1440000,
+            "in_box": false,
+            "drivers": {
+                "LORENZO UROSA": {
+                    "driving_time": 5640000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ALEX LOPEZ": {
+                    "driving_time": 1440000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1944": {
+            "position": 19,
+            "team_number": 2,
+            "team_name": "HART SAVORYREST",
+            "time": 68185,
+            "best_time": 66541,
+            "interval": 3385,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 3,
+            "driving_time": 2100000,
+            "in_box": false,
+            "drivers": {
+                "ARMANDO ROSALENY": {
+                    "driving_time": 4860000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "DANIEL ARROYO": {
+                    "driving_time": 2040000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1956": {
+            "position": 23,
+            "team_number": 14,
+            "team_name": "CKM BERYLO",
+            "time": 66850,
+            "best_time": 66155,
+            "interval": 20155,
+            "interval_unit": "milli",
+            "lap": 101,
+            "number_stops": 4,
+            "driving_time": 1500000,
+            "in_box": false,
+            "drivers": {
+                "DIMAS MU\u00d1OZ": {
+                    "driving_time": 1800000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "SEBASTIAN CORNEJO": {
+                    "driving_time": 1500000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1966": {
+            "position": 15,
+            "team_number": 24,
+            "team_name": "FOCUS",
+            "time": 220887,
+            "best_time": 66478,
+            "interval": 4042,
+            "interval_unit": "milli",
+            "lap": 103,
+            "number_stops": 3,
+            "driving_time": 0,
+            "in_box": false,
+            "drivers": {
+                "FRANCISCO LARA": {
+                    "driving_time": 3420000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "GUILLERMO ABAD": {
+                    "driving_time": 1740000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "PABLO BATURONE": {
+                    "driving_time": 1740000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1965": {
+            "position": 20,
+            "team_number": 23,
+            "team_name": "AURA AM",
+            "time": 218193,
+            "best_time": 67106,
+            "interval": 33025,
+            "interval_unit": "milli",
+            "lap": 102,
+            "number_stops": 3,
+            "driving_time": 0,
+            "in_box": false,
+            "drivers": {
+                "I\u00d1IGO DE DIEGO": {
+                    "driving_time": 1740000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JORGE ALVAREZ-OSSORIO": {
+                    "driving_time": 1620000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAVIER SANCHEZ-DIEZMA": {
+                    "driving_time": 3480000,
+                    "reference_time_offset": 0,
+                    "active": false
+                }
+            }
+        },
+        "r1967": {
+            "position": 7,
+            "team_number": 25,
+            "team_name": "JSD RACING",
+            "time": 68579,
+            "best_time": 66883,
+            "interval": 41704,
+            "interval_unit": "milli",
+            "lap": 106,
+            "number_stops": 1,
+            "driving_time": 1860000,
+            "in_box": false,
+            "drivers": {
+                "SERGIO GARCIA": {
+                    "driving_time": 5340000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JUAN PABLO ZAPATA": {
+                    "driving_time": 1860000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1948": {
+            "position": 28,
+            "team_number": 6,
+            "team_name": "LMKC PUERTAS HGV",
+            "time": 68837,
+            "best_time": 67187,
+            "interval": 5434,
+            "interval_unit": "milli",
+            "lap": 99,
+            "number_stops": 4,
+            "driving_time": 60000,
+            "in_box": false,
+            "drivers": {
+                "JAVI HARO": {
+                    "driving_time": 3360000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "PABLO MORENO": {
+                    "driving_time": 3240000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "FERNANDO GARCIA": {
+                    "driving_time": 60000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1958": {
+            "position": 27,
+            "team_number": 16,
+            "team_name": "CKM ROUNDABOUT 54",
+            "time": 68352,
+            "best_time": 67087,
+            "interval": 28268,
+            "interval_unit": "milli",
+            "lap": 99,
+            "number_stops": 4,
+            "driving_time": 240000,
+            "in_box": false,
+            "drivers": {
+                "VITO CALAVANTE": {
+                    "driving_time": 3240000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "SAUL": {
+                    "driving_time": 3240000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAVIER ESTEBAN": {
+                    "driving_time": 180000,
+                    "reference_time_offset": 0,
+                    "active": false
+                }
+            }
+        },
+        "r1950": {
+            "position": 29,
+            "team_number": 8,
+            "team_name": "LMKC AF KARTING",
+            "time": 216565,
+            "best_time": 67828,
+            "interval": 14778,
+            "interval_unit": "milli",
+            "lap": 99,
+            "number_stops": 4,
+            "driving_time": 0,
+            "in_box": false,
+            "drivers": {
+                "BORJA VIZCAINO": {
+                    "driving_time": 1500000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "MARIA JOSE MENENDEZ": {
+                    "driving_time": 0,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1971": {
+            "position": 26,
+            "team_number": 29,
+            "team_name": "RDM MOTORSPORT",
+            "time": 68545,
+            "best_time": 67233,
+            "interval": 60508,
+            "interval_unit": "milli",
+            "lap": 100,
+            "number_stops": 3,
+            "driving_time": 1680000,
+            "in_box": false,
+            "drivers": {
+                "CRISTETO ALAMEDA": {
+                    "driving_time": 0,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "RAIMUNDO MANZANARES": {
+                    "driving_time": 2400000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ADRIAN CHAMORRO": {
+                    "driving_time": 1680000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1945": {
+            "position": 25,
+            "team_number": 3,
+            "team_name": "HART ECOBOX",
+            "time": 68069,
+            "best_time": 67807,
+            "interval": 34773,
+            "interval_unit": "milli",
+            "lap": 100,
+            "number_stops": 3,
+            "driving_time": 1920000,
+            "in_box": false,
+            "drivers": {
+                "JAVIER PALOMEQUE": {
+                    "driving_time": 1740000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JOSE FERNANDEZ CUADRADO": {
+                    "driving_time": 3180000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "HARALD GRUNDNER": {
+                    "driving_time": 1920000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1969": {
+            "position": 22,
+            "team_number": 27,
+            "team_name": "SENNADORES 1",
+            "time": 69477,
+            "best_time": 67567,
+            "interval": 22635,
+            "interval_unit": "milli",
+            "lap": 101,
+            "number_stops": 2,
+            "driving_time": 2400000,
+            "in_box": false,
+            "drivers": {
+                "ANTONIO ALBARRAN": {
+                    "driving_time": 2400000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAVIER MARTINEZ": {
+                    "driving_time": 2160000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAVIER DE LOS RIOS": {
+                    "driving_time": 2400000,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        },
+        "r1970": {
+            "position": 30,
+            "team_number": 28,
+            "team_name": "SENNADORES 2",
+            "time": 71189,
+            "best_time": 69086,
+            "interval": 2,
+            "interval_unit": "laps",
+            "lap": 96,
+            "number_stops": 3,
+            "driving_time": 127000,
+            "in_box": false,
+            "drivers": {
+                "DANIEL ALVAREZ": {
+                    "driving_time": 2280000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "SALVADOR CORREA": {
+                    "driving_time": 2160000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "ROBERTO MARTINEZ": {
+                    "driving_time": 2460000,
+                    "reference_time_offset": 0,
+                    "active": false
+                },
+                "JAIME ESPA\u00d1A": {
+                    "driving_time": 0,
+                    "reference_time_offset": 0,
+                    "active": true
+                }
+            }
+        }
+    },
+    "extra": {
+        "grid_columns": [
+            "",
+            "",
+            "position",
+            "team_number",
+            "team_name",
+            "lap",
+            "time",
+            "",
+            "interval",
+            "best_time",
+            "driving_time",
+            "",
+            "number_stops"
+        ]
+    }
+}

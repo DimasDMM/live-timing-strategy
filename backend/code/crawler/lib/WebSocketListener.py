@@ -3,18 +3,12 @@ import os
 import random
 import time
 from datetime import datetime
-
 import websocket
 
-from .WebSocketParser import WebSocketParser
+from .MessagesParser import MessagesParser
 
-try:
-    import thread
-except ImportError:
-    import _thread as thread
-
-class WebSocket:
-    def __init__(self, url: str, parser: WebSocketParser, save_messages=None, ws=None):
+class WebSocketListener:
+    def __init__(self, url: str, parser: MessagesParser, save_messages=None):
         self.url = url
         self.parser = parser
         self.save_messages = save_messages
@@ -46,18 +40,11 @@ class WebSocket:
     def on_error(self, ws, error):
         self.parser.parse_error(error)
 
-    def on_close(self, ws):
+    def on_open(self, ws):
         pass
 
-    def on_open(self, ws):
-        def run(*args):
-            for i in range(3):
-                time.sleep(1)
-                ws.send('Hello %d' % i)
-            time.sleep(1)
-            ws.close()
-            print('thread terminating...')
-        thread.start_new_thread(run, ())
+    def on_close(self, ws):
+        pass
 
     def _current_time(self):
         return datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S.%f')

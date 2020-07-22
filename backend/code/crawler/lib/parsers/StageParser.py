@@ -1,20 +1,7 @@
-from .ParserInterface import ParserInterface
+from .BaseParser import BaseParser
 import re
 
-class StageParser(ParserInterface):
-    def __init__(self):
-        # Map columns
-        self.map_titles = {
-            'Clasificación': 'position',
-            'Kart': 'team_number',
-            'Equipo': 'team_name',
-            'Última vuelta': 'time',
-            'Gap': 'gap',
-            'Vueltas': 'lap',
-            'Pits': 'number_stops',
-            'En Pista': 'driving_time'
-        }
-
+class StageParser(BaseParser):
     def parse(self, data, timing):
         title = data[2]
 

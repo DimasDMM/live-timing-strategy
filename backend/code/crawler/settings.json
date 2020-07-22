@@ -1,7 +1,0 @@
-{
-    "save_messages": "../../artifacts/logs/se",
-    "ws_url": "ws://www.apex-timing.com:8092",
-    "api_url": "http://172.23.0.5",
-    "api_token": "d265aed699f7409ac0ec6fe07ee9cb11",
-    "event_name": "Resistencia%20Los%20Santos%2018-07-2020"
-}

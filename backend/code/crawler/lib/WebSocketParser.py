@@ -1,47 +1,25 @@
-from .ParserInterface import ParserInterface
-from .ApiRequests import ApiRequests
+import glob
 
-from .parsers.GridParser import GridParser
-from .parsers.StageParser import StageParser
-from .Timing import Timing
-
-from io import StringIO
-import pandas as pd
-import json
-import os
+from .MessagesParser import MessagesParser
 
 class WebSocketParser:
-    def __init__(self, timing: Timing, api: ApiRequests, debug=False):
-        self.timing = timing
-        self.api = api
-        self.debug = debug
+    def __init__(self, parser: MessagesParser, file_path: str):
+        self.parser = parser
+        self.file_path = '%s/*.txt' % file_path
 
-        # Parsers
-        self.parsers = {
-            'grid': GridParser(),
-            'title2': StageParser()
-        }
+        # Init list and iterator
+        self.i = 0
+        self.file_list = [f for f in glob.glob(self.file_path)]
+        self.file_list = sorted(self.file_list)
 
-    def parse_message(self, message: str):
-        io_message = StringIO(message)
-        df = pd.read_csv(io_message, sep='|', header=None)
+    def run(self):
+        if self.i >= len(self.file_list):
+            print('#' * 10)
+            print('CLOSE SIM-CONNECTION')
+            return None
 
-        for _, row in df.iterrows():
-            parser_found = False
-            if row[0] in self.parsers:
-                self.timing = self.parsers[row[0]].parse(row, self.timing)
-                parser_found = True
-            
-            if not parser_found:
-                # No parser for this message
-                print(message)
-                raise Exception('NO PARSER')
-
-    def parse_error(self, error: str):
-        pass
-
-    def set_timing(self, timing: Timing):
-        self.timing = timing
-
-    def get_timing(self):
-        return self.timing
+        with open(self.file_list[self.i], 'r') as fp:
+            self.i = self.i + 1
+            print('File %d of %d' % (self.i, len(self.file_list)))
+            message = fp.read()
+            return self.parser.parse_message(message)
