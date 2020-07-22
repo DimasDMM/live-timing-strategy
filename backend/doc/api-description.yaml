@@ -847,7 +847,7 @@ components:
       properties:
         reference_time_offset:
           type: integer
-        time_driving:
+        driving_time:
           type: integer
     DriverGet:
       allOf:
@@ -920,6 +920,8 @@ components:
           type: string
         time:
           type: integer
+        best_time:
+          type: integer
         interval:
           type: integer
         interval_unit:
@@ -945,11 +947,13 @@ components:
           type: string
         driver_reference_time_offset:
           type: integer
-        driver_time_driving:
+        driver_driving_time:
           type: integer
         lap:
           type: integer
         time:
+          type: integer
+        best_time:
           type: integer
         interval:
           type: integer
