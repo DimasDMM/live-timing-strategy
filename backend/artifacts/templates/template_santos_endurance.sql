@@ -5,6 +5,7 @@ CREATE TABLE `{tables_prefix}_teams` (
   `reference_time_offset` INT DEFAULT 0 COMMENT 'Respect track reference',
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX(`name`),
   UNIQUE KEY `team_name` (`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -12,7 +13,7 @@ CREATE TABLE `{tables_prefix}_drivers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `team_id` INT UNSIGNED NULL,
   `name` VARCHAR(191) NOT NULL,
-  `time_driving` INT UNSIGNED DEFAULT 0,
+  `driving_time` INT UNSIGNED DEFAULT 0,
   `reference_time_offset` INT DEFAULT 0 COMMENT 'Respect team reference',
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -26,6 +27,7 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `driver_id` INT UNSIGNED NULL,
   `position` INT UNSIGNED NOT NULL,
   `time` INT UNSIGNED NOT NULL,
+  `best_time` INT UNSIGNED NOT NULL,
   `lap` INT UNSIGNED NOT NULL,
   `interval` INT UNSIGNED NOT NULL,
   `interval_unit` ENUM('milli', 'laps') NOT NULL,
@@ -37,7 +39,6 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `is_stop` TINYINT(1) NOT NULL DEFAULT 0,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `timing_team_lap` (`team_id`, `lap`),
   CONSTRAINT `{tables_prefix}_timing__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`),
   CONSTRAINT `{tables_prefix}_timing__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `{tables_prefix}_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -75,14 +76,16 @@ CREATE TABLE `{tables_prefix}_event_config` (
   `name` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` VARCHAR(255) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX(`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_event_stats` (
   `name` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` VARCHAR(255) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX(`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `{tables_prefix}_event_health` (
@@ -93,6 +96,7 @@ CREATE TABLE `{tables_prefix}_event_health` (
   `message` VARCHAR(1000) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX(`category`, `name`),
   UNIQUE KEY `category_name` (`category`, `name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -109,7 +113,7 @@ INSERT INTO `{tables_prefix}_event_stats` (`name`, `value`) VALUES
   ('status', 'offline'),
   ('stage', 'unknown'),
   ('remaining_event', 'unknown'),
-  ('remaining_event_unit', 'unknown');
+  ('remaining_event_unit', 'milli');
 
 INSERT INTO `{tables_prefix}_event_health` (`category`, `name`, `status`) VALUES
   ('database', 'connection', 'offline'),
