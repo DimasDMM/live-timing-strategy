@@ -86,6 +86,8 @@ class OverviewPage extends Page {
                 timingData['kart_status_guess'],
                 timingData['position'],
                 timingData['team_name'],
+                timingData['lap'],
+                timingData['best_time'],
                 timingData['time'],
                 timingData['interval'],
                 timingData['interval_unit']
@@ -119,9 +121,13 @@ class OverviewPage extends Page {
         if (statsData['status'] == 'offline') {
             $('#stats-track-offset').html('offline');
         } else {
-            let offsetTime = that.getFormattedTime(statsData['reference_current_offset']);
-            let symbol = statsData['reference_current_offset'] >= 0 ? '+' : '-';
-            $('#stats-track-offset').html(symbol + offsetTime + ' seg');
+            if (statsData['stage'] == 'race') {
+                let offsetTime = that.getFormattedTime(statsData['reference_current_offset']);
+                let symbol = statsData['reference_current_offset'] >= 0 ? '+' : '-';
+                $('#stats-track-offset').html(symbol + offsetTime + ' seg');
+            } else {
+                $('#stats-track-offset').html('Aún no disponible');
+            }
         }
     }
 
@@ -129,18 +135,6 @@ class OverviewPage extends Page {
         that.counterLoadingData--;
         that.queueLoadingData--;
         $('#stats-track-offset').html('--');
-    }
-
-    updateLastTime(that) {
-        that.lastTime = new Date().getTime();
-    }
-
-    displayLoadingData() {
-        $('#info-last-update').html('Actualizando...');
-    }
-
-    displayLastTimeLoadedData() {
-
     }
 
     getTableStart() {
@@ -151,6 +145,8 @@ class OverviewPage extends Page {
             '            <th scope="col">&nbsp;</th>' +
             '            <th scope="col">Pos.</th>' +
             '            <th scope="col">Equipo</th>' +
+            '            <th scope="col">Vuelta</th>' +
+            '            <th scope="col">Mejor tiempo</th>' +
             '            <th scope="col">Última vuelta</th>' +
             '            <th scope="col">Interv.</th>' +
             '        </tr>' +
@@ -158,7 +154,7 @@ class OverviewPage extends Page {
             '<tbody>';
     }
 
-    getTableRow(that, kartStatus, kartStatusGuess, position, teamName, lapTime, interval, interval_unit) {
+    getTableRow(that, kartStatus, kartStatusGuess, position, teamName, lap, bestTime, lastTime, interval, interval_unit) {
         let badgeClass = ''
         switch (kartStatus) {
             case 'good':
@@ -187,7 +183,9 @@ class OverviewPage extends Page {
             '    <th scope="row" class="' + badgeClass + '">&nbsp;</th>' +
             '    <th>' + position + '</th>' +
             '    <td>' + teamName + '</td>' +
-            '    <td>' + that.getFormattedTime(lapTime) + '</td>' +
+            '    <td>' + lap + '</td>' +
+            '    <td>' + that.getFormattedTime(bestTime) + '</td>' +
+            '    <td>' + that.getFormattedTime(lastTime) + '</td>' +
             '    <td>' + (interval > 0 ? that.getFormattedInterval(interval, interval_unit) : '-') + '</td>' +
             '</tr>';
     }
@@ -198,7 +196,7 @@ class OverviewPage extends Page {
     
     getFormattedInterval(interval, interval_unit) {
         if (interval_unit == 'milli') {
-            return this.getFormattedTime(interval);
+            return '+' + this.getFormattedTime(interval);
         } else if (interval_unit == 'laps') {
             str_interval = '+' + interval;
             str_interval += (interval > 1 ? 'vueltas' : 'vuelta');
