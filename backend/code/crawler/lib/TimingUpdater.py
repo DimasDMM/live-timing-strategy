@@ -1,14 +1,15 @@
 import copy
+import time
 
 from .ApiRequests import ApiRequests
 from .Timing import Timing
 
 class TimingUpdater:
     def __init__(self, api: ApiRequests, event_name: str, event_config: list, timing: Timing):
-        self.api = api
-        self.event_name = event_name
-        self.event_config = event_config
-        self.timing = copy.deepcopy(timing)
+        self._api_requests = api
+        self._event_name = event_name
+        self._event_config = event_config
+        self._timing = copy.deepcopy(timing)
 
     def update_timing(self, new_timing: Timing):
         self._update_stats(new_timing)
@@ -16,8 +17,8 @@ class TimingUpdater:
 
     def _update_grid(self, new_timing: Timing):
         # Api updates
-        grid = self.timing.get_grid()
-        stats = self.timing.get_stats()
+        grid = self._timing.get_grid()
+        stats = self._timing.get_stats()
 
         new_grid = copy.deepcopy(new_timing.get_grid())
 
@@ -82,12 +83,13 @@ class TimingUpdater:
                         self._update_driver(team_data['team_name'], driver_name, new_driving_time)
 
         # Override whole grid
-        self.timing.set_grid(new_grid)
+        self._timing.set_grid(new_grid)
 
     def _update_stats(self, new_timing: Timing):
-        stats = self.timing.get_stats()
+        stats = self._timing.get_stats()
         new_stats = new_timing.get_stats()
         if 'stage' in new_stats and stats['stage'] != new_stats['stage']:
+            self._wait_no_workers()
             self._update_stat('stage', new_stats['stage'], 1)
             stats['stage'] = new_stats['stage']
         if 'remaining_event' in new_stats and stats['remaining_event'] != new_stats['remaining_event']:
@@ -97,29 +99,33 @@ class TimingUpdater:
             self._update_stat('remaining_event_unit', new_stats['remaining_event_unit'], 2)
             stats['remaining_event_unit'] = new_stats['remaining_event_unit']
 
-        self.timing.set_stats(stats)
+        self._timing.set_stats(stats)
 
     def _update_stat(self, name: str, value, priority: int):
         print('- Updating "%s" to "%s"...' % (name, value))
-        path = '/v1/events/%s/stats/%s' % (self.event_name, name)
+        path = '/v1/events/%s/stats/%s' % (self._event_name, name)
         data = {'value': value}
         if priority == 1:
-            response = self.api.put(path, data)
+            response = self._api_requests.put(path, data)
             if 'error' in response:
                 raise Exception(response)
         elif priority == 2:
-            self.api.put_future(path, data, priority)
+            self._api_requests.put_future(path, data, priority)
 
     def _add_kart_in_box(self, team_name: str):
+        def _callback_box(response, callback_params):
+            print('RESPONSE KART IN BOX')
+            print(response)
+        
         print('- Team "%s" entered to box...' % (team_name))
-        path = '/v1/events/%s/karts-box/in' % (self.event_name)
+        path = '/v1/events/%s/karts-box/in' % (self._event_name)
         data = {'team_name': team_name}
-        self.api.post_future(path, data, 1)
+        self._api_requests.post_future(path, data, 1, callback=_callback_box)
 
     def _add_time(self, position: int, team_name: str, time: int, best_time: int,
                   interval: int, interval_unit: str, lap: int, number_stops: int):
         print('- Adding time of team "%s"...' % (team_name))
-        path = '/v1/events/%s/timing' % (self.event_name)
+        path = '/v1/events/%s/timing' % (self._event_name)
         data = {
             'position': position,
             'team_name': team_name,
@@ -130,12 +136,12 @@ class TimingUpdater:
             'lap': lap,
             'number_stops': number_stops
         }
-        self.api.post_future(path, data, 1)
+        self._api_requests.post_future(path, data, 1)
 
     def _update_time(self, position: int, team_name: str, time: int, best_time: int,
                      interval: int, interval_unit: str, lap: int, number_stops: int):
         print('- Re-adding last time of team "%s"...' % (team_name))
-        path = '/v1/events/%s/timing' % (self.event_name)
+        path = '/v1/events/%s/timing' % (self._event_name)
         data = {
             'position': position,
             'team_name': team_name,
@@ -146,43 +152,53 @@ class TimingUpdater:
             'lap': lap,
             'number_stops': number_stops
         }
-        self.api.post_future(path, data, 1)
+        self._api_requests.post_future(path, data, 1)
 
     def _add_team(self, team_name: str, team_number: int):
         print('- Adding team "%s"...' % (team_name))
-        path = '/v1/events/%s/teams' % (self.event_name)
+        path = '/v1/events/%s/teams' % (self._event_name)
         data = {
             'name': team_name,
             'number': team_number,
             'drivers': [],
             'reference_time_offset': 0
         }
-        response = self.api.post(path, data)
+        response = self._api_requests.post(path, data)
         if 'error' in response:
             raise Exception(response)
 
     def _update_team_name(self, old_team_name: str, new_team_name: str):
         print('- Updating team name "%s" to "%s"...' % (old_team_name, new_team_name))
-        path = '/v1/events/%s/teams/%s' % (self.event_name, old_team_name)
+        path = '/v1/events/%s/teams/%s' % (self._event_name, old_team_name)
         data = {'name': new_team_name}
-        response = self.api.put(path, data)
+        response = self._api_requests.put(path, data)
         if 'error' in response:
             raise Exception(response)
 
     def _update_team_number(self, team_name: str, team_number: int):
         print('- Updating team number "%s" to "%d"...' % (team_name, team_number))
-        path = '/v1/events/%s/teams/%s' % (self.event_name, team_name)
+        path = '/v1/events/%s/teams/%s' % (self._event_name, team_name)
         data = {'number': team_number}
-        self.api.put_future(path, data, 2)
+        self._api_requests.put_future(path, data, 2)
 
     def _add_driver(self, team_name: str, driver_name: str):
         print('- Adding driver "%s" to the team "%s"...' % (driver_name, team_name))
-        path = '/v1/events/%s/teams/%s/%s' % (self.event_name, team_name, driver_name)
+        path = '/v1/events/%s/teams/%s/%s' % (self._event_name, team_name, driver_name)
         data = {}
-        self.api.post_future(path, data, 2)
+        self._api_requests.post_future(path, data, 2)
 
     def _update_driver(self, team_name: str, driver_name: str, driving_time: int):
         print('- Updating driver "%s" of team "%s"...' % (driver_name, team_name))
-        path = '/v1/events/%s/teams/%s/%s' % (self.event_name, team_name, driver_name)
+        path = '/v1/events/%s/teams/%s/%s' % (self._event_name, team_name, driver_name)
         data = {'driving_time': driving_time}
-        self.api.put_future(path, data, 2)
+        self._api_requests.put_future(path, data, 2)
+
+    def _wait_no_workers(self):
+        while True:
+            q_total, _, _ = self._api_requests.get_number_in_queue()
+            n_workers = self._api_requests.get_number_workers()
+            if q_total > 0 or n_workers > 0:
+                print('Waiting queue empty... (%d in queue, %d workers)' % (q_total, n_workers))
+                time.sleep(0.5)
+            else:
+                break

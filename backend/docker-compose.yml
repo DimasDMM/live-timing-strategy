@@ -27,6 +27,10 @@ services:
             - api_2
             - api_3
             - api_4
+            - api_5
+            - api_6
+            - api_7
+            - api_8
         networks:
             - backend
         depends_on:
@@ -34,6 +38,10 @@ services:
             - api_2
             - api_3
             - api_4
+            - api_5
+            - api_6
+            - api_7
+            - api_8
         restart: always
     python:
         container_name: python_${PROJECT_USER}
@@ -89,6 +97,58 @@ services:
             - backend
     api_4:
         container_name: api_4_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_5:
+        container_name: api_5_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_6:
+        container_name: api_6_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_7:
+        container_name: api_7_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/php
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        networks:
+            - backend
+    api_8:
+        container_name: api_8_${PROJECT_USER}
         build:
             context: ./misc/dockerfiles/php
             dockerfile: Dockerfile

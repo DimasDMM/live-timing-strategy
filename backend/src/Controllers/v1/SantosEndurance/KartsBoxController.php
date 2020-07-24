@@ -265,17 +265,19 @@ class KartsBoxController extends AbstractSantosEnduranceController
         /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
 
+        /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
+        $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
+
         // Values are set and not empty
         $validatorTypes->empty('team_name', $kartInOut['team_name'] ?? null);
-        $validatorTypes->empty('kart_status', $kartInOut['kart_status'] ?? null);
 
         // Values has correct format
         $validatorTypes->isString('team_name', $kartInOut['team_name']);
-        if (!empty($kartInOut['kart_status'])) {
-            $validatorTypes->isString('kart_status', $kartInOut['kart_status']);
+        if (isset($kartInOut['kart_status'])) {
+            $validatorRanges->inArray('kart_status', $kartInOut['kart_status'], $this->validKartStatus);
         }
-        if (!empty($kartInOut['forced_kart_status'])) {
-            $validatorTypes->isString('forced_kart_status', $kartInOut['forced_kart_status']);
+        if (isset($kartInOut['forced_kart_status'])) {
+            $validatorRanges->inArray('forced_kart_status', $kartInOut['forced_kart_status'], $this->validKartStatus);
         }
     }
 }

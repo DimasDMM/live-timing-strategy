@@ -8,10 +8,6 @@ from .parsers.RowColumnKeyParser import RowColumnKeyParser
 from .parsers.RowKeyParser import RowKeyParser
 from .Timing import Timing
 
-from io import StringIO
-import pandas as pd
-import json
-import os
 import re
 
 class MessagesParser:
@@ -53,9 +49,8 @@ class MessagesParser:
                 if message_row.strip() == '':
                     continue
 
-                # Parse each row independently since they may contain a different number of columns
-                io_message = StringIO(message_row)
-                row = pd.read_csv(io_message, sep='|', header=None, dtype=str).iloc[0]
+                # Split row in columns
+                row = message_row.split('|')
                 
                 if row[0] in self.parsers:
                     self.timing = self.parsers[row[0]].parse(row, self.timing)

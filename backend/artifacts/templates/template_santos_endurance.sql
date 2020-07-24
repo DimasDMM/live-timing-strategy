@@ -117,9 +117,7 @@ INSERT INTO `{tables_prefix}_event_stats` (`name`, `value`) VALUES
 
 INSERT INTO `{tables_prefix}_event_health` (`category`, `name`, `status`) VALUES
   ('database', 'connection', 'offline'),
-  ('crawler', 'internet', 'offline'),
-  ('crawler', 'live_timing', 'offline'),
-  ('crawler', 'parse_teams', 'offline'),
+  ('crawler', 'api_connection', 'offline'),
   ('crawler', 'parse_timing', 'offline'),
   ('batch', 'karts_box_probs', 'offline'),
   ('batch', 'karts_status', 'offline'),

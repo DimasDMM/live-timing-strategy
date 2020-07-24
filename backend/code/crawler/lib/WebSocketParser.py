@@ -22,4 +22,5 @@ class WebSocketParser:
             self.i = self.i + 1
             print('File %d of %d' % (self.i, len(self.file_list)))
             message = fp.read()
+            print('Parsing message...')
             return self.parser.parse_message(message)

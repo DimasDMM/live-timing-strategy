@@ -21,6 +21,7 @@ class HealthStorage extends AbstractSantosEnduranceStorage
                 ec.category,
                 ec.name,
                 ec.status,
+                ec.message,
                 ec.update_date
             FROM " . $tablePrefix . Tables::SE_EVENT_HEALTH . " ec
             ORDER BY update_date DESC";
@@ -42,6 +43,7 @@ class HealthStorage extends AbstractSantosEnduranceStorage
                 ec.category,
                 ec.name,
                 ec.status,
+                ec.message,
                 ec.update_date
             FROM `" . $tablePrefix . Tables::SE_EVENT_HEALTH . "` ec
             WHERE ec.name = :name";
@@ -54,20 +56,22 @@ class HealthStorage extends AbstractSantosEnduranceStorage
      * @param string $category
      * @param string $name
      * @param string $status
+     * @param string $message
      * @return boolean
      */
-    public function updateByName(string $category, string $name, string $status) : bool
+    public function updateByName(string $category, string $name, string $status, string $message) : bool
     {
         $connection = $this->getConnection();
         $tablePrefix = $this->getTablesPrefix();
         $stmt = "
             UPDATE `" . $tablePrefix . Tables::SE_EVENT_HEALTH . "`
-            SET `status` = :status
+            SET `status` = :status, `message` = :message
             WHERE `name` = :name AND `category` = :category";
         $params = [
             ':category' => $category,
             ':name' => $name,
             ':status' => $status,
+            ':message' => $message,
         ];
         $connection->executeUpdate($stmt, $params);
         return true;

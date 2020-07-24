@@ -56,31 +56,32 @@ class HealthController extends AbstractSantosEnduranceController
         }
 
         $data = $this->getParsedBody($request);
-        $this->validatePutHealthValue($request, $data, $healthName);
+        $this->validatePutHealthValue($request, $data);
 
-        $healthStorage->updateByName($healthCategory, $healthName, $data['value']);
+        $healthStorage->updateByName($healthCategory, $healthName, $data['status'], $data['message']);
 
         return $this->buildJsonResponse($request, $response);
     }
 
     /**
      * @param Request $request
-     * @param array $healthData
-     * @param string $healthName
+     * @param array $data
      * @return void
      */
-    protected function validatePutHealthValue(Request $request, array $healthData, string $healthName) : void
+    protected function validatePutHealthValue(Request $request, array $data) : void
     {
         /** @var \CkmTiming\Helpers\ValidatorTypes $validatorTypes */
         $validatorTypes = $this->container->get('validator_types')->setRequest($request);
+
         /** @var \CkmTiming\Helpers\ValidatorRanges $validatorRanges */
         $validatorRanges = $this->container->get('validator_ranges')->setRequest($request);
 
         // Value is set
-        $validatorTypes->empty('value', $healthData['value'] ?? null);
+        $validatorTypes->empty('status', $data['status'] ?? null);
+        $validatorTypes->isNull('message', $data['message'] ?? null);
         
         // Values has correct format
-        $validatorTypes->isString('value', $healthData['value']);
-        $validatorRanges->inArray('value', $healthData['value'], $this->validHealthStatus);
+        $validatorRanges->inArray('status', $data['status'], $this->validHealthStatus);
+        $validatorTypes->isString('message', $data['message']);
     }
 }
