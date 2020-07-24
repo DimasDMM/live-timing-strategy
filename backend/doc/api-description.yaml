@@ -964,8 +964,6 @@ components:
           $ref: '#/components/schemas/Stage'
         number_stops:
           type: integer
-        is_stop:
-          type: boolean
         kart_status:
           type: string
           enum: ['unknown', 'good', 'medium', 'bad']

@@ -36,7 +36,6 @@ CREATE TABLE `{tables_prefix}_timing_historic` (
   `kart_status_guess` ENUM('good', 'medium', 'bad') NULL,
   `forced_kart_status` ENUM('good', 'medium', 'bad') NULL,
   `number_stops` INT UNSIGNED NOT NULL DEFAULT 0,
-  `is_stop` TINYINT(1) NOT NULL DEFAULT 0,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `{tables_prefix}_timing__team_id` FOREIGN KEY (`team_id`) REFERENCES `{tables_prefix}_teams` (`id`),

@@ -39,8 +39,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                     se_th.kart_status,
                     se_th.kart_status_guess,
                     se_th.forced_kart_status,
-                    se_th.number_stops,
-                    se_th.is_stop
+                    se_th.number_stops
                 FROM `" . $tablePrefix . Tables::SE_TIMING_HISTORIC . "` se_th
                 LEFT JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_th.team_id
                 LEFT JOIN `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d ON se_th.driver_id = se_d.id
@@ -81,8 +80,7 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                 se_th.kart_status,
                 se_th.kart_status_guess,
                 se_th.forced_kart_status,
-                se_th.number_stops,
-                se_th.is_stop
+                se_th.number_stops
             FROM `" . $tablePrefix . Tables::SE_TIMING_HISTORIC . "` se_th
             JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_th.team_id
             LEFT JOIN `" . $tablePrefix . Tables::SE_DRIVERS . "` se_d ON se_th.driver_id = se_d.id
@@ -224,7 +222,6 @@ class TimingStorage extends AbstractSantosEnduranceStorage
                     'kart_status_guess' => $row['kart_status_guess'],
                     'forced_kart_status' => $row['forced_kart_status'],
                     'number_stops' => (int)$row['number_stops'],
-                    'is_stop' => (bool)$row['is_stop'],
                 ];
             },
             $data

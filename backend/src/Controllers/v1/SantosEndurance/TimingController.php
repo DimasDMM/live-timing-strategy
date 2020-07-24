@@ -352,7 +352,6 @@ class TimingController extends AbstractSantosEnduranceController
                     'kart_status_guess' => $row['kart_status_guess'],
                     'forced_kart_status' => $row['forced_kart_status'],
                     'number_stops' => $row['number_stops'],
-                    'is_stop' => $row['is_stop'],
                 ];
             },
             $data
