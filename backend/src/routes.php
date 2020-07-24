@@ -31,6 +31,7 @@ $app->group('', function (RouteCollectorProxy $group) {
         $group->group(Routes::EVENT_NAME, function (RouteCollectorProxy $group) {
             // Santos Endurance endpoints
             $group->get(Routes::SE_CONFIGURATION, ConfigurationController::class . ':get');
+            $group->put(Routes::SE_CONFIGURATION, ConfigurationController::class . ':put');
             $group->put(Routes::SE_CONFIGURATION_NAME, ConfigurationController::class . ':putByName');
             
             $group->get(Routes::SE_HEALTH, HealthController::class . ':get');

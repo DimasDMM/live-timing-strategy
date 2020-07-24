@@ -663,6 +663,39 @@ paths:
                         type: number
                       min_number_stops:
                         type: integer
+    put:
+      summary: Updates all configuration values.
+      tags:
+      - Santos Endurance Event
+      parameters:
+      - $ref: '#/components/parameters/HeaderRequestID'
+      - $ref: '#/components/parameters/EventName'
+      responses:
+        '200':
+          description: Correct response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      karts_in_box:
+                        type: integer
+                      race_length:
+                        type: number
+                      race_length_unit:
+                        type: string
+                        enum: ['laps', 'hours']
+                      reference_time_top_teams:
+                        type: integer
+                      stop_time:
+                        type: number
+                      min_number_stops:
+                        type: integer
   /events/{event-name}/configuration/{config-name}:
     put:
       summary: Updates a configuration item.
