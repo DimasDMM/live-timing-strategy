@@ -198,8 +198,7 @@ class OverviewPage extends Page {
         if (interval_unit == 'milli') {
             return '+' + this.getFormattedTime(interval);
         } else if (interval_unit == 'laps') {
-            str_interval = '+' + interval;
-            str_interval += (interval > 1 ? 'vueltas' : 'vuelta');
+            let str_interval = '+' + interval + ' ' + (interval > 1 ? 'vueltas' : 'vuelta');
             return str_interval;
         } else {
             return '??';
