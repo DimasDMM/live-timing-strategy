@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require realpath('./../vendor/autoload.php');
 
-use DI\Container;
+use CkmTiming\Utils\BasicContainer as Container;
 use Slim\Views\Twig;
 use Slim\Factory\AppFactory;
 
