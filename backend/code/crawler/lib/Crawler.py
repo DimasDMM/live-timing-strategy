@@ -179,7 +179,7 @@ class Crawler:
         try:
             with open(file_path, 'r') as fp:
                 return Timing().from_dict(json.load(fp))
-        except Exception as e:
+        except:
             timing = Timing()
             self.save_last_timing(timing)
             return timing
@@ -201,5 +201,4 @@ class Crawler:
 
     def close(self):
         print('Closing...')
-        self.api_requests.close()
         exit(0)
