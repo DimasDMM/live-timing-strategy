@@ -10,6 +10,7 @@ use Slim\Routing\RouteContext;
 
 class KartsBoxController extends AbstractSantosEnduranceController
 {
+    protected $defaultLimit = 10;
     protected $validKartStatus = ['unknown', 'good', 'medium', 'bad'];
 
     /**
@@ -22,11 +23,13 @@ class KartsBoxController extends AbstractSantosEnduranceController
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $kartAction = $route->getArgument('kart-action');
+        $limit = $route->getArgument('limit');
 
         if ($kartAction == 'probs') {
             return $this->getProbs($request, $response);
         } elseif ($kartAction == 'in' || $kartAction == 'out') {
-            return $this->getInOut($request, $response, $kartAction);
+            $limit = is_numeric($limit) && $limit > 0 ? (int)$limit : $this->defaultLimit;
+            return $this->getInOut($request, $response, $kartAction, $limit);
         }
 
         throw new HttpNotFoundException($request);
@@ -58,9 +61,10 @@ class KartsBoxController extends AbstractSantosEnduranceController
      * @param Request $request
      * @param Response $response
      * @param string $kartAction
+     * @param int $limit
      * @return Response
      */
-    protected function getInOut(Request $request, Response $response, string $kartAction) : Response
+    protected function getInOut(Request $request, Response $response, string $kartAction, int $limit) : Response
     {
         $eventIndex = $this->container->get('event-index');
         $tablesPrefix = $eventIndex['tables_prefix'];
@@ -69,7 +73,7 @@ class KartsBoxController extends AbstractSantosEnduranceController
         $storageKey = $kartAction == 'in' ? 'karts-box-in' : 'karts-box-out';
         $kartsInOutStorage = $this->container->get('storages')['santos_endurance'][$storageKey]();
         $kartsInOutStorage->setTablesPrefix($tablesPrefix);
-        $data = $kartsInOutStorage->getAll();
+        $data = $kartsInOutStorage->getAll($limit);
 
         return $this->buildJsonResponse(
             $request,
