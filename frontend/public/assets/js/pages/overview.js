@@ -90,7 +90,8 @@ class OverviewPage extends Page {
                 timingData['best_time'],
                 timingData['time'],
                 timingData['interval'],
-                timingData['interval_unit']
+                timingData['interval_unit'],
+                timingData['number_stops']
             );
         }
         tableHtml += that.getTableEnd();
@@ -149,12 +150,25 @@ class OverviewPage extends Page {
             '            <th scope="col">Mejor tiempo</th>' +
             '            <th scope="col">Última vuelta</th>' +
             '            <th scope="col">Interv.</th>' +
+            '            <th scope="col">Pits</th>' +
             '        </tr>' +
             '    </thead>' +
             '<tbody>';
     }
 
-    getTableRow(that, kartStatus, kartStatusGuess, position, teamName, lap, bestTime, lastTime, interval, interval_unit) {
+    getTableRow(
+        that,
+        kartStatus,
+        kartStatusGuess,
+        position,
+        teamName,
+        lap,
+        bestTime,
+        lastTime,
+        interval,
+        interval_unit,
+        numberStops
+    ) {
         let badgeClass = ''
         switch (kartStatus) {
             case 'good':
@@ -187,6 +201,7 @@ class OverviewPage extends Page {
             '    <td>' + that.getFormattedTime(bestTime) + '</td>' +
             '    <td>' + that.getFormattedTime(lastTime) + '</td>' +
             '    <td>' + (interval > 0 ? that.getFormattedInterval(interval, interval_unit) : '-') + '</td>' +
+            '    <td>' + numberStops + '</td>' +
             '</tr>';
     }
 

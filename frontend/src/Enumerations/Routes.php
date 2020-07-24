@@ -11,11 +11,10 @@ final class Routes
     const EVENT_INDEX = '/event-index';
     const EVENT_CREATOR = '/event-creator';
     const EVENT_OVERVIEW = '/event/{event-name}';
-    const CONFIGURATION = '/event/{event-name}/configuration';
-
+    
     // SE pages
     const SE_KARTS_IN_BOX = '/event/{event-name}/karts-in-box';
-    const SE_TRAFFIC_PREDICTION = '/event/{event-name}/traffic-prediction';
+    const SE_CONFIGURATION = '/event/{event-name}/configuration';
 
     public static function getConstants() : array
     {

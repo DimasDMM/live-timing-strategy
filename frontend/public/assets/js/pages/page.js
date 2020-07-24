@@ -68,6 +68,23 @@ class Page {
         .fail(errorCallback);
     }
 
+    sendPutRequest(path, data, successCallback, errorCallback) {
+        $.ajax({
+            url: this.apiUrl + path,
+            contentType: 'application/json; charset=utf-8',
+            cache: false,
+            crossDomain: true,
+            type: 'PUT',
+            dataType: 'json',
+            data: JSON.stringify(data),
+            headers: {
+                'X-Request-Id': this.getToken()
+            }
+        })
+        .done(successCallback)
+        .fail(errorCallback);
+    }
+
     sendPostRequest(path, data, successCallback, errorCallback) {
         $.ajax({
             url: this.apiUrl + path,

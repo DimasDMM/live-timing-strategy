@@ -5,7 +5,7 @@ use CkmTiming\Controllers\v1\EventIndexController;
 use CkmTiming\Controllers\v1\OverviewController;
 use CkmTiming\Controllers\v1\KartsInBoxController;
 use CkmTiming\Controllers\v1\TokenValidationController;
-use CkmTiming\Controllers\v1\TrafficPredictionController;
+use CkmTiming\Controllers\v1\ConfigurationController;
 use CkmTiming\Middlewares\DefaultMiddleware;
 use CkmTiming\Enumerations\Routes;
 use Slim\Routing\RouteCollectorProxy;
@@ -22,6 +22,6 @@ $app->group('', function (RouteCollectorProxy $group) {
     $group->get(Routes::EVENT_OVERVIEW, OverviewController::class . ':get');
 
     // SE pages
-    $group->get(Routes::SE_TRAFFIC_PREDICTION, TrafficPredictionController::class . ':get');
+    $group->get(Routes::SE_CONFIGURATION, ConfigurationController::class . ':get');
     $group->get(Routes::SE_KARTS_IN_BOX, KartsInBoxController::class . ':get');
 })->add(new DefaultMiddleware());
