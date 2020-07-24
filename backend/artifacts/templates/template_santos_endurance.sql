@@ -103,6 +103,7 @@ INSERT INTO `{tables_prefix}_event_config` (`name`, `value`) VALUES
   ('race_length', NULL),
   ('race_length_unit', NULL),
   ('reference_time_top_teams', NULL),
+  ('karts_in_box', NULL),
   ('stop_time', NULL),
   ('min_number_stops', NULL);
 
