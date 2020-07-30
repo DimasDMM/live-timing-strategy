@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class EventCreator extends AbstractHelper
 {
-    const PATH_TEMPLATES = __DIR__ . '/../../artifacts/templates/';
+    const PATH_TEMPLATES = __DIR__ . '/../../data/templates/';
 
     /** @var Request */
     protected $request;

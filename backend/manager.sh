@@ -19,6 +19,9 @@ case $1 in
   code:style)
     ${MANAGER_DIR}/misc/bin/code-style.sh -p
     ;;
+  go)
+    ${MANAGER_DIR}/misc/bin/go-container.sh
+    ;;
   python)
     ${MANAGER_DIR}/misc/bin/python-container.sh
     ;;

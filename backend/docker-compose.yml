@@ -13,6 +13,34 @@ services:
             - ./artifacts/templates:/bin/init_database/templates/
         networks:
             - backend
+    python:
+        container_name: python_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/python
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        depends_on:
+            - database
+        volumes:
+            - .:/App/code
+        networks:
+            - backend
+    go:
+        container_name: go_${PROJECT_USER}
+        build:
+            context: ./misc/dockerfiles/go
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        depends_on:
+            - database
+        volumes:
+            - ./data:/data
+            - ./code/go:/go
+            - ./artifacts/go-bin:/go-bin
+        networks:
+            - backend
     nginx:
         container_name: nginx_${PROJECT_USER}
         build:
@@ -43,19 +71,6 @@ services:
             - api_7
             - api_8
         restart: always
-    python:
-        container_name: python_${PROJECT_USER}
-        build:
-            context: ./misc/dockerfiles/python
-            dockerfile: Dockerfile
-        env_file:
-            - .env
-        depends_on:
-            - database
-        volumes:
-            - .:/App/code
-        networks:
-            - backend
     api_1:
         container_name: api_1_${PROJECT_USER}
         build:
