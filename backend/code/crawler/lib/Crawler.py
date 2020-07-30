@@ -60,7 +60,6 @@ class Crawler:
         print('Setting initial variables...')
         configuration_url_path = '/v1/events/%s/configuration' % (event_name)
         configuration = self.api_requests.get(configuration_url_path)
-
         if 'error' in configuration:
             raise Exception(configuration)
 
@@ -87,6 +86,7 @@ class Crawler:
             if message_i % self.GET_STATS_INTERVAL == 0:
                 print('Reloading event stats...')
                 self.get_stats_future()
+                self.get_configuration_future()
             
             # Skip if status is offline or stage is "pause"
             if stats['status'] == 'offline':
@@ -158,8 +158,16 @@ class Crawler:
             stats = {x['name']:x['value'] for x in response['data']}
             params['timing'].set_stats(stats)
         
-        stats_url_path = '/v1/events/%s/stats' % (self.event_name)
-        self.api_requests.get_future(stats_url_path, priority=1, callback=callback, callback_params={'timing': self.timing})
+        url_path = '/v1/events/%s/stats' % (self.event_name)
+        self.api_requests.get_future(url_path, priority=1, callback=callback, callback_params={'timing': self.timing})
+
+    def get_configuration_future(self):
+        def callback(response, params):
+            configuration = {x['name']:x['value'] for x in response['data']}
+            params['timing'].set_configuration(configuration)
+
+        url_path = '/v1/events/%s/configuration' % (self.event_name)
+        self.api_requests.get_future(url_path, priority=2, callback=callback, callback_params={'timing': self.timing})
 
     def update_status(self, value: str):
         path = '/v1/events/%s/stats/status' % (self.event_name)
