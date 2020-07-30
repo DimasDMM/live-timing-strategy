@@ -1,7 +1,5 @@
 numpy==1.18.4
 pandas==0.25.3
+psycopg2==2.8.5
 pycurl==7.43.0
-keras==2.3.1
-tensorflow==2.2.0
-tensorflow_cpu==2.2.0
 websocket_client==0.57.0
