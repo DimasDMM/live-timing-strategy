@@ -8,21 +8,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetLastTiming(
+func GetLastTimingByTeam(
 	connection *sql.DB,
 	event_data *structures.EventData,
 	event_stats *structures.EventStats,
+	team_id int,
+	limit int,
 ) ([]structures.Timing, int) {
 	if event_data.NumberTeams == 0 {
 		return nil, 0
 	}
-	
-	const MIN_LAPS = 5
 
 	// Definition
 	var (
 		id int
-		team_id int
 		team_name string
 		position int
 		time int
@@ -36,16 +35,17 @@ func GetLastTiming(
 		forced_kart_status structures.NullString
 		number_stops int
 	)
-	
-	// Limit based on the number of teams
-	limit := event_data.NumberTeams * MIN_LAPS
+
+	clause_limit := ""
+	if limit > 0 {
+		clause_limit = "LIMIT :limit"
+	}
 	
 	table_timing := event_data.TablesPrefix + "_timing_historic"
 	table_teams := event_data.TablesPrefix + "_teams"
 	query := namedParameterQuery.NewNamedParameterQuery(
 		"SELECT " +
 		"   th.`id`, " +
-		"   th.`team_id`, " +
 		"   teams.`name` team_name, " +
 		"   th.`position`, " +
 		"   th.`time`, " +
@@ -60,12 +60,17 @@ func GetLastTiming(
 		"   th.`number_stops` " +
 		"FROM " + table_timing + " th " +
 		"JOIN " + table_teams + " teams " +
-		"WHERE th.stage = :stage " +
+		"WHERE " +
+		"	th.stage = :stage AND " +
+		"	th.team_id = :teamId " +
 		"ORDER BY th.insert_date DESC " +
-		"LIMIT :limit",
+		clause_limit,
 	)
 	query.SetValue("stage", event_stats.Stage)
-	query.SetValue("limit", limit)
+	query.SetValue("teamId", team_id)
+	if limit > 0 {
+		query.SetValue("limit", limit)
+	}
 
 	rows, err := connection.Query(query.GetParsedQuery(), (query.GetParsedParameters())...)
 	if err != nil {
@@ -78,7 +83,6 @@ func GetLastTiming(
 	for rows.Next() {
 		err := rows.Scan(
 			&id,
-			&team_id,
 			&team_name,
 			&position,
 			&time,

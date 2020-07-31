@@ -51,15 +51,18 @@ func main() {
         }
         
         // Compute reference time or offset depending on the stage of the race
+		fmt.Println("Computing reference time...")
         timing_list, err_code := dbdata.GetLastTiming(connection, event_data, event_stats)
         if event_stats.Stage == "classification" {
-            // Reference time
-            ref_time := analyzers.GetTimeAverage(timing_list, event_data, event_stats)
+			// Reference time
+			min_required := event_data.NumberTeams * 5
+            ref_time := analyzers.GetTimeAverage(timing_list, event_data, event_stats, min_required, false, true)
             fmt.Printf("- Reference time: %d\n", ref_time)
             event_stats.ReferenceTime = ref_time
         } else {
             // Time offset respect the reference time
-            ref_time := analyzers.GetTimeAverage(timing_list, event_data, event_stats)
+			min_required := event_data.NumberTeams * 5
+            ref_time := analyzers.GetTimeAverage(timing_list, event_data, event_stats, min_required, false, true)
             time_offset := ref_time - event_stats.ReferenceTime
             fmt.Printf("- Reference time: %d\n", ref_time)
             fmt.Printf("- Time offset: %d\n", time_offset)
@@ -67,7 +70,33 @@ func main() {
             event_stats.ReferenceCurrentOffset = time_offset
         }
 
-        // TO DO: update event_stats sql
+		// Update event stats
+		fmt.Println("- Updating stats (if necessary)...")
+		dbdata.UpdateEventStats(connection, event_data, event_stats)
+
+		if event_stats.Stage == "classification" {
+			// Compute offset time of each team (only during classification)
+			fmt.Println("Computing offset time of each team...")
+			teams, err_code := dbdata.GetTeams(connection, event_data, event_stats)
+			if err_code != 0 {
+				os.Exit(1)
+			}
+
+			for _, team := range teams {
+				fmt.Printf("- Team: %s\n", team.Name)
+				team_timing_list, err_code := dbdata.GetLastTimingByTeam(connection, event_data, event_stats, team.ID, -1)
+				if err_code != 0 {
+					os.Exit(1)
+				}
+
+				min_required := 10
+				ref_time := analyzers.GetTimeAverage(team_timing_list, event_data, event_stats, min_required, true, false)
+				time_offset := ref_time - event_stats.ReferenceTime
+				dbdata.UpdateTeamTimeOffset(connection, event_data, team.ID, time_offset)
+				fmt.Printf("-- Reference time: %d\n", ref_time)
+				fmt.Printf("-- Time offset: %d\n", time_offset)
+			}
+		}
 
 		fmt.Println("Finishing...")
 		break
