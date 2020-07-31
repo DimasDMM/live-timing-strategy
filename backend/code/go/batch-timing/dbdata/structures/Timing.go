@@ -1,5 +1,10 @@
 package structures
 
+import (
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+)
+
 type Timing struct {
 	ID int
 	TeamID int
@@ -11,8 +16,8 @@ type Timing struct {
 	Interval int
 	IntervalUnit string
 	Stage string
-	KartStatus NullString
-	KartStatusGuess NullString
-	ForcedKartStatus NullString
+	KartStatus sql.NullString
+	KartStatusGuess sql.NullString
+	ForcedKartStatus sql.NullString
 	NumberStops int
 }

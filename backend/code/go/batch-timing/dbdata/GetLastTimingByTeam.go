@@ -19,23 +19,6 @@ func GetLastTimingByTeam(
 		return nil, 0
 	}
 
-	// Definition
-	var (
-		id int
-		team_name string
-		position int
-		time int
-		best_time int
-		lap int
-		interval int
-		interval_unit string
-		stage string
-		kart_status structures.NullString
-		kart_status_guess structures.NullString
-		forced_kart_status structures.NullString
-		number_stops int
-	)
-
 	clause_limit := ""
 	if limit > 0 {
 		clause_limit = "LIMIT :limit"
@@ -46,6 +29,7 @@ func GetLastTimingByTeam(
 	query := namedParameterQuery.NewNamedParameterQuery(
 		"SELECT " +
 		"   th.`id`, " +
+		"   th.`team_id` team_id, " +
 		"   teams.`name` team_name, " +
 		"   th.`position`, " +
 		"   th.`time`, " +
@@ -59,7 +43,7 @@ func GetLastTimingByTeam(
 		"   th.`forced_kart_status`, " +
 		"   th.`number_stops` " +
 		"FROM " + table_timing + " th " +
-		"JOIN " + table_teams + " teams " +
+		"JOIN " + table_teams + " teams ON teams.id = th.team_id " +
 		"WHERE " +
 		"	th.stage = :stage AND " +
 		"	th.team_id = :teamId " +
@@ -78,47 +62,32 @@ func GetLastTimingByTeam(
 		return nil, 1
 	}
 	defer rows.Close()
-	
+
 	timing_list := []structures.Timing{}
 	for rows.Next() {
+		timing := new(structures.Timing)
 		err := rows.Scan(
-			&id,
-			&team_name,
-			&position,
-			&time,
-			&best_time,
-			&lap,
-			&interval,
-			&interval_unit,
-			&stage,
-			&kart_status,
-			&kart_status_guess,
-			&forced_kart_status,
-			&number_stops,
+			&timing.ID,
+			&timing.TeamID,
+			&timing.TeamName,
+			&timing.Position,
+			&timing.Time,
+			&timing.BestTime,
+			&timing.Lap,
+			&timing.Interval,
+			&timing.IntervalUnit,
+			&timing.Stage,
+			&timing.KartStatus,
+			&timing.KartStatusGuess,
+			&timing.ForcedKartStatus,
+			&timing.NumberStops,
 		)
 		if err != nil {
 			fmt.Println(err)
 			return nil, 1
 		}
 
-		timing := structures.Timing{
-			ID: id,
-			TeamID: team_id,
-			TeamName: team_name,
-			Position: position,
-			Time: time,
-			BestTime: best_time,
-			Lap: lap,
-			Interval: interval,
-			IntervalUnit: interval_unit,
-			Stage: stage,
-			KartStatus: kart_status,
-			KartStatusGuess: kart_status_guess,
-			ForcedKartStatus: forced_kart_status,
-			NumberStops: number_stops,
-		}
-
-		timing_list = append(timing_list, timing)
+		timing_list = append(timing_list, *timing)
 	}
 	err = rows.Err()
 	
