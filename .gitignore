@@ -1,3 +1,6 @@
+# Go
+pkg/
+
 # Python, PHP and JS
 vendor/
 node_modules/
