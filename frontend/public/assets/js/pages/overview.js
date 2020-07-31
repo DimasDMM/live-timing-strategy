@@ -123,7 +123,7 @@ class OverviewPage extends Page {
             $('#stats-track-offset').html('offline');
         } else {
             if (statsData['stage'] == 'race') {
-                let offsetTime = that.getFormattedTime(statsData['reference_current_offset']);
+                let offsetTime = that.getFormattedTime(Math.abs(statsData['reference_current_offset']));
                 let symbol = statsData['reference_current_offset'] >= 0 ? '+' : '-';
                 $('#stats-track-offset').html(symbol + offsetTime + ' seg');
             } else {

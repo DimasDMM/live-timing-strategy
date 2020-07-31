@@ -47,7 +47,7 @@ class EventIndexPage extends Page {
         if (!hasEventData) {
             $('#event-index').html(
                 '<div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">' +
-                '    No hay eventos disponibles ¯\_(ツ)_/¯' +
+                '    No hay eventos disponibles ¯\\_(ツ)_/¯' +
                 '</div>'
             );
         }

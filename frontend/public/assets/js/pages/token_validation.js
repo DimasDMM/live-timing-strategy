@@ -34,9 +34,9 @@ class TokenValidationPage extends Page {
 
     errorCallbackToken(jqXHR, textStatus, errorThrown, that) {
         if (errorThrown == 'Unauthorized') {
-            that.displayError('Token no válido ¯\_(ツ)_/¯');
+            that.displayError('Token no válido ¯\\_(ツ)_/¯');
         } else {
-            that.displayError('Algo salió mal ¯\_(ツ)_/¯');
+            that.displayError('Algo salió mal ¯\\_(ツ)_/¯');
         }
 
         that.setToken(null);
