@@ -10,7 +10,7 @@ services:
             - .env
         volumes:
             - ./misc/bin:/bin/init_database/scripts/
-            - ./artifacts/templates:/bin/init_database/templates/
+            - ./data/templates:/bin/init_database/templates/
         networks:
             - backend
     python:
