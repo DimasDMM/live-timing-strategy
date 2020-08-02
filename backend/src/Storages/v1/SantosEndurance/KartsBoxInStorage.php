@@ -22,7 +22,7 @@ class KartsBoxInStorage extends AbstractSantosEnduranceStorage
                 se_kbi.update_date
             FROM `" . $tablePrefix . Tables::SE_KARTS_IN . "` se_kbi
             JOIN `" . $tablePrefix . Tables::SE_TEAMS . "` se_t ON se_t.id = se_kbi.team_id
-            ORDER BY se_kbi.update_date DESC";
+            ORDER BY se_kbi.id DESC";
         
         if (!is_null($limit)) {
             $stmt .= " LIMIT $limit";
