@@ -14,15 +14,29 @@ func UpdateTeamLastKartStatus(
 	event_stats *structures.EventStats,
 	team_id int,
 	kart_status string,
+	is_guess bool,
 ) (int) {
 	table_name := event_data.TablesPrefix + "_timing_historic"
-	query := namedParameterQuery.NewNamedParameterQuery(
-		"UPDATE " + table_name + " " +
-		"SET kart_status = :kartStatus " +
-		"WHERE team_id = :teamId AND stage = :stage " +
-		"ORDER BY id DESC " +
-		"LIMIT 1",
-	)
+
+	var (query *namedParameterQuery.NamedParameterQuery)
+	if is_guess {
+		query = namedParameterQuery.NewNamedParameterQuery(
+			"UPDATE " + table_name + " " +
+			"SET kart_status = 'unknown', kart_status_guess = :kartStatus " +
+			"WHERE team_id = :teamId AND stage = :stage " +
+			"ORDER BY id DESC " +
+			"LIMIT 1",
+		)
+	} else {
+		query = namedParameterQuery.NewNamedParameterQuery(
+			"UPDATE " + table_name + " " +
+			"SET kart_status = :kartStatus " +
+			"WHERE team_id = :teamId AND stage = :stage " +
+			"ORDER BY id DESC " +
+			"LIMIT 1",
+		)
+	}
+
 	query.SetValue("kartStatus", kart_status)
 	query.SetValue("teamId", team_id)
 	query.SetValue("stage", event_stats.Stage)

@@ -10,6 +10,9 @@ import (
 	"batch-timing/filedata"
 )
 
+const MIN_TIMES_KART_STATUS = 8
+const MIN_TIMES_KART_STATUS_GUESS = 5
+
 func main() {
 	fmt.Println("### BATCH TIMING ###")
 
@@ -96,13 +99,17 @@ func main() {
 					}
 
 					// Compute offset time of each team
-					filtered_timing_list := analyzers.FilterMinRequiredTimes(timing_list, 10, true, 0.8)
+					filtered_timing_list := analyzers.FilterMinRequiredTimes(timing_list, 10, false, 0.8)
 					ref_time := analyzers.GetTimeAverage(filtered_timing_list)
-					time_offset := ref_time - event_stats.ReferenceTime
-					dbdata.UpdateTeamTimeOffset(connection, event_data, team.ID, time_offset)
-					fmt.Printf("-- Reference time: %d\n", ref_time)
-					fmt.Printf("-- Time offset: %d\n", time_offset)
-					team.ReferenceTimeOffset = time_offset
+					if ref_time == 0 {
+						fmt.Println("-- Not enough times")
+					} else {
+						time_offset := ref_time - event_stats.ReferenceTime
+						dbdata.UpdateTeamTimeOffset(connection, event_data, team.ID, time_offset)
+						fmt.Printf("-- Reference time: %d\n", ref_time)
+						fmt.Printf("-- Time offset: %d\n", time_offset)
+						team.ReferenceTimeOffset = time_offset
+					}
 				}
 			}
 
@@ -115,22 +122,40 @@ func main() {
 					os.Exit(1)
 				}
 
-				// Compute offset time of each team
-				filtered_timing_list := analyzers.FilterMinRequiredTimes(timing_list, 8, true, 0.66)
-				ref_time := analyzers.GetTimeAverage(filtered_timing_list)
+				// Compute kart status
+				var (ref_time int)
+				if len(timing_list) < MIN_TIMES_KART_STATUS {
+					filtered_timing_list := analyzers.FilterMinRequiredTimes(timing_list, MIN_TIMES_KART_STATUS_GUESS, true, 0.8)
+					ref_time = analyzers.GetTimeAverage(filtered_timing_list)
+				} else {
+					filtered_timing_list := analyzers.FilterMinRequiredTimes(timing_list, MIN_TIMES_KART_STATUS, true, 0.66)
+					ref_time = analyzers.GetTimeAverage(filtered_timing_list)
+				}
 
 				if ref_time == 0 {
 					fmt.Println("-- Not enough times")
 				} else {
-					time_diff := ref_time - event_stats.ReferenceTime - team.ReferenceTimeOffset + event_stats.ReferenceCurrentOffset
+					var (time_diff int)
+					if event_stats.Stage == "classification" {
+						time_diff = ref_time - event_stats.ReferenceTime
+					} else {
+						time_diff = ref_time - event_stats.ReferenceTime - team.ReferenceTimeOffset + event_stats.ReferenceCurrentOffset
+					}
+
 					var (kart_status string)
 					if time_diff < 0 {
 						kart_status = "good"
 					} else {
 						kart_status = "bad"
 					}
-					dbdata.UpdateTeamLastKartStatus(connection, event_data, event_stats, team.ID, kart_status)
-					fmt.Printf("-- Kart status: %s (diff: %d)\n", kart_status, time_diff)
+
+					if len(timing_list) < MIN_TIMES_KART_STATUS {
+						dbdata.UpdateTeamLastKartStatus(connection, event_data, event_stats, team.ID, kart_status, true)
+						fmt.Printf("-- Kart status (guess): %s (diff: %d)\n", kart_status, time_diff)
+					} else {
+						dbdata.UpdateTeamLastKartStatus(connection, event_data, event_stats, team.ID, kart_status, false)
+						fmt.Printf("-- Kart status: %s (diff: %d)\n", kart_status, time_diff)
+					}
 				}
 			}
 		}
