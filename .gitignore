@@ -1,12 +1,6 @@
 # Go
 pkg/
 
-# Python, PHP and JS
-vendor/
-node_modules/
-logs/
-__pycache__/
-
 # MacOS
 .DS_Store
 ._*

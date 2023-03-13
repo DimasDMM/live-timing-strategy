@@ -1,6 +1,0 @@
-github.com/Knetic/go-namedParameterQuery v0.0.0-20150709205813-b7327e472dfd h1:KSbQj+RcWtQeg6ndcvtUMGWNBY/RozpbJlKrAmS0TeY=
-github.com/Knetic/go-namedParameterQuery v0.0.0-20150709205813-b7327e472dfd/go.mod h1:GGnSKvb/jhWZffu3/izcawQDUkwwdMgddYUVxu9aLxs=
-github.com/go-sql-driver/mysql v1.5.0 h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=
-github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
-github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a h1:zPPuIq2jAWWPTrGt70eK/BSch+gFAGrNzecsoENgu2o=
-github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a/go.mod h1:yL958EeXv8Ylng6IfnvG4oflryUi3vgA3xPs9hmII1s=
