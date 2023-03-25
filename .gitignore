@@ -10,5 +10,17 @@ Thumbs.db
 ehthumbs.db
 $RECYCLE.BIN/
 
+# Python
+.coverage*
+!.coveragerc
+dist/
+.pytest_cache/
+__pycache__/
+.venv
+reports/
+.tox/
+.ipynb_checkpoints
+.mypy_cache/
+
 # Others
 artifacts/

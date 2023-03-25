@@ -6,14 +6,58 @@ To do
 
 ## Development
 
+![](./docs/cat-typing.gif)
+
 ### Setup
 
 For development, we also need to install these tools:
 - GoLang: https://go.dev/
+- Python 3.9: https://www.python.org/
 - (Optional) MySQL Workbench: https://www.mysql.com/products/workbench/
 - (Optional) Visual Studio: https://code.visualstudio.com/
 
+### MySQL
+
+Docker:
+```sh
+docker run --name live-timing-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
+```
+
+### Python
+
+Linux:
+```sh
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install tox==4.4.7 poetry==1.4.0
+poetry config virtualenvs.create false
+```
+
+Windows:
+```sh
+python -m venv .venv
+.\.venv\Scripts\activate
+python -m pip install tox==4.4.7 poetry==1.4.0
+poetry config virtualenvs.create false
+```
+
+> In Windows, if there is any error similar to "running scripts is disabled",
+  use this command: `Set-ExecutionPolicy Unrestricted CurrentUser`.
+
+#### Adding more dependencies
+
+Every time you add more dependencies, you'll need to update the lock file. For
+this purpose, use this command while you are in the virtual env:
+```sh
+poetry lock --no-update
+```
+
+> Tip: in case that Poetry is slow to resolve the dependencies, try to clear its
+  cache: `poetry cache clear --all <name>`
+
 ## Deployment
+
+![](./docs/rocket-launch.gif)
 
 ### Setup
 
@@ -23,6 +67,16 @@ Before running the scripts, we need to install a few things in our system:
 
 > After installing Docker and Minikube, it may require to restart the computer.
 
+### Kubernetes
+
+Prepare the local kubernetes cluster with these commands:
+```sh
+minikube start
+kubectl apply -f ./k8s/00-namespace.yaml
+```
+
+Optionally, you may run the Minikube dashboard with `minikube dashboard`.
+
 ### Kafka
 
 Commands:
@@ -31,7 +85,45 @@ kubectl apply -f ./kafka/k8s/00-zookeeper.yaml
 kubectl apply -f ./kafka/k8s/01-kafka-broker.yaml
 ```
 
+Optionally, if we want to access Kafka from outside the cluster, we need to
+forward the port. This command is required if you want to run the scripts
+locally instead of using Kubernetes.
+```sh
+kubectl port-forward -n live-timing service/kafka-service 9092
+```
+
+Optionally, we may run a Kafka UI with Kouncil (use `admin` as user and pass):
+```sh
+kubectl apply -f ./kafka/k8s/02-kouncil.yaml
+kubectl port-forward -n live-timing service/kouncil-service 8080:8080
+```
+
+### MySQL
+
+WIP
+
 ### Live timing listener
+
+#### Listener: Websocket
+
+Local Python command:
+```sh
+python -m pyback.runners.raw_storage \
+  --kafka_servers localhost:9092 \
+  --websocket_uri www.apex-timing.com:8092 \
+  --verbosity 1
+```
+
+Arguments:
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
+  Example: `www.apex-timing.com:8092`.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.
+
+#### Listener: API REST
 
 WIP
 
@@ -41,19 +133,65 @@ WIP
 
 ### Raw storage
 
-WIP
+Local Python command:
+```sh
+python -m pyback.runners.raw_storage \
+  --kafka_servers localhost:9092 \
+  --verbosity 1
+```
+
+Arguments:
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--output_path`: (optional) Path to store the raw data. By default, it is
+  `./artifacts/logs`.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.
+
+> Local GO command (WIP):
+> ```sh
+> go run . \
+>   -mode raw_storage \
+>   -output_path ./artifacts \
+>   -bootstrap_servers localhost:9092
+> ```
 
 ### Metrics computation
 
 WIP
 
-### API REST
+### Web: API REST
 
 WIP
 
-### Web app
+### Web: App
 
 WIP
+
+## Test
+
+### Kafka
+
+Check that Kafka works correctly with a local dummy consumer:
+```sh
+python -m pyback.runners.kafka_check \
+  --kafka_servers localhost:9092 \
+  --test_mode consumer \
+  --verbosity 1
+```
+
+And a local dummy producer:
+```sh
+python -m pyback.runners.kafka_check \
+  --kafka_servers localhost:9092 \
+  --test_mode producer \
+  --verbosity 1
+```
+
+Note that, if you are using a different Kafka, you may need to replace the
+value of `--kafka_servers` with your list of Kafka brokers (separated) by
+commas.
 
 ## Features
 
