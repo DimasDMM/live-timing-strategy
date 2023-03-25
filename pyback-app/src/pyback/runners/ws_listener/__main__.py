@@ -5,12 +5,25 @@ import argparse
 from pyback.runners import build_logger
 from pyback.runners.ws_listener.main import main
 from pyback.configs import WsListenerConfig
-from pyback.configs import DEFAULT_VERBOSITY
+from pyback.configs import (
+    DEFAULT_RAW_MESSAGES_TOPIC,
+    DEFAULT_VERBOSITY,
+)
 
 
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the raw storage script.')
+parser.add_argument(
+    '--kafka_servers',
+    nargs='+',
+    help='List of Kafka brokers separated by commas.',
+    required=True)
+parser.add_argument(
+    '--kafka_topic',
+    type=str,
+    help='Kafka topic to suscribe.',
+    default=DEFAULT_RAW_MESSAGES_TOPIC)
 parser.add_argument(
     '--websocket_uri',
     type=str,

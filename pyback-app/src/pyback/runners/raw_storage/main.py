@@ -1,14 +1,12 @@
 import logging
 import msgpack  # type: ignore
+import os
 
 from pyback.configs import RawStorageConfig
 from pyback.steps.kafka import KafkaConsumerStep
+from pyback.steps.loggers import LogInfoStep
 from pyback.steps.filesystem import FileStorageStep
 from pyback.runners import BANNER_MSG
-
-
-TOPIC_RAW_MESSAGES = 'raw-messages'
-GROUP_RAW_STORAGE = 'raw-storage'
 
 
 def main(
@@ -24,17 +22,24 @@ def main(
     logger.info(BANNER_MSG)
     logger.debug(config)
 
+    logger.info(f'Create path if it does not exist: {config.output_path}')
+    os.makedirs(config.output_path, exist_ok=True)
+
     logger.info('Init script...')
     file_storage = FileStorageStep(
         logger=logger,
         output_path=config.output_path,
     )
+    info_step = LogInfoStep(
+        logger,
+        next_step=file_storage,
+    )
     kafka_consumer = KafkaConsumerStep(
         bootstrap_servers=config.kafka_servers,
-        topics=[TOPIC_RAW_MESSAGES],
+        topics=[config.kafka_topic],
         value_deserializer=msgpack.loads,
-        next_step=file_storage,
-        group_id=GROUP_RAW_STORAGE,
+        next_step=info_step,
+        group_id=config.kafka_group,
     )
 
     logger.info('Start Kafka consumer...')

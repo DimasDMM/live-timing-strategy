@@ -4,8 +4,12 @@ import argparse
 
 from pyback.runners import build_logger
 from pyback.runners.kafka_check.main import main
-from pyback.configs import TestKafkaConfig
-from pyback.configs import DEFAULT_VERBOSITY
+from pyback.configs import KafkaCheckConfig
+from pyback.configs import (
+    DEFAULT_TEST_GROUP,
+    DEFAULT_TEST_TOPIC,
+    DEFAULT_VERBOSITY,
+)
 
 
 parser = argparse.ArgumentParser(
@@ -16,6 +20,16 @@ parser.add_argument(
     nargs='+',
     help='File that contains the credentials.',
     required=True)
+parser.add_argument(
+    '--kafka_topic',
+    type=str,
+    help='Kafka topic to suscribe.',
+    default=DEFAULT_TEST_TOPIC)
+parser.add_argument(
+    '--kafka_group',
+    type=str,
+    help='Suscribe to the topic with a specific group name.',
+    default=DEFAULT_TEST_GROUP)
 parser.add_argument(
     '--test_mode',
     help='Test mode: "consumer" or "producer".',
@@ -29,7 +43,7 @@ parser.add_argument(
 
 args = {key: value for key, value in vars(parser.parse_args()).items()
         if value is not None}
-config = TestKafkaConfig(**args)
+config = KafkaCheckConfig(**args)
 logger = build_logger(__package__, config.verbosity)
 
 try:

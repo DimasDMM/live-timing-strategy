@@ -7,9 +7,6 @@ from pyback.steps.listeners import WebsocketListenerStep
 from pyback.steps.kafka import KafkaProducerStep
 
 
-TOPIC_RAW_MESSAGES = 'raw-messages'
-
-
 def main(
         config: WsListenerConfig,
         logger: logging.Logger) -> None:
@@ -24,11 +21,11 @@ def main(
     logger.debug(config)
 
     logger.info('Init script...')
-    logger.debug(f'Topic: {TOPIC_RAW_MESSAGES}')
+    logger.debug(f'Topic: {config.kafka_topic}')
     kafka_producer = KafkaProducerStep(
         logger,
         bootstrap_servers=config.kafka_servers,
-        topic=TOPIC_RAW_MESSAGES,
+        topic=config.kafka_topic,
         value_serializer=msgpack.dumps,
     )
     ws_listener = WebsocketListenerStep(
