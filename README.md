@@ -1,4 +1,4 @@
-# CKM Timing
+# Live Timing Strategy
 
 ## Introduction
 
@@ -108,17 +108,19 @@ WIP
 
 Local Python command:
 ```sh
-python -m pyback.runners.raw_storage \
+python -m pyback.runners.ws_listener \
   --kafka_servers localhost:9092 \
-  --websocket_uri www.apex-timing.com:8092 \
+  --websocket_uri ws://www.apex-timing.com:8092 \
   --verbosity 1
 ```
 
 Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
+- `--kafka_topic`: (optional) Topic of Kafka to write messages. By default,
+  it is `raw-messages`.
 - `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
-  Example: `www.apex-timing.com:8092`.
+  Example: `ws://www.apex-timing.com:8092`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
@@ -143,6 +145,10 @@ python -m pyback.runners.raw_storage \
 Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
+- `--kafka_topic`: (optional) Topic of Kafka to suscribe. By default, it is
+  `raw-messages`.
+- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
+  By default, it is `raw-storage`.
 - `--output_path`: (optional) Path to store the raw data. By default, it is
   `./artifacts/logs`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
@@ -177,6 +183,8 @@ Check that Kafka works correctly with a local dummy consumer:
 ```sh
 python -m pyback.runners.kafka_check \
   --kafka_servers localhost:9092 \
+  --kafka_topic test-topic \
+  --kafka_group test-group \
   --test_mode consumer \
   --verbosity 1
 ```
@@ -185,6 +193,7 @@ And a local dummy producer:
 ```sh
 python -m pyback.runners.kafka_check \
   --kafka_servers localhost:9092 \
+  --kafka_topic test-topic \
   --test_mode producer \
   --verbosity 1
 ```
