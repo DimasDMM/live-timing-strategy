@@ -39,6 +39,7 @@ class WebsocketListenerStep(StartStep):
         """Start listening the websocket for incoming data."""
         self._is_closed = False
         websocket.enableTrace(True)
+        self._logger.debug(f'Websocket: {self._uri}')
         ws = websocket.WebSocketApp(
             self._uri,
             on_message=self._on_message,
@@ -64,6 +65,10 @@ class WebsocketListenerStep(StartStep):
             ws: websocket.WebSocketApp,  # noqa: U100
             data: str) -> None:
         """Handle new message event."""
+        data = data.strip()
+        if not data:
+            self._logger.debug('Websocket data: <empty content>')
+            return
         self._logger.debug(f'Websocket data: {data}')
         msg = Message(
             data=data,
