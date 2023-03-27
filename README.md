@@ -6,7 +6,7 @@ To do
 
 ## Development
 
-![](./docs/cat-typing.gif)
+![](./docs/images/cat-typing.gif)
 
 ### Setup
 
@@ -57,13 +57,13 @@ poetry lock --no-update
 
 ## Deployment
 
-![](./docs/rocket-launch.gif)
+![](./docs/images/rocket-launch.gif)
 
 ### Setup
 
 Before running the scripts, we need to install a few things in our system:
 - Docker: https://docs.docker.com/desktop
-- Minikube: https://minikube.sigs.k8s.io/docs/start/
+- Minikube: https://minikube.sigs.k8s.io/docs/images/start/
 
 > After installing Docker and Minikube, it may require to restart the computer.
 
