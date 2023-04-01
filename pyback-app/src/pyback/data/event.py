@@ -27,8 +27,8 @@ class Participant:
 
 
 @dataclass
-class EventParticipants:
-    """Details about the participants of an event."""
+class InitialData:
+    """Details about the initial data of an event."""
 
     headers: Dict[str, str]
     participants: Dict[str, Participant]

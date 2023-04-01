@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-from typing import Any, List
+from typing import List
 
 from pyback.messages import Message, MessageSource
 from pyback.steps.base import StartStep, MidStep
@@ -25,7 +25,7 @@ class DummyStartStep(StartStep):
         self._next_step = next_step
         self._n_messages = n_messages
 
-    def get_children(self) -> List[Any]:
+    def get_children(self) -> List[MidStep]:
         """Return list of children steps to this one."""
         return [self._next_step] + self._next_step.get_children()
 

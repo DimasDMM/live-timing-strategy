@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from pyback.messages import Message
 from pyback.parsers.base import Parser
 from pyback.data.time import DiffLap, Unit
-from pyback.data.event import EventParticipants, Participant
+from pyback.data.event import InitialData, Participant
 
 
 class WsInitParser(Parser):
@@ -83,8 +83,7 @@ class WsInitParser(Parser):
         headers = self._parse_headers(initial_rows[0])
         participants = self._parse_participants(headers, initial_rows[1:])
 
-        initial_data = EventParticipants(
-            headers=headers, participants=participants)
+        initial_data = InitialData(headers=headers, participants=participants)
         return initial_data.to_dict()
 
     def _parse_headers(self, first_row: str) -> Dict[str, str]:
