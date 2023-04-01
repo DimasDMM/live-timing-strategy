@@ -12,6 +12,11 @@ jobs:
   test-pipeline:
     runs-on: ubuntu-latest
     steps:
+    - name: Clean coverage badge
+      run: |
+        curl -s https://github.com/DimasDMM/live-timing-strategy/blob/master/README.md > README.md.tmp
+        grep -Eo '<img src="[^"]+"' README.md.tmp | grep camo | grep -Eo 'https[^"]+' | xargs -I {} curl -w "\n" -s -X PURGE {}
+
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -63,3 +68,8 @@ jobs:
       with:
         github_token: ${{ secrets.github_token }}
         branch: ${{ github.ref }}
+
+    - name: Clean coverage badge
+      run: |
+        curl -s https://github.com/DimasDMM/live-timing-strategy/blob/master/README.md > README.md.tmp
+        grep -Eo '<img src="[^"]+"' README.md.tmp | grep camo | grep -Eo 'https[^"]+' | echo | xargs -I {} curl -w "\n" -s -X PURGE {}
