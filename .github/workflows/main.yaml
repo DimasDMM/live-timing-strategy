@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  test:
+  test-pipeline:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -22,37 +22,40 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cd pyback-app
         python -m pip install --upgrade pip
         python -m pip install tox==4.4.7 poetry==1.4.0
         poetry install
 
     - name: Run tests
-      run: tox -e testenv > log_tests.txt
+      run: |
+        cd pyback-app
+        tox -e testenv
 
     - name: Run linter
-      run: tox -e lint
-
-    - name: Extract coverage percentage
       run: |
-        COVERAGE=$(cat log_tests.txt | sed -n 's/TOTAL.*\s\([.\d]*\)%/\1/p')
-        echo "Coverage: $COVERAGE%"
+        cd pyback-app
+        tox -e lint
 
     - name: Coverage Badge
-      uses: tj-actions/coverage-badge-py@v2
+      run: |
+        cd pyback-app
+        poetry run pytest tests --cov src
+        poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
       uses: tj-actions/verify-changed-files@v13
       id: verify-changed-files
       with:
-        files: coverage.svg
+        files: pyback-app/docs/coverage.svg
 
     - name: Commit files
       if: steps.verify-changed-files.outputs.files_changed == 'true'
       run: |
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
-        git add coverage.svg
-        git commit -m "Update coverage.svg"
+        git add pyback-app/docs/coverage.svg
+        git commit -m "Update pyback-app coverage.svg"
 
     - name: Push changes
       if: steps.verify-changed-files.outputs.files_changed == 'true'

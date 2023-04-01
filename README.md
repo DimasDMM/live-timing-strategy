@@ -1,3 +1,5 @@
+![Coverage badge](./pyback-app/docs/coverage.svg)
+
 # Live Timing Strategy
 
 ## Introduction

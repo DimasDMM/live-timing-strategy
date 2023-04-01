@@ -34,8 +34,12 @@ pytest-clarity = "^1.0.1"
 pytest-sugar = "^0.9.4"
 pytest-lazy-fixture = "^0.6.3"
 pytest-mock = "^3.7.0"
-pytest-cov = "^3.0.0"
+pytest-cov = "^4.0.0"
 pytest-profiling = "^1.7.0"
+
+
+[tool.poetry.group.dev.dependencies]
+coverage-badge = "^1.1.0"
 
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
