@@ -1,12 +1,6 @@
 # Go
 pkg/
 
-# Python, PHP and JS
-vendor/
-node_modules/
-logs/
-__pycache__/
-
 # MacOS
 .DS_Store
 ._*
@@ -15,6 +9,18 @@ __pycache__/
 Thumbs.db
 ehthumbs.db
 $RECYCLE.BIN/
+
+# Python
+.coverage*
+!.coveragerc
+dist/
+.pytest_cache/
+__pycache__/
+.venv
+reports/
+.tox/
+.ipynb_checkpoints
+.mypy_cache/
 
 # Others
 artifacts/
