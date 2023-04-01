@@ -1,0 +1,62 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox==4.4.7 poetry==1.4.0
+        poetry install
+
+    - name: Run tests
+      run: tox -e testenv > log_tests.txt
+
+    - name: Run linter
+      run: tox -e lint
+
+    - name: Extract coverage percentage
+      run: |
+        COVERAGE=$(cat log_tests.txt | sed -n 's/TOTAL.*\s\([.\d]*\)%/\1/p')
+        echo "Coverage: $COVERAGE%"
+
+    - name: Coverage Badge
+      uses: tj-actions/coverage-badge-py@v2
+
+    - name: Verify Changed files
+      uses: tj-actions/verify-changed-files@v13
+      id: verify-changed-files
+      with:
+        files: coverage.svg
+
+    - name: Commit files
+      if: steps.verify-changed-files.outputs.files_changed == 'true'
+      run: |
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+        git add coverage.svg
+        git commit -m "Update coverage.svg"
+
+    - name: Push changes
+      if: steps.verify-changed-files.outputs.files_changed == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.github_token }}
+        branch: ${{ github.ref }}
