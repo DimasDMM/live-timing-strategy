@@ -18,6 +18,8 @@ class LogInfoStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display messages in
                 the step.
+            next_step (MidStep | None): Optionally, apply another step to the
+                message.
         """
         self._logger = logger
         self._next_step = next_step
@@ -33,4 +35,5 @@ class LogInfoStep(MidStep):
         """Display a message."""
         self._logger.info(str(msg))
         if self._next_step is not None:
+            msg.updated()
             self._next_step.run_step(msg)

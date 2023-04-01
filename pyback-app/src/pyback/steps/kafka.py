@@ -66,7 +66,7 @@ class KafkaProducerStep(MidStep):
             topic: str,
             value_serializer: Callable,
             next_step: Optional[MidStep] = None,
-            on_error_step: Optional[MidStep] = None,
+            on_error: Optional[MidStep] = None,
             timeout: int = 5) -> None:
         """
         Construct.
@@ -79,13 +79,14 @@ class KafkaProducerStep(MidStep):
             topic (str): Topics where the messages will be published.
             value_serializer (Callable): Any callable that takes a raw message
                 value and serializes it.
-            next_step (MidStep): Optionally, apply another step to the message.
+            next_step (MidStep | None): Optionally, apply another step to the
+                message.
             timeout (str | None): Timeout to send a message.
         """
         self._logger = logger
         self._topic = topic
         self._next_step = next_step
-        self._on_error_step = on_error_step
+        self._on_error = on_error
         self._timeout = timeout
         self._producer = _KafkaProducer(
             bootstrap_servers=bootstrap_servers,
@@ -97,9 +98,9 @@ class KafkaProducerStep(MidStep):
         children = []
         if self._next_step is not None:
             children += [self._next_step] + self._next_step.get_children()
-        if self._on_error_step is not None:
+        if self._on_error is not None:
             children += (
-                [self._on_error_step] + self._on_error_step.get_children())
+                [self._on_error] + self._on_error.get_children())
         return children
 
     def run_step(self, msg: Message) -> None:
@@ -109,8 +110,10 @@ class KafkaProducerStep(MidStep):
         try:
             _ = future.get(timeout=self._timeout)
             if self._next_step is not None:
+                msg.updated()
                 self._next_step.run_step(msg)
         except KafkaError as e:
             self._logger.critical(e, exc_info=True)
-            if self._on_error_step is not None:
-                self._on_error_step.run_step(msg)
+            if self._on_error is not None:
+                msg.updated()
+                self._on_error.run_step(msg)

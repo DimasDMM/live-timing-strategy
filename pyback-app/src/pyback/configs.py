@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, List
+from typing import List
+
+from pyback.enum import EnumBase
 
 
 DEFAULT_VERBOSITY = 2  # 0: Disabled, 1: Debug, 2: Info, ...
@@ -11,23 +12,11 @@ DEFAULT_TEST_GROUP = 'test-group'
 DEFAULT_TEST_TOPIC = 'test-topic'
 
 
-class KafkaMode(Enum):
+class KafkaMode(EnumBase):
     """Enumeration of Kafka modes."""
 
     MODE_CONSUMER = 'kafka-consumer'
     MODE_PRODUCER = 'kafka-producer'
-
-    def __eq__(self, other: Any) -> bool:
-        """Compare enumeration to other objects and strings."""
-        if self.__class__ is other.__class__:
-            return self.value == other.value
-        elif isinstance(other, str):
-            return self.value == other
-        return False
-
-    def __hash__(self) -> int:
-        """Build hash of current instance."""
-        return hash(self.value)
 
 
 @dataclass(frozen=True)
@@ -56,6 +45,7 @@ class KafkaCheckConfig:
 class WsListenerConfig:
     """Class to store the settings of the CLI script."""
 
+    event_code: str
     kafka_servers: List[str]
     websocket_uri: str
     kafka_topic: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)

@@ -9,6 +9,8 @@ from pyback.steps.base import StartStep, MidStep
 class DummyStartStep(StartStep):
     """Step to generate dummy messages for debugging purposes."""
 
+    DUMMY_CODE = 'dummy-code'
+
     def __init__(
             self,
             next_step: MidStep,
@@ -31,6 +33,7 @@ class DummyStartStep(StartStep):
         """Start generating dummy messages."""
         for i in range(self._n_messages):
             msg = Message(
+                event_code=DummyStartStep.DUMMY_CODE,
                 data={'counter': i},
                 source=MessageSource.SOURCE_DUMMY,
                 created_at=datetime.utcnow().timestamp(),

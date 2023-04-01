@@ -21,7 +21,8 @@ class FileStorageStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             output_path (str): Path to store messages in files.
-            next_step (MidStep): The next step to apply to the message.
+            next_step (MidStep | None): Optionally, apply another step to the
+                message.
         """
         self._logger = logger
         self._output_path = output_path
@@ -43,4 +44,5 @@ class FileStorageStep(MidStep):
             fp.write(str(msg))
 
         if self._next_step is not None:
+            msg.updated()
             self._next_step.run_step(msg)
