@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 
 from pyback.enum import EnumBase
 
@@ -19,4 +19,4 @@ class DiffLap:
 
     def to_dict(self) -> dict:
         """Transform into dictionary."""
-        return dict(asdict(self).items())
+        return {'value': self.value, 'unit': self.unit.value}

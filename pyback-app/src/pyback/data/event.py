@@ -35,8 +35,4 @@ class InitialData:
 
     def to_dict(self) -> dict:
         """Transform into a dictionary."""
-        return {
-            'headers': self.headers,
-            'participants': {c: p.to_dict()
-                             for c, p in self.participants.items()},
-        }
+        return dict(asdict(self).items())

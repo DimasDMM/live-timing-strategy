@@ -29,7 +29,7 @@ class WsInitParser(Parser):
                 'equipo': 'NAME',
                 'kart': 'KART_NUMBER',
                 '\\u00daltima vuelta': 'LAST_LAP_TIME',
-                'mejor vuelta': 'BEST_LAP',
+                'mejor vuelta': 'BEST_TIME',
                 'gap': 'GAP',
                 'interv.': 'INTERVAL',
                 'intervalo': 'INTERVAL',
@@ -66,7 +66,8 @@ class WsInitParser(Parser):
     def _is_init_msg(self, msg: Message) -> bool:
         """Check if it is an initializer message."""
         data = msg.get_data()
-        return isinstance(data, str) and re.match(r'^init|p|', data) is not None
+        return (isinstance(data, str)
+                and re.match(r'^init\|p\|', data) is not None)
 
     def _parse_init_data(self, data: str) -> dict:
         """Parse content in the raw data."""
@@ -95,7 +96,7 @@ class WsInitParser(Parser):
             flags=re.S)
         for i, item in enumerate(items):
             id_match = self.__get_by_key(item[0], self._filters['by_id'])
-            name_match = self.__get_by_key(item[0], self._filters['by_name'])
+            name_match = self.__get_by_key(item[1], self._filters['by_name'])
 
             if id_match is None and name_match is None:
                 continue
@@ -118,6 +119,7 @@ class WsInitParser(Parser):
             value: str,
             filters: Dict[str, str]) -> Optional[str]:
         """Get by key."""
+        value = value.lower()
         if value in filters:
             return filters[value]
         return None
@@ -177,11 +179,11 @@ class WsInitParser(Parser):
         if lap_time is None:
             return None
         lap_time = lap_time.strip()
-        match = re.search(r'^\+?(\d+)?:?(\d+)\.(\d+)$', lap_time)
+        match = re.search(r'^\+?(?:(\d+):)?(\d+)\.(\d+)?$', lap_time)
         if match is None:
             return None
         else:
-            parts = [0 if p == '' else int(p) for p in match.groups()[1:]]
+            parts = [int(p) if p else 0 for p in match.groups()]
             return parts[0] * 60000 + parts[1] * 1000 + parts[2]
 
     def _parse_diff_lap(self, diff_lap: Optional[str]) -> Optional[DiffLap]:
