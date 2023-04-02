@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from pyback.messages import Message
 from pyback.parsers.base import Parser
 from pyback.data.time import DiffLap, Unit
-from pyback.data.event import InitialData, Participant
+from pyback.data.competition import InitialData, Participant
 
 
 class WsInitParser(Parser):
