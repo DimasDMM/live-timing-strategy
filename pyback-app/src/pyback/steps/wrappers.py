@@ -61,7 +61,7 @@ class ParsersStep(MidStep):
                 self._logger.critical(e, exc_info=True)
                 if self._on_error is not None:
                     msg = Message(
-                        event_code=msg.get_event_code(),
+                        competition_code=msg.get_competition_code(),
                         data=msg.get_data(),
                         source=msg.get_source(),
                         created_at=msg.get_created_at(),

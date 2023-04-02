@@ -53,7 +53,7 @@ class WsInitParser(Parser):
         if self._is_init_msg(msg):
             parsed_data = self._parse_init_data(msg.get_data())
             return Message(
-                event_code=msg.get_event_code(),
+                competition_code=msg.get_competition_code(),
                 data=parsed_data,
                 source=msg.get_source(),
                 created_at=msg.get_created_at(),

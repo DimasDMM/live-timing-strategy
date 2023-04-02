@@ -15,9 +15,9 @@ parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the raw storage script.')
 parser.add_argument(
-    '--event_code',
+    '--competition_code',
     type=str,
-    help='Verbose code to identify the event.',
+    help='Verbose code to identify the competition.',
     required=True)
 parser.add_argument(
     '--kafka_servers',

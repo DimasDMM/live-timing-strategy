@@ -20,7 +20,7 @@ def test_dummy_start_step(n_messages: int = 2) -> None:
     message: Message = None
     for i in range(n_messages):
         message = next_step.run_step.call_args_list[i][0][0]
-        assert message.get_event_code() == DummyStartStep.DUMMY_CODE
+        assert message.get_competition_code() == DummyStartStep.DUMMY_CODE
         assert message.get_data() == {'counter': i}
 
     # Also, check that the get_children method returns the mock

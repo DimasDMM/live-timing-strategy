@@ -15,7 +15,7 @@ def test_log_info_step(sample_message: Message) -> None:
 
     # Assert that the logger receives the message
     expected_start = (
-        '{"event_code": "' + sample_message.get_event_code()
+        '{"competition_code": "' + sample_message.get_competition_code()
         + '", "data": "' + sample_message.get_data() + '"')
     messages: List[str] = fake_logger.get_messages()['info']
     assert len(messages) == 1

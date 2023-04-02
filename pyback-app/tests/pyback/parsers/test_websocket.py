@@ -12,12 +12,12 @@ from tests.pyback.parsers import (
 from pyback.parsers.websocket import WsInitParser
 
 
-TEST_EVENT_CODE = 'sample-event-code'
+TEST_COMPETITION_CODE = 'sample-competition-code'
 
 
 def _build_non_init() -> Tuple[Message, Optional[Message]]:
     in_message = Message(
-        event_code=TEST_EVENT_CODE,
+        competition_code=TEST_COMPETITION_CODE,
         data=load_raw_message('display_driver_name.txt'),
         source=MessageSource.SOURCE_WS_LISTENER,
         created_at=datetime.utcnow().timestamp(),
@@ -29,14 +29,14 @@ def _build_non_init() -> Tuple[Message, Optional[Message]]:
 
 def _build_initial_3_teams() -> Tuple[Message, Optional[Message]]:
     in_message = Message(
-        event_code=TEST_EVENT_CODE,
+        competition_code=TEST_COMPETITION_CODE,
         data=load_raw_message('initial_3_teams.txt'),
         source=MessageSource.SOURCE_WS_LISTENER,
         created_at=datetime.utcnow().timestamp(),
         updated_at=datetime.utcnow().timestamp(),
     )
     out_message = Message(
-        event_code=in_message.get_event_code(),
+        competition_code=in_message.get_competition_code(),
         data={
             'headers': INITIAL_HEADERS,
             'participants': {
@@ -57,14 +57,14 @@ def _build_initial_3_teams() -> Tuple[Message, Optional[Message]]:
 
 def _build_initial_3_teams_with_times() -> Tuple[Message, Optional[Message]]:
     in_message = Message(
-        event_code=TEST_EVENT_CODE,
+        competition_code=TEST_COMPETITION_CODE,
         data=load_raw_message('initial_3_teams_with_times.txt'),
         source=MessageSource.SOURCE_WS_LISTENER,
         created_at=datetime.utcnow().timestamp(),
         updated_at=datetime.utcnow().timestamp(),
     )
     out_message = Message(
-        event_code=in_message.get_event_code(),
+        competition_code=in_message.get_competition_code(),
         data={
             'headers': INITIAL_HEADERS,
             'participants': {
@@ -136,8 +136,8 @@ class TestWsInitParser:
         if expected_message is None:
             assert out_message is None
         else:
-            assert (out_message.get_event_code()
-                    == expected_message.get_event_code())
+            assert (out_message.get_competition_code()
+                    == expected_message.get_competition_code())
             assert out_message.get_source() == expected_message.get_source()
             assert out_message.get_data() == expected_message.get_data()
             assert (out_message.get_created_at()
@@ -152,7 +152,7 @@ class TestWsInitParser:
     def test_parse_wrong_headers(self) -> None:
         """Test method parse with unexpected messages."""
         message = Message(
-            event_code=TEST_EVENT_CODE,
+            competition_code=TEST_COMPETITION_CODE,
             data=load_raw_message('wrong_headers.txt'),
             source=MessageSource.SOURCE_WS_LISTENER,
             created_at=datetime.utcnow().timestamp(),

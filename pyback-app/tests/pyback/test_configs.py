@@ -39,11 +39,11 @@ def test_ws_listener_config() -> None:
     """Test pyback.configs.WsListenerConfig."""
     kafka_servers = ['localhost:9092']
     ws_listener_config = WsListenerConfig(
-        event_code='event-sample-code',
+        competition_code='competition-sample-code',
         kafka_servers=kafka_servers,
         websocket_uri='ws://localhost:8000/ws/',
     )
-    assert ws_listener_config.event_code == 'event-sample-code'
+    assert ws_listener_config.competition_code == 'competition-sample-code'
     assert ws_listener_config.kafka_servers == kafka_servers
     assert ws_listener_config.kafka_topic == DEFAULT_RAW_MESSAGES_TOPIC
     assert ws_listener_config.websocket_uri == 'ws://localhost:8000/ws/'

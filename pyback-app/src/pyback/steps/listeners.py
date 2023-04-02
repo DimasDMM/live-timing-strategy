@@ -16,7 +16,7 @@ class WebsocketListenerStep(StartStep):
     def __init__(
             self,
             logger: logging.Logger,
-            event_code: str,
+            competition_code: str,
             uri: str,
             next_step: MidStep) -> None:
         """
@@ -24,12 +24,12 @@ class WebsocketListenerStep(StartStep):
 
         Params:
             logger (logging.Logger): Logger instance to display information.
-            event_code (str): Verbose code to identify the event.
+            competition_code (str): Verbose code to identify the competition.
             uri (str): websocket URI to get messages from.
             next_step (MidStep): The next step to apply to the message.
         """
         self._logger = logger
-        self._event_code = event_code
+        self._competition_code = competition_code
         self._uri = uri
         self._next_step = next_step
         self._is_closed = False
@@ -74,7 +74,7 @@ class WebsocketListenerStep(StartStep):
             return
         self._logger.debug(f'Websocket data: {data}')
         msg = Message(
-            event_code=self._event_code,
+            competition_code=self._competition_code,
             data=data,
             source=MessageSource.SOURCE_WS_LISTENER,
             created_at=datetime.utcnow().timestamp(),

@@ -11,7 +11,7 @@ class TestMessage:
 
     def test_init(self) -> None:
         """Test constructor."""
-        event_code = 'sample-code'
+        competition_code = 'sample-code'
         data = 'Hello, World!'
         source = MessageSource.SOURCE_DUMMY
         created_at = datetime.utcnow().timestamp()
@@ -19,7 +19,7 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            event_code,
+            competition_code,
             data,
             source,
             created_at,
@@ -27,7 +27,7 @@ class TestMessage:
             error_description,
             error_traceback)
 
-        assert message.get_event_code() == event_code
+        assert message.get_competition_code() == competition_code
         assert message.get_data() == data
         assert message.get_source() == source
         assert message.get_created_at() == created_at
@@ -37,7 +37,7 @@ class TestMessage:
 
     def test_encode(self) -> None:
         """Test encoding message."""
-        event_code = 'sample-code'
+        competition_code = 'sample-code'
         data = 'Hello, World!'
         source = MessageSource.SOURCE_DUMMY
         created_at = datetime.utcnow().timestamp()
@@ -45,7 +45,7 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            event_code,
+            competition_code,
             data,
             source,
             created_at,
@@ -53,7 +53,7 @@ class TestMessage:
             error_description,
             error_traceback)
         expected_result = json.dumps({
-            'event_code': event_code,
+            'competition_code': competition_code,
             'data': data,
             'source': source.value,
             'created_at': created_at,
@@ -66,7 +66,7 @@ class TestMessage:
 
     def test_decode(self) -> None:
         """Test decoding message."""
-        event_code = 'sample-code'
+        competition_code = 'sample-code'
         data = 'Hello, World!'
         source = MessageSource.SOURCE_DUMMY
         created_at = datetime.utcnow().timestamp()
@@ -74,7 +74,7 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            event_code,
+            competition_code,
             data,
             source,
             created_at,
@@ -84,7 +84,7 @@ class TestMessage:
         encoded_message = message.encode()
         decoded_message: Message = Message.decode(encoded_message)
 
-        assert decoded_message.get_event_code() == event_code
+        assert decoded_message.get_competition_code() == competition_code
         assert decoded_message.get_data() == data
         assert decoded_message.get_source() == source
         assert decoded_message.get_created_at() == created_at
@@ -95,7 +95,7 @@ class TestMessage:
     def test_decode_with_missing_key(self) -> None:
         """Test decoding a message with a missing key."""
         encoded_message = json.dumps({
-            'event_code': 'sample-code',
+            'competition_code': 'sample-code',
             'data': 'Hello, World!',
             'source': MessageSource.SOURCE_DUMMY.value,
             'created_at': datetime.utcnow().timestamp(),

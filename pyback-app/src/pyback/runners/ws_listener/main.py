@@ -21,7 +21,7 @@ def main(
     logger.debug(config)
 
     logger.info('Init script...')
-    logger.info(f'Event code: {config.event_code}')
+    logger.info(f'Competition code: {config.competition_code}')
     logger.debug(f'Topic: {config.kafka_topic}')
     kafka_producer = KafkaProducerStep(
         logger,
@@ -31,7 +31,7 @@ def main(
     )
     ws_listener = WebsocketListenerStep(
         logger,
-        event_code=config.event_code,
+        competition_code=config.competition_code,
         uri=config.websocket_uri,
         next_step=kafka_producer,
     )

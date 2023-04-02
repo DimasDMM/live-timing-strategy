@@ -45,7 +45,7 @@ class KafkaCheckConfig:
 class WsListenerConfig:
     """Class to store the settings of the CLI script."""
 
-    event_code: str
+    competition_code: str
     kafka_servers: List[str]
     websocket_uri: str
     kafka_topic: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)

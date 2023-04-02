@@ -7,7 +7,7 @@ from pyback.messages import Message, MessageSource
 def sample_message() -> Message:
     """Build a sample message."""
     return Message(
-        event_code='sample-code',
+        competition_code='sample-code',
         data='sample-data',
         source=MessageSource.SOURCE_DUMMY,
         created_at=1679944690.8801994,

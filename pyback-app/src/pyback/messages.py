@@ -36,7 +36,7 @@ class Message:
 
     def __init__(
             self,
-            event_code: str,
+            competition_code: str,
             data: Any,
             source: MessageSource,
             created_at: float,
@@ -47,7 +47,7 @@ class Message:
         Construct.
 
         Params:
-            event_code (str): Verbose code to identify the event.
+            competition_code (str): Verbose code to identify the competition.
             data (Any): Data of the message.
             source (MessageSource): The source message.
             created_at (float): Timestamp when the message was created.
@@ -57,7 +57,7 @@ class Message:
             error_traceback (str | None): If there was any error with this
                 message, this field has the traceback.
         """
-        self._event_code = event_code
+        self._competition_code = competition_code
         self._data = data
         self._source = source
         self._created_at = created_at
@@ -67,9 +67,9 @@ class Message:
         self._has_error = (
             error_description is not None or error_traceback is not None)
 
-    def get_event_code(self) -> str:
-        """Get the event code."""
-        return self._event_code
+    def get_competition_code(self) -> str:
+        """Get the competition code."""
+        return self._competition_code
 
     def get_data(self) -> Any:
         """Get data of the message."""
@@ -102,7 +102,7 @@ class Message:
     def encode(self) -> str:
         """Encode the message as a string."""
         data = {
-            'event_code': self.get_event_code(),
+            'competition_code': self.get_competition_code(),
             'data': self.get_data(),
             'source': self.get_source().value,
             'created_at': self.get_created_at(),
@@ -121,7 +121,7 @@ class Message:
     def decode(encoded: Union[str, bytes, bytearray]) -> Any:
         """Decode a string-format message."""
         msg = json.loads(encoded)
-        event_code = Message.__get_by_key(msg, 'event_code')
+        competition_code = Message.__get_by_key(msg, 'competition_code')
         data = Message.__get_by_key(msg, 'data')
         str_source = Message.__get_by_key(msg, 'source')
         created_at = Message.__get_by_key(msg, 'created_at')
@@ -131,7 +131,7 @@ class Message:
         error_traceback = Message.__get_by_key(
             msg, 'error_traceback', required=False)
         return Message(
-            event_code=event_code,
+            competition_code=competition_code,
             data=data,
             source=MessageSource.value_of(str_source),
             created_at=created_at,
