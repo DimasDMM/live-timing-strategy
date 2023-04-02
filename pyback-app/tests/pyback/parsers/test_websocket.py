@@ -1,9 +1,9 @@
-from datetime import datetime
 import pytest
-from typing import Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
+from pyback.data.actions import Action, ActionType
 from pyback.data.time import Unit
-from pyback.messages import Message, MessageSource
+from pyback.messages import Message
 from tests.pyback.parsers import (
     build_participant,
     load_raw_message,
@@ -15,28 +15,15 @@ from pyback.parsers.websocket import WsInitParser
 TEST_COMPETITION_CODE = 'sample-competition-code'
 
 
-def _build_non_init() -> Tuple[Message, Optional[Message]]:
-    in_message = Message(
-        competition_code=TEST_COMPETITION_CODE,
-        data=load_raw_message('display_driver_name.txt'),
-        source=MessageSource.SOURCE_WS_LISTENER,
-        created_at=datetime.utcnow().timestamp(),
-        updated_at=datetime.utcnow().timestamp(),
-    )
-    out_message = None
-    return (in_message, out_message)
+def _build_non_init() -> Tuple[Message, Optional[List[Action]]]:
+    in_data = load_raw_message('display_driver_name.txt')
+    return (in_data, [])
 
 
-def _build_initial_3_teams() -> Tuple[Message, Optional[Message]]:
-    in_message = Message(
-        competition_code=TEST_COMPETITION_CODE,
-        data=load_raw_message('initial_3_teams.txt'),
-        source=MessageSource.SOURCE_WS_LISTENER,
-        created_at=datetime.utcnow().timestamp(),
-        updated_at=datetime.utcnow().timestamp(),
-    )
-    out_message = Message(
-        competition_code=in_message.get_competition_code(),
+def _build_initial_3_teams() -> Tuple[Message, List[Action]]:
+    in_data = load_raw_message('initial_3_teams.txt')
+    out_action = Action(
+        type=ActionType.INITIALIZE,
         data={
             'headers': INITIAL_HEADERS,
             'participants': {
@@ -48,23 +35,14 @@ def _build_initial_3_teams() -> Tuple[Message, Optional[Message]]:
                     code='r5627', ranking=3, kart_number=3, team_name='CKM 3'),
             },
         },
-        source=MessageSource.SOURCE_WS_LISTENER,
-        created_at=in_message.get_created_at(),
-        updated_at=in_message.get_updated_at(),
     )
-    return (in_message, out_message)
+    return (in_data, [out_action])
 
 
-def _build_initial_3_teams_with_times() -> Tuple[Message, Optional[Message]]:
-    in_message = Message(
-        competition_code=TEST_COMPETITION_CODE,
-        data=load_raw_message('initial_3_teams_with_times.txt'),
-        source=MessageSource.SOURCE_WS_LISTENER,
-        created_at=datetime.utcnow().timestamp(),
-        updated_at=datetime.utcnow().timestamp(),
-    )
-    out_message = Message(
-        competition_code=in_message.get_competition_code(),
+def _build_initial_3_teams_with_times() -> Tuple[Message, List[Action]]:
+    in_data = load_raw_message('initial_3_teams_with_times.txt')
+    out_action = Action(
+        type=ActionType.INITIALIZE,
         data={
             'headers': INITIAL_HEADERS,
             'participants': {
@@ -107,18 +85,15 @@ def _build_initial_3_teams_with_times() -> Tuple[Message, Optional[Message]]:
                 ),
             },
         },
-        source=MessageSource.SOURCE_WS_LISTENER,
-        created_at=in_message.get_created_at(),
-        updated_at=in_message.get_updated_at(),
     )
-    return (in_message, out_message)
+    return (in_data, [out_action])
 
 
 class TestWsInitParser:
     """Test pyback.parsers.websocket.WsInitParser."""
 
     @pytest.mark.parametrize(
-        'in_message, expected_message',
+        'in_data, expected_actions',
         [
             _build_non_init(),
             _build_initial_3_teams(),
@@ -127,39 +102,18 @@ class TestWsInitParser:
     )
     def test_parse(
             self,
-            in_message: Message,
-            expected_message: Optional[Message]) -> None:
+            in_data: Any,
+            expected_actions: List[Action]) -> None:
         """Test method parse with correct messages."""
         parser = WsInitParser()
-        out_message = parser.parse(in_message)
-
-        if expected_message is None:
-            assert out_message is None
-        else:
-            assert (out_message.get_competition_code()
-                    == expected_message.get_competition_code())
-            assert out_message.get_source() == expected_message.get_source()
-            assert out_message.get_data() == expected_message.get_data()
-            assert (out_message.get_created_at()
-                    == expected_message.get_created_at())
-            assert (out_message.get_updated_at()
-                    == expected_message.get_updated_at())
-            assert (out_message.get_error_description()
-                    == expected_message.get_error_description())
-            assert (out_message.get_error_traceback()
-                    == expected_message.get_error_traceback())
+        out_actions = parser.parse(in_data)
+        assert out_actions == expected_actions
 
     def test_parse_wrong_headers(self) -> None:
         """Test method parse with unexpected messages."""
-        message = Message(
-            competition_code=TEST_COMPETITION_CODE,
-            data=load_raw_message('wrong_headers.txt'),
-            source=MessageSource.SOURCE_WS_LISTENER,
-            created_at=datetime.utcnow().timestamp(),
-            updated_at=datetime.utcnow().timestamp(),
-        )
+        in_data = load_raw_message('wrong_headers.txt')
         parser = WsInitParser()
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(message)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == 'Cannot parse column 8 of headers (GAP != PITS).'

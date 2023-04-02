@@ -1,7 +1,7 @@
 import abc
-from typing import Optional
+from typing import Any, List
 
-from pyback.messages import Message
+from pyback.data.actions import Action
 
 
 class Parser(abc.ABC):
@@ -10,19 +10,18 @@ class Parser(abc.ABC):
     """
 
     @abc.abstractmethod
-    def parse(self, msg: Message) -> Optional[Message]:
+    def parse(self, data: Any) -> List[Action]:
         """
-        Analyse and/or parse a given message.
+        Analyse and/or parse a given data.
 
         Params:
-            msg (Message): Message to parse.
+            data (Any): Data to parse.
 
         Returns:
-            Optional[Message]: transformed message (or the original message
-                if no transformation is needed).
+            List[Action]: list of actions and their respective parsed data.
         """
         raise NotImplementedError
 
-    def __call__(self, msg: Message) -> Optional[Message]:
+    def __call__(self, data: Any) -> List[Action]:
         """Forward to method Parser.parse()."""
-        return self.parse(msg)
+        return self.parse(data)

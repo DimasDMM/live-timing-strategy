@@ -1,15 +1,15 @@
 import re
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from pyback.messages import Message
-from pyback.parsers.base import Parser
-from pyback.data.time import DiffLap, Unit
+from pyback.data.actions import Action, ActionType
 from pyback.data.competition import InitialData, Participant
+from pyback.data.time import DiffLap, Unit
+from pyback.parsers.base import Parser
 
 
 class WsInitParser(Parser):
     """
-    Parse the initial message in a websocket.
+    Parse the initializer data from a websocket.
     """
 
     def __init__(self) -> None:
@@ -39,33 +39,24 @@ class WsInitParser(Parser):
             },
         }
 
-    def parse(self, msg: Message) -> Optional[Message]:
+    def parse(self, data: Any) -> List[Action]:
         """
-        Parse a given message.
+        Parse a given data.
 
         Params:
-            msg (Message): Message to parse.
+            data (Any): Data to parse.
 
         Returns:
-            Message: transformed message or None if no transformation can be
-                applied.
+            List[Action]: list of actions and their respective parsed data.
         """
-        if self._is_init_msg(msg):
-            parsed_data = self._parse_init_data(msg.get_data())
-            return Message(
-                competition_code=msg.get_competition_code(),
-                data=parsed_data,
-                source=msg.get_source(),
-                created_at=msg.get_created_at(),
-                updated_at=msg.get_updated_at(),
-                error_description=msg.get_error_description(),
-                error_traceback=msg.get_error_traceback(),
-            )
-        return None
+        if self._is_initializer_data(data):
+            parsed_data = self._parse_init_data(data)
+            action = Action(type=ActionType.INITIALIZE, data=parsed_data)
+            return [action]
+        return []
 
-    def _is_init_msg(self, msg: Message) -> bool:
-        """Check if it is an initializer message."""
-        data = msg.get_data()
+    def _is_initializer_data(self, data: Any) -> bool:
+        """Check if it is an initializer data."""
         return (isinstance(data, str)
                 and re.match(r'^init\|p\|', data) is not None)
 

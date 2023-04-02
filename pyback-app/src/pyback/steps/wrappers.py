@@ -1,6 +1,7 @@
 import logging
 from typing import Any, List, Optional
 
+from pyback.data.actions import Action
 from pyback.parsers.base import Parser
 from pyback.messages import Message
 from pyback.steps.base import MidStep
@@ -13,6 +14,7 @@ class ParsersStep(MidStep):
             self,
             logger: logging.Logger,
             parsers: List[Parser],
+            stop_on_first: bool = True,
             on_parsed: Optional[MidStep] = None,
             on_unknown: Optional[MidStep] = None,
             on_error: Optional[MidStep] = None) -> None:
@@ -22,6 +24,8 @@ class ParsersStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             parsers (List[Parser]): List of parsers to apply.
+            stop_on_first (bool): Stop parsing after one parser has returned
+                some actions.
             on_parsed (MidStep | None): Optionally, apply another step to the
                 message when the data is parsed.
             on_unknown (MidStep | None): Optionally, apply another step to the
@@ -31,6 +35,7 @@ class ParsersStep(MidStep):
         """
         self._logger = logger
         self._parsers = parsers
+        self._stop_on_first = stop_on_first
         self._on_parsed = on_parsed
         self._on_unknown = on_unknown
         self._on_error = on_error
@@ -48,15 +53,25 @@ class ParsersStep(MidStep):
 
     def run_step(self, msg: Message) -> None:
         """Display a message."""
-        parsed_msg = None
+        actions: List[Action] = []
         for parser in self._parsers:
             try:
-                parsed_msg = parser(msg)
-                if parsed_msg is not None:
+                actions += parser(msg)
+                if len(actions) > 0:
                     if self._on_parsed is not None:
-                        parsed_msg.updated()
-                        self._on_parsed.run_step(parsed_msg)
-                    break
+                        new_msg = Message(
+                            competition_code=msg.get_competition_code(),
+                            data=actions,
+                            source=msg.get_source(),
+                            created_at=msg.get_created_at(),
+                            updated_at=msg.get_updated_at(),
+                            error_description=msg.get_error_description(),
+                            error_traceback=msg.get_error_traceback(),
+                        )
+                        new_msg.updated()
+                        self._on_parsed.run_step(new_msg)
+                    if self._stop_on_first:
+                        break
             except Exception as e:
                 self._logger.critical(e, exc_info=True)
                 if self._on_error is not None:
