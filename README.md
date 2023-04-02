@@ -83,8 +83,8 @@ Optionally, you may run the Minikube dashboard with `minikube dashboard`.
 
 Commands:
 ```sh
-kubectl apply -f ./kafka/k8s/00-zookeeper.yaml
-kubectl apply -f ./kafka/k8s/01-kafka-broker.yaml
+kubectl apply -f ./k8s/kafka/00-zookeeper.yaml
+kubectl apply -f ./k8s/kafka/01-kafka-broker.yaml
 ```
 
 Optionally, if we want to access Kafka from outside the cluster, we need to
@@ -96,7 +96,7 @@ kubectl port-forward -n live-timing service/kafka-service 9092
 
 Optionally, we may run a Kafka UI with Kouncil (use `admin` as user and pass):
 ```sh
-kubectl apply -f ./kafka/k8s/02-kouncil.yaml
+kubectl apply -f ./k8s/kafka/02-kouncil.yaml
 kubectl port-forward -n live-timing service/kouncil-service 8080:8080
 ```
 
