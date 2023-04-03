@@ -1,4 +1,4 @@
-![Coverage badge](./pyback-app/docs/coverage.svg)
+![Coverage badge](./lts-pipeline/docs/coverage.svg)
 
 # Live Timing Strategy
 
@@ -31,16 +31,18 @@ Linux:
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install tox==4.4.7 poetry==1.4.0
+python -m pip install tox==4.4.8 poetry==1.4.2
 poetry config virtualenvs.create false
+poetry install
 ```
 
 Windows:
 ```sh
 python -m venv .venv
 .\.venv\Scripts\activate
-python -m pip install tox==4.4.7 poetry==1.4.0
+python -m pip install tox==4.4.8 poetry==1.4.2
 poetry config virtualenvs.create false
+poetry install
 ```
 
 > In Windows, if there is any error similar to "running scripts is disabled",
@@ -110,7 +112,7 @@ WIP
 
 Local Python command:
 ```sh
-python -m pyback.runners.ws_listener \
+python -m lts.runners.ws_listener \
   --kafka_servers localhost:9092 \
   --websocket_uri ws://www.apex-timing.com:8092 \
   --verbosity 1
@@ -139,7 +141,7 @@ WIP
 
 Local Python command:
 ```sh
-python -m pyback.runners.raw_storage \
+python -m lts.runners.raw_storage \
   --kafka_servers localhost:9092 \
   --verbosity 1
 ```
@@ -183,7 +185,7 @@ WIP
 
 Check that Kafka works correctly with a local dummy consumer:
 ```sh
-python -m pyback.runners.kafka_check \
+python -m lts.runners.kafka_check \
   --kafka_servers localhost:9092 \
   --kafka_topic test-topic \
   --kafka_group test-group \
@@ -193,7 +195,7 @@ python -m pyback.runners.kafka_check \
 
 And a local dummy producer:
 ```sh
-python -m pyback.runners.kafka_check \
+python -m lts.runners.kafka_check \
   --kafka_servers localhost:9092 \
   --kafka_topic test-topic \
   --test_mode producer \

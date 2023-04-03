@@ -27,24 +27,24 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd pyback-app
+        cd lts-pipeline
         python -m pip install --upgrade pip
         python -m pip install tox==4.4.7 poetry==1.4.0
         poetry install
 
     - name: Run tests
       run: |
-        cd pyback-app
+        cd lts-pipeline
         tox -e testenv
 
     - name: Run linter
       run: |
-        cd pyback-app
+        cd lts-pipeline
         tox -e lint
 
     - name: Coverage Badge
       run: |
-        cd pyback-app
+        cd lts-pipeline
         poetry run pytest tests --cov src
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
@@ -52,15 +52,15 @@ jobs:
       uses: tj-actions/verify-changed-files@v13
       id: verify-changed-files
       with:
-        files: pyback-app/docs/coverage.svg
+        files: lts-pipeline/docs/coverage.svg
 
     - name: Commit files
       if: steps.verify-changed-files.outputs.files_changed == 'true'
       run: |
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
-        git add pyback-app/docs/coverage.svg
-        git commit -m "Update pyback-app coverage.svg"
+        git add lts-pipeline/docs/coverage.svg
+        git commit -m "Update lts-pipeline coverage.svg"
 
     - name: Push changes
       if: steps.verify-changed-files.outputs.files_changed == 'true'
