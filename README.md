@@ -25,39 +25,9 @@ Docker:
 docker run --name live-timing-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
 ```
 
-### Python
+### Pipeline
 
-Linux:
-```sh
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install tox==4.4.8 poetry==1.4.2
-poetry config virtualenvs.create false
-poetry install
-```
-
-Windows:
-```sh
-python -m venv .venv
-.\.venv\Scripts\activate
-python -m pip install tox==4.4.8 poetry==1.4.2
-poetry config virtualenvs.create false
-poetry install
-```
-
-> In Windows, if there is any error similar to "running scripts is disabled",
-  use this command: `Set-ExecutionPolicy Unrestricted CurrentUser`.
-
-#### Adding more dependencies
-
-Every time you add more dependencies, you'll need to update the lock file. For
-this purpose, use this command while you are in the virtual env:
-```sh
-poetry lock --no-update
-```
-
-> Tip: in case that Poetry is slow to resolve the dependencies, try to clear its
-  cache: `poetry cache clear --all <name>`
+See: [README of pipeline](./lts-pipeline/README.md)
 
 ## Deployment
 
@@ -106,70 +76,9 @@ kubectl port-forward -n live-timing service/kouncil-service 8080:8080
 
 WIP
 
-### Live timing listener
+### Pipeline
 
-#### Listener: Websocket
-
-Local Python command:
-```sh
-python -m lts.runners.ws_listener \
-  --kafka_servers localhost:9092 \
-  --websocket_uri ws://www.apex-timing.com:8092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
-- `--kafka_topic`: (optional) Topic of Kafka to write messages. By default,
-  it is `raw-messages`.
-- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
-  Example: `ws://www.apex-timing.com:8092`.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
-
-#### Listener: API REST
-
-WIP
-
-### Messages parser
-
-WIP
-
-### Raw storage
-
-Local Python command:
-```sh
-python -m lts.runners.raw_storage \
-  --kafka_servers localhost:9092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
-- `--kafka_topic`: (optional) Topic of Kafka to suscribe. By default, it is
-  `raw-messages`.
-- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
-  By default, it is `raw-storage`.
-- `--output_path`: (optional) Path to store the raw data. By default, it is
-  `./artifacts/logs`.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
-
-> Local GO command (WIP):
-> ```sh
-> go run . \
->   -mode raw_storage \
->   -output_path ./artifacts \
->   -bootstrap_servers localhost:9092
-> ```
-
-### Metrics computation
-
-WIP
+See: [README of pipeline](./lts-pipeline/README.md)
 
 ### Web: API REST
 
@@ -178,33 +87,6 @@ WIP
 ### Web: App
 
 WIP
-
-## Test
-
-### Kafka
-
-Check that Kafka works correctly with a local dummy consumer:
-```sh
-python -m lts.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --kafka_group test-group \
-  --test_mode consumer \
-  --verbosity 1
-```
-
-And a local dummy producer:
-```sh
-python -m lts.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --test_mode producer \
-  --verbosity 1
-```
-
-Note that, if you are using a different Kafka, you may need to replace the
-value of `--kafka_servers` with your list of Kafka brokers (separated) by
-commas.
 
 ## Features
 

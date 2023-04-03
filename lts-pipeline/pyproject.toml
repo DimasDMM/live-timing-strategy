@@ -2,6 +2,7 @@
 name = "live-timing-strategy-pipeline"
 version = "1.0.0"
 description = "Live timing strategy: pipelines"
+readme = "README.md"
 authors = ["DimasDMM <@dimasdmm>"]
 license = "MIT"
 packages = [
