@@ -2,7 +2,7 @@ from typing import List
 
 from ltsapi import _build_logger
 from ltsapi.main import _build_db_connection
-from ltsapi.models.responses import FullCompetition, FullTrack
+from ltsapi.models.responses import FullCompetition
 
 
 if __name__ == '__main__':
@@ -27,7 +27,7 @@ if __name__ == '__main__':
             JOIN tracks ON tracks.id = cidx.track_id
             LIMIT 2'''
         cursor.execute(query)  # type: ignore
-        raw_data = cursor.fetchall()
+        raw_data: List[dict] = cursor.fetchall()  # type: ignore
         for row in raw_data:
             item = FullCompetition(
                 id=row['cidx_id'],

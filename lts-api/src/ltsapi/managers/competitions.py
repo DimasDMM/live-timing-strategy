@@ -2,7 +2,7 @@ from logging import Logger
 from typing import List
 
 from ltsapi.db import DBContext
-from ltsapi.models.responses import FullCompetition, FullTrack
+from ltsapi.models.responses import FullCompetition
 
 
 class CompetitionManager:
@@ -32,7 +32,7 @@ class CompetitionManager:
                 FROM competitions_index as cidx
                 JOIN tracks ON tracks.id = cidx.track_id'''
             cursor.execute(query)  # type: ignore
-            raw_data = cursor.fetchall()
+            raw_data: List[dict] = cursor.fetchall()  # type: ignore
             items: List[FullCompetition] = []
             for row in raw_data:
                 items.append(FullCompetition(

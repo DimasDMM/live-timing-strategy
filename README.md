@@ -1,4 +1,4 @@
-![Coverage badge](./lts-pipeline/docs/coverage.svg)
+**Data Pipelines** ![Coverage badge](./lts-pipeline/docs/coverage.svg) | **API REST** ![Coverage badge](./lts-api/docs/coverage.svg)
 
 # Live Timing Strategy
 
