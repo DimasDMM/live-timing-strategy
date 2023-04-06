@@ -10,24 +10,10 @@ To do
 
 ![](./docs/images/cat-typing.gif)
 
-### Setup
-
-For development, we also need to install these tools:
-- GoLang: https://go.dev/
-- Python 3.9: https://www.python.org/
-- (Optional) MySQL Workbench: https://www.mysql.com/products/workbench/
-- (Optional) Visual Studio: https://code.visualstudio.com/
-
-### MySQL
-
-Docker:
-```sh
-docker run --name live-timing-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
-```
-
-### Pipeline
-
-See: [README of pipeline](./lts-pipeline/README.md)
+This project is composed by several parts, and each of them require a different
+setup. For further details:
+- [README of pipeline](./lts-pipeline/README.md)
+- [README of API](./lts-api/README.md)
 
 ## Deployment
 
@@ -49,7 +35,7 @@ minikube start
 kubectl apply -f ./k8s/00-namespace.yaml
 ```
 
-Optionally, you may run the Minikube dashboard with `minikube dashboard`.
+Optionally, we may run the Minikube dashboard with `minikube dashboard`.
 
 ### Kafka
 
@@ -60,7 +46,7 @@ kubectl apply -f ./k8s/kafka/01-kafka-broker.yaml
 ```
 
 Optionally, if we want to access Kafka from outside the cluster, we need to
-forward the port. This command is required if you want to run the scripts
+forward the port. This command is required if we want to run the scripts
 locally instead of using Kubernetes.
 ```sh
 kubectl port-forward -n live-timing service/kafka-service 9092

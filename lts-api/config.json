@@ -1,0 +1,40 @@
+{
+    "listeners": {
+        "*:80": {
+            "pass": "routes"
+        }
+    },
+    "routes": [
+        {
+            "match": {
+                "uri": [
+                    "/v1/*",
+                    "/docs",
+                    "/openapi.json"
+                ]
+            },
+            "action": {
+                "pass": "applications/fastapi"
+            }
+        },
+        {
+            "match": {
+                "uri": [
+                    "*.png"
+                ]
+            },
+            "action": {
+                "share": "/app/static$uri"
+            }
+        }
+    ],
+    "applications": {
+        "fastapi": {
+            "type": "python 3.11",
+            "path": "/app/src/",
+            "home": "/usr/local",
+            "module": "ltsapi.main",
+            "callable": "app"
+        }
+    }
+}

@@ -6,11 +6,15 @@ Retrieves and analyses the data that comes from a live timing application.
 
 ## Setup for development
 
+For development, we also need to install these tools:
+- Python 3.9: https://www.python.org/
+- (Optional) Visual Studio: https://code.visualstudio.com/
+
 Linux:
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install tox==4.4.8 poetry==1.4.2
+python -m pip install tox==3.28 poetry==1.4.2
 poetry config virtualenvs.create false
 ```
 
@@ -18,7 +22,7 @@ Windows:
 ```sh
 python -m venv .venv
 .\.venv\Scripts\activate
-python -m pip install tox==4.4.8 poetry==1.4.2
+python -m pip install tox==3.28 poetry==1.4.2
 poetry config virtualenvs.create false
 ```
 
@@ -27,8 +31,8 @@ poetry config virtualenvs.create false
 
 ### Adding more dependencies
 
-Every time you add more dependencies, you'll need to update the lock file. For
-this purpose, use this command while you are in the virtual env:
+Every time we add more dependencies, we'll need to update the lock file. For
+this purpose, use this command while we are in the virtual env:
 ```sh
 poetry lock --no-update
 ```
@@ -124,6 +128,6 @@ python -m ltspipe.runners.kafka_check \
   --verbosity 1
 ```
 
-Note that, if you are using a different Kafka, you may need to replace the
-value of `--kafka_servers` with your list of Kafka brokers (separated) by
+Note that, if we are using a different Kafka, we may need to replace the
+value of `--kafka_servers` with our list of Kafka brokers (separated) by
 commas.

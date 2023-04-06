@@ -2,8 +2,14 @@ START TRANSACTION;
 
 SET autocommit=0;
 
+-- Optionally, we may run these two commands to create the database:
+-- > CREATE DATABASE	IF NOT EXISTS `live-timing`;
+-- > USE `live-timing`;
+
 CREATE DATABASE	IF NOT EXISTS `live-timing`;
 USE `live-timing`;
+
+--
 
 CREATE TABLE `api_tokens` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -20,7 +26,7 @@ CREATE TABLE `tracks` (
   `name` VARCHAR(255) NOT NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `token` (`token`)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `competitions_index` (
@@ -156,7 +162,7 @@ CREATE TABLE `competitions_metadata_history` (
   `value` VARCHAR(255) NULL,
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `competitions_metadata__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
+  CONSTRAINT `competitions_metadata_history__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `stats_health` (

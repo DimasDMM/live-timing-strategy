@@ -1,19 +1,19 @@
 [tool.poetry]
-name = "live-timing-strategy-pipeline"
+name = "live-timing-strategy-api"
 version = "0.1.0"
-description = "Live timing strategy: pipelines"
+description = "Live timing strategy: API REST"
 readme = "README.md"
 authors = ["DimasDMM <@dimasdmm>"]
 license = "MIT"
 packages = [
-    { include = "ltspipe", from = "src" }
+    { include = "ltsapi", from = "src" }
 ]
 
 [tool.poetry.dependencies]
+fastapi = "^0.95.0"
+pydantic = "^1.10.7"
 python = "^3.9"
-kafka-python = "^2.0.2"
-crc32c = "^2.3.post0"
-websocket-client = "^1.5.1"
+mysql-connector-python = "^8.0.32"
 
 [tool.poetry.group.test.dependencies]
 flake8 = "^4.0.1"
@@ -46,4 +46,4 @@ pythonpath = [".", "src"]
 
 [build-system]
 requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+build-backend = "poetry.core.masonry.api:start"
