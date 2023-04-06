@@ -1,15 +1,6 @@
-START TRANSACTION;
-
-SET autocommit=0;
-
 -- Optionally, we may run these two commands to create the database:
 -- > CREATE DATABASE	IF NOT EXISTS `live-timing`;
 -- > USE `live-timing`;
-
-CREATE DATABASE	IF NOT EXISTS `live-timing`;
-USE `live-timing`;
-
---
 
 CREATE TABLE `api_tokens` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -201,13 +192,3 @@ CREATE TABLE `parsers_config` (
   `insert_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-INSERT INTO `api_tokens` (`token`, `name`, `role`) VALUES
-  ('d265aed699f7409ac0ec6fe07ee9cb11', 'Batch', 'batch'),
-  ('f9a23e776e199b52f12f60cd1ea0dfc3', 'Dimas', 'admin');
-
-INSERT INTO `tracks` (`name`) VALUES
-  ('Karting Los Santos');
-
-COMMIT;

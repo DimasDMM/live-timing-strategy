@@ -45,11 +45,14 @@ source .env
 
 In Windows, we have to use this command instead of `source .env`:
 ```sh
-get-content .env | foreach {
-    $name, $value = $_.split('=')
-    set-content env:\$name $value
+Get-Content .env | foreach {
+  $name, $value = $_.split('=')
+  if (![string]::IsNullOrWhiteSpace($name) -and !$name.Contains('#')) {
+    Set-Content Env:\$name $value
+  }
 }
 ```
+Set-Variable -Scope global -Name "$name" -Value "$value"
 
 ### Network of containers
 

@@ -12,8 +12,8 @@ To do
 
 This project is composed by several parts, and each of them require a different
 setup. For further details:
-- [README of pipeline](./lts-pipeline/README.md)
-- [README of API](./lts-api/README.md)
+- [Data Pipelines](./lts-pipeline/README.md)
+- [API REST](./lts-api/README.md)
 
 ## Deployment
 
@@ -64,7 +64,7 @@ WIP
 
 ### Pipeline
 
-See: [README of pipeline](./lts-pipeline/README.md)
+WIP
 
 ### Web: API REST
 

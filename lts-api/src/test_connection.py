@@ -25,7 +25,7 @@ if __name__ == '__main__':
                 tracks.`update_date` AS tracks_update_date
             FROM competitions_index as cidx
             JOIN tracks ON tracks.id = cidx.track_id
-            LIMIT 2'''
+            LIMIT 5'''
         cursor.execute(query)  # type: ignore
         raw_data: List[dict] = cursor.fetchall()  # type: ignore
         for row in raw_data:
@@ -43,5 +43,5 @@ if __name__ == '__main__':
                 insert_date=row['cidx_insert_date'],
                 update_date=row['cidx_update_date'],
             )
-        logger.info(item)
+            logger.info(item)
     logger.info('Finish!')
