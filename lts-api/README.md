@@ -32,7 +32,7 @@ poetry config virtualenvs.create false
 
 ### Environment variables
 
-There is a file with some environment variables located at [.env](.env). The
+There is a file with some environment variables located at `.env`. The
 value `DB_HOST` changes depending on we are running the code locally or in a
 container:
 - Locally: `127.0.0.1`
@@ -40,12 +40,12 @@ container:
 
 To import the environment variables, we may run this command in Linux:
 ```sh
-source .env
+source .env.local
 ```
 
-In Windows, we have to use this command instead of `source .env`:
+In Windows, we have to use this command instead of `source .env.local`:
 ```sh
-Get-Content .env | foreach {
+Get-Content .env.local | foreach {
   $name, $value = $_.split('=')
   if (![string]::IsNullOrWhiteSpace($name) -and !$name.Contains('#')) {
     Set-Content Env:\$name $value
@@ -69,7 +69,7 @@ Initialize the database with this command:
 docker run \
   --name lts-mysql \
   --network lts-network \
-  -p 3306:3306 \
+  -p ${DB_PORT}:3306 \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:8.0.32
 ```
@@ -94,12 +94,14 @@ Run it:
 ```sh
 docker run \
   --rm \
-  --env-file .env \
+  --env-file .env.indocker \
   --name lts-api \
   --network lts-network \
   -p 8090:80 \
   lts-api
 ```
+
+> Note that the environment variables file is `.env.indocker`.
 
 ## Tests
 
@@ -107,9 +109,15 @@ The tests require that we initialize a MySQL server first (see command in
 the section above). Remember that we must import the environment variables
 before running the tests.
 
-Then, we may run the tests with the usual command:
+Then, we may run the whole test pipeline (unit tests and code style) with the
+usual command:
 ```sh
 tox
+```
+
+We may generate the coverage report (and pass the unit tests) with this command:
+```sh
+poe coverage
 ```
 
 ## Other resources

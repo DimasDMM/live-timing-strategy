@@ -131,3 +131,16 @@ python -m ltspipe.runners.kafka_check \
 Note that, if we are using a different Kafka, we may need to replace the
 value of `--kafka_servers` with our list of Kafka brokers (separated) by
 commas.
+
+### Python code
+
+We may run the whole test pipeline (unit tests and code style) with the
+usual command:
+```sh
+tox
+```
+
+We may generate the coverage report (and pass the unit tests) with this command:
+```sh
+poe coverage
+```

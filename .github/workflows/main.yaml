@@ -11,14 +11,16 @@ on:
 jobs:
   pre-clean-badge:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
     - name: Clean coverage badge
       run: |
         curl -s https://github.com/DimasDMM/live-timing-strategy/blob/master/README.md > README.md.tmp
         grep -Eo '<img src="[^"]+"' README.md.tmp | grep camo | grep -Eo 'https[^"]+' | xargs -I {} curl -w "\n" -s -X PURGE {}
 
-  test-pipeline:
+  test-lts-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -39,17 +41,7 @@ jobs:
     - name: Run tests
       run: |
         cd lts-pipeline
-        tox -e testenv
-
-    - name: Run linter
-      run: |
-        cd lts-pipeline
-        tox -e lint
-
-    - name: Coverage Badge
-      run: |
-        cd lts-pipeline
-        poetry run pytest tests --cov src
+        tox -e test
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -73,8 +65,9 @@ jobs:
         github_token: ${{ secrets.github_token }}
         branch: ${{ github.ref }}
 
-  test-api:
+  linter-lts-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -87,25 +80,76 @@ jobs:
 
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox==4.4.7 poetry==1.4.0
+
+    - name: Run linter
+      run: |
+        cd lts-pipeline
+        tox -e lint
+
+  mypy-lts-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: pre-clean-badge
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox==4.4.7 poetry==1.4.0
+
+    - name: Run MyPy
+      run: |
+        cd lts-pipeline
+        tox -e 'py{39, 310, 311}-mypy'
+
+  test-lts-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: pre-clean-badge
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Load environment variables
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: 'lts-api/.env.local'    
+        expand: 'true'
+
+    - name: Start MySQL
+      run: |
+        cd lts-api
+        docker run -d --name lts-mysql -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
+
+    - name: Install dependencies
+      run: |
         cd lts-api
         python -m pip install --upgrade pip
         python -m pip install tox==4.4.7 poetry==1.4.0
         poetry install
 
+    - name: Wait for MySQL
+      run: |
+        sh ./lts-api/bin/wait-database.sh
+
     - name: Run tests
       run: |
         cd lts-api
-        tox -e testenv
-
-    - name: Run linter
-      run: |
-        cd lts-api
-        tox -e lint
-
-    - name: Coverage Badge
-      run: |
-        cd lts-api
-        poetry run pytest tests --cov src
+        tox -e test
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -129,11 +173,58 @@ jobs:
         github_token: ${{ secrets.github_token }}
         branch: ${{ github.ref }}
 
+  linter-lts-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: pre-clean-badge
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox==4.4.7 poetry==1.4.0
+
+    - name: Run linter
+      run: |
+        cd lts-api
+        tox -e lint
+
+  mypy-lts-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: pre-clean-badge
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox==4.4.7 poetry==1.4.0
+
+    - name: Run MyPy
+      run: |
+        cd lts-api
+        tox -e 'py{39, 310, 311}-mypy'
+
   post-clean-badge:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs:
-    - test-pipeline
-    - test-api
+    - test-lts-api
+    - test-lts-pipeline
     steps:
     - name: Clean coverage badge
       run: |

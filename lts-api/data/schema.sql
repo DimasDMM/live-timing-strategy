@@ -2,6 +2,8 @@
 -- > CREATE DATABASE	IF NOT EXISTS `live-timing`;
 -- > USE `live-timing`;
 
+SET GLOBAL time_zone = 'Europe/Madrid';
+
 CREATE TABLE `api_tokens` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `token` VARCHAR(255) NOT NULL,
