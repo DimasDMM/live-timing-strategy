@@ -41,7 +41,7 @@ jobs:
     - name: Run tests
       run: |
         cd lts-pipeline
-        tox -e test
+        tox -e 'py39-test'
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -86,7 +86,7 @@ jobs:
     - name: Run linter
       run: |
         cd lts-pipeline
-        tox -e lint
+        tox -e 'py39-lint'
 
   mypy-lts-pipeline:
     runs-on: ubuntu-latest
@@ -149,7 +149,7 @@ jobs:
     - name: Run tests
       run: |
         cd lts-api
-        tox -e test
+        tox -e 'py39-test'
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -194,7 +194,7 @@ jobs:
     - name: Run linter
       run: |
         cd lts-api
-        tox -e lint
+        tox -e 'py39-lint'
 
   mypy-lts-api:
     runs-on: ubuntu-latest

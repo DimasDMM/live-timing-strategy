@@ -6,7 +6,7 @@ from typing import List
 from ltsapi import API_VERSION, _build_logger
 from ltsapi.db import DBContext
 from ltsapi.managers.competitions import CompetitionManager
-from ltsapi.models.responses import FullCompetition
+from ltsapi.models.competitions import GetCompetition
 
 
 app = FastAPI(
@@ -29,7 +29,7 @@ def _build_db_connection(logger: Logger) -> DBContext:
 
 
 @app.get(f'/{API_VERSION}/competitions/')
-async def get_all_competitions() -> List[FullCompetition]:
+async def get_all_competitions() -> List[GetCompetition]:
     """Get all competitions in the database."""
     logger = _build_logger(__package__)
     db = _build_db_connection(logger)

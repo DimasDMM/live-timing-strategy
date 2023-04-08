@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class FullTrack(BaseModel):
+class GetTrack(BaseModel):
     """Track data."""
 
     id: int
@@ -11,11 +11,20 @@ class FullTrack(BaseModel):
     update_date: datetime
 
 
-class FullCompetition(BaseModel):
-    """Competition data."""
+class AddCompetition(BaseModel):
+    """Data to add a new competition."""
+
+    track_id: int
+    code: str
+    name: str
+    description: str
+
+
+class GetCompetition(BaseModel):
+    """All data of a competition."""
 
     id: int
-    track: FullTrack
+    track: GetTrack
     code: str
     name: str
     description: str

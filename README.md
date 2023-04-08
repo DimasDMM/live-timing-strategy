@@ -101,8 +101,8 @@ labelled as:
 - Red (bad)
 - Blue (unknown)
 
-### How average time is computed?
+### How the average time is computed?
 
-When a driver is doing a stint, s/he might do slow laps due to external reasons.
+When a driver is doing a stint, it might do slow laps due to external reasons.
 The app excludes those laps (outliers) from the average computation. Moreover,
 it only takes into account the last `5` laps (by default) in the computation.

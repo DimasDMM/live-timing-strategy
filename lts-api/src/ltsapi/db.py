@@ -61,3 +61,9 @@ class DBContext:
         if self._cnx is None:
             raise Exception('Connection not initialized yet.')
         return self._cnx
+
+    def commit(self) -> None:
+        """Do commit."""
+        if self._cnx is None:
+            raise Exception('Connection not initialized yet.')
+        self._cnx.commit()

@@ -14,6 +14,7 @@ class DatabaseTestInit:
     """
 
     DATABASE_NAME = os.environ.get('DB_DATABASE')
+    INIT_DATA_FILE = os.path.join('data', 'init.sql')
     SAMPLE_DATA_FILE = os.path.join('data', 'sample.sql')
     SCHEMA_FILE = os.path.join('data', 'schema.sql')
 
@@ -31,6 +32,8 @@ class DatabaseTestInit:
                 cursor, self.SCHEMA_FILE)
             cnx.commit()
 
+            self._import_sql_file(
+                cursor, self.INIT_DATA_FILE)
             self._import_sql_file(
                 cursor, self.SAMPLE_DATA_FILE)
             cnx.commit()

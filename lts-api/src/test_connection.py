@@ -2,7 +2,7 @@ from typing import List
 
 from ltsapi import _build_logger
 from ltsapi.main import _build_db_connection
-from ltsapi.models.responses import FullCompetition
+from ltsapi.models.competitions import GetCompetition
 
 
 if __name__ == '__main__':
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         cursor.execute(query)  # type: ignore
         raw_data: List[dict] = cursor.fetchall()  # type: ignore
         for row in raw_data:
-            item = FullCompetition(
+            item = GetCompetition(
                 id=row['cidx_id'],
                 track={
                     'id': row['tracks_id'],
