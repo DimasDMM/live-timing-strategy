@@ -10,4 +10,4 @@ exclude_lines =
 [run]
 omit =
     */__main__.py
-    src/runners/__init__.py
+    src/test_connection.py
