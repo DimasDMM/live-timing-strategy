@@ -38,7 +38,7 @@ CREATE TABLE `competitions_index` (
 CREATE TABLE `competitions_teams` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
-  `code` VARCHAR(255) NULL COMMENT 'Optional unique code given by the live timing',
+  `code` VARCHAR(255) NULL COMMENT 'Optional unique code given by the live timing to the team or driver',
   `name` VARCHAR(255) NOT NULL,
   `number` INT UNSIGNED NULL,
   `reference_time_offset` INT NOT NULL DEFAULT 0 COMMENT 'Respect track reference',
@@ -53,7 +53,7 @@ CREATE TABLE `competitions_drivers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NULL,
-  `code` VARCHAR(255) NULL COMMENT 'Optional unique code given by the live timing',
+  `code` VARCHAR(255) NULL COMMENT 'Optional unique code given by the live timing to the team or driver',
   `name` VARCHAR(255) NOT NULL,
   `number` INT UNSIGNED NULL,
   `total_driving_time` INT UNSIGNED NOT NULL DEFAULT 0,

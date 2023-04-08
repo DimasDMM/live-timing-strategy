@@ -1,6 +1,8 @@
 import pytest
+import time
 
 from ltsapi.db import DBContext
+from ltsapi.models.timing import UpdateReferenceTime
 from ltsapi.models.filters import IdFilter
 from ltsapi.models.participants import AddTeam
 from ltsapi.managers.participants import TeamsManager
@@ -255,3 +257,33 @@ class TestTeamsManager(DatabaseTestInit):
         e: Exception = e_info.value
         assert (str(e) == f'The team "{add_item.code}" '
                 f'(competition = {add_item.competition_id}) already exists.')
+
+    def test_update_team_time_reference_offset(
+            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+        """Test method update_team_time_reference_offset."""
+        manager = TeamsManager(db=db_context, logger=fake_logger)
+        filter_time = UpdateReferenceTime(id=2, time=79000)
+        filter_id = IdFilter(id=filter_time.id)
+
+        before_item = manager.get_by_id(filter_id)
+        assert before_item is not None
+
+        time.sleep(2)
+        manager.update_team_time_reference_offset(filter_time)
+
+        after_item = manager.get_by_id(filter_id)
+        assert after_item is not None
+        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+
+        expected_item = {
+            'id': 2,
+            'competition_id': 1,
+            'code': 'team-2',
+            'name': 'CKM 2',
+            'number': 42,
+            'reference_time_offset': 79000,
+            'drivers': [],
+        }
+        assert dict_item == expected_item
+        assert before_item.insert_date == after_item.insert_date
+        assert before_item.update_date < after_item.update_date

@@ -25,7 +25,7 @@ class CompetitionManager:
             tracks.`update_date` AS tracks_update_date
         FROM competitions_index as cidx
         JOIN tracks ON tracks.id = cidx.track_id'''
-    INSERT_STMT = '''
+    BASE_INSERT = '''
         INSERT INTO `competitions_index`
         (`track_id`, `code`, `name`, `description`) VALUES'''
 
@@ -60,7 +60,7 @@ class CompetitionManager:
             raise ApiError(
                 f'The code "{competition.code}" already exists.')
 
-        stmt = f'{self.INSERT_STMT} (%s, %s, %s, %s)'
+        stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s)'
         params = (
             competition.track_id,
             competition.code,

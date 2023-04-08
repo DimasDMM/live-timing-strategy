@@ -5,6 +5,7 @@ from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
 from ltsapi.models.filters import IdFilter
 from ltsapi.models.participants import AddTeam, GetTeam
+from ltsapi.models.timing import UpdateReferenceTime
 
 
 class TeamsManager:
@@ -21,10 +22,11 @@ class TeamsManager:
             ct.`insert_date` AS ct_insert_date,
             ct.`update_date` AS ct_update_date
         FROM competitions_teams AS ct'''
-    INSERT_STMT = '''
+    BASE_INSERT = '''
         INSERT INTO `competitions_teams`
         (`competition_id`, `code`, `name`, `number`, `reference_time_offset`)
         VALUES'''
+    BASE_UPDATE = 'UPDATE `competitions_teams`'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
@@ -52,13 +54,27 @@ class TeamsManager:
                 f'The team "{team.code}" '
                 f'(competition = {team.competition_id}) already exists.')
 
-        stmt = f'{self.INSERT_STMT} (%s, %s, %s, %s, %s)'
+        stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s, %s)'
         params = (
             team.competition_id,
             team.code,
             team.name,
             team.number,
             team.reference_time_offset)
+        with self._db as cursor:
+            cursor.execute(stmt, params)
+            if commit:
+                self._db.commit()
+
+    def update_team_time_reference_offset(
+            self, filter: UpdateReferenceTime, commit: bool = True) -> None:
+        """Update reference_time_offset value of a team."""
+        if self.get_by_id(IdFilter(id=filter.id)) is None:
+            raise ApiError(f'The team with ID={filter.id} does not exist.')
+
+        stmt = (f'{self.BASE_UPDATE} SET `reference_time_offset` = %s '
+                'WHERE `id` = %s')
+        params = (filter.time, filter.id)
         with self._db as cursor:
             cursor.execute(stmt, params)
             if commit:
