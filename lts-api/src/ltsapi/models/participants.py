@@ -7,9 +7,12 @@ class AddDriver(BaseModel):
     """Data to add a new driver."""
 
     competition_id: int
+    team_id: Optional[int]
     code: Optional[str]
     name: str
     number: Optional[int]
+    total_driving_time: Optional[int]
+    partial_driving_time: Optional[int]
     reference_time_offset: Optional[int]
 
 
@@ -27,6 +30,18 @@ class GetDriver(BaseModel):
     reference_time_offset: int
     insert_date: datetime
     update_date: datetime
+
+
+class UpdateDriver(BaseModel):
+    """Update the data of a driver."""
+
+    id: int
+    code: Optional[str]
+    name: Optional[str]
+    number: Optional[int]
+    total_driving_time: Optional[int]
+    partial_driving_time: Optional[int]
+    reference_time_offset: Optional[int]
 
 
 class AddTeam(BaseModel):
@@ -51,3 +66,13 @@ class GetTeam(BaseModel):
     drivers: List[GetDriver]
     insert_date: datetime
     update_date: datetime
+
+
+class UpdateTeam(BaseModel):
+    """Update the data of a team."""
+
+    id: int
+    code: Optional[str]
+    name: Optional[str]
+    number: Optional[int]
+    reference_time_offset: Optional[int]
