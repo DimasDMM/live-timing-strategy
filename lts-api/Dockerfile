@@ -2,6 +2,9 @@ FROM nginx/unit:1.29.1-python3.11
 
 WORKDIR /app
 
+# Update libraries
+RUN python -m pip install --upgrade pip
+
 # Copy source code
 COPY ./src ./src
 COPY ./static ./static

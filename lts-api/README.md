@@ -97,11 +97,20 @@ docker run \
   --env-file .env.indocker \
   --name lts-api \
   --network lts-network \
+  --env DEBUG=1 \
   -p 8090:80 \
   lts-api
 ```
 
-> Note that the environment variables file is `.env.indocker`.
+> Note 1: the environment variables file is `.env.indocker` to run the
+  container.
+
+> Note 2: The above command has `DEBUG=1`, so the output of the API REST is
+  more verbose when we are implementing new code.
+
+Once the container is running, we may see all the available endpoints at
+[http://127.0.0.1/docs](http://127.0.0.1/docs). Additionally, we may import the
+Postman's template located at `./data/postman.json`.
 
 ## Tests
 
