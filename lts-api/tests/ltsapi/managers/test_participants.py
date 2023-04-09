@@ -167,9 +167,9 @@ class TestDriversManager(DatabaseTestInit):
         }
         assert dict_item == expected_item
 
-    def test_get_by_competition_id(
+    def test_get_by_team_id(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
-        """Test method get_by_competition_id."""
+        """Test method get_by_team_id."""
         team_id = 2
 
         manager = DriversManager(db=db_context, logger=fake_logger)
@@ -179,6 +179,20 @@ class TestDriversManager(DatabaseTestInit):
                       for x in manager.get_by_team_id(filter)]
         expected_items = [x for x in self.ALL_DRIVERS
                           if x['team_id'] == team_id]
+        assert dict_items == expected_items
+
+    def test_get_by_competition_id(
+            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+        """Test method get_by_competition_id."""
+        competition_id = 2
+
+        manager = DriversManager(db=db_context, logger=fake_logger)
+        filter = IdFilter(id=competition_id)
+
+        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+                      for x in manager.get_by_competition_id(filter)]
+        expected_items = [x for x in self.ALL_DRIVERS
+                          if x['competition_id'] == competition_id]
         assert dict_items == expected_items
 
     def test_add_one(

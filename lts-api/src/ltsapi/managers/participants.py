@@ -54,6 +54,11 @@ class DriversManager:
         query = f'{self.BASE_QUERY} WHERE cd.id = %s'
         return self._fetchone_driver(query, (filter.id,))
 
+    def get_by_competition_id(self, filter: IdFilter) -> List[GetTeam]:
+        """Retrieve the drivers in a competition."""
+        query = f'{self.BASE_QUERY} WHERE cd.competition_id = %s'
+        return self._fetchmany_driver(query, (filter.id,))
+
     def get_by_team_id(self, filter: IdFilter) -> List[GetDriver]:
         """Retrieve the drivers in a team."""
         query = f'{self.BASE_QUERY} WHERE cd.team_id = %s'
