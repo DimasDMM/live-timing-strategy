@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
-from ltsapi.models.filters import IdFilter
+from ltsapi.models.filters import CodeFilter, IdFilter, NameFilter
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -54,7 +54,7 @@ class DriversManager:
         query = f'{self.BASE_QUERY} WHERE cd.id = %s'
         return self._fetchone_driver(query, (filter.id,))
 
-    def get_by_competition_id(self, filter: IdFilter) -> List[GetTeam]:
+    def get_by_competition_id(self, filter: IdFilter) -> List[GetDriver]:
         """Retrieve the drivers in a competition."""
         query = f'{self.BASE_QUERY} WHERE cd.competition_id = %s'
         return self._fetchmany_driver(query, (filter.id,))
@@ -64,12 +64,23 @@ class DriversManager:
         query = f'{self.BASE_QUERY} WHERE cd.team_id = %s'
         return self._fetchmany_driver(query, (filter.id,))
 
+    def get_by_name_and_competition(
+            self,
+            filter_name: NameFilter,
+            filter_competition: IdFilter) -> Optional[GetDriver]:
+        """Retrieve a driver by its name and the competition ID."""
+        query = f'''{self.BASE_QUERY} WHERE
+                    cd.name = %s AND cd.competition_id = %s'''
+        return self._fetchone_driver(
+            query, (filter_name.name, filter_competition.id))
+
     def add_one(self, driver: AddDriver, commit: bool = True) -> None:
         """Add a new driver."""
         if self.exists_by_name(driver.team_id, driver.name):
             raise ApiError(
-                f'The driver "{driver.name}" '
-                f'(team={driver.team_id}) already exists.')
+                message=f'The driver "{driver.name}" '
+                        f'(team={driver.team_id}) already exists.',
+                status_code=400)
 
         stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s, %s, %s, %s, %s)'
         params = (
@@ -90,7 +101,9 @@ class DriversManager:
             self, driver: UpdateDriver, commit: bool = True) -> None:
         """Update the data of a driver."""
         if self.get_by_id(IdFilter(id=driver.id)) is None:
-            raise ApiError(f'The driver with ID={driver.id} does not exist.')
+            raise ApiError(
+                message=f'The driver with ID={driver.id} does not exist.',
+                status_code=400)
 
         stmt, params = self._build_update(self.BASE_UPDATE, driver, key='id')
         with self._db as cursor:
@@ -205,12 +218,23 @@ class TeamsManager:
         query = f'{self.BASE_QUERY} WHERE ct.competition_id = %s'
         return self._fetchmany_team(query, (filter.id,))
 
+    def get_by_code_and_competition(
+            self,
+            filter_code: CodeFilter,
+            filter_competition: IdFilter) -> Optional[GetTeam]:
+        """Retrieve a team by its code and the competition ID."""
+        query = f'''{self.BASE_QUERY} WHERE
+                    ct.code = %s AND ct.competition_id = %s'''
+        return self._fetchone_team(
+            query, (filter_code.code, filter_competition.id))
+
     def add_one(self, team: AddTeam, commit: bool = True) -> None:
         """Add a new team."""
         if self.exists_by_code(team.competition_id, team.code):
             raise ApiError(
-                f'The team "{team.code}" '
-                f'(competition={team.competition_id}) already exists.')
+                message=f'The team "{team.code}" '
+                        f'(competition={team.competition_id}) already exists.',
+                status_code=400)
 
         stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s, %s)'
         params = (
@@ -228,7 +252,9 @@ class TeamsManager:
             self, team: UpdateTeam, commit: bool = True) -> None:
         """Update the data of a team."""
         if self.get_by_id(IdFilter(id=team.id)) is None:
-            raise ApiError(f'The team with ID={team.id} does not exist.')
+            raise ApiError(
+                message=f'The team with ID={team.id} does not exist.',
+                status_code=400)
 
         stmt, params = self._build_update(self.BASE_UPDATE, team, key='id')
         with self._db as cursor:

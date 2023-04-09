@@ -1,7 +1,7 @@
 from typing import List
 
 from ltsapi import _build_logger
-from ltsapi.main import _build_db_connection
+from ltsapi.router import _build_db_connection
 from ltsapi.models.competitions import GetCompetition
 
 

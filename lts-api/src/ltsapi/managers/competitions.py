@@ -58,7 +58,8 @@ class CompetitionManager:
         """Add a new competition."""
         if self.exists_by_code(competition.code):
             raise ApiError(
-                f'The code "{competition.code}" already exists.')
+                message=f'The code "{competition.code}" already exists.',
+                status_code=400)
 
         stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s)'
         params = (
@@ -70,6 +71,11 @@ class CompetitionManager:
             cursor.execute(stmt, params)
             if commit:
                 self._db.commit()
+
+    def exists_by_code(self, code: str) -> bool:
+        """Check if a competition with the given code exists."""
+        filter = CodeFilter(code=code)
+        return self.get_by_code(filter) is not None
 
     def _fetchone_competition(
             self,
@@ -100,8 +106,3 @@ class CompetitionManager:
             insert_date=row['cidx_insert_date'],
             update_date=row['cidx_update_date'],
         )
-
-    def exists_by_code(self, code: str) -> bool:
-        """Check if a competition with the given code exists."""
-        filter = CodeFilter(code=code)
-        return self.get_by_code(filter) is not None

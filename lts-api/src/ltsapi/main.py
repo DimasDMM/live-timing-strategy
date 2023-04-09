@@ -1,12 +1,10 @@
-from fastapi import FastAPI
-from logging import Logger
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 import os
-from typing import List
 
-from ltsapi import API_VERSION, _build_logger
-from ltsapi.db import DBContext
-from ltsapi.managers.competitions import CompetitionManager
-from ltsapi.models.competitions import GetCompetition
+from ltsapi.exceptions import ApiError
+from ltsapi.router.competitions import router as router_competitions
+from ltsapi.router.participants import router as router_participants
 
 
 app = FastAPI(
@@ -14,24 +12,33 @@ app = FastAPI(
     description='OpenAPI schema of LTS application',
     version='0.0.1',
 )
+app.include_router(router_competitions)
+app.include_router(router_participants)
 
 
-def _build_db_connection(logger: Logger) -> DBContext:
-    """Build connection with the database."""
-    return DBContext(
-        host=os.environ.get('DB_HOST', None),
-        port=os.environ.get('DB_PORT', None),
-        user=os.environ.get('DB_USER', None),
-        password=os.environ.get('DB_PASS', None),
-        database=os.environ.get('DB_DATABASE', None),
-        logger=logger,
+@app.exception_handler(ApiError)
+async def api_error_handler(
+        request: Request, exc: ApiError) -> JSONResponse:  # noqa: U100
+    """Handle and display error messages."""
+    return JSONResponse(
+        status_code=exc.get_status_code(),
+        content=exc.error_response().dict(),
     )
 
+if os.environ.get('DEBUG', default=False):
+    @app.exception_handler(Exception)
+    async def debug_exception_handler(
+            request: Request, exc: Exception) -> Response:  # noqa: U100
+        """Display exception traceback for debug purposes."""
+        import traceback
 
-@app.get(f'/{API_VERSION}/competitions/')
-async def get_all_competitions() -> List[GetCompetition]:
-    """Get all competitions in the database."""
-    logger = _build_logger(__package__)
-    db = _build_db_connection(logger)
-    manager = CompetitionManager(db=db, logger=logger)
-    return manager.get_all()
+        return Response(
+            content=''.join(
+                traceback.format_exception(
+                    type(exc),
+                    value=exc,
+                    tb=exc.__traceback__,
+                ),
+            ),
+            status_code=500,
+        )

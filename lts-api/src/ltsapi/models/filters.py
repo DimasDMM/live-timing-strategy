@@ -11,3 +11,9 @@ class CodeFilter(BaseModel):
     """Filter by code."""
 
     code: str
+
+
+class NameFilter(BaseModel):
+    """Filter by name."""
+
+    name: str

@@ -3,7 +3,7 @@ import time
 from typing import Any
 
 from ltsapi.db import DBContext
-from ltsapi.models.filters import IdFilter
+from ltsapi.models.filters import CodeFilter, IdFilter, NameFilter
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -194,6 +194,34 @@ class TestDriversManager(DatabaseTestInit):
         expected_items = [x for x in self.ALL_DRIVERS
                           if x['competition_id'] == competition_id]
         assert dict_items == expected_items
+
+    def test_get_by_name_and_competition(
+            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+        """Test method get_by_name_and_competition."""
+        driver_name = 'CKM 1 Driver 1'
+        competition_id = 1
+
+        manager = DriversManager(db=db_context, logger=fake_logger)
+        filter_name = NameFilter(name=driver_name)
+        filter_competition = IdFilter(id=competition_id)
+
+        db_item = manager.get_by_name_and_competition(
+            filter_name, filter_competition)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        expected_item = {
+            'id': 1,
+            'competition_id': 1,
+            'team_id': 1,
+            'code': 'team-1',
+            'name': 'CKM 1 Driver 1',
+            'number': 41,
+            'total_driving_time': 0,
+            'partial_driving_time': 0,
+            'reference_time_offset': 0,
+        }
+        assert dict_item == expected_item
 
     def test_add_one(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
@@ -432,6 +460,32 @@ class TestTeamsManager(DatabaseTestInit):
         expected_items = [x for x in self.ALL_TEAMS
                           if x['competition_id'] == competition_id]
         assert dict_items == expected_items
+
+    def test_get_by_code_and_competition(
+            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+        """Test method get_by_code_and_competition."""
+        competition_id = 1
+        team_code = 'team-2'
+
+        manager = TeamsManager(db=db_context, logger=fake_logger)
+        filter_code = CodeFilter(code=team_code)
+        filter_competition = IdFilter(id=competition_id)
+
+        db_item = manager.get_by_code_and_competition(
+            filter_code, filter_competition)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        expected_item = {
+            'id': 2,
+            'competition_id': 1,
+            'code': 'team-2',
+            'name': 'CKM 2',
+            'number': 42,
+            'reference_time_offset': 0,
+            'drivers': [],
+        }
+        assert dict_item == expected_item
 
     def test_add_one(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
