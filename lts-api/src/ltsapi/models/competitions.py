@@ -15,7 +15,7 @@ class AddCompetition(BaseModel):
     """Data to add a new competition."""
 
     track_id: int
-    code: str
+    competition_code: str
     name: str
     description: str
 
@@ -25,7 +25,7 @@ class GetCompetition(BaseModel):
 
     id: int
     track: GetTrack
-    code: str
+    competition_code: str
     name: str
     description: str
     insert_date: datetime

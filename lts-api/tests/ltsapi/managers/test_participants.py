@@ -1,9 +1,8 @@
 import pytest
 import time
-from typing import Any
+from typing import Any, Optional
 
 from ltsapi.db import DBContext
-from ltsapi.models.filters import CodeFilter, IdFilter, NameFilter
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -27,7 +26,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 1,
             'competition_id': 1,
             'team_id': 1,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
             'total_driving_time': 0,
@@ -38,7 +37,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 2,
             'competition_id': 1,
             'team_id': 1,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
             'total_driving_time': 0,
@@ -49,7 +48,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 3,
             'competition_id': 1,
             'team_id': 2,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
             'total_driving_time': 0,
@@ -60,7 +59,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 4,
             'competition_id': 1,
             'team_id': 2,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
             'total_driving_time': 0,
@@ -71,7 +70,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 5,
             'competition_id': 2,
             'team_id': 3,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
             'total_driving_time': 0,
@@ -82,7 +81,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 6,
             'competition_id': 2,
             'team_id': 3,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
             'total_driving_time': 0,
@@ -93,7 +92,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 7,
             'competition_id': 2,
             'team_id': 4,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
             'total_driving_time': 0,
@@ -104,7 +103,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 8,
             'competition_id': 2,
             'team_id': 4,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
             'total_driving_time': 0,
@@ -115,7 +114,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 9,
             'competition_id': 3,
             'team_id': 5,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
             'total_driving_time': 0,
@@ -126,7 +125,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 10,
             'competition_id': 3,
             'team_id': 5,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
             'total_driving_time': 0,
@@ -147,10 +146,10 @@ class TestDriversManager(DatabaseTestInit):
     def test_get_by_id(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
+        driver_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=2)
 
-        db_item = manager.get_by_id(filter)
+        db_item = manager.get_by_id(driver_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
@@ -158,7 +157,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 2,
             'competition_id': 1,
             'team_id': 1,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
             'total_driving_time': 0,
@@ -171,12 +170,10 @@ class TestDriversManager(DatabaseTestInit):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_team_id."""
         team_id = 2
-
         manager = DriversManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=team_id)
 
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
-                      for x in manager.get_by_team_id(filter)]
+                      for x in manager.get_by_team_id(team_id)]
         expected_items = [x for x in self.ALL_DRIVERS
                           if x['team_id'] == team_id]
         assert dict_items == expected_items
@@ -185,28 +182,26 @@ class TestDriversManager(DatabaseTestInit):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
         competition_id = 2
-
         manager = DriversManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=competition_id)
 
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
-                      for x in manager.get_by_competition_id(filter)]
+                      for x in manager.get_by_competition_id(competition_id)]
         expected_items = [x for x in self.ALL_DRIVERS
                           if x['competition_id'] == competition_id]
         assert dict_items == expected_items
 
-    def test_get_by_name_and_competition(
+    def test_get_by_name(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
-        """Test method get_by_name_and_competition."""
+        """Test method get_by_name."""
         driver_name = 'CKM 1 Driver 1'
+        team_id = 1
         competition_id = 1
-
         manager = DriversManager(db=db_context, logger=fake_logger)
-        filter_name = NameFilter(name=driver_name)
-        filter_competition = IdFilter(id=competition_id)
 
-        db_item = manager.get_by_name_and_competition(
-            filter_name, filter_competition)
+        db_item = manager.get_by_name(
+            driver_name=driver_name,
+            competition_id=competition_id,
+            team_id=team_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
@@ -214,7 +209,7 @@ class TestDriversManager(DatabaseTestInit):
             'id': 1,
             'competition_id': 1,
             'team_id': 1,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
             'total_driving_time': 0,
@@ -227,10 +222,10 @@ class TestDriversManager(DatabaseTestInit):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method add_one."""
         manager = DriversManager(db=db_context, logger=fake_logger)
+        competition_id = 1
+        team_id = 1
         add_item = AddDriver(
-            competition_id=1,
-            team_id=1,
-            code='team-1',
+            participant_code='team-1',
             name='CKM 1 Driver 3',
             number=41,
             total_driving_time=0,
@@ -238,18 +233,18 @@ class TestDriversManager(DatabaseTestInit):
             reference_time_offset=0,
         )
 
-        manager.add_one(add_item, commit=True)
+        manager.add_one(add_item, competition_id, team_id, commit=True)
 
-        filter = IdFilter(id=11)
-        db_item = manager.get_by_id(filter)
+        driver_id = 11
+        db_item = manager.get_by_id(driver_id, team_id, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 11,
-            'team_id': add_item.team_id,
-            'competition_id': add_item.competition_id,
-            'code': add_item.code,
+            'team_id': team_id,
+            'competition_id': competition_id,
+            'participant_code': add_item.participant_code,
             'name': add_item.name,
             'number': add_item.number,
             'total_driving_time': add_item.total_driving_time,
@@ -261,11 +256,11 @@ class TestDriversManager(DatabaseTestInit):
     def test_add_one_duplicated_code(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method add_one."""
+        competition_id = 1
+        team_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
         add_item = AddDriver(
-            competition_id=1,
-            team_id=2,
-            code='team-2',
+            participant_code='team-2',
             name='CKM 2 Driver 1',
             number=42,
             total_driving_time=0,
@@ -274,19 +269,21 @@ class TestDriversManager(DatabaseTestInit):
         )
 
         with pytest.raises(Exception) as e_info:
-            manager.add_one(add_item, commit=True)
+            manager.add_one(add_item, competition_id, team_id, commit=True)
 
         e: Exception = e_info.value
         assert (str(e) == f'The driver "{add_item.name}" '
-                f'(team={add_item.team_id}) already exists.')
+                f'(team={team_id}) already exists.')
 
     @pytest.mark.parametrize(
-        'update_data, expected_item',
+        'driver_id, team_id, competition_id, update_data, expected_item',
         [
             (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
                 UpdateDriver(
-                    id=2,
-                    code=None,
+                    participant_code=None,
                     name=None,
                     number=None,
                     total_driving_time=79000,
@@ -296,7 +293,7 @@ class TestDriversManager(DatabaseTestInit):
                     'id': 2,
                     'team_id': 1,
                     'competition_id': 1,
-                    'code': 'team-1',
+                    'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 2',
                     'number': 41,
                     'total_driving_time': 79000,
@@ -305,9 +302,11 @@ class TestDriversManager(DatabaseTestInit):
                 },
             ),
             (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
                 UpdateDriver(
-                    id=2,
-                    code='team-1-updated',
+                    participant_code='team-1-updated',
                     name='CKM 1 Driver 2 Updated',
                     number=51,
                     total_driving_time=79000,
@@ -317,7 +316,7 @@ class TestDriversManager(DatabaseTestInit):
                     'id': 2,
                     'team_id': 1,
                     'competition_id': 1,
-                    'code': 'team-1-updated',
+                    'participant_code': 'team-1-updated',
                     'name': 'CKM 1 Driver 2 Updated',
                     'number': 51,
                     'total_driving_time': 79000,
@@ -328,23 +327,24 @@ class TestDriversManager(DatabaseTestInit):
         ])
     def test_update_by_id(
             self,
+            driver_id: int,
+            team_id: Optional[int],
+            competition_id: Optional[int],
             update_data: UpdateDriver,
             expected_item: dict,
             request: Any) -> None:
         """Test method update_by_id."""
         db_context = request.getfixturevalue('db_context')
         fake_logger = request.getfixturevalue('fake_logger')
-
         manager = DriversManager(db=db_context, logger=fake_logger)
-        filter_id = IdFilter(id=update_data.id)
 
-        before_item = manager.get_by_id(filter_id)
+        before_item = manager.get_by_id(driver_id, team_id, competition_id)
         assert before_item is not None
 
         time.sleep(1)
-        manager.update_by_id(update_data)
+        manager.update_by_id(update_data, driver_id, team_id, competition_id)
 
-        after_item = manager.get_by_id(filter_id)
+        after_item = manager.get_by_id(driver_id, team_id, competition_id)
         assert after_item is not None
         dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
 
@@ -364,7 +364,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 1,
             'competition_id': 1,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
             'reference_time_offset': 0,
@@ -373,7 +373,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 2,
             'competition_id': 1,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
             'reference_time_offset': 0,
@@ -382,7 +382,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 3,
             'competition_id': 1,
-            'code': 'team-3',
+            'participant_code': 'team-3',
             'name': 'CKM 3',
             'number': 43,
             'reference_time_offset': 0,
@@ -391,7 +391,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 4,
             'competition_id': 2,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
             'reference_time_offset': 0,
@@ -400,7 +400,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 5,
             'competition_id': 2,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
             'reference_time_offset': 0,
@@ -409,7 +409,7 @@ class TestTeamsManager(DatabaseTestInit):
         {
             'id': 6,
             'competition_id': 3,
-            'code': 'team-1',
+            'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
             'reference_time_offset': 0,
@@ -429,17 +429,17 @@ class TestTeamsManager(DatabaseTestInit):
     def test_get_by_id(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
+        team_id = 2
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=2)
 
-        db_item = manager.get_by_id(filter)
+        db_item = manager.get_by_id(team_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 2,
             'competition_id': 1,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
             'reference_time_offset': 0,
@@ -451,35 +451,29 @@ class TestTeamsManager(DatabaseTestInit):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
         competition_id = 2
-
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=competition_id)
 
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
-                      for x in manager.get_by_competition_id(filter)]
+                      for x in manager.get_by_competition_id(competition_id)]
         expected_items = [x for x in self.ALL_TEAMS
                           if x['competition_id'] == competition_id]
         assert dict_items == expected_items
 
-    def test_get_by_code_and_competition(
+    def test_get_by_code(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
-        """Test method get_by_code_and_competition."""
-        competition_id = 1
+        """Test method get_by_code."""
         team_code = 'team-2'
-
+        competition_id = 1
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        filter_code = CodeFilter(code=team_code)
-        filter_competition = IdFilter(id=competition_id)
 
-        db_item = manager.get_by_code_and_competition(
-            filter_code, filter_competition)
+        db_item = manager.get_by_code(team_code, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 2,
             'competition_id': 1,
-            'code': 'team-2',
+            'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
             'reference_time_offset': 0,
@@ -490,26 +484,26 @@ class TestTeamsManager(DatabaseTestInit):
     def test_add_one(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method add_one."""
+        competition_id = 3
+        team_id = 7
         manager = TeamsManager(db=db_context, logger=fake_logger)
         add_item = AddTeam(
-            competition_id=3,
-            code='team-2',
+            participant_code='team-2',
             name='CKM 2',
             number=42,
             reference_time_offset=0,
         )
 
-        manager.add_one(add_item, commit=True)
+        manager.add_one(add_item, competition_id, commit=True)
 
-        filter = IdFilter(id=7)
-        db_item = manager.get_by_id(filter)
+        db_item = manager.get_by_id(team_id, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
-            'id': 7,
-            'competition_id': add_item.competition_id,
-            'code': add_item.code,
+            'id': team_id,
+            'competition_id': competition_id,
+            'participant_code': add_item.participant_code,
             'name': add_item.name,
             'number': add_item.number,
             'reference_time_offset': add_item.reference_time_offset,
@@ -520,37 +514,40 @@ class TestTeamsManager(DatabaseTestInit):
     def test_add_one_duplicated_code(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method add_one."""
+        competition_id = 1
         manager = TeamsManager(db=db_context, logger=fake_logger)
         add_item = AddTeam(
-            competition_id=1,
-            code='team-2',
+            competition_id=competition_id,
+            participant_code='team-2',
             name='CKM 2',
             number=42,
             reference_time_offset=0,
         )
 
         with pytest.raises(Exception) as e_info:
-            manager.add_one(add_item, commit=True)
+            manager.add_one(add_item, competition_id, commit=True)
 
         e: Exception = e_info.value
-        assert (str(e) == f'The team "{add_item.code}" '
-                f'(competition={add_item.competition_id}) already exists.')
+        assert (str(e) == f'The team "{add_item.participant_code}" '
+                f'(competition={competition_id}) already exists.')
 
     @pytest.mark.parametrize(
-        'update_data, expected_item',
+        'team_id, competition_id, update_data, expected_item',
         [
             (
+                2,  # team_id
+                1,  # competition_id
                 UpdateTeam(
                     id=2,
                     name=None,
-                    code=None,
+                    participant_code=None,
                     number=None,
                     reference_time_offset=78000,
                 ),
                 {
                     'id': 2,
                     'competition_id': 1,
-                    'code': 'team-2',
+                    'participant_code': 'team-2',
                     'name': 'CKM 2',
                     'number': 42,
                     'reference_time_offset': 78000,
@@ -558,17 +555,19 @@ class TestTeamsManager(DatabaseTestInit):
                 },
             ),
             (
+                2,  # team_id
+                1,  # competition_id
                 UpdateTeam(
                     id=2,
                     name='CKM 2 Updated',
-                    code='team-2-updated',
+                    participant_code='team-2-updated',
                     number=52,
                     reference_time_offset=78000,
                 ),
                 {
                     'id': 2,
                     'competition_id': 1,
-                    'code': 'team-2-updated',
+                    'participant_code': 'team-2-updated',
                     'name': 'CKM 2 Updated',
                     'number': 52,
                     'reference_time_offset': 78000,
@@ -578,23 +577,23 @@ class TestTeamsManager(DatabaseTestInit):
         ])
     def test_update_by_id(
             self,
+            team_id: int,
+            competition_id: int,
             update_data: UpdateTeam,
             expected_item: dict,
             request: Any) -> None:
         """Test method update_by_id."""
         db_context = request.getfixturevalue('db_context')
         fake_logger = request.getfixturevalue('fake_logger')
-
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        filter_id = IdFilter(id=update_data.id)
 
-        before_item = manager.get_by_id(filter_id)
+        before_item = manager.get_by_id(team_id, competition_id)
         assert before_item is not None
 
         time.sleep(1)
-        manager.update_by_id(update_data)
+        manager.update_by_id(update_data, team_id, competition_id)
 
-        after_item = manager.get_by_id(filter_id)
+        after_item = manager.get_by_id(team_id, competition_id)
         assert after_item is not None
         dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
 

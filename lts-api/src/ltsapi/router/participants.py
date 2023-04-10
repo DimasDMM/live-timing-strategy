@@ -4,7 +4,6 @@ from typing import Annotated, List, Union
 from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
 from ltsapi.managers.participants import DriversManager, TeamsManager
-from ltsapi.models.filters import CodeFilter, IdFilter, NameFilter
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -17,125 +16,188 @@ from ltsapi.models.responses import Empty
 from ltsapi.router import _build_db_connection
 
 
-router = APIRouter(prefix=f'/{API_VERSION}/participants', tags=['Participants'])
+router = APIRouter(
+    prefix='/' + API_VERSION + '/competitions/{competition_id}',  # noqa
+    tags=['Participants'])
 _logger = _build_logger(__package__)
 _db = _build_db_connection(_logger)
 
 
-@router.post('/teams')
-async def add_team(team: AddTeam) -> GetTeam:
-    """Add a new team."""
-    manager = TeamsManager(db=_db, logger=_logger)
-    manager.add_one(team, commit=True)
-    item = manager.get_by_code_and_competition(
-        CodeFilter(code=team.code), IdFilter(id=team.competition_id))
-    if item is None:
-        raise ApiError('No data was inserted or updated.')
-    return item
-
-
-@router.get('/teams/{team_id}')  # noqa: FS003
-async def get_team_by_id(
-    team_id: Annotated[int, Path(title='The ID of the team')],
-) -> Union[GetTeam, Empty]:
-    """Get a team by its ID."""
-    manager = TeamsManager(db=_db, logger=_logger)
-    item = manager.get_by_id(IdFilter(id=team_id))
-    return Empty() if item is None else item
-
-
-@router.put('/teams/{team_id}')  # noqa: FS003
-async def update_team_by_id(
-    team_id: Annotated[int, Path(title='The ID of the team')],
-    team: UpdateTeam,
-) -> GetTeam:
-    """Update the data of a team."""
-    _validate_team_id(team_id, team)
-    manager = TeamsManager(db=_db, logger=_logger)
-    manager.update_by_id(team)
-    item = manager.get_by_id(IdFilter(id=team_id))
-    if item is None:
-        raise ApiError('No data was inserted or updated.')
-    return item
-
-
-@router.get('/teams/filter/competition/{competition_id}')  # noqa: FS003
+@router.get(
+        path='/teams',
+        summary='Get all teams in a competition')
 async def get_teams_by_competition_id(
-    competition_id: Annotated[int, Path(title='The ID of the competition')],
+    competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetTeam]:
     """Get all teams in a specific competition."""
     manager = TeamsManager(db=_db, logger=_logger)
-    return manager.get_by_competition_id(IdFilter(id=competition_id))
+    return manager.get_by_competition_id(competition_id)
 
 
-@router.post('/drivers')
-async def add_driver(driver: AddDriver) -> GetDriver:
-    """Add a new driver."""
-    manager = DriversManager(db=_db, logger=_logger)
-    manager.add_one(driver, commit=True)
-    item = manager.get_by_name_and_competition(
-        NameFilter(name=driver.name), IdFilter(id=driver.competition_id))
+@router.post(
+        path='/teams',
+        summary='Add a new team to a competition.')
+async def add_team_to_competition(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team: AddTeam,
+) -> GetTeam:
+    """Add a new team."""
+    manager = TeamsManager(db=_db, logger=_logger)
+    manager.add_one(team, competition_id, commit=True)
+    item = manager.get_by_code(team.participant_code, competition_id)
     if item is None:
         raise ApiError('No data was inserted or updated.')
     return item
 
 
-@router.get('/drivers/{driver_id}')  # noqa: FS003
-async def get_driver_by_id(
-    driver_id: Annotated[int, Path(title='The ID of the driver')],
-) -> Union[GetDriver, Empty]:
-    """Get a driver by its ID."""
-    manager = DriversManager(db=_db, logger=_logger)
-    item = manager.get_by_id(IdFilter(id=driver_id))
+@router.get(
+        path='/teams/{team_id}',  # noqa: FS003
+        summary='Get a team of a competition')
+async def get_team_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+) -> Union[GetTeam, Empty]:
+    """Get a team by its ID."""
+    manager = TeamsManager(db=_db, logger=_logger)
+    item = manager.get_by_id(team_id, competition_id)
     return Empty() if item is None else item
 
 
-@router.put('/drivers/{driver_id}')  # noqa: FS003
-async def update_driver_by_id(
-    driver_id: Annotated[int, Path(title='The ID of the driver')],
-    driver: UpdateDriver,
-) -> GetDriver:
-    """Update the data of a driver."""
-    _validate_driver_id(driver_id, driver)
-    manager = DriversManager(db=_db, logger=_logger)
-    manager.update_by_id(driver)
-    item = manager.get_by_id(IdFilter(id=driver_id))
+@router.put(
+        path='/teams/{team_id}',  # noqa: FS003
+        summary='Update a team of a competition')
+async def update_team_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+    team: UpdateTeam,
+) -> GetTeam:
+    """Update the data of a team."""
+    manager = TeamsManager(db=_db, logger=_logger)
+    manager.update_by_id(team, team_id, competition_id)
+    item = manager.get_by_id(team_id, competition_id)
     if item is None:
         raise ApiError('No data was inserted or updated.')
     return item
 
 
-@router.get('/drivers/filter/competition/{competition_id}')  # noqa: FS003
-async def get_drivers_by_competition_id(
-    competition_id: Annotated[int, Path(title='The ID of the competition')],
-) -> List[GetDriver]:
-    """Get all drivers in a specific competition."""
-    manager = DriversManager(db=_db, logger=_logger)
-    return manager.get_by_competition_id(IdFilter(id=competition_id))
-
-
-@router.get('/drivers/filter/team/{team_id}')  # noqa: FS003
-async def get_drivers_by_team_id(
-    team_id: Annotated[int, Path(title='The ID of the team')],
+@router.get(
+        path='/teams/{team_id}/drivers',  # noqa: FS003
+        summary='Get all the drivers in a team')
+async def get_team_drivers_by_team_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
 ) -> List[GetDriver]:
     """Get all drivers in a specific team."""
     manager = DriversManager(db=_db, logger=_logger)
-    return manager.get_by_team_id(IdFilter(id=team_id))
+    return manager.get_by_team_id(team_id, competition_id)
 
 
-def _validate_team_id(team_id: int, team: UpdateTeam) -> None:
-    """Validate that the given ID coincides with the team data."""
-    if team_id != team.id:
-        raise ApiError(
-            message=f'The IDs does not coincide ({team_id} != {team.id}).',
-            status_code=400,
-        )
+@router.post(
+        path='/teams/{team_id}/drivers',  # noqa: FS003
+        summary='Add a new driver to a team')
+async def add_team_driver(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+    driver: AddDriver,
+) -> GetDriver:
+    """Add a new driver in the team."""
+    manager = DriversManager(db=_db, logger=_logger)
+    manager.add_one(driver, competition_id, team_id, commit=True)
+    item = manager.get_by_name(
+        driver_name=driver.name,
+        team_id=team_id,
+        competition_id=competition_id)
+    if item is None:
+        raise ApiError('No data was inserted or updated.')
+    return item
 
 
-def _validate_driver_id(driver_id: int, driver: UpdateDriver) -> None:
-    """Validate that the given ID coincides with the driver data."""
-    if driver_id != driver.id:
-        raise ApiError(
-            message=f'The IDs does not coincide ({driver_id} != {driver.id}).',
-            status_code=400,
-        )
+@router.get(
+        path='/teams/{team_id}/drivers/{driver_id}',  # noqa: FS003
+        summary='Get a driver of a team')
+async def get_team_driver_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+) -> Union[GetDriver, Empty]:
+    """Get a driver by its ID."""
+    manager = DriversManager(db=_db, logger=_logger)
+    item = manager.get_by_id(driver_id, team_id, competition_id)
+    return Empty() if item is None else item
+
+
+@router.put(
+        path='/teams/{team_id}/drivers/{driver_id}',  # noqa: FS003
+        summary='Update a driver of a team')
+async def update_team_driver_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+    driver: UpdateDriver,
+) -> GetDriver:
+    """Update the data of a driver."""
+    manager = DriversManager(db=_db, logger=_logger)
+    manager.update_by_id(driver, driver_id, team_id, competition_id)
+    item = manager.get_by_id(driver_id, team_id, competition_id)
+    if item is None:
+        raise ApiError('No data was inserted or updated.')
+    return item
+
+
+@router.get(
+        path='/drivers',
+        summary='Get all the drivers (w/wo team) in a competition')
+async def get_single_drivers_by_competition_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+) -> List[GetDriver]:
+    """Get all drivers in a specific competition."""
+    manager = DriversManager(db=_db, logger=_logger)
+    return manager.get_by_competition_id(competition_id)
+
+
+@router.post(
+        path='/drivers',
+        summary='Add a driver (without team) to a competition')
+async def add_single_driver(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    driver: AddDriver,
+) -> GetDriver:
+    """Add a new driver without team."""
+    manager = DriversManager(db=_db, logger=_logger)
+    manager.add_one(driver, competition_id, commit=True)
+    item = manager.get_by_name(
+        driver_name=driver.name,
+        competition_id=competition_id)
+    if item is None:
+        raise ApiError('No data was inserted or updated.')
+    return item
+
+
+@router.get(
+        path='/drivers/{driver_id}',  # noqa: FS003
+        summary='Get a driver (w/wo team)')
+async def get_single_driver_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+) -> Union[GetDriver, Empty]:
+    """Get a driver by its ID."""
+    manager = DriversManager(db=_db, logger=_logger)
+    item = manager.get_by_id(driver_id, competition_id=competition_id)
+    return Empty() if item is None else item
+
+
+@router.put(
+        path='/drivers/{driver_id}',  # noqa: FS003
+        summary='Update a driver (w/wo team) of a competition')
+async def update_single_driver_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+    driver: UpdateDriver,
+) -> GetDriver:
+    """Update the data of a driver."""
+    manager = DriversManager(db=_db, logger=_logger)
+    manager.update_by_id(driver, driver_id, competition_id=competition_id)
+    item = manager.get_by_id(driver_id, competition_id=competition_id)
+    if item is None:
+        raise ApiError('No data was inserted or updated.')
+    return item

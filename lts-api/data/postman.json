@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"track_id\": 1,\r\n    \"code\": \"santos-add-postman\",\r\n    \"name\": \"Los Santos - Added via Postman\",\r\n    \"description\": \"Karting Los Santos - Added via Postman\"\r\n}\r\n",
+					"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"santos-add-postman\",\r\n    \"name\": \"Los Santos - Added via Postman\",\r\n    \"description\": \"Karting Los Santos - Added via Postman\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -52,7 +52,7 @@
 			"response": []
 		},
 		{
-			"name": "Get competition by ID",
+			"name": "Get competition",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -71,7 +71,7 @@
 			"response": []
 		},
 		{
-			"name": "Get competition by code",
+			"name": "Get competition (by code)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -92,27 +92,19 @@
 			"response": []
 		},
 		{
-			"name": "Add a team",
+			"name": "Get all teams of a competition",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"competition_id\": 1,\r\n    \"code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101,\r\n    \"reference_time_offset\": 0\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{api_url}}/v1/participants/teams",
+					"raw": "{{api_url}}/v1/competitions/1/teams",
 					"host": [
 						"{{api_url}}"
 					],
 					"path": [
 						"v1",
-						"participants",
+						"competitions",
+						"1",
 						"teams"
 					]
 				}
@@ -120,84 +112,13 @@
 			"response": []
 		},
 		{
-			"name": "Get team by ID",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{api_url}}/v1/participants/teams/1",
-					"host": [
-						"{{api_url}}"
-					],
-					"path": [
-						"v1",
-						"participants",
-						"teams",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update team by ID",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"CKM 1 Updated\",\r\n    \"number\": 51\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{api_url}}/v1/participants/teams/1",
-					"host": [
-						"{{api_url}}"
-					],
-					"path": [
-						"v1",
-						"participants",
-						"teams",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all teams by competition",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{api_url}}/v1/participants/teams/filter/competition/1",
-					"host": [
-						"{{api_url}}"
-					],
-					"path": [
-						"v1",
-						"participants",
-						"teams",
-						"filter",
-						"competition",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add a driver",
+			"name": "Add a team to a competition",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"competition_id\": 1,\r\n    \"team_id\": 1,\r\n    \"code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
+					"raw": "{\r\n    \"participant_code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101,\r\n    \"reference_time_offset\": 0\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -205,13 +126,87 @@
 					}
 				},
 				"url": {
-					"raw": "{{api_url}}/v1/participants/drivers",
+					"raw": "{{api_url}}/v1/competitions/1/teams",
 					"host": [
 						"{{api_url}}"
 					],
 					"path": [
 						"v1",
-						"participants",
+						"competitions",
+						"1",
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get team of a competition",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/teams/1",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a team of a competition",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM 1 Updated\",\r\n    \"number\": 51\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/teams/1",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all drivers in a team",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"teams",
+						"1",
 						"drivers"
 					]
 				}
@@ -219,33 +214,13 @@
 			"response": []
 		},
 		{
-			"name": "Get driver by ID",
+			"name": "Add a driver to a team",
 			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{api_url}}/v1/participants/drivers/1",
-					"host": [
-						"{{api_url}}"
-					],
-					"path": [
-						"v1",
-						"participants",
-						"drivers",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update driver by ID",
-			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
+					"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -253,13 +228,47 @@
 					}
 				},
 				"url": {
-					"raw": "{{api_url}}/v1/participants/drivers/1",
+					"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers",
 					"host": [
 						"{{api_url}}"
 					],
 					"path": [
 						"v1",
-						"participants",
+						"competitions",
+						"1",
+						"teams",
+						"1",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update driver of a team",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers/1",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"teams",
+						"1",
 						"drivers",
 						"1"
 					]
@@ -268,21 +277,69 @@
 			"response": []
 		},
 		{
-			"name": "Get all drivers by competition Copy",
+			"name": "Get all drivers in a competition",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{api_url}}/v1/participants/drivers/filter/competition/1",
+					"raw": "{{api_url}}/v1/competitions/1/drivers",
 					"host": [
 						"{{api_url}}"
 					],
 					"path": [
 						"v1",
-						"participants",
+						"competitions",
+						"1",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a driver (no team)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/drivers",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get driver (w/wo team)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/drivers/1",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
 						"drivers",
-						"filter",
-						"competition",
 						"1"
 					]
 				}
@@ -290,21 +347,29 @@
 			"response": []
 		},
 		{
-			"name": "Get all drivers by team",
+			"name": "Update driver (no team)",
 			"request": {
-				"method": "GET",
+				"method": "PUT",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{api_url}}/v1/participants/drivers/filter/team/1",
+					"raw": "{{api_url}}/v1/competitions/1/drivers/1",
 					"host": [
 						"{{api_url}}"
 					],
 					"path": [
 						"v1",
-						"participants",
+						"competitions",
+						"1",
 						"drivers",
-						"filter",
-						"team",
 						"1"
 					]
 				}

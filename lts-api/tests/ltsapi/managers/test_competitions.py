@@ -1,7 +1,6 @@
 import pytest
 
 from ltsapi.db import DBContext
-from ltsapi.models.filters import CodeFilter, IdFilter
 from ltsapi.models.competitions import AddCompetition
 from ltsapi.managers.competitions import CompetitionManager
 from tests.helpers import DatabaseTestInit
@@ -27,21 +26,21 @@ class TestCompetitionManager(DatabaseTestInit):
             {
                 'id': 1,
                 'track': {'id': 1, 'name': 'Karting Los Santos'},
-                'code': 'santos-endurance-2023-02-26',
+                'competition_code': 'santos-endurance-2023-02-26',
                 'name': 'Resistencia Los Santos 26-02-2023',
                 'description': 'Resistencia de 3h en Karting Los Santos',
             },
             {
                 'id': 2,
                 'track': {'id': 1, 'name': 'Karting Los Santos'},
-                'code': 'santos-endurance-2023-03-25',
+                'competition_code': 'santos-endurance-2023-03-25',
                 'name': 'Resistencia Los Santos 25-03-2023',
                 'description': 'Resistencia de 3h en Karting Los Santos',
             },
             {
                 'id': 3,
                 'track': {'id': 2, 'name': 'Karting Burgueño'},
-                'code': 'burgueno-endurance-2023-03-26',
+                'competition_code': 'burgueno-endurance-2023-03-26',
                 'name': 'Resistencia Burgueño 26-03-2023',
                 'description': 'Resistencia de 3h en Karting Burgueño',
             },
@@ -51,17 +50,17 @@ class TestCompetitionManager(DatabaseTestInit):
     def test_get_by_id(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
+        competition_id = 2
         manager = CompetitionManager(db=db_context, logger=fake_logger)
-        filter = IdFilter(id=2)
 
-        db_item = manager.get_by_id(filter)
+        db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 2,
             'track': {'id': 1, 'name': 'Karting Los Santos'},
-            'code': 'santos-endurance-2023-03-25',
+            'competition_code': 'santos-endurance-2023-03-25',
             'name': 'Resistencia Los Santos 25-03-2023',
             'description': 'Resistencia de 3h en Karting Los Santos',
         }
@@ -70,17 +69,17 @@ class TestCompetitionManager(DatabaseTestInit):
     def test_get_by_code(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_by_code."""
+        competition_code = 'burgueno-endurance-2023-03-26'
         manager = CompetitionManager(db=db_context, logger=fake_logger)
-        filter = CodeFilter(code='burgueno-endurance-2023-03-26')
 
-        db_item = manager.get_by_code(filter)
+        db_item = manager.get_by_code(competition_code)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 3,
             'track': {'id': 2, 'name': 'Karting Burgueño'},
-            'code': 'burgueno-endurance-2023-03-26',
+            'competition_code': 'burgueno-endurance-2023-03-26',
             'name': 'Resistencia Burgueño 26-03-2023',
             'description': 'Resistencia de 3h en Karting Burgueño',
         }
@@ -89,25 +88,25 @@ class TestCompetitionManager(DatabaseTestInit):
     def test_add_one(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method add_one."""
+        competition_id = 4
         manager = CompetitionManager(db=db_context, logger=fake_logger)
         add_item = AddCompetition(
             track_id=2,
-            code='add-one-competition',
+            competition_code='add-one-competition',
             name='Added competition',
             description='This is a test of adding a competition',
         )
 
         manager.add_one(add_item, commit=True)
 
-        filter = IdFilter(id=4)
-        db_item = manager.get_by_id(filter)
+        db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         expected_item = {
             'id': 4,
             'track': {'id': 2, 'name': 'Karting Burgueño'},
-            'code': add_item.code,
+            'competition_code': add_item.competition_code,
             'name': add_item.name,
             'description': add_item.description,
         }
@@ -120,7 +119,7 @@ class TestCompetitionManager(DatabaseTestInit):
         manager = CompetitionManager(db=db_context, logger=fake_logger)
         add_item = AddCompetition(
             track_id=2,
-            code=competition_code,
+            competition_code=competition_code,
             name='Duplicated competition',
             description='This is a test of adding a duplicated competition',
         )
@@ -129,4 +128,5 @@ class TestCompetitionManager(DatabaseTestInit):
             manager.add_one(add_item, commit=True)
 
         e: Exception = e_info.value
-        assert str(e) == f'The code "{competition_code}" already exists.'
+        assert str(e) == ('There is already a competition '
+                          f'with the code "{competition_code}".')

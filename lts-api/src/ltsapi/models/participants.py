@@ -6,9 +6,7 @@ from typing import List, Optional
 class AddDriver(BaseModel):
     """Data to add a new driver."""
 
-    competition_id: int
-    team_id: Optional[int]
-    code: Optional[str]
+    participant_code: str
     name: str
     number: Optional[int]
     total_driving_time: Optional[int]
@@ -22,7 +20,7 @@ class GetDriver(BaseModel):
     id: int
     competition_id: int
     team_id: Optional[int]
-    code: Optional[str]
+    participant_code: str
     name: str
     number: Optional[int]
     total_driving_time: int
@@ -35,8 +33,7 @@ class GetDriver(BaseModel):
 class UpdateDriver(BaseModel):
     """Update the data of a driver."""
 
-    id: int
-    code: Optional[str]
+    participant_code: Optional[str]
     name: Optional[str]
     number: Optional[int]
     total_driving_time: Optional[int]
@@ -47,8 +44,7 @@ class UpdateDriver(BaseModel):
 class AddTeam(BaseModel):
     """Data to add a new team."""
 
-    competition_id: int
-    code: Optional[str]
+    participant_code: str
     name: str
     number: Optional[int]
     reference_time_offset: Optional[int]
@@ -59,7 +55,7 @@ class GetTeam(BaseModel):
 
     id: int
     competition_id: int
-    code: Optional[str]
+    participant_code: str
     name: str
     number: Optional[int]
     reference_time_offset: int
@@ -71,8 +67,7 @@ class GetTeam(BaseModel):
 class UpdateTeam(BaseModel):
     """Update the data of a team."""
 
-    id: int
-    code: Optional[str]
+    participant_code: Optional[str]
     name: Optional[str]
     number: Optional[int]
     reference_time_offset: Optional[int]

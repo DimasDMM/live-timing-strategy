@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
-from ltsapi.models.filters import CodeFilter, IdFilter
 from ltsapi.models.competitions import AddCompetition, GetCompetition
 
 
@@ -16,7 +15,7 @@ class CompetitionManager:
             cidx.`track_id` AS cidx_track_id,
             cidx.`name` AS cidx_name,
             cidx.`description` AS cidx_description,
-            cidx.`code` AS cidx_code,
+            cidx.`competition_code` AS cidx_competition_code,
             cidx.`insert_date` AS cidx_insert_date,
             cidx.`update_date` AS cidx_update_date,
             tracks.`id` AS tracks_id,
@@ -27,7 +26,7 @@ class CompetitionManager:
         JOIN tracks ON tracks.id = cidx.track_id'''
     BASE_INSERT = '''
         INSERT INTO `competitions_index`
-        (`track_id`, `code`, `name`, `description`) VALUES'''
+        (`track_id`, `competition_code`, `name`, `description`) VALUES'''
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
@@ -44,38 +43,59 @@ class CompetitionManager:
                 items.append(self._raw_to_competition(row))  # type: ignore
             return items
 
-    def get_by_id(self, filter: IdFilter) -> Optional[GetCompetition]:
-        """Retrieve a competition by its ID."""
-        query = f'{self.BASE_QUERY} WHERE cidx.id = %s'
-        return self._fetchone_competition(query, (filter.id,))
+    def get_by_id(self, competition_id: int) -> Optional[GetCompetition]:
+        """
+        Retrieve a competition by its ID.
 
-    def get_by_code(self, filter: CodeFilter) -> Optional[GetCompetition]:
-        """Retrieve a competition by its code."""
-        query = f'{self.BASE_QUERY} WHERE cidx.code = %s'
-        return self._fetchone_competition(query, (filter.code,))
+        Params:
+            competition_id (int): ID of the competition.
+
+        Returns:
+            GetCompetition | None: If the competition exists, returns
+                its instance.
+        """
+        query = f'{self.BASE_QUERY} WHERE cidx.id = %s'
+        return self._fetchone_competition(query, (competition_id,))
+
+    def get_by_code(self, competition_code: str) -> Optional[GetCompetition]:
+        """
+        Retrieve a competition by its code.
+
+        Params:
+            competition_code (str): Code of the competition.
+
+        Returns:
+            GetCompetition | None: If the competition exists, returns
+                its instance.
+        """
+        query = f'{self.BASE_QUERY} WHERE cidx.competition_code = %s'
+        return self._fetchone_competition(query, (competition_code,))
 
     def add_one(self, competition: AddCompetition, commit: bool = True) -> None:
-        """Add a new competition."""
-        if self.exists_by_code(competition.code):
+        """
+        Add a new competition.
+
+        Params:
+            competition (AddCompetition): Data of the competition.
+            commit (bool): Commit transaction.
+        """
+        code = competition.competition_code
+        if self.get_by_code(code) is not None:
             raise ApiError(
-                message=f'The code "{competition.code}" already exists.',
+                message=(
+                    f'There is already a competition with the code "{code}".'),
                 status_code=400)
 
         stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s)'
         params = (
             competition.track_id,
-            competition.code,
+            competition.competition_code,
             competition.name,
             competition.description)
         with self._db as cursor:
             cursor.execute(stmt, params)
             if commit:
                 self._db.commit()
-
-    def exists_by_code(self, code: str) -> bool:
-        """Check if a competition with the given code exists."""
-        filter = CodeFilter(code=code)
-        return self.get_by_code(filter) is not None
 
     def _fetchone_competition(
             self,
@@ -100,7 +120,7 @@ class CompetitionManager:
                 'insert_date': row['tracks_insert_date'],
                 'update_date': row['tracks_update_date'],
             },
-            code=row['cidx_code'],
+            competition_code=row['cidx_competition_code'],
             name=row['cidx_name'],
             description=row['cidx_description'],
             insert_date=row['cidx_insert_date'],
