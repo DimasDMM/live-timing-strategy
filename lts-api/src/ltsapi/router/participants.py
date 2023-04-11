@@ -46,7 +46,7 @@ async def add_team_to_competition(
     item_id = manager.add_one(team, competition_id, commit=True)
     if item_id is None:
         raise ApiError('No data was inserted or updated.')
-    item = manager.get_by_id(item_id)
+    item = manager.get_by_id(team_id=item_id)
     if item is None:
         raise ApiError('It was not possible to locate the new data.')
     return item
@@ -61,7 +61,7 @@ async def get_team_by_id(
 ) -> Union[GetTeam, Empty]:
     """Get a team by its ID."""
     manager = TeamsManager(db=_db, logger=_logger)
-    item = manager.get_by_id(team_id, competition_id)
+    item = manager.get_by_id(team_id=team_id, competition_id=competition_id)
     return Empty() if item is None else item
 
 
@@ -75,7 +75,8 @@ async def update_team_by_id(
 ) -> GetTeam:
     """Update the data of a team."""
     manager = TeamsManager(db=_db, logger=_logger)
-    manager.update_by_id(team, team_id, competition_id)
+    manager.update_by_id(
+        team, team_id=team_id, competition_id=competition_id)
     item = manager.get_by_id(team_id, competition_id)
     if item is None:
         raise ApiError('No data was inserted or updated.')
@@ -104,7 +105,8 @@ async def add_team_driver(
 ) -> GetDriver:
     """Add a new driver in the team."""
     manager = DriversManager(db=_db, logger=_logger)
-    item_id = manager.add_one(driver, competition_id, team_id, commit=True)
+    item_id = manager.add_one(
+        driver, competition_id=competition_id, team_id=team_id, commit=True)
     if item_id is None:
         raise ApiError('No data was inserted or updated.')
     item = manager.get_by_id(item_id)
@@ -123,7 +125,8 @@ async def get_team_driver_by_id(
 ) -> Union[GetDriver, Empty]:
     """Get a driver by its ID."""
     manager = DriversManager(db=_db, logger=_logger)
-    item = manager.get_by_id(driver_id, team_id, competition_id)
+    item = manager.get_by_id(
+        driver_id, team_id=team_id, competition_id=competition_id)
     return Empty() if item is None else item
 
 
@@ -138,8 +141,10 @@ async def update_team_driver_by_id(
 ) -> GetDriver:
     """Update the data of a driver."""
     manager = DriversManager(db=_db, logger=_logger)
-    manager.update_by_id(driver, driver_id, team_id, competition_id)
-    item = manager.get_by_id(driver_id, team_id, competition_id)
+    manager.update_by_id(
+        driver, driver_id, team_id=team_id, competition_id=competition_id)
+    item = manager.get_by_id(
+        driver_id, team_id=team_id, competition_id=competition_id)
     if item is None:
         raise ApiError('No data was inserted or updated.')
     return item
@@ -165,7 +170,8 @@ async def add_single_driver(
 ) -> GetDriver:
     """Add a new driver without team."""
     manager = DriversManager(db=_db, logger=_logger)
-    item_id = manager.add_one(driver, competition_id, commit=True)
+    item_id = manager.add_one(
+        driver, competition_id=competition_id, commit=True)
     if item_id is None:
         raise ApiError('No data was inserted or updated.')
     item = manager.get_by_id(item_id)

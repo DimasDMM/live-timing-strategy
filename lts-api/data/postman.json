@@ -52,7 +52,7 @@
 			"response": []
 		},
 		{
-			"name": "Get competition",
+			"name": "Get a competition",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -71,7 +71,7 @@
 			"response": []
 		},
 		{
-			"name": "Get competition (by code)",
+			"name": "Get a competition (by code)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -86,6 +86,79 @@
 						"filter",
 						"code",
 						"santos-endurance-2023-02-26"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all tracks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/tracks",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"tracks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a track",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"New track 2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/tracks",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"tracks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a track",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Karting North Updated\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/tracks/1",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"tracks",
+						"1"
 					]
 				}
 			},
