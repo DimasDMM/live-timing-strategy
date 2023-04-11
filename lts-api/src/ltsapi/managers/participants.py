@@ -1,8 +1,14 @@
 from logging import Logger
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
+from ltsapi.managers.utils.statements import (
+    insert_model,
+    update_model,
+    fetchmany_models,
+    fetchone_model,
+)
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -30,14 +36,7 @@ class DriversManager:
             cd.`insert_date` AS cd_insert_date,
             cd.`update_date` AS cd_update_date
         FROM drivers AS cd'''
-    BASE_INSERT = '''
-        INSERT INTO `drivers`
-        (
-            `competition_id`, `team_id`, `participant_code`, `name`, `number`,
-            `total_driving_time`, `partial_driving_time`,
-            `reference_time_offset`)
-        VALUES'''
-    BASE_UPDATE = 'UPDATE `drivers`'
+    TABLE_NAME = 'drivers'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
@@ -46,7 +45,9 @@ class DriversManager:
 
     def get_all(self) -> List[GetDriver]:
         """Get all drivers in the database."""
-        return self._fetchmany_driver(self.BASE_QUERY)
+        models: List[GetDriver] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_driver, self.BASE_QUERY)
+        return models
 
     def get_by_id(
             self,
@@ -73,7 +74,9 @@ class DriversManager:
         if competition_id is not None:
             query = f'{query} AND cd.competition_id = %s'
             params.append(competition_id)
-        return self._fetchone_driver(query, tuple(params))
+        model: Optional[GetDriver] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_driver, query, params=tuple(params))
+        return model
 
     def get_by_competition_id(
             self,
@@ -88,7 +91,12 @@ class DriversManager:
             List[GetDriver]: List of drivers in the competition.
         """
         query = f'{self.BASE_QUERY} WHERE cd.competition_id = %s'
-        return self._fetchmany_driver(query, (competition_id,))
+        models: List[GetDriver] = fetchmany_models(  # type: ignore
+            self._db,
+            self._raw_to_driver,
+            query,
+            params=(competition_id,))
+        return models
 
     def get_by_team_id(
             self,
@@ -110,7 +118,12 @@ class DriversManager:
         if competition_id is not None:
             query = f'{query} AND cd.competition_id = %s'
             params.append(competition_id)
-        return self._fetchmany_driver(query, tuple(params))
+        models: List[GetDriver] = fetchmany_models(  # type: ignore
+            self._db,
+            self._raw_to_driver,
+            query,
+            params=tuple(params))
+        return models
 
     def get_by_name(
             self,
@@ -135,15 +148,16 @@ class DriversManager:
         if competition_id is not None:
             query = f'{query} AND cd.team_id = %s'
             params.append(team_id)
-        return self._fetchone_driver(
-            query, tuple(params))
+        model: Optional[GetDriver] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_driver, query, params=tuple(params))
+        return model
 
     def add_one(
             self,
             driver: AddDriver,
             competition_id: int,
             team_id: Optional[int] = None,
-            commit: bool = True) -> None:
+            commit: bool = True) -> Optional[int]:
         """
         Add a new driver.
 
@@ -153,6 +167,9 @@ class DriversManager:
             team_id (int | None): If given, the driver will be inserted in the
                 given team.
             commit (bool): Commit transaction.
+
+        Returns:
+            int | None: ID of inserted model.
         """
         if self._exists_by_name(driver.name, team_id, competition_id):
             raise ApiError(
@@ -160,20 +177,11 @@ class DriversManager:
                         f'(team={team_id}) already exists.',
                 status_code=400)
 
-        stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s, %s, %s, %s, %s)'
-        params = (
-            competition_id,
-            team_id,
-            driver.participant_code,
-            driver.name,
-            driver.number,
-            driver.total_driving_time,
-            driver.partial_driving_time,
-            driver.reference_time_offset)
-        with self._db as cursor:
-            cursor.execute(stmt, params)
-            if commit:
-                self._db.commit()
+        model_data = driver.dict()
+        model_data['competition_id'] = competition_id
+        model_data['team_id'] = team_id
+        return insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=commit)
 
     def update_by_id(
             self,
@@ -197,13 +205,13 @@ class DriversManager:
             raise ApiError(
                 message=f'The driver with ID={driver_id} does not exist.',
                 status_code=400)
-
-        stmt, params = self._build_update(
-            self.BASE_UPDATE, driver, key_name='id', key_value=driver_id)
-        with self._db as cursor:
-            cursor.execute(stmt, params)
-            if commit:
-                self._db.commit()
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            driver.dict(),
+            key_name='id',
+            key_value=driver_id,
+            commit=commit)
 
     def _exists_by_name(
             self,
@@ -221,54 +229,13 @@ class DriversManager:
             query = f'{query} AND cd.competition_id = %s'
             params.append(competition_id)
 
-        matches = self._fetchmany_driver(query, tuple(params))
-        return len(matches) > 0
-
-    def _build_update(
-            self,
-            base_stmt: str,
-            driver: UpdateDriver,
-            key_name: str,
-            key_value: int) -> Tuple[str, list]:
-        """Build the statement to update a driver."""
-        fields = {k: v for k, v in driver.dict().items()
-                  if v is not None}
-        stmt_fields, params = list(fields.keys()), list(fields.values())
-        stmt_fields = [f'`{field}` = %s' for field in stmt_fields]
-
-        stmt = (f'{base_stmt} SET {",".join(stmt_fields)} '
-                f'WHERE `{key_name}` = %s')
-        params.append(key_value)
-        return stmt, params
-
-    def _fetchone_driver(
-            self,
-            query: str,
-            params: Optional[tuple] = None) -> Optional[GetDriver]:
-        """Run the given query and retrieve a single GetDriver."""
-        with self._db as cursor:
-            cursor.execute(query, params)  # type: ignore
-            raw_data: dict = cursor.fetchone()  # type: ignore
-            return self._raw_to_driver(raw_data)
-
-    def _fetchmany_driver(
-            self,
-            query: str,
-            params: Optional[tuple] = None) -> List[GetDriver]:
-        """Run the given query and retrieve many GetDriver."""
-        with self._db as cursor:
-            cursor.execute(query, params)
-            raw_data: List[dict] = cursor.fetchall()  # type: ignore
-            items: List[GetDriver] = []
-            for row in raw_data:
-                items.append(self._raw_to_driver(row))  # type: ignore
-            return items
+        models: List[GetDriver] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_driver, query, params=tuple(params))
+        return len(models) > 0
 
     def _raw_to_driver(
-            self, row: Optional[dict]) -> Optional[GetDriver]:
+            self, row: dict) -> GetDriver:
         """Build an instance of GetDriver."""
-        if row is None:
-            return None
         return GetDriver(
             id=row['cd_id'],
             competition_id=row['cd_competition_id'],
@@ -298,11 +265,7 @@ class TeamsManager:
             ct.`insert_date` AS ct_insert_date,
             ct.`update_date` AS ct_update_date
         FROM teams AS ct'''
-    BASE_INSERT = '''
-        INSERT INTO `teams`
-        (`competition_id`, `participant_code`, `name`,
-        `number`, `reference_time_offset`) VALUES'''
-    BASE_UPDATE = 'UPDATE `teams`'
+    TABLE_NAME = 'teams'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
@@ -311,7 +274,9 @@ class TeamsManager:
 
     def get_all(self) -> List[GetTeam]:
         """Get all teams in the database."""
-        return self._fetchmany_team(self.BASE_QUERY)
+        models: List[GetTeam] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_team, self.BASE_QUERY)
+        return models
 
     def get_by_id(
             self,
@@ -333,7 +298,9 @@ class TeamsManager:
         if competition_id is not None:
             query = f'{query} AND ct.competition_id = %s'
             params.append(competition_id)
-        return self._fetchone_team(query, tuple(params))
+        model: Optional[GetTeam] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_team, query, params=tuple(params))
+        return model
 
     def get_by_competition_id(self, competition_id: int) -> List[GetTeam]:
         """
@@ -346,7 +313,9 @@ class TeamsManager:
             List[GetTeam]: List of teams in the competition.
         """
         query = f'{self.BASE_QUERY} WHERE ct.competition_id = %s'
-        return self._fetchmany_team(query, (competition_id,))
+        models: List[GetTeam] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_team, query, params=(competition_id,))
+        return models
 
     def get_by_code(
             self,
@@ -364,14 +333,16 @@ class TeamsManager:
         """
         query = f'''{self.BASE_QUERY} WHERE
                     ct.participant_code = %s AND ct.competition_id = %s'''
-        return self._fetchone_team(
-            query, (participant_code, competition_id))
+        params = (participant_code, competition_id)
+        model: Optional[GetTeam] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_team, query, params=tuple(params))
+        return model
 
     def add_one(
             self,
             team: AddTeam,
             competition_id: int,
-            commit: bool = True) -> None:
+            commit: bool = True) -> Optional[int]:
         """
         Add a new team.
 
@@ -379,6 +350,9 @@ class TeamsManager:
             team (AddTeam): Data of the team.
             competition_id (int): ID of the competition.
             commit (bool): Commit transaction.
+
+        Returns:
+            int | None: ID of inserted model.
         """
         if self._exists_by_code(competition_id, team.participant_code):
             raise ApiError(
@@ -386,17 +360,10 @@ class TeamsManager:
                         f'(competition={competition_id}) already exists.',
                 status_code=400)
 
-        stmt = f'{self.BASE_INSERT} (%s, %s, %s, %s, %s)'
-        params = (
-            competition_id,
-            team.participant_code,
-            team.name,
-            team.number,
-            team.reference_time_offset)
-        with self._db as cursor:
-            cursor.execute(stmt, params)
-            if commit:
-                self._db.commit()
+        model_data = team.dict()
+        model_data['competition_id'] = competition_id
+        return insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=commit)
 
     def update_by_id(
             self,
@@ -418,13 +385,13 @@ class TeamsManager:
             raise ApiError(
                 message=f'The team with ID={team_id} does not exist.',
                 status_code=400)
-
-        stmt, params = self._build_update(
-            self.BASE_UPDATE, team, key_name='id', key_value=team_id)
-        with self._db as cursor:
-            cursor.execute(stmt, params)
-            if commit:
-                self._db.commit()
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            team.dict(),
+            key_name='id',
+            key_value=team_id,
+            commit=commit)
 
     def _exists_by_code(
             self, competition_id: int, team_code: Optional[str]) -> bool:
@@ -432,54 +399,14 @@ class TeamsManager:
         query = f'''
             {self.BASE_QUERY}
             WHERE ct.competition_id = %s AND ct.participant_code = %s'''
-        matches = self._fetchmany_team(query, (competition_id, team_code))
-        return len(matches) > 0
-
-    def _build_update(
-            self,
-            base_stmt: str,
-            team: UpdateTeam,
-            key_name: str,
-            key_value: int) -> Tuple[str, list]:
-        """Build the statement to update a team."""
-        fields = {k: v for k, v in team.dict().items()
-                  if v is not None}
-        stmt_fields, params = list(fields.keys()), list(fields.values())
-        stmt_fields = [f'`{field}` = %s' for field in stmt_fields]
-
-        stmt = (f'{base_stmt} SET {",".join(stmt_fields)} '
-                f'WHERE `{key_name}` = %s')
-        params.append(key_value)
-        return stmt, params
-
-    def _fetchone_team(
-            self,
-            query: str,
-            params: Optional[tuple] = None) -> Optional[GetTeam]:
-        """Run the given query and retrieve a single GetTeam."""
-        with self._db as cursor:
-            cursor.execute(query, params)  # type: ignore
-            raw_data: dict = cursor.fetchone()  # type: ignore
-            return self._raw_to_team(raw_data)
-
-    def _fetchmany_team(
-            self,
-            query: str,
-            params: Optional[tuple] = None) -> List[GetTeam]:
-        """Run the given query and retrieve many GetTeam."""
-        with self._db as cursor:
-            cursor.execute(query, params)
-            raw_data: List[dict] = cursor.fetchall()  # type: ignore
-            items: List[GetTeam] = []
-            for row in raw_data:
-                items.append(self._raw_to_team(row))  # type: ignore
-            return items
+        params = (competition_id, team_code)
+        models: List[GetTeam] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_team, query, params)
+        return len(models) > 0
 
     def _raw_to_team(
-            self, row: Optional[dict]) -> Optional[GetTeam]:
+            self, row: dict) -> GetTeam:
         """Build an instance of GetTeam."""
-        if row is None:
-            return None
         return GetTeam(
             id=row['ct_id'],
             competition_id=row['ct_competition_id'],

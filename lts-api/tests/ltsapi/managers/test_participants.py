@@ -1,11 +1,13 @@
 import pytest
 import time
-from typing import Any, Optional
+from typing import List, Optional
 
 from ltsapi.db import DBContext
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
+    GetDriver,
+    GetTeam,
     UpdateDriver,
     UpdateTeam,
 )
@@ -143,59 +145,161 @@ class TestDriversManager(DatabaseTestInit):
         expected_items = self.ALL_DRIVERS
         assert dict_items == expected_items
 
+    @pytest.mark.parametrize(
+        'driver_id, team_id, competition_id, expected_item',
+        [
+            (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'team_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                },
+            ),
+        ])
     def test_get_by_id(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            driver_id: int,
+            team_id: Optional[int],
+            competition_id: Optional[int],
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
-        driver_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
 
-        db_item = manager.get_by_id(driver_id)
+        db_item = manager.get_by_id(
+            driver_id, team_id=team_id, competition_id=competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': 2,
-            'competition_id': 1,
-            'team_id': 1,
-            'participant_code': 'team-1',
-            'name': 'CKM 1 Driver 2',
-            'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': 0,
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'team_id, competition_id, expected_items',
+        [
+            (
+                2,  # team_id
+                1,  # competition_id
+                [
+                    {
+                        'id': 3,
+                        'competition_id': 1,
+                        'team_id': 2,
+                        'participant_code': 'team-2',
+                        'name': 'CKM 2 Driver 1',
+                        'number': 42,
+                        'total_driving_time': 0,
+                        'partial_driving_time': 0,
+                        'reference_time_offset': 0,
+                    },
+                    {
+                        'id': 4,
+                        'competition_id': 1,
+                        'team_id': 2,
+                        'participant_code': 'team-2',
+                        'name': 'CKM 2 Driver 2',
+                        'number': 42,
+                        'total_driving_time': 0,
+                        'partial_driving_time': 0,
+                        'reference_time_offset': 0,
+                    },
+                ],
+            ),
+        ])
     def test_get_by_team_id(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            team_id: int,
+            competition_id: Optional[int],
+            expected_items: List[GetDriver],
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_team_id."""
-        team_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
-
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
-                      for x in manager.get_by_team_id(team_id)]
-        expected_items = [x for x in self.ALL_DRIVERS
-                          if x['team_id'] == team_id]
+                      for x in manager.get_by_team_id(team_id, competition_id)]
         assert dict_items == expected_items
 
+    @pytest.mark.parametrize(
+        'competition_id, expected_items',
+        [
+            (
+                3,  # competition_id
+                [
+                    {
+                        'id': 9,
+                        'competition_id': 3,
+                        'team_id': 5,
+                        'participant_code': 'team-1',
+                        'name': 'CKM 1 Driver 1',
+                        'number': 41,
+                        'total_driving_time': 0,
+                        'partial_driving_time': 0,
+                        'reference_time_offset': 0,
+                    },
+                    {
+                        'id': 10,
+                        'competition_id': 3,
+                        'team_id': 5,
+                        'participant_code': 'team-1',
+                        'name': 'CKM 1 Driver 2',
+                        'number': 41,
+                        'total_driving_time': 0,
+                        'partial_driving_time': 0,
+                        'reference_time_offset': 0,
+                    },
+                ],
+            ),
+        ])
     def test_get_by_competition_id(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: int,
+            expected_items: List[GetDriver],
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
-        competition_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
-
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
                       for x in manager.get_by_competition_id(competition_id)]
-        expected_items = [x for x in self.ALL_DRIVERS
-                          if x['competition_id'] == competition_id]
         assert dict_items == expected_items
 
+    @pytest.mark.parametrize(
+        'driver_name, team_id, competition_id, expected_item',
+        [
+            (
+                'CKM 1 Driver 2',  # driver_name
+                1,  # team_id
+                1,  # competition_id
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'team_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                },
+            ),
+        ])
     def test_get_by_name(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            driver_name: str,
+            team_id: Optional[int],
+            competition_id: Optional[int],
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_name."""
-        driver_name = 'CKM 1 Driver 1'
-        team_id = 1
-        competition_id = 1
         manager = DriversManager(db=db_context, logger=fake_logger)
 
         db_item = manager.get_by_name(
@@ -205,75 +309,86 @@ class TestDriversManager(DatabaseTestInit):
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': 1,
-            'competition_id': 1,
-            'team_id': 1,
-            'participant_code': 'team-1',
-            'name': 'CKM 1 Driver 1',
-            'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': 0,
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'team_id, competition_id, model, expected_item',
+        [
+            (
+                1,  # competition_id
+                1,  # team_id
+                AddDriver(
+                    participant_code='team-1',
+                    name='CKM 1 Driver 3',
+                    number=41,
+                    total_driving_time=0,
+                    partial_driving_time=0,
+                    reference_time_offset=0,
+                ),
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'team_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 3',
+                    'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                },
+            ),
+        ])
     def test_add_one(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: int,
+            team_id: Optional[int],
+            model: AddDriver,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method add_one."""
         manager = DriversManager(db=db_context, logger=fake_logger)
-        competition_id = 1
-        team_id = 1
-        add_item = AddDriver(
-            participant_code='team-1',
-            name='CKM 1 Driver 3',
-            number=41,
-            total_driving_time=0,
-            partial_driving_time=0,
-            reference_time_offset=0,
-        )
+        item_id = manager.add_one(model, competition_id, team_id, commit=True)
 
-        manager.add_one(add_item, competition_id, team_id, commit=True)
-
-        driver_id = 11
-        db_item = manager.get_by_id(driver_id, team_id, competition_id)
+        expected_item['id'] = item_id
+        db_item = manager.get_by_id(item_id, team_id, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': 11,
-            'team_id': team_id,
-            'competition_id': competition_id,
-            'participant_code': add_item.participant_code,
-            'name': add_item.name,
-            'number': add_item.number,
-            'total_driving_time': add_item.total_driving_time,
-            'partial_driving_time': add_item.partial_driving_time,
-            'reference_time_offset': add_item.reference_time_offset,
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'competition_id, team_id, model, expected_error',
+        [
+            (
+                2,  # competition_id
+                4,  # team_id
+                AddDriver(
+                    participant_code='team-2',
+                    name='CKM 2 Driver 1',
+                    number=42,
+                    total_driving_time=0,
+                    partial_driving_time=0,
+                    reference_time_offset=0,
+                ),
+                'The driver "CKM 2 Driver 1" (team=4) already exists.',
+            ),
+        ])
     def test_add_one_duplicated_code(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: int,
+            team_id: Optional[int],
+            model: AddDriver,
+            expected_error: str,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        competition_id = 1
-        team_id = 2
         manager = DriversManager(db=db_context, logger=fake_logger)
-        add_item = AddDriver(
-            participant_code='team-2',
-            name='CKM 2 Driver 1',
-            number=42,
-            total_driving_time=0,
-            partial_driving_time=0,
-            reference_time_offset=0,
-        )
-
         with pytest.raises(Exception) as e_info:
-            manager.add_one(add_item, competition_id, team_id, commit=True)
+            manager.add_one(model, competition_id, team_id, commit=True)
 
         e: Exception = e_info.value
-        assert (str(e) == f'The driver "{add_item.name}" '
-                f'(team={team_id}) already exists.')
+        assert str(e) == expected_error
 
     @pytest.mark.parametrize(
         'driver_id, team_id, competition_id, update_data, expected_item',
@@ -332,10 +447,9 @@ class TestDriversManager(DatabaseTestInit):
             competition_id: Optional[int],
             update_data: UpdateDriver,
             expected_item: dict,
-            request: Any) -> None:
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
-        db_context = request.getfixturevalue('db_context')
-        fake_logger = request.getfixturevalue('fake_logger')
         manager = DriversManager(db=db_context, logger=fake_logger)
 
         before_item = manager.get_by_id(driver_id, team_id, competition_id)
@@ -426,110 +540,176 @@ class TestTeamsManager(DatabaseTestInit):
         expected_items = self.ALL_TEAMS
         assert dict_items == expected_items
 
+    @pytest.mark.parametrize(
+        'team_id, expected_item',
+        [
+            (
+                2,  # team_id
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'participant_code': 'team-2',
+                    'name': 'CKM 2',
+                    'number': 42,
+                    'reference_time_offset': 0,
+                    'drivers': [],
+                },
+            ),
+        ])
     def test_get_by_id(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            team_id: int,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
-        team_id = 2
         manager = TeamsManager(db=db_context, logger=fake_logger)
 
         db_item = manager.get_by_id(team_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': 2,
-            'competition_id': 1,
-            'participant_code': 'team-2',
-            'name': 'CKM 2',
-            'number': 42,
-            'reference_time_offset': 0,
-            'drivers': [],
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'competition_id, expected_items',
+        [
+            (
+                2,  # competition_id
+                [
+                    {
+                        'id': 4,
+                        'competition_id': 2,
+                        'participant_code': 'team-1',
+                        'name': 'CKM 1',
+                        'number': 41,
+                        'reference_time_offset': 0,
+                        'drivers': [],
+                    },
+                    {
+                        'id': 5,
+                        'competition_id': 2,
+                        'participant_code': 'team-2',
+                        'name': 'CKM 2',
+                        'number': 42,
+                        'reference_time_offset': 0,
+                        'drivers': [],
+                    },
+                ],
+            ),
+        ])
     def test_get_by_competition_id(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: int,
+            expected_items: List[GetTeam],
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
-        competition_id = 2
         manager = TeamsManager(db=db_context, logger=fake_logger)
-
         dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
                       for x in manager.get_by_competition_id(competition_id)]
-        expected_items = [x for x in self.ALL_TEAMS
-                          if x['competition_id'] == competition_id]
         assert dict_items == expected_items
 
+    @pytest.mark.parametrize(
+        'team_code, competition_id, expected_item',
+        [
+            (
+                'team-2',  # team_code
+                1,  # competition_id
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'participant_code': 'team-2',
+                    'name': 'CKM 2',
+                    'number': 42,
+                    'reference_time_offset': 0,
+                    'drivers': [],
+                },
+            ),
+        ])
     def test_get_by_code(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            team_code: str,
+            competition_id: Optional[int],
+            expected_item: GetTeam,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method get_by_code."""
-        team_code = 'team-2'
-        competition_id = 1
         manager = TeamsManager(db=db_context, logger=fake_logger)
-
         db_item = manager.get_by_code(team_code, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': 2,
-            'competition_id': 1,
-            'participant_code': 'team-2',
-            'name': 'CKM 2',
-            'number': 42,
-            'reference_time_offset': 0,
-            'drivers': [],
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'competition_id, model, expected_item',
+        [
+            (
+                3,  # competition_id
+                AddTeam(
+                    participant_code='team-2',
+                    name='CKM 2',
+                    number=42,
+                    reference_time_offset=0,
+                ),
+                {
+                    'id': None,
+                    'competition_id': 3,
+                    'participant_code': 'team-2',
+                    'name': 'CKM 2',
+                    'number': 42,
+                    'reference_time_offset': 0,
+                    'drivers': [],
+                },
+            ),
+        ])
     def test_add_one(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: Optional[int],
+            model: AddTeam,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        competition_id = 3
-        team_id = 7
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        add_item = AddTeam(
-            participant_code='team-2',
-            name='CKM 2',
-            number=42,
-            reference_time_offset=0,
-        )
+        item_id = manager.add_one(model, competition_id, commit=True)
 
-        manager.add_one(add_item, competition_id, commit=True)
-
-        db_item = manager.get_by_id(team_id, competition_id)
+        expected_item['id'] = item_id
+        db_item = manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
-        expected_item = {
-            'id': team_id,
-            'competition_id': competition_id,
-            'participant_code': add_item.participant_code,
-            'name': add_item.name,
-            'number': add_item.number,
-            'reference_time_offset': add_item.reference_time_offset,
-            'drivers': [],
-        }
         assert dict_item == expected_item
 
+    @pytest.mark.parametrize(
+        'competition_id, model, expected_error',
+        [
+            (
+                3,  # competition_id
+                AddTeam(
+                    participant_code='team-1',
+                    name='CKM 1',
+                    number=41,
+                    reference_time_offset=0,
+                ),
+                'The team "team-1" (competition=3) already exists.',
+            ),
+        ])
     def test_add_one_duplicated_code(
-            self, db_context: DBContext, fake_logger: FakeLogger) -> None:
+            self,
+            competition_id: int,
+            model: AddTeam,
+            expected_error: str,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        competition_id = 1
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        add_item = AddTeam(
-            competition_id=competition_id,
-            participant_code='team-2',
-            name='CKM 2',
-            number=42,
-            reference_time_offset=0,
-        )
-
         with pytest.raises(Exception) as e_info:
-            manager.add_one(add_item, competition_id, commit=True)
+            manager.add_one(model, competition_id, commit=True)
 
         e: Exception = e_info.value
-        assert (str(e) == f'The team "{add_item.participant_code}" '
-                f'(competition={competition_id}) already exists.')
+        assert str(e) == expected_error
 
     @pytest.mark.parametrize(
         'team_id, competition_id, update_data, expected_item',
@@ -581,10 +761,9 @@ class TestTeamsManager(DatabaseTestInit):
             competition_id: int,
             update_data: UpdateTeam,
             expected_item: dict,
-            request: Any) -> None:
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
-        db_context = request.getfixturevalue('db_context')
-        fake_logger = request.getfixturevalue('fake_logger')
         manager = TeamsManager(db=db_context, logger=fake_logger)
 
         before_item = manager.get_by_id(team_id, competition_id)

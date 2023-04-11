@@ -1,9 +1,9 @@
 -- This data should be used only for testing purposes
 
 INSERT INTO `competitions_index`(`track_id`, `competition_code`, `name`, `description`) VALUES
-    (1, 'santos-endurance-2023-02-26', 'Resistencia Los Santos 26-02-2023', 'Resistencia de 3h en Karting Los Santos'),
-    (1, 'santos-endurance-2023-03-25', 'Resistencia Los Santos 25-03-2023', 'Resistencia de 3h en Karting Los Santos'),
-    (2, 'burgueno-endurance-2023-03-26', 'Resistencia Burgueño 26-03-2023', 'Resistencia de 3h en Karting Burgueño');
+    (1, 'north-endurance-2023-02-26', 'Endurance North 26-02-2023', 'Endurance in Karting North'),
+    (1, 'north-endurance-2023-03-25', 'Endurance North 25-03-2023', 'Endurance in Karting North'),
+    (2, 'south-endurance-2023-03-26', 'Endurance South 26-03-2023', 'Endurance in Karting South');
 
 INSERT INTO `teams`(`competition_id`, `participant_code`, `name`, `number`, `reference_time_offset`) VALUES
   (1, 'team-1', 'CKM 1', 41, 0),

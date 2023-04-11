@@ -36,7 +36,8 @@ CREATE TABLE `competitions_index` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `competitions_settings` (
-  `competition_id` INT UNSIGNED NOT NULL PRIMARY KEY,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `competition_id` INT UNSIGNED NOT NULL UNIQUE KEY,
   `length` INT UNSIGNED NOT NULL,
   `length_unit` ENUM('milli', 'laps') NOT NULL,
   `pit_time` INT UNSIGNED NULL,
@@ -47,7 +48,8 @@ CREATE TABLE `competitions_settings` (
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `competitions_metadata_current` (
-  `competition_id` INT UNSIGNED NOT NULL PRIMARY KEY,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `competition_id` INT UNSIGNED NOT NULL UNIQUE KEY,
   `reference_time` INT NOT NULL DEFAULT 0 COMMENT 'Reference time (usually, the median) of the track during practice or early stages',
   `reference_current_offset` INT NOT NULL DEFAULT 0 COMMENT 'Time offset with respect to the track reference',
   `status` ENUM('paused', 'ongoing', 'finished') NOT NULL,
@@ -104,7 +106,7 @@ CREATE TABLE `drivers` (
   CONSTRAINT `drivers__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `timing_history` (
+CREATE TABLE `timing_current` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NULL,
@@ -119,6 +121,28 @@ CREATE TABLE `timing_history` (
   `pits` INT UNSIGNED NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
   `fixed_kart_status` ENUM('good', 'medium', 'bad') NULL,
+  `number_pits` INT UNSIGNED NOT NULL DEFAULT 0,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY (`competition_id`, `team_id`, `driver_id`),
+  CONSTRAINT `timing_current__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  CONSTRAINT `timing_current__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `timing_current__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `drivers` (`id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `timing_history` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `competition_id` INT UNSIGNED NOT NULL,
+  `team_id` INT UNSIGNED NULL,
+  `driver_id` INT UNSIGNED NULL,
+  `position` INT UNSIGNED NOT NULL,
+  `time` INT UNSIGNED NOT NULL,
+  `best_time` INT UNSIGNED NOT NULL,
+  `lap` INT UNSIGNED NOT NULL,
+  `interval` INT UNSIGNED NOT NULL,
+  `interval_unit` ENUM('milli', 'laps') NOT NULL,
+  `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
+  `pits` INT UNSIGNED NULL,
   `number_pits` INT UNSIGNED NOT NULL DEFAULT 0,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -141,6 +165,7 @@ CREATE TABLE `timing_karts_pits` (
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `strategy_karts_probs` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `step` INT UNSIGNED NOT NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
@@ -148,7 +173,7 @@ CREATE TABLE `strategy_karts_probs` (
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `strategy_karts_probs__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  PRIMARY KEY (`competition_id`, `step`)
+  UNIQUE KEY (`competition_id`, `step`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `stats_health` (

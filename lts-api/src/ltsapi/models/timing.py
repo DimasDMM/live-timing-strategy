@@ -1,6 +1,14 @@
+from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
+
+
+class LengthUnit(str, Enum):
+    """Units to measure the race length."""
+
+    LAPS = 'laps'
+    MILLIS = 'millis'
 
 
 class GetLapTime(BaseModel):

@@ -43,10 +43,12 @@ async def add_team_to_competition(
 ) -> GetTeam:
     """Add a new team."""
     manager = TeamsManager(db=_db, logger=_logger)
-    manager.add_one(team, competition_id, commit=True)
-    item = manager.get_by_code(team.participant_code, competition_id)
-    if item is None:
+    item_id = manager.add_one(team, competition_id, commit=True)
+    if item_id is None:
         raise ApiError('No data was inserted or updated.')
+    item = manager.get_by_id(item_id)
+    if item is None:
+        raise ApiError('It was not possible to locate the new data.')
     return item
 
 
@@ -102,13 +104,12 @@ async def add_team_driver(
 ) -> GetDriver:
     """Add a new driver in the team."""
     manager = DriversManager(db=_db, logger=_logger)
-    manager.add_one(driver, competition_id, team_id, commit=True)
-    item = manager.get_by_name(
-        driver_name=driver.name,
-        team_id=team_id,
-        competition_id=competition_id)
-    if item is None:
+    item_id = manager.add_one(driver, competition_id, team_id, commit=True)
+    if item_id is None:
         raise ApiError('No data was inserted or updated.')
+    item = manager.get_by_id(item_id)
+    if item is None:
+        raise ApiError('It was not possible to locate the new data.')
     return item
 
 
@@ -164,12 +165,12 @@ async def add_single_driver(
 ) -> GetDriver:
     """Add a new driver without team."""
     manager = DriversManager(db=_db, logger=_logger)
-    manager.add_one(driver, competition_id, commit=True)
-    item = manager.get_by_name(
-        driver_name=driver.name,
-        competition_id=competition_id)
-    if item is None:
+    item_id = manager.add_one(driver, competition_id, commit=True)
+    if item_id is None:
         raise ApiError('No data was inserted or updated.')
+    item = manager.get_by_id(item_id)
+    if item is None:
+        raise ApiError('It was not possible to locate the new data.')
     return item
 
 
