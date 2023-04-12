@@ -1,8 +1,12 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Optional
 
-from ltsapi.models.enum import LengthUnit
+from ltsapi.models import BaseModel
+from ltsapi.models.enum import (
+    CompetitionStage,
+    CompetitionStatus,
+    LengthUnit,
+)
 
 
 class AddTrack(BaseModel):
@@ -26,6 +30,41 @@ class UpdateTrack(BaseModel):
     name: Optional[str]
 
 
+class AddCompetitionMetadata(BaseModel):
+    """Metadata of a competition."""
+
+    reference_time: int
+    reference_current_offset: int
+    status: CompetitionStatus
+    stage: CompetitionStage
+    remaining_length: int
+    remaining_length_unit: LengthUnit
+
+
+class GetCompetitionMetadata(BaseModel):
+    """Metadata of a competition."""
+
+    reference_time: int
+    reference_current_offset: int
+    status: CompetitionStatus
+    stage: CompetitionStage
+    remaining_length: int
+    remaining_length_unit: LengthUnit
+    insert_date: datetime
+    update_date: datetime
+
+
+class UpdateCompetitionMetadata(BaseModel):
+    """Metadata of a competition."""
+
+    reference_time: Optional[int]
+    reference_current_offset: Optional[int]
+    status: Optional[CompetitionStatus]
+    stage: Optional[CompetitionStage]
+    remaining_length: Optional[int]
+    remaining_length_unit: Optional[LengthUnit]
+
+
 class AddCompetitionSettings(BaseModel):
     """Add the settings of a competition."""
 
@@ -33,13 +72,6 @@ class AddCompetitionSettings(BaseModel):
     length_unit: LengthUnit
     pit_time: Optional[int]
     min_number_pits: int
-
-    def dict(self, *args) -> dict:
-        """Transform model into a dictionary."""
-        data = super().dict(*args)
-        if 'length_unit' in data:
-            data['length_unit'] = data['length_unit'].value
-        return data
 
 
 class GetCompetitionSettings(BaseModel):

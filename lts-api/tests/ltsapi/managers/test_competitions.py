@@ -1,5 +1,6 @@
 import pytest
 import time
+from typing import List
 
 from ltsapi.db import DBContext
 from ltsapi.models.competitions import (
@@ -11,10 +12,15 @@ from ltsapi.models.competitions import (
 )
 from ltsapi.managers.competitions import (
     CompetitionsIndexManager,
+    CMetadataManager,
     CSettingsManager,
     TracksManager,
 )
-from ltsapi.models.enum import LengthUnit
+from ltsapi.models.enum import (
+    CompetitionStage,
+    CompetitionStatus,
+    LengthUnit,
+)
 from tests.helpers import DatabaseTestInit
 from tests.mocks.logging import FakeLogger
 
@@ -150,6 +156,90 @@ class TestTracksManager(DatabaseTestInit):
             assert before_item.update_date < after_item.update_date
         else:
             assert before_item.update_date == after_item.update_date
+
+
+class TestCMetadataManager(DatabaseTestInit):
+    """Test class ltsapi.managers.competitions.CMetadataManager."""
+
+    EXCLUDED_KEYS = {
+        'insert_date': True,
+        'update_date': True,
+    }
+
+    @pytest.mark.parametrize(
+        'competition_id, expected_item',
+        [
+            (
+                2,  # competition_id
+                {
+                    'reference_time': 0,
+                    'reference_current_offset': 0,
+                    'status': CompetitionStatus.ONGOING,
+                    'stage': CompetitionStage.RACE,
+                    'remaining_length': 349,
+                    'remaining_length_unit': LengthUnit.LAPS,
+                },
+            ),
+        ])
+    def test_get_current_by_id(
+            self,
+            competition_id: int,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method get_current_by_id."""
+        manager = CMetadataManager(db=db_context, logger=fake_logger)
+
+        db_item = manager.get_current_by_id(competition_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        assert dict_item == expected_item
+
+    @pytest.mark.parametrize(
+        'competition_id, expected_items',
+        [
+            (
+                2,  # competition_id
+                [
+                    {
+                        'reference_time': 0,
+                        'reference_current_offset': 0,
+                        'status': CompetitionStatus.PAUSED,
+                        'stage': CompetitionStage.FREE_PRACTICE,
+                        'remaining_length': 0,
+                        'remaining_length_unit': LengthUnit.LAPS,
+                    },
+                    {
+                        'reference_time': 0,
+                        'reference_current_offset': 0,
+                        'status': CompetitionStatus.ONGOING,
+                        'stage': CompetitionStage.RACE,
+                        'remaining_length': 350,
+                        'remaining_length_unit': LengthUnit.LAPS,
+                    },
+                    {
+                        'reference_time': 0,
+                        'reference_current_offset': 0,
+                        'status': CompetitionStatus.ONGOING,
+                        'stage': CompetitionStage.RACE,
+                        'remaining_length': 349,
+                        'remaining_length_unit': LengthUnit.LAPS,
+                    },
+                ],
+            ),
+        ])
+    def test_get_history_by_id(
+            self,
+            competition_id: int,
+            expected_items: List[dict],
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method get_history_by_id."""
+        manager = CMetadataManager(db=db_context, logger=fake_logger)
+        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+                      for x in manager.get_history_by_id(competition_id)]
+        assert dict_items == expected_items
 
 
 class TestCSettingsManager(DatabaseTestInit):
@@ -382,6 +472,14 @@ class TestCompetitionsIndexManager(DatabaseTestInit):
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         assert dict_item == expected_item
+
+        # Check that additional tables are filled too
+        manager = CMetadataManager(db=db_context, logger=fake_logger)
+        assert manager.get_current_by_id(competition_id=item_id) is not None
+        assert manager.get_history_by_id(competition_id=item_id) is not None
+
+        manager = CSettingsManager(db=db_context, logger=fake_logger)
+        assert manager.get_by_id(competition_id=item_id) is not None
 
     @pytest.mark.parametrize(
         'model, expected_error',

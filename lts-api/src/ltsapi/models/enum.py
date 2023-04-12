@@ -18,6 +18,22 @@ class EnumBase(Enum):
         return hash(self.value)
 
 
+class CompetitionStatus(str, EnumBase):
+    """Status of a competition."""
+
+    PAUSED = 'paused'
+    ONGOING = 'ongoing'
+    FINISHED = 'finished'
+
+
+class CompetitionStage(str, EnumBase):
+    """Stage of a competition."""
+
+    FREE_PRACTICE = 'free-practice'
+    QUALIFYING = 'qualifying'
+    RACE = 'race'
+
+
 class LengthUnit(str, EnumBase):
     """Units to measure the race length."""
 

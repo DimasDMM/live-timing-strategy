@@ -1,7 +1,7 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Optional
 
+from ltsapi.models import BaseModel
 from ltsapi.models.enum import LengthUnit
 
 
@@ -17,7 +17,7 @@ class GetLapTime(BaseModel):
     best_time: int
     lap: int
     interval: int
-    interval_unit: str
+    interval_unit: LengthUnit
     stage: str
     pits: Optional[int]
     number_pits: int

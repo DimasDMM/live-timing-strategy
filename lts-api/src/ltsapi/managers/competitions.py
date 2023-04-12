@@ -11,12 +11,20 @@ from ltsapi.managers.utils.statements import (
 )
 from ltsapi.models.competitions import (
     AddCompetition,
+    AddCompetitionMetadata,
     GetCompetition,
+    GetCompetitionMetadata,
     GetCompetitionSettings,
     AddTrack,
     GetTrack,
+    UpdateCompetitionMetadata,
     UpdateCompetitionSettings,
     UpdateTrack,
+)
+from ltsapi.models.enum import (
+    CompetitionStage,
+    CompetitionStatus,
+    LengthUnit,
 )
 
 
@@ -141,9 +149,9 @@ class CSettingsManager:
                 its instance.
         """
         query = f'{self.BASE_QUERY} WHERE cs.competition_id = %s'
-        model: Optional[GetCompetitionSettings] = fetchone_model(  # type: ignore
+        m: Optional[GetCompetitionSettings] = fetchone_model(  # type: ignore
             self._db, self._raw_to_settings, query, (competition_id,))
-        return model
+        return m
 
     def update_by_id(
             self,
@@ -182,6 +190,124 @@ class CSettingsManager:
             min_number_pits=row['cs_min_number_pits'],
             insert_date=row['cs_insert_date'],
             update_date=row['cs_update_date'],
+        )
+
+
+class CMetadataManager:
+    """Manage metadata of competitions."""
+
+    BASE_SELECT = '''
+        SELECT
+            cm.`competition_id` AS cm_competition_id,
+            cm.`reference_time` AS cm_reference_time,
+            cm.`reference_current_offset` AS cm_reference_current_offset,
+            cm.`status` AS cm_status,
+            cm.`stage` AS cm_stage,
+            cm.`remaining_length` AS cm_remaining_length,
+            cm.`remaining_length_unit` AS cm_remaining_length_unit,
+            cm.`insert_date` AS cm_insert_date,
+            cm.`update_date` AS cm_update_date'''
+    CURRENT_QUERY = f'{BASE_SELECT} FROM competitions_metadata_current as cm'
+    HISTORY_QUERY = f'{BASE_SELECT} FROM competitions_metadata_history as cm'
+    CURRENT_TABLE = 'competitions_metadata_current'
+    HISTORY_TABLE = 'competitions_metadata_history'
+
+    def __init__(self, db: DBContext, logger: Logger) -> None:
+        """Construct."""
+        self._db = db
+        self._logger = logger
+
+    def get_current_by_id(
+            self, competition_id: int) -> Optional[GetCompetitionMetadata]:
+        """
+        Retrieve the current metadata of a competition.
+
+        Params:
+            competition_id (int): ID of the competition.
+
+        Returns:
+            GetCompetitionMetadata | None: If the competition exists, returns
+                its instance.
+        """
+        query = f'{self.CURRENT_QUERY} WHERE cm.competition_id = %s'
+        m: Optional[GetCompetitionMetadata] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_metadata, query, (competition_id,))
+        return m
+
+    def get_history_by_id(
+            self, competition_id: int) -> List[GetCompetitionMetadata]:
+        """
+        Retrieve the metadata history of a competition.
+
+        Params:
+            competition_id (int): ID of the competition.
+
+        Returns:
+            List[GetCompetitionMetadata]: History of all metadata values of the
+                competition.
+        """
+        query = f'{self.HISTORY_QUERY} WHERE cm.competition_id = %s'
+        m: List[GetCompetitionMetadata] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_metadata, query, (competition_id,))
+        return m
+
+    def update_by_id(
+            self,
+            metadata: UpdateCompetitionMetadata,
+            competition_id: int,
+            commit: bool = True) -> None:
+        """
+        Update the metadata of a competition (it must already exist).
+
+        Note that, after the record is updated, it also inserts a new row in the
+        history table.
+
+        Params:
+            metadata (UpdateCompetitionMetadata): New metadata of the
+                competition ('None' is ignored).
+            competition_id (int): ID of the competition.
+            commit (bool): Commit transaction.
+        """
+        previous_model = self.get_current_by_id(competition_id)
+        if previous_model is None:
+            raise ApiError(
+                message=(f'The competition with ID={competition_id} '
+                         'does not exist.'),
+                status_code=400)
+        update_model(
+            self._db,
+            self.CURRENT_TABLE,
+            metadata.dict(),
+            key_name='competition_id',
+            key_value=competition_id,
+            commit=False)
+
+        # Insert record in the history table
+        new_data = metadata.dict()
+        previous_data = previous_model.dict(exclude={
+            'insert_date': True, 'update_date': True})
+        for field_name, _ in previous_data.items():
+            if new_data[field_name] is not None:
+                previous_data[field_name] = new_data[field_name]
+        previous_data['competition_id'] = competition_id
+        _ = insert_model(
+            self._db,
+            CMetadataManager.HISTORY_TABLE,
+            previous_data,
+            commit=commit)
+
+    def _raw_to_metadata(
+            self, row: dict) -> GetCompetitionMetadata:
+        """Build an instance of GetCompetitionMetadata."""
+        return GetCompetitionMetadata(
+            reference_time=row['cm_reference_time'],
+            reference_current_offset=row['cm_reference_current_offset'],
+            status=row['cm_status'],
+            stage=row['cm_stage'],
+            remaining_length=row['cm_remaining_length'],
+            remaining_length_unit=row['cm_remaining_length_unit'],
+            insert_date=row['cm_insert_date'],
+            update_date=row['cm_update_date'],
         )
 
 
@@ -269,16 +395,36 @@ class CompetitionsIndexManager:
                     f'There is already a competition with the code "{code}".'),
                 status_code=400)
 
-        model_data = competition.dict(exclude={'settings'})
+        model_data = competition.dict(exclude={'settings': True})
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
 
+        # Create settings of the competition
         model_data = competition.settings.dict()
         model_data['competition_id'] = item_id
         _ = insert_model(
-            self._db, CSettingsManager.TABLE_NAME, model_data, commit=commit)
+            self._db, CSettingsManager.TABLE_NAME, model_data, commit=False)
+
+        # Create metadata of the competition
+        model_data = self._initial_metadata().dict()
+        model_data['competition_id'] = item_id
+        _ = insert_model(
+            self._db, CMetadataManager.CURRENT_TABLE, model_data, commit=False)
+        _ = insert_model(
+            self._db, CMetadataManager.HISTORY_TABLE, model_data, commit=commit)
 
         return item_id
+
+    def _initial_metadata(self) -> AddCompetitionMetadata:
+        """Create initial metadata of a competition."""
+        return AddCompetitionMetadata(
+            reference_time=0,
+            reference_current_offset=0,
+            status=CompetitionStatus.PAUSED,
+            stage=CompetitionStage.FREE_PRACTICE,
+            remaining_length=0,
+            remaining_length_unit=LengthUnit.LAPS,
+        )
 
     def _raw_to_competition(
             self, row: dict) -> GetCompetition:

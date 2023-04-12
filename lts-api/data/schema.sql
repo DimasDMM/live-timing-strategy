@@ -47,12 +47,11 @@ CREATE TABLE `competitions_settings` (
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `competitions_metadata_current` (
-  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `competition_id` INT UNSIGNED NOT NULL UNIQUE KEY,
+  `competition_id` INT UNSIGNED NOT NULL PRIMARY KEY,
   `reference_time` INT NOT NULL DEFAULT 0 COMMENT 'Reference time (usually, the median) of the track during practice or early stages',
   `reference_current_offset` INT NOT NULL DEFAULT 0 COMMENT 'Time offset with respect to the track reference',
   `status` ENUM('paused', 'ongoing', 'finished') NOT NULL,
-  `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
+  `stage` ENUM('free-practice', 'qualifying', 'race') NOT NULL,
   `remaining_length` INT UNSIGNED NOT NULL,
   `remaining_length_unit` ENUM('millis', 'laps') NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

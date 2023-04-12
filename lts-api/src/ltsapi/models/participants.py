@@ -1,6 +1,7 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import List, Optional
+
+from ltsapi.models import BaseModel
 
 
 class AddDriver(BaseModel):

@@ -92,6 +92,76 @@
 			"response": []
 		},
 		{
+			"name": "Get the metadata of a competition",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/2/metadata",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"2",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the metadata of a competition (history)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/2/metadata/history",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"2",
+						"metadata",
+						"history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update the metadata of a competition",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reference_time\": null,\r\n    \"reference_current_offset\": null,\r\n    \"status\": null,\r\n    \"stage\": null,\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/2/metadata",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"2",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get the settings of a competition",
 			"request": {
 				"method": "GET",

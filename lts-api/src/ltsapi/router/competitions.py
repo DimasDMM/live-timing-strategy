@@ -5,6 +5,7 @@ from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
 from ltsapi.managers.competitions import (
     CompetitionsIndexManager,
+    CMetadataManager,
     CSettingsManager,
     TracksManager,
 )
@@ -12,8 +13,10 @@ from ltsapi.models.competitions import (
     AddCompetition,
     AddTrack,
     GetCompetition,
+    GetCompetitionMetadata,
     GetCompetitionSettings,
     GetTrack,
+    UpdateCompetitionMetadata,
     UpdateCompetitionSettings,
     UpdateTrack,
 )
@@ -22,7 +25,7 @@ from ltsapi.router import _build_db_connection
 
 
 router = APIRouter(
-    prefix=f'/{API_VERSION}', tags=['Competitions (generic)'])
+    prefix=f'/{API_VERSION}', tags=['Competitions (base)'])
 _logger = _build_logger(__package__)
 _db = _build_db_connection(_logger)
 
@@ -67,6 +70,48 @@ async def get_competition_by_id(
 
 
 @router.get(
+        path='/competitions/{competition_id}/metadata',  # noqa: FS003
+        summary='Get the current metadata of a competition')
+async def get_current_competition_metadata_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+) -> Union[GetCompetitionMetadata, Empty]:
+    """Get the current metadata of a competition."""
+    with _db:
+        manager = CMetadataManager(db=_db, logger=_logger)
+        item = manager.get_current_by_id(competition_id)
+        return Empty() if item is None else item
+
+
+@router.put(
+        path='/competitions/{competition_id}/metadata',  # noqa: FS003
+        summary='Update the metadata of a competition')
+async def update_competition_metadata_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    metadata: UpdateCompetitionMetadata,
+) -> GetCompetitionMetadata:
+    """Update the metadata of a competition."""
+    with _db:
+        manager = CMetadataManager(db=_db, logger=_logger)
+        manager.update_by_id(metadata, competition_id=competition_id)
+        item = manager.get_current_by_id(competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+    return item
+
+
+@router.get(
+        path='/competitions/{competition_id}/metadata/history',  # noqa: FS003
+        summary='Get the history metadata of a competition')
+async def get_history_competition_metadata_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+) -> List[GetCompetitionMetadata]:
+    """Get the history metadata of a competition."""
+    with _db:
+        manager = CMetadataManager(db=_db, logger=_logger)
+        return manager.get_history_by_id(competition_id)
+
+
+@router.get(
         path='/competitions/{competition_id}/settings',  # noqa: FS003
         summary='Get the settings of a competition')
 async def get_competition_settings_by_id(
@@ -82,7 +127,7 @@ async def get_competition_settings_by_id(
 @router.put(
         path='/competitions/{competition_id}/settings',  # noqa: FS003
         summary='Update the settings of a competition')
-async def update_track_by_id(
+async def update_competition_settings_by_id(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     settings: UpdateCompetitionSettings,
 ) -> GetCompetitionSettings:
