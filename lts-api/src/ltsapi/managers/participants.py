@@ -35,8 +35,8 @@ class DriversManager:
             cd.`reference_time_offset` AS cd_reference_time_offset,
             cd.`insert_date` AS cd_insert_date,
             cd.`update_date` AS cd_update_date
-        FROM drivers AS cd'''
-    TABLE_NAME = 'drivers'
+        FROM participants_drivers AS cd'''
+    TABLE_NAME = 'participants_drivers'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
@@ -264,8 +264,8 @@ class TeamsManager:
             ct.`reference_time_offset` AS ct_reference_time_offset,
             ct.`insert_date` AS ct_insert_date,
             ct.`update_date` AS ct_update_date
-        FROM teams AS ct'''
-    TABLE_NAME = 'teams'
+        FROM participants_teams AS ct'''
+    TABLE_NAME = 'participants_teams'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""

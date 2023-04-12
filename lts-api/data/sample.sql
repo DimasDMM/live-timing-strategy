@@ -24,7 +24,7 @@ INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `
   (2, 320, 'laps', 120000, 4),
   (3, 3600000, 'millis', 10000, 4);
 
-INSERT INTO `teams`(`competition_id`, `participant_code`, `name`, `number`, `reference_time_offset`) VALUES
+INSERT INTO `participants_teams`(`competition_id`, `participant_code`, `name`, `number`, `reference_time_offset`) VALUES
   (1, 'team-1', 'CKM 1', 41, 0),
   (1, 'team-2', 'CKM 2', 42, 0),
   (1, 'team-3', 'CKM 3', 43, 0),
@@ -32,7 +32,7 @@ INSERT INTO `teams`(`competition_id`, `participant_code`, `name`, `number`, `ref
   (2, 'team-2', 'CKM 2', 42, 0),
   (3, 'team-1', 'CKM 1', 41, 0);
 
-INSERT INTO `drivers`(`competition_id`, `team_id`, `participant_code`, `name`, `number`, `total_driving_time`, `partial_driving_time`, `reference_time_offset`) VALUES
+INSERT INTO `participants_drivers`(`competition_id`, `team_id`, `participant_code`, `name`, `number`, `total_driving_time`, `partial_driving_time`, `reference_time_offset`) VALUES
   (1, 1, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
   (1, 1, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0),
   (1, 2, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),

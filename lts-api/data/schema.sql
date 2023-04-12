@@ -73,7 +73,7 @@ CREATE TABLE `competitions_metadata_history` (
   CONSTRAINT `competitions_metadata_history__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `teams` (
+CREATE TABLE `participants_teams` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `participant_code` VARCHAR(255) NOT NULL COMMENT 'Unique code given by the live timing (or auto-generated) to the team or the driver',
@@ -84,10 +84,10 @@ CREATE TABLE `teams` (
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `name` (`competition_id`, `name`),
   UNIQUE KEY `participant_code` (`competition_id`, `participant_code`),
-  CONSTRAINT `teams__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
+  CONSTRAINT `participants_teams__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `drivers` (
+CREATE TABLE `participants_drivers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NULL,
@@ -100,8 +100,8 @@ CREATE TABLE `drivers` (
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `team_driver` (`team_id`, `name`),
-  CONSTRAINT `drivers__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `drivers__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
+  CONSTRAINT `participants_drivers__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  CONSTRAINT `participants_drivers__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timing_current` (
@@ -124,8 +124,8 @@ CREATE TABLE `timing_current` (
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY (`competition_id`, `team_id`, `driver_id`),
   CONSTRAINT `timing_current__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_current__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`),
-  CONSTRAINT `timing_current__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `drivers` (`id`)
+  CONSTRAINT `timing_current__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`),
+  CONSTRAINT `timing_current__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `participants_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timing_history` (
@@ -145,8 +145,8 @@ CREATE TABLE `timing_history` (
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `timing_history__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_history__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`),
-  CONSTRAINT `timing_history__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `drivers` (`id`)
+  CONSTRAINT `timing_history__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`),
+  CONSTRAINT `timing_history__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `participants_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timing_karts_pits` (
@@ -159,7 +159,7 @@ CREATE TABLE `timing_karts_pits` (
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `timing_karts_pits__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_karts_pits__team_id` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
+  CONSTRAINT `timing_karts_pits__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `strategy_karts_probs` (
