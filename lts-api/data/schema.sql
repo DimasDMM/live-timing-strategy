@@ -36,10 +36,9 @@ CREATE TABLE `competitions_index` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `competitions_settings` (
-  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `competition_id` INT UNSIGNED NOT NULL UNIQUE KEY,
+  `competition_id` INT UNSIGNED NOT NULL PRIMARY KEY,
   `length` INT UNSIGNED NOT NULL,
-  `length_unit` ENUM('milli', 'laps') NOT NULL,
+  `length_unit` ENUM('millis', 'laps') NOT NULL,
   `pit_time` INT UNSIGNED NULL,
   `min_number_pits` INT UNSIGNED NOT NULL DEFAULT 0,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,7 +54,7 @@ CREATE TABLE `competitions_metadata_current` (
   `status` ENUM('paused', 'ongoing', 'finished') NOT NULL,
   `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
   `remaining_length` INT UNSIGNED NOT NULL,
-  `remaining_length_unit` ENUM('milli', 'laps') NOT NULL,
+  `remaining_length_unit` ENUM('millis', 'laps') NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `competitions_metadata__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
@@ -69,7 +68,7 @@ CREATE TABLE `competitions_metadata_history` (
   `status` ENUM('paused', 'ongoing', 'finished') NOT NULL,
   `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
   `remaining_length` INT UNSIGNED NOT NULL,
-  `remaining_length_unit` ENUM('milli', 'laps') NOT NULL,
+  `remaining_length_unit` ENUM('millis', 'laps') NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `competitions_metadata_history__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`)
@@ -116,7 +115,7 @@ CREATE TABLE `timing_current` (
   `best_time` INT UNSIGNED NOT NULL,
   `lap` INT UNSIGNED NOT NULL,
   `interval` INT UNSIGNED NOT NULL,
-  `interval_unit` ENUM('milli', 'laps') NOT NULL,
+  `interval_unit` ENUM('millis', 'laps') NOT NULL,
   `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
   `pits` INT UNSIGNED NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
@@ -140,7 +139,7 @@ CREATE TABLE `timing_history` (
   `best_time` INT UNSIGNED NOT NULL,
   `lap` INT UNSIGNED NOT NULL,
   `interval` INT UNSIGNED NOT NULL,
-  `interval_unit` ENUM('milli', 'laps') NOT NULL,
+  `interval_unit` ENUM('millis', 'laps') NOT NULL,
   `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
   `pits` INT UNSIGNED NULL,
   `number_pits` INT UNSIGNED NOT NULL DEFAULT 0,

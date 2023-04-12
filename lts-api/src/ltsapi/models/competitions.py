@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
-from ltsapi.models.timing import LengthUnit
+from ltsapi.models.enum import LengthUnit
 
 
 class AddTrack(BaseModel):
@@ -34,11 +34,17 @@ class AddCompetitionSettings(BaseModel):
     pit_time: Optional[int]
     min_number_pits: int
 
+    def dict(self, *args) -> dict:
+        """Transform model into a dictionary."""
+        data = super().dict(*args)
+        if 'length_unit' in data:
+            data['length_unit'] = data['length_unit'].value
+        return data
+
 
 class GetCompetitionSettings(BaseModel):
     """Settings of a competition."""
 
-    competition_id: int
     length: int
     length_unit: LengthUnit
     pit_time: Optional[int]
@@ -63,6 +69,7 @@ class AddCompetition(BaseModel):
     competition_code: str
     name: str
     description: str
+    settings: AddCompetitionSettings
 
 
 class GetCompetition(BaseModel):

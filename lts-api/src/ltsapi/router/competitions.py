@@ -5,13 +5,16 @@ from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
 from ltsapi.managers.competitions import (
     CompetitionsIndexManager,
+    CSettingsManager,
     TracksManager,
 )
 from ltsapi.models.competitions import (
     AddCompetition,
     AddTrack,
     GetCompetition,
+    GetCompetitionSettings,
     GetTrack,
+    UpdateCompetitionSettings,
     UpdateTrack,
 )
 from ltsapi.models.responses import Empty
@@ -29,8 +32,9 @@ _db = _build_db_connection(_logger)
         summary='Get all the competitions')
 async def get_all_competitions() -> List[GetCompetition]:
     """Get all competitions in the database."""
-    manager = CompetitionsIndexManager(db=_db, logger=_logger)
-    return manager.get_all()
+    with _db:
+        manager = CompetitionsIndexManager(db=_db, logger=_logger)
+        return manager.get_all()
 
 
 @router.post(
@@ -38,14 +42,15 @@ async def get_all_competitions() -> List[GetCompetition]:
         summary='Add a new competition')
 async def add_competition(competition: AddCompetition) -> GetCompetition:
     """Add a new competition."""
-    manager = CompetitionsIndexManager(db=_db, logger=_logger)
-    item_id = manager.add_one(competition, commit=True)
-    if item_id is None:
-        raise ApiError('No data was inserted or updated.')
-    item = manager.get_by_id(item_id)
-    if item is None:
-        raise ApiError('It was not possible to locate the new data.')
-    return item
+    with _db:
+        manager = CompetitionsIndexManager(db=_db, logger=_logger)
+        item_id = manager.add_one(competition, commit=True)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
+        item = manager.get_by_id(item_id)
+        if item is None:
+            raise ApiError('It was not possible to locate the new data.')
+        return item
 
 
 @router.get(
@@ -55,9 +60,40 @@ async def get_competition_by_id(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> Union[GetCompetition, Empty]:
     """Get a competition from the database by its ID."""
-    manager = CompetitionsIndexManager(db=_db, logger=_logger)
-    item = manager.get_by_id(competition_id)
-    return Empty() if item is None else item
+    with _db:
+        manager = CompetitionsIndexManager(db=_db, logger=_logger)
+        item = manager.get_by_id(competition_id)
+        return Empty() if item is None else item
+
+
+@router.get(
+        path='/competitions/{competition_id}/settings',  # noqa: FS003
+        summary='Get the settings of a competition')
+async def get_competition_settings_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+) -> Union[GetCompetitionSettings, Empty]:
+    """Get the settings of a competition."""
+    with _db:
+        manager = CSettingsManager(db=_db, logger=_logger)
+        item = manager.get_by_id(competition_id)
+        return Empty() if item is None else item
+
+
+@router.put(
+        path='/competitions/{competition_id}/settings',  # noqa: FS003
+        summary='Update the settings of a competition')
+async def update_track_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    settings: UpdateCompetitionSettings,
+) -> GetCompetitionSettings:
+    """Update the settings of a competition."""
+    with _db:
+        manager = CSettingsManager(db=_db, logger=_logger)
+        manager.update_by_id(settings, competition_id=competition_id)
+        item = manager.get_by_id(competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+    return item
 
 
 @router.get(
@@ -68,9 +104,10 @@ async def get_competition_by_code(
         description='Code of the competition')],
 ) -> Union[GetCompetition, Empty]:
     """Get a competition from the database by its code."""
-    manager = CompetitionsIndexManager(db=_db, logger=_logger)
-    item = manager.get_by_code(competition_code)
-    return Empty() if item is None else item
+    with _db:
+        manager = CompetitionsIndexManager(db=_db, logger=_logger)
+        item = manager.get_by_code(competition_code)
+        return Empty() if item is None else item
 
 
 @router.get(
@@ -78,8 +115,9 @@ async def get_competition_by_code(
         summary='Get all the tracks')
 async def get_all_tracks() -> List[GetTrack]:
     """Get all tracks in the database."""
-    manager = TracksManager(db=_db, logger=_logger)
-    return manager.get_all()
+    with _db:
+        manager = TracksManager(db=_db, logger=_logger)
+        return manager.get_all()
 
 
 @router.post(
@@ -87,14 +125,15 @@ async def get_all_tracks() -> List[GetTrack]:
         summary='Add a new track')
 async def add_track(track: AddTrack) -> GetTrack:
     """Add a new track."""
-    manager = TracksManager(db=_db, logger=_logger)
-    item_id = manager.add_one(track, commit=True)
-    if item_id is None:
-        raise ApiError('No data was inserted or updated.')
-    item = manager.get_by_id(item_id)
-    if item is None:
-        raise ApiError('It was not possible to locate the new data.')
-    return item
+    with _db:
+        manager = TracksManager(db=_db, logger=_logger)
+        item_id = manager.add_one(track, commit=True)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
+        item = manager.get_by_id(item_id)
+        if item is None:
+            raise ApiError('It was not possible to locate the new data.')
+        return item
 
 
 @router.put(
@@ -105,9 +144,10 @@ async def update_track_by_id(
     track: UpdateTrack,
 ) -> GetTrack:
     """Update the data of a track."""
-    manager = TracksManager(db=_db, logger=_logger)
-    manager.update_by_id(track, track_id)
-    item = manager.get_by_id(track_id)
-    if item is None:
-        raise ApiError('No data was inserted or updated.')
-    return item
+    with _db:
+        manager = TracksManager(db=_db, logger=_logger)
+        manager.update_by_id(track, track_id)
+        item = manager.get_by_id(track_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item

@@ -12,10 +12,10 @@ def fake_logger() -> FakeLogger:
     return FakeLogger()
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope='function')
 def db_context() -> DBContext:
     """Build a context to manage database connections."""
-    return DBContext(
+    db = DBContext(
         host=os.environ.get('DB_HOST', None),
         port=os.environ.get('DB_PORT', None),
         user=os.environ.get('DB_USER', None),
@@ -23,3 +23,5 @@ def db_context() -> DBContext:
         database=DatabaseTestInit.DATABASE_NAME,
         logger=FakeLogger(),
     )
+    with db:
+        yield db

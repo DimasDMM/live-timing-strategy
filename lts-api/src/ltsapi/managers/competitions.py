@@ -12,8 +12,10 @@ from ltsapi.managers.utils.statements import (
 from ltsapi.models.competitions import (
     AddCompetition,
     GetCompetition,
+    GetCompetitionSettings,
     AddTrack,
     GetTrack,
+    UpdateCompetitionSettings,
     UpdateTrack,
 )
 
@@ -107,6 +109,82 @@ class TracksManager:
         )
 
 
+class CSettingsManager:
+    """Manage settings of competitions."""
+
+    BASE_QUERY = '''
+        SELECT
+            cs.`length` AS cs_length,
+            cs.`length_unit` AS cs_length_unit,
+            cs.`pit_time` AS cs_pit_time,
+            cs.`min_number_pits` AS cs_min_number_pits,
+            cs.`insert_date` AS cs_insert_date,
+            cs.`update_date` AS cs_update_date
+        FROM competitions_settings as cs'''
+    TABLE_NAME = 'competitions_settings'
+
+    def __init__(self, db: DBContext, logger: Logger) -> None:
+        """Construct."""
+        self._db = db
+        self._logger = logger
+
+    def get_by_id(
+            self, competition_id: int) -> Optional[GetCompetitionSettings]:
+        """
+        Retrieve the settings of a competition.
+
+        Params:
+            competition_id (int): ID of the competition.
+
+        Returns:
+            GetCompetitionSettings | None: If the competition exists, returns
+                its instance.
+        """
+        query = f'{self.BASE_QUERY} WHERE cs.competition_id = %s'
+        model: Optional[GetCompetitionSettings] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_settings, query, (competition_id,))
+        return model
+
+    def update_by_id(
+            self,
+            settings: UpdateCompetitionSettings,
+            competition_id: int,
+            commit: bool = True) -> None:
+        """
+        Update the settings of a competition (it must already exist).
+
+        Params:
+            settings (UpdateCompetitionSettings): New settings of the
+                competition ('None' is ignored).
+            competition_id (int): ID of the competition.
+            commit (bool): Commit transaction.
+        """
+        if self.get_by_id(competition_id) is None:
+            raise ApiError(
+                message=(f'The competition with ID={competition_id} '
+                         'does not exist.'),
+                status_code=400)
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            settings.dict(),
+            key_name='competition_id',
+            key_value=competition_id,
+            commit=commit)
+
+    def _raw_to_settings(
+            self, row: dict) -> GetCompetitionSettings:
+        """Build an instance of GetCompetitionSettings."""
+        return GetCompetitionSettings(
+            length=row['cs_length'],
+            length_unit=row['cs_length_unit'],
+            pit_time=row['cs_pit_time'],
+            min_number_pits=row['cs_min_number_pits'],
+            insert_date=row['cs_insert_date'],
+            update_date=row['cs_update_date'],
+        )
+
+
 class CompetitionsIndexManager:
     """Manage data of competitions."""
 
@@ -190,8 +268,17 @@ class CompetitionsIndexManager:
                 message=(
                     f'There is already a competition with the code "{code}".'),
                 status_code=400)
-        return insert_model(
-            self._db, self.TABLE_NAME, competition.dict(), commit=commit)
+
+        model_data = competition.dict(exclude={'settings'})
+        item_id = insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=False)
+
+        model_data = competition.settings.dict()
+        model_data['competition_id'] = item_id
+        _ = insert_model(
+            self._db, CSettingsManager.TABLE_NAME, model_data, commit=commit)
+
+        return item_id
 
     def _raw_to_competition(
             self, row: dict) -> GetCompetition:

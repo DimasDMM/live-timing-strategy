@@ -4,13 +4,17 @@ import time
 from ltsapi.db import DBContext
 from ltsapi.models.competitions import (
     AddCompetition,
+    AddCompetitionSettings,
     AddTrack,
+    UpdateCompetitionSettings,
     UpdateTrack,
 )
 from ltsapi.managers.competitions import (
     CompetitionsIndexManager,
+    CSettingsManager,
     TracksManager,
 )
+from ltsapi.models.enum import LengthUnit
 from tests.helpers import DatabaseTestInit
 from tests.mocks.logging import FakeLogger
 
@@ -148,8 +152,99 @@ class TestTracksManager(DatabaseTestInit):
             assert before_item.update_date == after_item.update_date
 
 
-class TestCompetitionManager(DatabaseTestInit):
-    """Test class ltsapi.managers.competitions.CompetitionManager."""
+class TestCSettingsManager(DatabaseTestInit):
+    """Test class ltsapi.managers.competitions.CSettingsManager."""
+
+    EXCLUDED_KEYS = {
+        'insert_date': True,
+        'update_date': True,
+    }
+
+    @pytest.mark.parametrize(
+        'competition_id, expected_item',
+        [
+            (
+                2,  # competition_id
+                {
+                    'length': 320,
+                    'length_unit': LengthUnit.LAPS,
+                    'pit_time': 120000,
+                    'min_number_pits': 4,
+                },
+            ),
+        ])
+    def test_get_by_id(
+            self,
+            competition_id: int,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method get_by_id."""
+        manager = CSettingsManager(db=db_context, logger=fake_logger)
+
+        db_item = manager.get_by_id(competition_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        assert dict_item == expected_item
+
+    @pytest.mark.parametrize(
+        'competition_id, update_data, expected_item, is_updated',
+        [
+            (
+                2,  # competition_id
+                UpdateCompetitionSettings(),
+                {
+                    'length': 320,
+                    'length_unit': LengthUnit.LAPS,
+                    'pit_time': 120000,
+                    'min_number_pits': 4,
+                },
+                False,  # is_updated
+            ),
+            (
+                2,  # competition_id
+                UpdateCompetitionSettings(length=321),
+                {
+                    'length': 321,
+                    'length_unit': LengthUnit.LAPS,
+                    'pit_time': 120000,
+                    'min_number_pits': 4,
+                },
+                True,  # is_updated
+            ),
+        ])
+    def test_update_by_id(
+            self,
+            competition_id: int,
+            update_data: UpdateCompetitionSettings,
+            expected_item: dict,
+            is_updated: bool,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method update_by_id."""
+        manager = CSettingsManager(db=db_context, logger=fake_logger)
+
+        before_item = manager.get_by_id(competition_id)
+        assert before_item is not None
+
+        time.sleep(1)
+        manager.update_by_id(update_data, competition_id)
+
+        after_item = manager.get_by_id(competition_id)
+        assert after_item is not None
+        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+
+        assert dict_item == expected_item
+        assert before_item.insert_date == after_item.insert_date
+        if is_updated:
+            assert before_item.update_date < after_item.update_date
+        else:
+            assert before_item.update_date == after_item.update_date
+
+
+class TestCompetitionsIndexManager(DatabaseTestInit):
+    """Test class ltsapi.managers.competitions.CompetitionsIndexManager."""
 
     ALL_COMPETITIONS = [
         {
@@ -255,6 +350,12 @@ class TestCompetitionManager(DatabaseTestInit):
                     competition_code='add-one-competition',
                     name='Added competition',
                     description='This is a test',
+                    settings=AddCompetitionSettings(
+                        length=10,
+                        length_unit=LengthUnit.LAPS,
+                        pit_time=120000,
+                        min_number_pits=4,
+                    ),
                 ),
                 {
                     'id': None,
@@ -291,6 +392,12 @@ class TestCompetitionManager(DatabaseTestInit):
                     competition_code='north-endurance-2023-02-26',
                     name='Duplicated competition',
                     description='This is a test',
+                    settings=AddCompetitionSettings(
+                        length=10,
+                        length_unit=LengthUnit.LAPS,
+                        pit_time=120000,
+                        min_number_pits=4,
+                    ),
                 ),
                 ('There is already a competition with the '
                  'code "north-endurance-2023-02-26".'),

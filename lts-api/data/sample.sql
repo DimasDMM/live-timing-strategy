@@ -5,6 +5,11 @@ INSERT INTO `competitions_index`(`track_id`, `competition_code`, `name`, `descri
     (1, 'north-endurance-2023-03-25', 'Endurance North 25-03-2023', 'Endurance in Karting North'),
     (2, 'south-endurance-2023-03-26', 'Endurance South 26-03-2023', 'Endurance in Karting South');
 
+INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `pit_time`, `min_number_pits`) VALUES
+    (1, 350, 'laps', 120000, 5),
+    (2, 320, 'laps', 120000, 4),
+    (3, 3600000, 'millis', 10000, 4);
+
 INSERT INTO `teams`(`competition_id`, `participant_code`, `name`, `number`, `reference_time_offset`) VALUES
   (1, 'team-1', 'CKM 1', 41, 0),
   (1, 'team-2', 'CKM 2', 42, 0),

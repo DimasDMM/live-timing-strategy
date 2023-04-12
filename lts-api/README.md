@@ -52,7 +52,6 @@ Get-Content .env.local | foreach {
   }
 }
 ```
-Set-Variable -Scope global -Name "$name" -Value "$value"
 
 ### Network of containers
 

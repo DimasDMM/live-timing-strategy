@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"santos-add-postman\",\r\n    \"name\": \"Los Santos - Added via Postman\",\r\n    \"description\": \"Karting Los Santos - Added via Postman\"\r\n}\r\n",
+					"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"new-track-added\",\r\n    \"name\": \"New Karting\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -86,6 +86,55 @@
 						"filter",
 						"code",
 						"santos-endurance-2023-02-26"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the settings of a competition",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/settings",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update the settings of a competition",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"length\": 321,\r\n    \"length_unit\": \"laps\",\r\n    \"pit_time\": null,\r\n    \"min_number_pits\": null\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/v1/competitions/1/settings",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"v1",
+						"competitions",
+						"1",
+						"settings"
 					]
 				}
 			},

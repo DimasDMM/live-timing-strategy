@@ -27,11 +27,15 @@ def insert_model(
     stmt_head = ', '.join([f'`{h}`' for h in headers])
     stmt = f'''
         INSERT INTO `{table_name}` ({stmt_head}) VALUES ({placeholders})'''
-    with db as cursor:
+    cursor = db.get_cursor()
+    try:
         cursor.execute(stmt, tuple(params))
         if commit:
             db.commit()
         return cursor.lastrowid
+    except Exception as e:
+        db.rollback()
+        raise e
 
 
 def update_model(
@@ -51,10 +55,11 @@ def update_model(
             UPDATE `{table_name}` SET {",".join(stmt_fields)}
             WHERE `{key_name}` = %s'''
         params.append(key_value)
-        with db as cursor:
-            cursor.execute(stmt, tuple(params))
-            if commit:
-                db.commit()
+
+        cursor = db.get_cursor()
+        cursor.execute(stmt, tuple(params))
+        if commit:
+            db.commit()
 
 
 def fetchone_model(
@@ -73,10 +78,10 @@ def fetchone_model(
         params (tuple | None): If the query has any parameter, they should be
             provided through this argument.
     """
-    with db as cursor:
-        cursor.execute(query, params)  # type: ignore
-        raw_data: dict = cursor.fetchone()  # type: ignore
-        return None if raw_data is None else model_factory(raw_data)
+    cursor = db.get_cursor()
+    cursor.execute(query, params)  # type: ignore
+    raw_data: dict = cursor.fetchone()  # type: ignore
+    return None if raw_data is None else model_factory(raw_data)
 
 
 def fetchmany_models(
@@ -95,10 +100,10 @@ def fetchmany_models(
         params (tuple | None): If the query has any parameter, they should be
             provided through this argument.
     """
-    with db as cursor:
-        cursor.execute(query, params)
-        raw_data: List[dict] = cursor.fetchall()  # type: ignore
-        items: List[BaseModel] = []
-        for row in raw_data:
-            items.append(model_factory(row))  # type: ignore
-        return items
+    cursor = db.get_cursor()
+    cursor.execute(query, params)
+    raw_data: List[dict] = cursor.fetchall()  # type: ignore
+    items: List[BaseModel] = []
+    for row in raw_data:
+        items.append(model_factory(row))  # type: ignore
+    return items

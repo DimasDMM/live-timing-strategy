@@ -62,8 +62,26 @@ class DBContext:
             raise Exception('Connection not initialized yet.')
         return self._cnx
 
+    def get_cursor(self) -> MySQLCursorDict:
+        """Return MySQL cursor instance."""
+        if self._cursor is None:
+            raise Exception('Connection not initialized yet.')
+        return self._cursor
+
     def commit(self) -> None:
         """Do commit."""
         if self._cnx is None:
             raise Exception('Connection not initialized yet.')
         self._cnx.commit()
+
+    def rollback(self) -> None:
+        """Do rollback."""
+        if self._cnx is None:
+            raise Exception('Connection not initialized yet.')
+        self._cnx.rollback()
+
+    def start_transaction(self) -> None:
+        """Start a transaction."""
+        if self._cnx is None:
+            raise Exception('Connection not initialized yet.')
+        self._cnx.start_transaction()
