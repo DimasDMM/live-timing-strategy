@@ -3,11 +3,17 @@ from typing import Any, List, Optional
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
+from ltsapi.managers.timing import TimingManager
 from ltsapi.managers.utils.statements import (
     insert_model,
     update_model,
     fetchmany_models,
     fetchone_model,
+)
+from ltsapi.models.enum import (
+    CompetitionStage,
+    KartStatus,
+    LengthUnit,
 )
 from ltsapi.models.participants import (
     AddDriver,
@@ -17,6 +23,7 @@ from ltsapi.models.participants import (
     UpdateDriver,
     UpdateTeam,
 )
+from ltsapi.models.timing import AddLapTime
 
 
 class DriversManager:
@@ -180,8 +187,29 @@ class DriversManager:
         model_data = driver.dict()
         model_data['competition_id'] = competition_id
         model_data['team_id'] = team_id
-        return insert_model(
-            self._db, self.TABLE_NAME, model_data, commit=commit)
+        item_id = insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=False)
+
+        # Additional information required when we create a new driver.
+        # Note that this section is executed only if the driver does not have
+        # any team (otherwise, it asumes that these records already exist
+        # because they were created along the team).
+        if team_id is None and item_id is not None:
+            initial_model = self._initial_timing(driver_id=item_id)
+            initial_data = initial_model.dict()
+            initial_data['competition_id'] = competition_id
+            _ = insert_model(
+                self._db,
+                TimingManager.CURRENT_TABLE,
+                initial_data,
+                commit=False)
+            _ = insert_model(
+                self._db,
+                TimingManager.HISTORY_TABLE,
+                initial_data,
+                commit=commit)
+
+        return item_id
 
     def update_by_id(
             self,
@@ -232,6 +260,24 @@ class DriversManager:
         models: List[GetDriver] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_driver, query, params=tuple(params))
         return len(models) > 0
+
+    def _initial_timing(self, driver_id: int) -> AddLapTime:
+        """Create initial timing data."""
+        return AddLapTime(
+            team_id=None,
+            driver_id=driver_id,
+            position=0,
+            time=0,
+            best_time=0,
+            lap=0,
+            interval=0,
+            interval_unit=LengthUnit.LAPS,
+            stage=CompetitionStage.FREE_PRACTICE,
+            pits=0,
+            kart_status=KartStatus.UNKNOWN,
+            fixed_kart_status=None,
+            number_pits=0,
+        )
 
     def _raw_to_driver(self, row: dict) -> GetDriver:
         """Build an instance of GetDriver."""
@@ -361,8 +407,26 @@ class TeamsManager:
 
         model_data = team.dict()
         model_data['competition_id'] = competition_id
-        return insert_model(
-            self._db, self.TABLE_NAME, model_data, commit=commit)
+        item_id = insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=False)
+
+        # Additional information required when we create a new team.
+        if item_id is not None:
+            initial_model = self._initial_timing(team_id=item_id)
+            initial_data = initial_model.dict()
+            initial_data['competition_id'] = competition_id
+            _ = insert_model(
+                self._db,
+                TimingManager.CURRENT_TABLE,
+                initial_data,
+                commit=False)
+            _ = insert_model(
+                self._db,
+                TimingManager.HISTORY_TABLE,
+                initial_data,
+                commit=commit)
+
+        return item_id
 
     def update_by_id(
             self,
@@ -402,6 +466,24 @@ class TeamsManager:
         models: List[GetTeam] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_team, query, params)
         return len(models) > 0
+
+    def _initial_timing(self, team_id: int) -> AddLapTime:
+        """Create initial timing data."""
+        return AddLapTime(
+            team_id=team_id,
+            driver_id=None,
+            position=0,
+            time=0,
+            best_time=0,
+            lap=0,
+            interval=0,
+            interval_unit=LengthUnit.LAPS,
+            stage=CompetitionStage.FREE_PRACTICE,
+            pits=0,
+            kart_status=KartStatus.UNKNOWN,
+            fixed_kart_status=None,
+            number_pits=0,
+        )
 
     def _raw_to_team(self, row: dict) -> GetTeam:
         """Build an instance of GetTeam."""

@@ -12,6 +12,7 @@ from ltsapi.models.participants import (
     UpdateTeam,
 )
 from ltsapi.managers.participants import DriversManager, TeamsManager
+from ltsapi.managers.timing import TimingManager
 from tests.helpers import DatabaseTestInit
 from tests.mocks.logging import FakeLogger
 
@@ -312,7 +313,7 @@ class TestDriversManager(DatabaseTestInit):
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
-        'team_id, competition_id, model, expected_item',
+        'competition_id, team_id, model, expected_item',
         [
             (
                 1,  # competition_id
@@ -326,12 +327,33 @@ class TestDriversManager(DatabaseTestInit):
                     reference_time_offset=0,
                 ),
                 {
-                    'id': 2,
                     'competition_id': 1,
                     'team_id': 1,
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 3',
                     'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                },
+            ),
+            (
+                1,  # competition_id
+                None,  # team_id
+                AddDriver(
+                    participant_code='team-new',
+                    name='New Team Driver 1',
+                    number=101,
+                    total_driving_time=0,
+                    partial_driving_time=0,
+                    reference_time_offset=0,
+                ),
+                {
+                    'competition_id': 1,
+                    'team_id': None,
+                    'participant_code': 'team-new',
+                    'name': 'New Team Driver 1',
+                    'number': 101,
                     'total_driving_time': 0,
                     'partial_driving_time': 0,
                     'reference_time_offset': 0,
@@ -348,14 +370,32 @@ class TestDriversManager(DatabaseTestInit):
             fake_logger: FakeLogger) -> None:
         """Test method add_one."""
         manager = DriversManager(db=db_context, logger=fake_logger)
-        item_id = manager.add_one(model, competition_id, team_id, commit=True)
+        item_id = manager.add_one(
+            model, competition_id=competition_id, team_id=team_id, commit=True)
 
         expected_item['id'] = item_id
-        db_item = manager.get_by_id(item_id, team_id, competition_id)
+        db_item = manager.get_by_id(
+            item_id, team_id=team_id, competition_id=competition_id)
         assert db_item is not None
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         assert dict_item == expected_item
+
+        # Check that additional tables are filled too
+        if team_id is None:
+            manager = TimingManager(db=db_context, logger=fake_logger)
+            item = manager.get_current_single_by_id(
+                competition_id=competition_id,
+                team_id=team_id,
+                driver_id=item_id)
+            assert item is not None
+
+            manager = TimingManager(db=db_context, logger=fake_logger)
+            items = manager.get_history_by_id(
+                competition_id=competition_id,
+                team_id=item_id,
+                driver_id=item_id)
+            assert items is not None
 
     @pytest.mark.parametrize(
         'competition_id, team_id, model, expected_error',
@@ -681,6 +721,17 @@ class TestTeamsManager(DatabaseTestInit):
 
         dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
         assert dict_item == expected_item
+
+        # Check that additional tables are filled too
+        manager = TimingManager(db=db_context, logger=fake_logger)
+        item = manager.get_current_single_by_id(
+            competition_id=competition_id, team_id=item_id)
+        assert item is not None
+
+        manager = TimingManager(db=db_context, logger=fake_logger)
+        items = manager.get_history_by_id(
+            competition_id=competition_id, team_id=item_id)
+        assert items is not None
 
     @pytest.mark.parametrize(
         'competition_id, model, expected_error',

@@ -8,6 +8,24 @@ from ltsapi.models.enum import (
 )
 
 
+class AddLapTime(BaseModel):
+    """Data of a lap."""
+
+    team_id: Optional[int]
+    driver_id: Optional[int]
+    position: int
+    time: int
+    best_time: int
+    lap: int
+    interval: int
+    interval_unit: LengthUnit
+    stage: str
+    pits: Optional[int]
+    kart_status: KartStatus
+    fixed_kart_status: Optional[KartStatus]
+    number_pits: int
+
+
 class GetLapTime(BaseModel):
     """Data of a lap."""
 
