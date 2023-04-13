@@ -106,8 +106,7 @@ class TracksManager:
             key_value=track_id,
             commit=commit)
 
-    def _raw_to_track(
-            self, row: dict) -> GetTrack:
+    def _raw_to_track(self, row: dict) -> GetTrack:
         """Build an instance of GetTrack."""
         return GetTrack(
             id=row['track_id'],
@@ -180,8 +179,7 @@ class CSettingsManager:
             key_value=competition_id,
             commit=commit)
 
-    def _raw_to_settings(
-            self, row: dict) -> GetCompetitionSettings:
+    def _raw_to_settings(self, row: dict) -> GetCompetitionSettings:
         """Build an instance of GetCompetitionSettings."""
         return GetCompetitionSettings(
             length=row['cs_length'],
@@ -296,8 +294,7 @@ class CMetadataManager:
             previous_data,
             commit=commit)
 
-    def _raw_to_metadata(
-            self, row: dict) -> GetCompetitionMetadata:
+    def _raw_to_metadata(self, row: dict) -> GetCompetitionMetadata:
         """Build an instance of GetCompetitionMetadata."""
         return GetCompetitionMetadata(
             reference_time=row['cm_reference_time'],
@@ -426,8 +423,7 @@ class CompetitionsIndexManager:
             remaining_length_unit=LengthUnit.LAPS,
         )
 
-    def _raw_to_competition(
-            self, row: dict) -> GetCompetition:
+    def _raw_to_competition(self, row: dict) -> GetCompetition:
         """Build an instance of GetCompetition."""
         return GetCompetition(
             id=row['cidx_id'],

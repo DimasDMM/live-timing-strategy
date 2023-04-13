@@ -1,7 +1,8 @@
 from pydantic import BaseModel
-from typing import Any, Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 from ltsapi.db import DBContext
+from ltsapi.exceptions import ApiError
 
 
 def insert_model(
@@ -42,8 +43,8 @@ def update_model(
         db: DBContext,
         table_name: str,
         model: dict,
-        key_name: str,
-        key_value: Any,
+        key_name: Union[str, List[str]],
+        key_value: Union[int, List[int]],
         commit: bool = True) -> None:
     """Update the database with the model (as a dictionary)."""
     fields = {k: v for k, v in model.items() if v is not None}
@@ -51,10 +52,20 @@ def update_model(
     stmt_fields = [f'`{field}` = %s' for field in stmt_fields]
 
     if len(stmt_fields) > 0:
+        if isinstance(key_name, list) and isinstance(key_value, list):
+            # The key is complex
+            stmt_where = [f'`{name}` = %s' for name in key_name]
+            params += key_value
+        elif isinstance(key_name, str) and isinstance(key_value, int):
+            stmt_where = [f'`{key_name}` = %s']
+            params.append(key_value)
+        else:
+            # Invalid key
+            raise ApiError('Invalid keys and values to build update.')
+
         stmt = f'''
             UPDATE `{table_name}` SET {",".join(stmt_fields)}
-            WHERE `{key_name}` = %s'''
-        params.append(key_value)
+            WHERE {" AND ".join(stmt_where)}'''
 
         cursor = db.get_cursor()
         cursor.execute(stmt, tuple(params))

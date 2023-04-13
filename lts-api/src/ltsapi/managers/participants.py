@@ -233,8 +233,7 @@ class DriversManager:
             self._db, self._raw_to_driver, query, params=tuple(params))
         return len(models) > 0
 
-    def _raw_to_driver(
-            self, row: dict) -> GetDriver:
+    def _raw_to_driver(self, row: dict) -> GetDriver:
         """Build an instance of GetDriver."""
         return GetDriver(
             id=row['cd_id'],
@@ -404,8 +403,7 @@ class TeamsManager:
             self._db, self._raw_to_team, query, params)
         return len(models) > 0
 
-    def _raw_to_team(
-            self, row: dict) -> GetTeam:
+    def _raw_to_team(self, row: dict) -> GetTeam:
         """Build an instance of GetTeam."""
         return GetTeam(
             id=row['ct_id'],

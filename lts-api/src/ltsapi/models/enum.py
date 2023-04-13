@@ -34,6 +34,14 @@ class CompetitionStage(str, EnumBase):
     RACE = 'race'
 
 
+class KartStatus(str, EnumBase):
+    """Status of a kart."""
+
+    GOOD = 'good'
+    BAD = 'bad'
+    UNKNOWN = 'unknown'
+
+
 class LengthUnit(str, EnumBase):
     """Units to measure the race length."""
 

@@ -7,7 +7,7 @@ INSERT INTO `competitions_index`(`track_id`, `competition_code`, `name`, `descri
 
 INSERT INTO `competitions_metadata_current`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
   (1, 0, 0, 'finished', 'race', 0, 'laps'),
-  (2, 0, 0, 'ongoing', 'race', 349, 'laps'),
+  (2, 0, 0, 'ongoing', 'race', 348, 'laps'),
   (3, 0, 0, 'paused', 'free-practice', 0, 'laps');
 
 INSERT INTO `competitions_metadata_history`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
@@ -16,7 +16,7 @@ INSERT INTO `competitions_metadata_history`(`competition_id`, `reference_time`, 
   (1, 0, 0, 'finished', 'race', 0, 'laps'),
   (2, 0, 0, 'paused', 'free-practice', 0, 'laps'),
   (2, 0, 0, 'ongoing', 'race', 350, 'laps'),
-  (2, 0, 0, 'ongoing', 'race', 349, 'laps'),
+  (2, 0, 0, 'ongoing', 'race', 348, 'laps'),
   (3, 0, 0, 'paused', 'free-practice', 0, 'laps');
 
 INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `pit_time`, `min_number_pits`) VALUES
@@ -44,3 +44,23 @@ INSERT INTO `participants_drivers`(`competition_id`, `team_id`, `participant_cod
   (2, 4, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
   (3, 5, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
   (3, 5, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0);
+
+INSERT INTO `timing_current`(`competition_id`, `team_id`, `driver_id`, `position`, `time`, `best_time`, `lap`, `interval`, `interval_unit`, `stage`, `pits`, `kart_status`, `fixed_kart_status`, `number_pits`) VALUES
+  (1, 1, 1, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (1, 2, 3, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (1, 3, NULL, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (2, 4, 5, 1, 58800, 58800, 2, 0, 'millis', 'race', 0, 'good', NULL, 0),
+  (2, 5, 7, 2, 59700, 59500, 2, 1400, 'millis', 'race', 0, 'bad', NULL, 0),
+  (3, 3, 9, 1, 60000, 59000, 1, 0, 'laps', 'free-practice', 0, 'unknown', NULL, 0);
+
+INSERT INTO `timing_history`(`competition_id`, `team_id`, `driver_id`, `position`, `time`, `best_time`, `lap`, `interval`, `interval_unit`, `stage`, `pits`, `kart_status`, `fixed_kart_status`, `number_pits`) VALUES
+  (1, 1, 1, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (1, 2, 3, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (1, 3, NULL, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),
+  (2, 4, 5, 1, 0, 0, 0, 0, 'millis', 'race', 0, 'unknown', NULL, 0),
+  (2, 5, 7, 2, 0, 0, 0, 0, 'millis', 'race', 0, 'unknown', NULL, 0),
+  (2, 4, 5, 1, 59000, 59000, 1, 0, 'millis', 'race', 0, 'unknown', NULL, 0),
+  (2, 5, 7, 2, 59500, 59500, 1, 500, 'millis', 'race', 0, 'unknown', NULL, 0),
+  (2, 4, 5, 1, 58800, 58800, 2, 0, 'millis', 'race', 0, 'good', NULL, 0),
+  (2, 5, 7, 2, 59700, 59500, 2, 1400, 'millis', 'race', 0, 'bad', NULL, 0),
+  (3, 3, 9, 1, 60000, 59000, 1, 0, 'millis', 'free-practice', 0, 'unknown', NULL, 0);
