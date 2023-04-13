@@ -16,7 +16,6 @@ router = APIRouter(
     prefix='/' + API_VERSION + '/competitions/{competition_id}',  # noqa
     tags=['Timing'])
 _logger = _build_logger(__package__)
-_db = _build_db_connection(_logger)
 
 
 @router.get(
@@ -26,8 +25,9 @@ async def get_current_global_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetLapTime]:
     """Get current timing of a specific competition."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         return manager.get_current_all_by_id(competition_id)
 
 
@@ -39,8 +39,9 @@ async def get_current_driver_timing(
     driver_id: Annotated[int, Path(description='ID of the driver')],
 ) -> Union[GetLapTime, Empty]:
     """Get current timing in a competition of a specific driver."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         item = manager.get_current_single_by_id(
             competition_id, driver_id=driver_id)
         return Empty() if item is None else item
@@ -54,8 +55,9 @@ async def get_history_driver_timing(
     driver_id: Annotated[int, Path(description='ID of the driver')],
 ) -> List[GetLapTime]:
     """Get history timing in a competition of a specific driver."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         return manager.get_history_by_id(competition_id, driver_id=driver_id)
 
 
@@ -67,8 +69,9 @@ async def get_current_team_timing(
     team_id: Annotated[int, Path(description='ID of the team')],
 ) -> Union[GetLapTime, Empty]:
     """Get current timing in a competition of a specific team."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         item = manager.get_current_single_by_id(competition_id, team_id=team_id)
         return Empty() if item is None else item
 
@@ -82,8 +85,9 @@ async def update_timing_by_team(
     lap_time: UpdateLapTime,
 ) -> GetLapTime:
     """Update the timing of a team in a competition."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         manager.update_by_id(
             lap_time, competition_id=competition_id, team_id=team_id)
         item = manager.get_current_single_by_id(competition_id, team_id=team_id)
@@ -100,8 +104,9 @@ async def get_history_team_timing(
     team_id: Annotated[int, Path(description='ID of the team')],
 ) -> List[GetLapTime]:
     """Get history timing in a competition of a specific team."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         return manager.get_history_by_id(competition_id, team_id=team_id)
 
 
@@ -112,6 +117,7 @@ async def get_history_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetLapTime]:
     """Get history timing in a competition."""
-    with _db:
-        manager = TimingManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TimingManager(db=db, logger=_logger)
         return manager.get_history_by_id(competition_id)

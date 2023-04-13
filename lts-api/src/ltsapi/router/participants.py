@@ -20,7 +20,6 @@ router = APIRouter(
     prefix='/' + API_VERSION + '/competitions/{competition_id}',  # noqa
     tags=['Participants'])
 _logger = _build_logger(__package__)
-_db = _build_db_connection(_logger)
 
 
 @router.get(
@@ -30,8 +29,9 @@ async def get_teams_by_competition_id(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetTeam]:
     """Get all teams in a specific competition."""
-    with _db:
-        manager = TeamsManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TeamsManager(db=db, logger=_logger)
         return manager.get_by_competition_id(competition_id)
 
 
@@ -43,8 +43,9 @@ async def add_team_to_competition(
     team: AddTeam,
 ) -> GetTeam:
     """Add a new team."""
-    with _db:
-        manager = TeamsManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TeamsManager(db=db, logger=_logger)
         item_id = manager.add_one(team, competition_id, commit=True)
         if item_id is None:
             raise ApiError('No data was inserted or updated.')
@@ -62,8 +63,9 @@ async def get_team_by_id(
     team_id: Annotated[int, Path(description='ID of the team')],
 ) -> Union[GetTeam, Empty]:
     """Get a team by its ID."""
-    with _db:
-        manager = TeamsManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TeamsManager(db=db, logger=_logger)
         item = manager.get_by_id(team_id=team_id, competition_id=competition_id)
         return Empty() if item is None else item
 
@@ -77,8 +79,9 @@ async def update_team_by_id(
     team: UpdateTeam,
 ) -> GetTeam:
     """Update the data of a team."""
-    with _db:
-        manager = TeamsManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = TeamsManager(db=db, logger=_logger)
         manager.update_by_id(
             team, team_id=team_id, competition_id=competition_id)
         item = manager.get_by_id(team_id, competition_id)
@@ -95,8 +98,9 @@ async def get_team_drivers_by_team_id(
     team_id: Annotated[int, Path(description='ID of the team')],
 ) -> List[GetDriver]:
     """Get all drivers in a specific team."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         return manager.get_by_team_id(team_id, competition_id)
 
 
@@ -109,8 +113,9 @@ async def add_team_driver(
     driver: AddDriver,
 ) -> GetDriver:
     """Add a new driver in the team."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         item_id = manager.add_one(
             driver, competition_id=competition_id, team_id=team_id, commit=True)
         if item_id is None:
@@ -130,8 +135,9 @@ async def get_team_driver_by_id(
     driver_id: Annotated[int, Path(description='ID of the driver')],
 ) -> Union[GetDriver, Empty]:
     """Get a driver by its ID."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         item = manager.get_by_id(
             driver_id, team_id=team_id, competition_id=competition_id)
         return Empty() if item is None else item
@@ -147,8 +153,9 @@ async def update_team_driver_by_id(
     driver: UpdateDriver,
 ) -> GetDriver:
     """Update the data of a driver."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         manager.update_by_id(
             driver, driver_id, team_id=team_id, competition_id=competition_id)
         item = manager.get_by_id(
@@ -165,8 +172,9 @@ async def get_single_drivers_by_competition_id(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetDriver]:
     """Get all drivers in a specific competition."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         return manager.get_by_competition_id(competition_id)
 
 
@@ -178,8 +186,9 @@ async def add_single_driver(
     driver: AddDriver,
 ) -> GetDriver:
     """Add a new driver without team."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         item_id = manager.add_one(
             driver, competition_id=competition_id, commit=True)
         if item_id is None:
@@ -198,8 +207,9 @@ async def get_single_driver_by_id(
     driver_id: Annotated[int, Path(description='ID of the driver')],
 ) -> Union[GetDriver, Empty]:
     """Get a driver by its ID."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         item = manager.get_by_id(driver_id, competition_id=competition_id)
         return Empty() if item is None else item
 
@@ -213,8 +223,9 @@ async def update_single_driver_by_id(
     driver: UpdateDriver,
 ) -> GetDriver:
     """Update the data of a driver."""
-    with _db:
-        manager = DriversManager(db=_db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        manager = DriversManager(db=db, logger=_logger)
         manager.update_by_id(driver, driver_id, competition_id=competition_id)
         item = manager.get_by_id(driver_id, competition_id=competition_id)
         if item is None:

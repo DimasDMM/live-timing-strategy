@@ -7,27 +7,7 @@ from ltsapi.models.enum import (
     CompetitionStatus,
     LengthUnit,
 )
-
-
-class AddTrack(BaseModel):
-    """Data to add a new track."""
-
-    name: str
-
-
-class GetTrack(BaseModel):
-    """Track data."""
-
-    id: int
-    name: str
-    insert_date: datetime
-    update_date: datetime
-
-
-class UpdateTrack(BaseModel):
-    """Data to update a track."""
-
-    name: Optional[str]
+from ltsapi.models.tracks import GetTrack
 
 
 class AddCompetitionMetadata(BaseModel):

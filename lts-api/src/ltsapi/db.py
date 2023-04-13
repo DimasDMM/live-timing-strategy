@@ -1,7 +1,7 @@
 from logging import Logger
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursorDict
-from typing import Optional
+from typing import Any, Optional
 
 
 class DBContext:
@@ -85,3 +85,31 @@ class DBContext:
         if self._cnx is None:
             raise Exception('Connection not initialized yet.')
         self._cnx.start_transaction()
+
+
+class SingleDBContext(DBContext):
+    """Unique database connection."""
+
+    _instance: DBContext
+
+    def __new__(
+            cls: Any,
+            host: Optional[str],
+            port: Optional[str],
+            user: Optional[str],
+            password: Optional[str],
+            database: Optional[str],
+            logger: Logger) -> Any:
+        """Create singleton."""
+        if cls._instance is None:
+            logger.info('Create singleton of database connection')
+            cls._instance = DBContext(
+                host=host,
+                port=port,
+                user=user,
+                password=password,
+                database=database,
+                logger=logger)
+        else:
+            logger.info('Re-use database connection')
+        return cls._instance

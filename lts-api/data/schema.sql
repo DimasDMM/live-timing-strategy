@@ -193,3 +193,14 @@ CREATE TABLE `stats_health` (
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `label_name` (`name`, `label`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `parsers_settings` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `competition_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT `parsers_settings__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  UNIQUE KEY `competition_name` (`competition_id`, `name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

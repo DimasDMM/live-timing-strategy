@@ -3,8 +3,11 @@ from fastapi.responses import JSONResponse
 import os
 import traceback
 
+from ltsapi import _build_logger
 from ltsapi.exceptions import ApiError
+from ltsapi.router import _build_db_connection
 from ltsapi.router.competitions import router as router_competitions
+from ltsapi.router.misc import router as router_misc
 from ltsapi.router.participants import router as router_participants
 from ltsapi.router.timing import router as router_timing
 
@@ -15,8 +18,13 @@ app = FastAPI(
     version='0.0.1',
 )
 app.include_router(router_competitions)
+app.include_router(router_misc)
 app.include_router(router_participants)
 app.include_router(router_timing)
+
+# Init singleton of database connection
+_logger = _build_logger(__package__)
+_ = _build_db_connection(_logger)
 
 
 @app.exception_handler(ApiError)

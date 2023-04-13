@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Callable, List, Optional, Union
 
 from ltsapi.db import DBContext
-from ltsapi.exceptions import ApiError
 
 
 def insert_model(
@@ -44,9 +43,9 @@ def update_model(
         table_name: str,
         model: dict,
         key_name: Union[str, List[str]],
-        key_value: Union[int, List[int]],
+        key_value: Union[int, str, list],
         commit: bool = True) -> None:
-    """Update the database with the model (as a dictionary)."""
+    """Update the model in the database (as a dictionary)."""
     fields = {k: v for k, v in model.items() if v is not None}
     stmt_fields, params = list(fields.keys()), list(fields.values())
     stmt_fields = [f'`{field}` = %s' for field in stmt_fields]
@@ -56,12 +55,9 @@ def update_model(
             # The key is complex
             stmt_where = [f'`{name}` = %s' for name in key_name]
             params += key_value
-        elif isinstance(key_name, str) and isinstance(key_value, int):
+        else:
             stmt_where = [f'`{key_name}` = %s']
             params.append(key_value)
-        else:
-            # Invalid key
-            raise ApiError('Invalid keys and values to build update.')
 
         stmt = f'''
             UPDATE `{table_name}` SET {",".join(stmt_fields)}
@@ -71,6 +67,29 @@ def update_model(
         cursor.execute(stmt, tuple(params))
         if commit:
             db.commit()
+
+
+def delete_model(
+        db: DBContext,
+        table_name: str,
+        key_name: Union[str, List[str]],
+        key_value: Union[int, str, list],
+        commit: bool = True) -> None:
+    """Delete a model from the database."""
+    if isinstance(key_name, list) and isinstance(key_value, list):
+        # The key is complex
+        stmt_where = [f'`{name}` = %s' for name in key_name]
+        params = key_value
+    else:
+        stmt_where = [f'`{key_name}` = %s']
+        params = [key_value]
+
+    stmt = f'DELETE FROM `{table_name}` WHERE {" AND ".join(stmt_where)}'
+
+    cursor = db.get_cursor()
+    cursor.execute(stmt, tuple(params))
+    if commit:
+        db.commit()
 
 
 def fetchone_model(
