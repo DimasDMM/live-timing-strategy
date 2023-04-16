@@ -36,7 +36,7 @@ def main(
     )
     kafka_consumer = KafkaConsumerStep(
         bootstrap_servers=config.kafka_servers,
-        topics=[config.kafka_topic],
+        topics=[config.kafka_subscribe],
         value_deserializer=msgpack.loads,
         next_step=info_step,
         group_id=config.kafka_group,

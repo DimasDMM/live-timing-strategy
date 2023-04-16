@@ -22,7 +22,7 @@ parser.add_argument(
     help='List of Kafka brokers separated by commas.',
     required=True)
 parser.add_argument(
-    '--kafka_topic',
+    '--kafka_subscribe',
     type=str,
     help='Kafka topic to suscribe.',
     default=DEFAULT_RAW_MESSAGES_TOPIC)

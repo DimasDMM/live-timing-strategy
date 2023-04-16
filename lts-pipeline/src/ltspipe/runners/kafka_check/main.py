@@ -23,7 +23,7 @@ def main(
 
     logger.info(f'Test mode: {config.test_mode}')
     logger.info(f'Group ID: {config.kafka_group}')
-    logger.info(f'Topic: {config.kafka_topic}')
+    logger.info(f'Topic: {config.kafka_subscribe}')
 
     if config.test_mode == KafkaMode.MODE_CONSUMER:
         # Consumer mode: it just prints the data on the console
@@ -31,7 +31,7 @@ def main(
         log_step = LogInfoStep(logger)
         kafka_consumer = KafkaConsumerStep(
             bootstrap_servers=config.kafka_servers,
-            topics=[config.kafka_topic],
+            topics=[config.kafka_subscribe],
             value_deserializer=msgpack.loads,
             next_step=log_step,
             group_id=config.kafka_group,
@@ -44,7 +44,7 @@ def main(
         kafka_producer = KafkaProducerStep(
             logger=logger,
             bootstrap_servers=config.kafka_servers,
-            topic=config.kafka_topic,
+            topic=config.kafka_subscribe,
             value_serializer=msgpack.dumps,
         )
         dummy_generator = DummyStartStep(next_step=kafka_producer)

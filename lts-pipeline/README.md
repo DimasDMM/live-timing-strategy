@@ -55,7 +55,7 @@ python -m ltspipe.runners.ws_listener \
 Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_topic`: (optional) Topic of Kafka to write messages. By default,
+- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
   it is `raw-messages`.
 - `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
   Example: `ws://www.apex-timing.com:8092`.
@@ -68,6 +68,13 @@ Arguments:
 WIP
 
 ### Pipeline: Messages parser
+
+Local Python command:
+```sh
+python -m ltspipe.runners.parser \
+  --kafka_servers localhost:9092 \
+  --verbosity 1
+```
 
 WIP
 
@@ -83,7 +90,7 @@ python -m ltspipe.runners.raw_storage \
 Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_topic`: (optional) Topic of Kafka to suscribe. By default, it is
+- `--kafka_subscribe`: (optional) Topic of Kafka to suscribe. By default, it is
   `raw-messages`.
 - `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
   By default, it is `raw-storage`.
@@ -113,7 +120,7 @@ Check that Kafka works correctly with a local dummy consumer:
 ```sh
 python -m ltspipe.runners.kafka_check \
   --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
+  --kafka_subscribe test-topic \
   --kafka_group test-group \
   --test_mode consumer \
   --verbosity 1
@@ -123,7 +130,7 @@ And a local dummy producer:
 ```sh
 python -m ltspipe.runners.kafka_check \
   --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
+  --kafka_subscribe test-topic \
   --test_mode producer \
   --verbosity 1
 ```

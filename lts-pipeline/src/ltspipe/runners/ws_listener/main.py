@@ -22,11 +22,11 @@ def main(
 
     logger.info('Init script...')
     logger.info(f'Competition code: {config.competition_code}')
-    logger.debug(f'Topic: {config.kafka_topic}')
+    logger.debug(f'Topic: {config.kafka_produce}')
     kafka_producer = KafkaProducerStep(
         logger,
         bootstrap_servers=config.kafka_servers,
-        topic=config.kafka_topic,
+        topic=config.kafka_produce,
         value_serializer=msgpack.dumps,
     )
     ws_listener = WebsocketListenerStep(
