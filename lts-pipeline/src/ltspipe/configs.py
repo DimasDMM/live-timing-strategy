@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from ltspipe.enum import EnumBase
+from ltspipe.data.enum import EnumBase
 
 
 DEFAULT_VERBOSITY = 2  # 0: Disabled, 1: Debug, 2: Info, ...

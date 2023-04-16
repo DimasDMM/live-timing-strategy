@@ -1,18 +1,10 @@
-from dataclasses import dataclass
 from typing import Any
 
-from ltspipe.enum import EnumBase
+from ltspipe.data.enum import ActionType
+from ltspipe.data.base import BaseModel
 
 
-class ActionType(EnumBase):
-    """Types of actions."""
-
-    INITIALIZE = 'initialize'
-    UPDATE = 'update'
-
-
-@dataclass(frozen=True)
-class Action:
+class Action(BaseModel):
     """Apply an action to the data."""
 
     type: ActionType

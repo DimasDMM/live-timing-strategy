@@ -56,7 +56,7 @@ class ParsersStep(MidStep):
         actions: List[Action] = []
         for parser in self._parsers:
             try:
-                actions += parser(msg)
+                actions += parser(msg.get_data())
                 if len(actions) > 0:
                     if self._on_parsed is not None:
                         new_msg = Message(
