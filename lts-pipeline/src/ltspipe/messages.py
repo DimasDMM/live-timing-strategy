@@ -1,116 +1,54 @@
 from datetime import datetime
-from enum import Enum
 import json
+from pydantic import Field
 from typing import Any, Optional, Union
 
+from ltspipe.base import EnumBase, BaseModel
 
-class MessageSource(Enum):
+
+class MessageSource(EnumBase):
     """Enumeration of sources of messages."""
 
     SOURCE_DUMMY = 'dummy'
     SOURCE_WS_LISTENER = 'ws-listener'
 
-    def __eq__(self, other: Any) -> bool:
-        """Compare enumeration to other objects and strings."""
-        if self.__class__ is other.__class__:
-            return self.value == other.value
-        elif isinstance(other, str):
-            return self.value == other
-        return False
 
-    def __hash__(self) -> int:
-        """Build hash of current instance."""
-        return hash(self.value)
+class Message(BaseModel):
+    """
+    Basic unit of information that the steps share between them.
 
-    @classmethod
-    def value_of(cls: Any, value: Any) -> Any:
-        """Build source message from a given value."""
-        for k, v in cls.__members__.items():
-            if MessageSource[k] == value:
-                return v
-        raise ValueError(f'"{cls.__name__}" enum not found for "{value}".')
+    Attributes:
+        competition_code (str): Verbose code to identify the competition.
+        data (Any): Data of the message.
+        source (MessageSource): The source message.
+        created_at (float): Timestamp when the message was created.
+        updated_at (float): Timestamp of last time the message was updated.
+        error_description (str | None): If there was any error with this
+            message, this field has the error description.
+        error_traceback (str | None): If there was any error with this
+            message, this field has the traceback.
+    """
 
+    competition_code: str
+    data: Any
+    source: MessageSource
+    created_at: float
+    updated_at: float
+    error_description: Optional[str] = Field(default=None)
+    error_traceback: Optional[str] = Field(default=None)
 
-class Message:
-    """Basic unit of information that the steps share between them."""
-
-    def __init__(
-            self,
-            competition_code: str,
-            data: Any,
-            source: MessageSource,
-            created_at: float,
-            updated_at: float,
-            error_description: Optional[str] = None,
-            error_traceback: Optional[str] = None) -> None:
-        """
-        Construct.
-
-        Params:
-            competition_code (str): Verbose code to identify the competition.
-            data (Any): Data of the message.
-            source (MessageSource): The source message.
-            created_at (float): Timestamp when the message was created.
-            updated_at (float): Timestamp of last time the message was updated.
-            error_description (str | None): If there was any error with this
-                message, this field has the error description.
-            error_traceback (str | None): If there was any error with this
-                message, this field has the traceback.
-        """
-        self._competition_code = competition_code
-        self._data = data
-        self._source = source
-        self._created_at = created_at
-        self._updated_at = updated_at
-        self._error_description = error_description
-        self._error_traceback = error_traceback
-        self._has_error = (
-            error_description is not None or error_traceback is not None)
-
-    def get_competition_code(self) -> str:
-        """Get the competition code."""
-        return self._competition_code
-
-    def get_data(self) -> Any:
-        """Get data of the message."""
-        return self._data
-
-    def get_source(self) -> MessageSource:
-        """Get source of the message."""
-        return self._source
-
-    def get_created_at(self) -> float:
-        """Get timestamp when the message was created."""
-        return self._created_at
-
-    def get_updated_at(self) -> float:
-        """Get timestamp of last time the message was updated."""
-        return self._updated_at
-
-    def get_error_description(self) -> Optional[str]:
-        """Return error description if there was any error."""
-        return self._error_description
-
-    def get_error_traceback(self) -> Optional[str]:
-        """Return error traceback if there was any error."""
-        return self._error_traceback
+    def has_error(self) -> bool:
+        """Return true if the message contains an error description."""
+        return (self.error_description is not None
+                or self.error_traceback is not None)
 
     def updated(self) -> None:
         """Change 'updated_at' to the current timestamp."""
-        self._updated_at = datetime.utcnow().timestamp()
+        self.updated_at = datetime.utcnow().timestamp()
 
     def encode(self) -> str:
         """Encode the message as a string."""
-        data = {
-            'competition_code': self.get_competition_code(),
-            'data': self.get_data(),
-            'source': self.get_source().value,
-            'created_at': self.get_created_at(),
-            'updated_at': self.get_updated_at(),
-        }
-        if self._has_error:
-            data['error_description'] = self._error_description
-            data['error_traceback'] = self._error_traceback
+        data = self.dict()
         return json.dumps(data)
 
     def __str__(self) -> str:

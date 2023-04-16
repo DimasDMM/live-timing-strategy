@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 import time
-from typing import Any, List
+from typing import Any, Callable, List
 import websocket  # type: ignore
 
 from ltspipe.messages import Message, MessageSource
@@ -43,7 +43,7 @@ class WebsocketListenerStep(StartStep):
         self._is_closed = False
         websocket.enableTrace(True)
         self._logger.debug(f'Websocket: {self._uri}')
-        ws = websocket.WebSocketApp(
+        ws = self._build_websocket(
             self._uri,
             on_message=self._on_message,
             on_error=self._on_error,
@@ -88,3 +88,18 @@ class WebsocketListenerStep(StartStep):
             error: str) -> None:
         """Handle an error event."""
         self._logger.error(f'Websocket error: {error}')
+
+    def _build_websocket(
+            self,
+            uri: str,
+            on_message: Callable,
+            on_error: Callable,
+            on_close: Callable,
+            on_open: Callable) -> websocket.WebSocketApp:
+        """Wrap builder of websocket."""
+        return websocket.WebSocketApp(
+            uri,
+            on_message=on_message,
+            on_error=on_error,
+            on_close=on_close,
+            on_open=on_open)

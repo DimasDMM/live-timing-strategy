@@ -56,17 +56,17 @@ class ParsersStep(MidStep):
         actions: List[Action] = []
         for parser in self._parsers:
             try:
-                actions += parser(msg.get_data())
+                actions += parser(msg.data)
                 if len(actions) > 0:
                     if self._on_parsed is not None:
                         new_msg = Message(
-                            competition_code=msg.get_competition_code(),
+                            competition_code=msg.competition_code,
                             data=actions,
-                            source=msg.get_source(),
-                            created_at=msg.get_created_at(),
-                            updated_at=msg.get_updated_at(),
-                            error_description=msg.get_error_description(),
-                            error_traceback=msg.get_error_traceback(),
+                            source=msg.source,
+                            created_at=msg.created_at,
+                            updated_at=msg.updated_at,
+                            error_description=msg.error_description,
+                            error_traceback=msg.error_traceback,
                         )
                         new_msg.updated()
                         self._on_parsed.run_step(new_msg)
@@ -76,11 +76,11 @@ class ParsersStep(MidStep):
                 self._logger.critical(e, exc_info=True)
                 if self._on_error is not None:
                     msg = Message(
-                        competition_code=msg.get_competition_code(),
-                        data=msg.get_data(),
-                        source=msg.get_source(),
-                        created_at=msg.get_created_at(),
-                        updated_at=msg.get_updated_at(),
+                        competition_code=msg.competition_code,
+                        data=msg.data,
+                        source=msg.source,
+                        created_at=msg.created_at,
+                        updated_at=msg.updated_at,
                         error_description=str(e),
                         error_traceback=str(e.__traceback__),
                     )

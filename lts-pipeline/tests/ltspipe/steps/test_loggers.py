@@ -15,8 +15,8 @@ def test_log_info_step(sample_message: Message) -> None:
 
     # Assert that the logger receives the message
     expected_start = (
-        '{"competition_code": "' + sample_message.get_competition_code()
-        + '", "data": "' + sample_message.get_data() + '"')
+        '{"competition_code": "' + sample_message.competition_code
+        + '", "data": "' + sample_message.data + '"')
     messages: List[str] = fake_logger.get_messages()['info']
     assert len(messages) == 1
     assert messages[0].startswith(expected_start)

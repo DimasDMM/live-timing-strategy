@@ -19,21 +19,21 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            competition_code,
-            data,
-            source,
-            created_at,
-            updated_at,
-            error_description,
-            error_traceback)
+            competition_code=competition_code,
+            data=data,
+            source=source,
+            created_at=created_at,
+            updated_at=updated_at,
+            error_description=error_description,
+            error_traceback=error_traceback)
 
-        assert message.get_competition_code() == competition_code
-        assert message.get_data() == data
-        assert message.get_source() == source
-        assert message.get_created_at() == created_at
-        assert message.get_updated_at() == updated_at
-        assert message.get_error_description() == error_description
-        assert message.get_error_traceback() == error_traceback
+        assert message.competition_code == competition_code
+        assert message.data == data
+        assert message.source == source
+        assert message.created_at == created_at
+        assert message.updated_at == updated_at
+        assert message.error_description == error_description
+        assert message.error_traceback == error_traceback
 
     def test_encode(self) -> None:
         """Test encoding message."""
@@ -45,13 +45,13 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            competition_code,
-            data,
-            source,
-            created_at,
-            updated_at,
-            error_description,
-            error_traceback)
+            competition_code=competition_code,
+            data=data,
+            source=source,
+            created_at=created_at,
+            updated_at=updated_at,
+            error_description=error_description,
+            error_traceback=error_traceback)
         expected_result = json.dumps({
             'competition_code': competition_code,
             'data': data,
@@ -74,23 +74,23 @@ class TestMessage:
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
         message = Message(
-            competition_code,
-            data,
-            source,
-            created_at,
-            updated_at,
-            error_description,
-            error_traceback)
+            competition_code=competition_code,
+            data=data,
+            source=source,
+            created_at=created_at,
+            updated_at=updated_at,
+            error_description=error_description,
+            error_traceback=error_traceback)
         encoded_message = message.encode()
         decoded_message: Message = Message.decode(encoded_message)
 
-        assert decoded_message.get_competition_code() == competition_code
-        assert decoded_message.get_data() == data
-        assert decoded_message.get_source() == source
-        assert decoded_message.get_created_at() == created_at
-        assert decoded_message.get_updated_at() == updated_at
-        assert decoded_message.get_error_description() == error_description
-        assert decoded_message.get_error_traceback() == error_traceback
+        assert decoded_message.competition_code == competition_code
+        assert decoded_message.data == data
+        assert decoded_message.source == source
+        assert decoded_message.created_at == created_at
+        assert decoded_message.updated_at == updated_at
+        assert decoded_message.error_description == error_description
+        assert decoded_message.error_traceback == error_traceback
 
     def test_decode_with_missing_key(self) -> None:
         """Test decoding a message with a missing key."""

@@ -55,6 +55,16 @@ class KafkaConsumerStep(StartStep):
             msg.updated()
             self._next_step.run_step(msg)
 
+    def _build_kafka_consumer(
+            self,
+            bootstrap_servers: List[str],
+            value_deserializer: Callable) -> _KafkaConsumer:
+        """Wrap builder of KafkaConsumer."""
+        return _KafkaConsumer(
+            bootstrap_servers=bootstrap_servers,
+            value_deserializer=value_deserializer,
+        )
+
 
 class KafkaProducerStep(MidStep):
     """Step that acts as a wrapper of kafka.KafkaProducer."""
@@ -88,7 +98,7 @@ class KafkaProducerStep(MidStep):
         self._next_step = next_step
         self._on_error = on_error
         self._timeout = timeout
-        self._producer = _KafkaProducer(
+        self._producer = self._build_kafka_producer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=value_serializer,
         )
@@ -117,3 +127,13 @@ class KafkaProducerStep(MidStep):
             if self._on_error is not None:
                 msg.updated()
                 self._on_error.run_step(msg)
+
+    def _build_kafka_producer(
+            self,
+            bootstrap_servers: List[str],
+            value_serializer: Callable) -> _KafkaProducer:
+        """Wrap builder of KafkaProducer."""
+        return _KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=value_serializer,
+        )

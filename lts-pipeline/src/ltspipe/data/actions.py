@@ -1,7 +1,7 @@
 from typing import Any
 
 from ltspipe.data.enum import ActionType
-from ltspipe.data.base import BaseModel
+from ltspipe.base import BaseModel
 
 
 class Action(BaseModel):

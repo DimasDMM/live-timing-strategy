@@ -1,7 +1,7 @@
 from pydantic import Field
 from typing import Dict, Optional
 
-from ltspipe.data.base import BaseModel
+from ltspipe.base import BaseModel
 from ltspipe.data.enum import (
     CompetitionStage,
     CompetitionStatus,
