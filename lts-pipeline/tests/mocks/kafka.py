@@ -22,7 +22,7 @@ class MockKafkaConsumer(KafkaConsumer):
         self.__iter__()
 
     def __iter__(self) -> Any:
-        """Iterator initializer."""
+        """Initialize iterator."""
         self._i = 0
         return self
 

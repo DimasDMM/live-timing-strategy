@@ -103,7 +103,10 @@ OUT_EXPECTED = [
                             team_name='CKM 3',
                             last_lap_time=65411,  # 1:05.411
                             best_time=64941,  # 1:04.941
-                            gap={'value': 1, 'unit': LengthUnit.LAPS.value},  # 1 vuelta
+                            gap={
+                                'value': 1,  # 1 vuelta
+                                'unit': LengthUnit.LAPS.value,
+                            },
                             interval={
                                 'value': 12293,  # 12.293
                                 'unit': LengthUnit.MILLIS.value,

@@ -39,7 +39,7 @@ class KafkaConsumerStep(StartStep):
         """
         self._next_step = next_step
         self._consumer = self._build_kafka_consumer(
-            *topics,
+            topics,
             bootstrap_servers=bootstrap_servers,
             group_id=group_id,
             value_deserializer=value_deserializer)
