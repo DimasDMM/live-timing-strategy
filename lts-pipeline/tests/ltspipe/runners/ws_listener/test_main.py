@@ -47,9 +47,7 @@ OUT_EXPECTED = [
 ]
 
 
-def test_main(
-        mocker: MockerFixture,
-) -> None:
+def test_main(mocker: MockerFixture) -> None:
     """Test main method."""
     mocked_kafka = mock_kafka_producer_builder(mocker)
     _ = mock_websocket_builder(mocker, messages=IN_WEBSOCKET)

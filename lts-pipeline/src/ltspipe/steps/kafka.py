@@ -38,7 +38,7 @@ class KafkaConsumerStep(StartStep):
                 assignment and offset commits are disabled.
         """
         self._next_step = next_step
-        self._consumer = _KafkaConsumer(
+        self._consumer = self._build_kafka_consumer(
             *topics,
             bootstrap_servers=bootstrap_servers,
             group_id=group_id,
@@ -57,11 +57,15 @@ class KafkaConsumerStep(StartStep):
 
     def _build_kafka_consumer(
             self,
+            topics: List[str],
             bootstrap_servers: List[str],
+            group_id: Optional[str],
             value_deserializer: Callable) -> _KafkaConsumer:
         """Wrap builder of KafkaConsumer."""
         return _KafkaConsumer(
+            *topics,
             bootstrap_servers=bootstrap_servers,
+            group_id=group_id,
             value_deserializer=value_deserializer,
         )
 

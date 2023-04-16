@@ -1,13 +1,25 @@
 from pytest_mock import MockerFixture
 from typing import Callable, List
 
+from ltspipe.messages import Message
 from ltspipe.steps.listeners import WebsocketListenerStep
 from tests.fixtures import *  # noqa: F401, F403
-from tests.mocks.kafka import MockKafkaProducer
+from tests.mocks.kafka import MockKafkaConsumer, MockKafkaProducer
 from tests.mocks.websocket import MockWebSocketApp
 
 import warnings
 warnings.filterwarnings('error')
+
+
+def mock_kafka_consumer_builder(
+        mocker: MockerFixture,
+        messages: List[Message]) -> MockKafkaConsumer:
+    """Mock builders of Kafka consumer."""
+    mocked_kafka = MockKafkaConsumer(messages)
+    mocker.patch(
+        'ltspipe.steps.kafka.KafkaConsumerStep._build_kafka_consumer',
+        return_value=mocked_kafka)
+    return mocked_kafka
 
 
 def mock_kafka_producer_builder(mocker: MockerFixture) -> MockKafkaProducer:
