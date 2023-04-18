@@ -10,6 +10,14 @@ from ltspipe.data.enum import (
 )
 
 
+class CompetitionInfo(BaseModel):
+    """Info of a competition."""
+
+    id: Optional[int]
+    competition_code: str
+    parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
+
+
 class DiffLap(BaseModel):
     """Difference between two laps."""
 

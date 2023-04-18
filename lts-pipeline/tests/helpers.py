@@ -1,9 +1,17 @@
 import os
 from typing import Optional
+from unittest.mock import MagicMock
 
 from ltspipe.data.competitions import DiffLap
 
 BASE_PATH = 'tests/data/messages'
+
+
+def build_magic_step() -> MagicMock:
+    """Create mock of a step."""
+    step = MagicMock()
+    step.get_children.return_value = []
+    return step
 
 
 def build_participant(

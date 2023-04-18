@@ -5,6 +5,7 @@ class ActionType(str, EnumBase):
     """Types of actions."""
 
     INITIALIZE = 'initialize'
+    NOTIFICATION = 'notification'
     UPDATE_COMPETITION_META = 'update-competition-meta'
     UPDATE_DRIVER = 'update-driver'
     UPDATE_TEAM = 'update-team'
@@ -30,6 +31,12 @@ class CompetitionStage(str, EnumBase):
     RACE = 'race'
 
 
+class FlagName(str, EnumBase):
+    """Name of flags."""
+
+    WAIT_INIT = 'wait-init'
+
+
 class KartStatus(str, EnumBase):
     """Status of a kart."""
 
@@ -43,6 +50,13 @@ class LengthUnit(str, EnumBase):
 
     LAPS = 'laps'
     MILLIS = 'millis'
+
+
+class NotificationType(str, EnumBase):
+    """Types of actions."""
+
+    INIT_ONGOING = 'init-ongoing'
+    INIT_FINISHED = 'init-finished'
 
 
 class ParserSettings(str, EnumBase):

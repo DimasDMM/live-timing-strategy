@@ -4,16 +4,17 @@ from typing import List
 from ltspipe.data.enum import EnumBase
 
 
-DEFAULT_VERBOSITY = 2  # 0: Disabled, 1: Debug, 2: Info, ...
+DEFAULT_NOTIFICATIONS_TOPIC = 'notifications'
+DEFAULT_PARSER_GROUP = 'messages-parser'
+DEFAULT_PARSER_ERRORS_PATH = 'artifacts/parser/errors/'
+DEFAULT_PARSER_UNKNOWNS_PATH = 'artifacts/parser/unknowns/'
 DEFAULT_RAW_DATA_PATH = 'artifacts/raw/'
 DEFAULT_RAW_MESSAGES_TOPIC = 'raw-messages'
 DEFAULT_RAW_STORAGE_GROUP = 'raw-storage'
 DEFAULT_STD_MESSAGES_TOPIC = 'standard'
-DEFAULT_PARSER_GROUP = 'messages-parser'
-DEFAULT_PARSER_ERRORS_PATH = 'artifacts/parser/errors/'
-DEFAULT_PARSER_UNKNOWNS_PATH = 'artifacts/parser/unknowns/'
 DEFAULT_TEST_GROUP = 'test-group'
 DEFAULT_TEST_TOPIC = 'test-topic'
+DEFAULT_VERBOSITY = 2  # 0: Disabled, 1: Debug, 2: Info, ...
 
 
 class KafkaMode(EnumBase):
@@ -28,8 +29,8 @@ class RawStorageConfig:
     """Class to store the settings of the CLI script."""
 
     kafka_servers: List[str]
-    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     kafka_group: str = field(default=DEFAULT_RAW_STORAGE_GROUP)
+    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     output_path: str = field(default=DEFAULT_RAW_DATA_PATH)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
@@ -40,8 +41,8 @@ class KafkaCheckConfig:
 
     kafka_servers: List[str]
     test_mode: KafkaMode
-    kafka_subscribe: str = field(default=DEFAULT_TEST_TOPIC)
     kafka_group: str = field(default=DEFAULT_TEST_GROUP)
+    kafka_subscribe: str = field(default=DEFAULT_TEST_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 
@@ -49,11 +50,13 @@ class KafkaCheckConfig:
 class ParserConfig:
     """Class to store the settings of the CLI script."""
 
+    api_lts: str
     kafka_servers: List[str]
-    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
-    kafka_group: str = field(default=DEFAULT_PARSER_GROUP)
-    kafka_produce: str = field(default=DEFAULT_STD_MESSAGES_TOPIC)
     errors_path: str = field(default=DEFAULT_PARSER_ERRORS_PATH)
+    kafka_group: str = field(default=DEFAULT_PARSER_GROUP)
+    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
+    kafka_produce: str = field(default=DEFAULT_STD_MESSAGES_TOPIC)
+    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     unknowns_path: str = field(default=DEFAULT_PARSER_UNKNOWNS_PATH)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
@@ -65,5 +68,6 @@ class WsListenerConfig:
     competition_code: str
     kafka_servers: List[str]
     websocket_uri: str
+    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
     kafka_produce: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)

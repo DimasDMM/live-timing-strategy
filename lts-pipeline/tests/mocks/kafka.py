@@ -2,6 +2,8 @@ from kafka import KafkaConsumer, KafkaProducer  # type: ignore
 from kafka.producer.future import FutureRecordMetadata  # type: ignore
 from typing import Any, Dict, List, Optional
 
+from ltspipe.messages import Message
+
 
 class MockKafkaRecord:
     """Mock of returned type by KafkaConsumer."""
@@ -38,13 +40,12 @@ class MockKafkaConsumer(KafkaConsumer):
 class MockKafkaProducer(KafkaProducer):
     """Mock of kafka.KafkaProducer."""
 
-    def __init__(self, **kwargs: dict) -> None:  # noqa: U100
+    def __init__(
+            self,
+            messages_topic: Dict[str, List[Message]],
+            **kwargs: dict) -> None:  # noqa: U100
         """Construct."""
-        self._values: Dict[str, list] = {}
-
-    def get_values(self) -> Dict[str, list]:
-        """Return received values."""
-        return self._values
+        self._messages_topic = messages_topic
 
     def send(
         self,
@@ -56,9 +57,9 @@ class MockKafkaProducer(KafkaProducer):
         timestamp_ms: Optional[int] = None,  # noqa: U100
     ) -> FutureRecordMetadata:
         """Mock send method."""
-        if topic not in self._values:
-            self._values[topic] = []
-        self._values[topic].append(value)
+        if topic not in self._messages_topic:
+            self._messages_topic[topic] = []
+        self._messages_topic[topic].append(value)
         return MockFutureRecordMetadata()
 
 

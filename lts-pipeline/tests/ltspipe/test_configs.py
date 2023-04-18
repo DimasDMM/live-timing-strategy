@@ -41,8 +41,10 @@ def test_kafka_check_config() -> None:
 
 def test_parser_config() -> None:
     """Test ltspipe.configs.ParserConfig."""
+    api_lts = 'http://localhost:8090/'
     kafka_servers = ['localhost:9092']
     parser_config = ParserConfig(
+        api_lts=api_lts,
         kafka_servers=kafka_servers,
     )
     assert parser_config.kafka_servers == kafka_servers

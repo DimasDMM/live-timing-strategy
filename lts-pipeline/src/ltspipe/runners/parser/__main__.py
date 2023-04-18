@@ -19,6 +19,11 @@ parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the raw storage script.')
 parser.add_argument(
+    '--api_lts',
+    nargs='+',
+    help='URI of API REST of LTS app.',
+    required=True)
+parser.add_argument(
     '--kafka_servers',
     nargs='+',
     help='List of Kafka brokers separated by commas.',

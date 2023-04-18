@@ -6,6 +6,7 @@ from ltspipe.runners import build_logger
 from ltspipe.runners.ws_listener.main import main
 from ltspipe.configs import WsListenerConfig
 from ltspipe.configs import (
+    DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_RAW_MESSAGES_TOPIC,
     DEFAULT_VERBOSITY,
 )
@@ -24,6 +25,11 @@ parser.add_argument(
     nargs='+',
     help='List of Kafka brokers separated by commas.',
     required=True)
+parser.add_argument(
+    '--kafka_notifications',
+    type=str,
+    help='Kafka topic to write and read notifications.',
+    default=DEFAULT_NOTIFICATIONS_TOPIC)
 parser.add_argument(
     '--kafka_produce',
     type=str,
