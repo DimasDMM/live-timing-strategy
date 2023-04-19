@@ -1,11 +1,8 @@
 from logging import Logger
 from typing import Any, Dict, List, Optional
 
-from ltspipe.data.enum import (
-    ActionType,
-    FlagName,
-    NotificationType,
-)
+from ltspipe.data.enum import FlagName
+from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message
 from ltspipe.steps.base import MidStep
 
@@ -103,6 +100,6 @@ class NotificationMapperStep(MidStep):
     def _get_notification_type(
             self, msg: Message) -> Optional[NotificationType]:
         """Return the notification type if the message is a notification."""
-        if 'type' in msg.data and msg.data['type'] == ActionType.NOTIFICATION:
-            return msg.data['data'] if 'data' in msg.data else None
+        if isinstance(msg.data, Notification):
+            return msg.data.type
         return None

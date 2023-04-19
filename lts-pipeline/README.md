@@ -57,9 +57,9 @@ graph TD;
   B -- Yes --> F[Add message to queue]
   B -- No --> C[Is init message?]
   C -- Yes --> D[Set wait_init as true]
-  D --> E[Kafka producer: notifications]
-  E --> G[Kafka producer: raw-messages]
-  C -- No --> G
+  D --> E[Create notification: 'init-ongoing']
+  E --> L[Kafka producer: notifications]
+  D --> G[Kafka producer: raw-messages]
 
   H[Kafka consumer: notifications] --> I[Is 'init-finished'?]
   I -- Yes --> J[Set wait_init as false]
@@ -92,13 +92,32 @@ Arguments:
 
 ### Pipeline: API REST
 
+```mermaid
+graph TD;
+  A[Kafka consumer: standard]
+  A --> B[Send data to API REST]
+  B --> C[Is init message?]
+  C -- Yes --> D[Create notification: 'init-finished']
+  D --> E[Kafka producer: notifications]
+```
+
 WIP
 
 ### Pipeline: Messages parser
 
+The script of messages parsing is composed by two processes:
+- One handles the notifications, such as the initialization, so it modifies the
+  overall behaviour of parsing.
+- The other is the one that parses the message data and transform it into
+  something that we can store in the database.
+
+Additionally, this script might connect to the API REST to get information, such
+as settings to parse the data.
+
 ```mermaid
 graph TD;
-  A[Kafka consumer: raw-messages] --> M[Is init message?]
+  A[Kafka consumer: raw-messages]
+  A --> M[Is init message?]
   M -- No --> B[Has wait_init as true?]
   B -- Yes --> E[Add message to queue]
   B -- No --> C[Parse data]

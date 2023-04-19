@@ -4,7 +4,8 @@ from multiprocessing import Manager, Process
 from multiprocessing.managers import DictProxy
 
 from ltspipe.configs import WsListenerConfig
-from ltspipe.data.enum import FlagName, NotificationType
+from ltspipe.data.enum import FlagName
+from ltspipe.data.notifications import NotificationType
 from ltspipe.runners import BANNER_MSG
 from ltspipe.steps.bulk import (
     QueueDistributorStep,

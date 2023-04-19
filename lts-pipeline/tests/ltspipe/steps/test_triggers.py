@@ -1,8 +1,7 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from ltspipe.data.actions import Action
-from ltspipe.data.enum import ActionType, NotificationType
+from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message, MessageSource
 from ltspipe.steps.triggers import WsInitTriggerStep
 from tests.helpers import build_magic_step
@@ -20,8 +19,6 @@ class TestWsInitTriggerStep:
             source=MessageSource.SOURCE_DUMMY,
             created_at=1679944690.8801994,
             updated_at=1679944719.1858709,
-            error_description=None,
-            error_traceback=None,
         )
 
     def _build_normal_message(self) -> Message:
@@ -32,17 +29,14 @@ class TestWsInitTriggerStep:
             source=MessageSource.SOURCE_DUMMY,
             created_at=1679944690.8801994,
             updated_at=1679944719.1858709,
-            error_description=None,
-            error_traceback=None,
         )
 
     def _build_notification(self) -> Message:
         """Build a notification of init data."""
         return Message(
             competition_code='sample-code',
-            data=Action(
-                type=ActionType.NOTIFICATION,
-                data=NotificationType.INIT_ONGOING,
+            data=Notification(
+                type=NotificationType.INIT_ONGOING,
             ),
             source=MessageSource.SOURCE_DUMMY,
             created_at=datetime.utcnow().timestamp(),

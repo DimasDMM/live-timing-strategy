@@ -3,16 +3,14 @@ from typing import Any, Dict, List, Optional
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
+    CompetitionStage,
+    CompetitionStatus,
     DiffLap,
     InitialData,
     LengthUnit,
     Participant,
 )
-from ltspipe.data.enum import (
-    CompetitionStage,
-    CompetitionStatus,
-    ParserSettings,
-)
+from ltspipe.data.enum import ParserSettings
 from ltspipe.parsers.base import Parser
 
 
@@ -75,7 +73,9 @@ class WsInitParser(Parser):
         if self._is_initializer_data(data):
             parsed_data = self._parse_init_data(data)
             action = Action(
-                type=ActionType.INITIALIZE, data=parsed_data.dict())
+                type=ActionType.INITIALIZE,
+                data=parsed_data,
+            )
             return [action]
         return []
 

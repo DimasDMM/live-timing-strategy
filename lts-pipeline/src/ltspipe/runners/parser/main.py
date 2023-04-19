@@ -6,7 +6,8 @@ import os
 from typing import List
 
 from ltspipe.configs import ParserConfig
-from ltspipe.data.enum import FlagName, NotificationType
+from ltspipe.data.enum import FlagName
+from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import WsInitParser
 from ltspipe.runners import BANNER_MSG

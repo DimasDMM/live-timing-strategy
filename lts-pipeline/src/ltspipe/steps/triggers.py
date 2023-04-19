@@ -3,9 +3,8 @@ from logging import Logger
 import re
 from typing import Any, List, Optional
 
-from ltspipe.data.actions import Action
-from ltspipe.data.enum import ActionType, NotificationType
-from ltspipe.messages import Message, MessageSource
+from ltspipe.data.notifications import Notification, NotificationType
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
 
 
@@ -69,11 +68,11 @@ class WsInitTriggerStep(MidStep):
 
         notification = Message(
             competition_code=competition_code,
-            data=Action(
-                type=ActionType.NOTIFICATION,
-                data=NotificationType.INIT_ONGOING,
-            ).dict(),
+            data=Notification(
+                type=NotificationType.INIT_ONGOING,
+            ),
             source=source,
+            decoder=MessageDecoder.NOTIFICATION,
             created_at=datetime.utcnow().timestamp(),
             updated_at=datetime.utcnow().timestamp(),
         )

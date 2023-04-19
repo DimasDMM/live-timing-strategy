@@ -1,8 +1,7 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from ltspipe.data.actions import Action
-from ltspipe.data.enum import ActionType, NotificationType
+from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message, MessageSource
 from ltspipe.steps.notifications import NotificationMapperStep
 from tests.helpers import build_magic_step
@@ -16,10 +15,9 @@ class TestNotificationMapperStep:
         """Build a notification of init data."""
         return Message(
             competition_code='sample-code',
-            data=Action(
-                type=ActionType.NOTIFICATION,
-                data=NotificationType.INIT_FINISHED,
-            ).dict(),
+            data=Notification(
+                type=NotificationType.INIT_FINISHED,
+            ),
             source=MessageSource.SOURCE_DUMMY,
             created_at=datetime.utcnow().timestamp(),
             updated_at=datetime.utcnow().timestamp(),

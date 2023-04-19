@@ -1,36 +1,6 @@
 from ltspipe.base import EnumBase
 
 
-class ActionType(str, EnumBase):
-    """Types of actions."""
-
-    INITIALIZE = 'initialize'
-    NOTIFICATION = 'notification'
-    UPDATE_COMPETITION_META = 'update-competition-meta'
-    UPDATE_DRIVER = 'update-driver'
-    UPDATE_TEAM = 'update-team'
-    UPDATE_TIMING_ALL = 'update-timing-all'
-    UPDATE_TIMING_SINGLE = 'update-timing-single'
-    ADD_PIT_IN = 'add-pit-in'
-    ADD_PIT_OUT = 'add-pit-out'
-
-
-class CompetitionStatus(str, EnumBase):
-    """Status of a competition."""
-
-    PAUSED = 'paused'
-    ONGOING = 'ongoing'
-    FINISHED = 'finished'
-
-
-class CompetitionStage(str, EnumBase):
-    """Stage of a competition."""
-
-    FREE_PRACTICE = 'free-practice'
-    QUALIFYING = 'qualifying'
-    RACE = 'race'
-
-
 class FlagName(str, EnumBase):
     """Name of flags."""
 
@@ -50,13 +20,6 @@ class LengthUnit(str, EnumBase):
 
     LAPS = 'laps'
     MILLIS = 'millis'
-
-
-class NotificationType(str, EnumBase):
-    """Types of actions."""
-
-    INIT_ONGOING = 'init-ongoing'
-    INIT_FINISHED = 'init-finished'
 
 
 class ParserSettings(str, EnumBase):

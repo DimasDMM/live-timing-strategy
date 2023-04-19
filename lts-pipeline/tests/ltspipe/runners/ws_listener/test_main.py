@@ -8,13 +8,9 @@ from ltspipe.configs import (
     DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_RAW_MESSAGES_TOPIC,
 )
-from ltspipe.data.actions import Action
-from ltspipe.data.enum import (
-    ActionType,
-    FlagName,
-    NotificationType,
-)
-from ltspipe.messages import Message, MessageSource
+from ltspipe.data.notifications import Notification, NotificationType
+from ltspipe.data.enum import FlagName
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.runners.ws_listener.main import main
 from tests.conftest import (
     mock_kafka_consumer_builder,
@@ -52,13 +48,13 @@ WEBSOCKET_URI = 'ws://localhost:8000/ws/'
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
                         competition_code=COMPETITION_CODE,
-                        data=Action(
-                            type=ActionType.NOTIFICATION,
-                            data=NotificationType.INIT_ONGOING,
+                        data=Notification(
+                            type=NotificationType.INIT_ONGOING,
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
+                        decoder=MessageDecoder.NOTIFICATION,
                     ).encode(),
                 ],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
@@ -95,13 +91,13 @@ WEBSOCKET_URI = 'ws://localhost:8000/ws/'
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
                         competition_code=COMPETITION_CODE,
-                        data=Action(
-                            type=ActionType.NOTIFICATION,
-                            data=NotificationType.INIT_FINISHED,
+                        data=Notification(
+                            type=NotificationType.INIT_FINISHED,
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
+                        decoder=MessageDecoder.NOTIFICATION,
                     ).encode(),
                 ],
             },
@@ -115,8 +111,6 @@ WEBSOCKET_URI = 'ws://localhost:8000/ws/'
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
-                        error_description=None,
-                        error_traceback=None,
                     ),
                 ],
             },
@@ -124,13 +118,13 @@ WEBSOCKET_URI = 'ws://localhost:8000/ws/'
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
                         competition_code=COMPETITION_CODE,
-                        data=Action(
-                            type=ActionType.NOTIFICATION,
-                            data=NotificationType.INIT_FINISHED,
+                        data=Notification(
+                            type=NotificationType.INIT_FINISHED,
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
+                        decoder=MessageDecoder.NOTIFICATION,
                     ).encode(),
                 ],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
@@ -141,8 +135,6 @@ WEBSOCKET_URI = 'ws://localhost:8000/ws/'
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
-                        error_description=None,
-                        error_traceback=None,
                     ).encode(),
                 ],
             },
@@ -167,10 +159,10 @@ def test_main(
     )
 
     in_flags: Dict[str, Dict[FlagName, Any]] = {}
-    _ = mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
-    _ = mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
-    _ = mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)
-    _ = mock_websocket_builder(mocker, messages=in_websocket)
+    mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
+    mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
+    mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)
+    mock_websocket_builder(mocker, messages=in_websocket)
     fake_logger = FakeLogger()
 
     main(config=config, logger=fake_logger)

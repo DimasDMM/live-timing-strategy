@@ -1,9 +1,10 @@
+from datetime import datetime
 import logging
 from typing import Any, List, Optional
 
 from ltspipe.data.actions import Action
 from ltspipe.parsers.base import Parser
-from ltspipe.messages import Message
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
 
 
@@ -58,18 +59,11 @@ class ParsersStep(MidStep):
             try:
                 actions += parser(msg.data)
                 if len(actions) > 0:
-                    if self._on_parsed is not None:
-                        new_msg = Message(
-                            competition_code=msg.competition_code,
-                            data=actions,
-                            source=msg.source,
-                            created_at=msg.created_at,
-                            updated_at=msg.updated_at,
-                            error_description=msg.error_description,
-                            error_traceback=msg.error_traceback,
-                        )
-                        new_msg.updated()
-                        self._on_parsed.run_step(new_msg)
+                    self._forward_actions(
+                        actions=actions,
+                        competition_code=msg.competition_code,
+                        source=msg.source,
+                    )
                     if self._stop_on_first:
                         break
             except Exception as e:
@@ -79,14 +73,33 @@ class ParsersStep(MidStep):
                         competition_code=msg.competition_code,
                         data=msg.data,
                         source=msg.source,
-                        created_at=msg.created_at,
-                        updated_at=msg.updated_at,
+                        decoder=msg.decoder,
                         error_description=str(e),
                         error_traceback=str(e.__traceback__),
                     )
                     msg.updated()
                     self._on_error.run_step(msg)
 
-        if self._on_unknown is not None:
+        if len(actions) == 0 and self._on_unknown is not None:
             msg.updated()
             self._on_unknown.run_step(msg)
+
+    def _forward_actions(
+            self,
+            actions: List[Action],
+            competition_code: str,
+            source: MessageSource) -> None:
+        """Send actions in messages to the next step."""
+        if self._on_parsed is None:
+            return
+
+        for action in actions:
+            new_msg = Message(
+                competition_code=competition_code,
+                data=action,
+                source=source,
+                decoder=MessageDecoder.ACTION,
+                created_at=datetime.utcnow().timestamp(),
+                updated_at=datetime.utcnow().timestamp(),
+            )
+            self._on_parsed.run_step(new_msg)

@@ -1,11 +1,52 @@
-from typing import Any
+from typing import Any, Dict, Type
 
-from ltspipe.data.enum import ActionType
-from ltspipe.base import BaseModel
+from ltspipe.base import BaseModel, DictModel, EnumBase
+from ltspipe.data.competitions import InitialData, Participant
 
 
-class Action(BaseModel):
+class ActionType(str, EnumBase):
+    """Types of actions."""
+
+    INITIALIZE = 'initialize'
+    # UPDATE_COMPETITION_META = 'update-competition-meta'
+    UPDATE_DRIVER = 'update-driver'
+    # UPDATE_TEAM = 'update-team'
+    # UPDATE_TIMING_ALL = 'update-timing-all'
+    # UPDATE_TIMING_SINGLE = 'update-timing-single'
+    # ADD_PIT_IN = 'add-pit-in'
+    # ADD_PIT_OUT = 'add-pit-out'
+
+
+_factory: Dict[ActionType, Type[DictModel]] = {
+    ActionType.INITIALIZE: InitialData,
+    ActionType.UPDATE_DRIVER: Participant,
+}
+
+
+class Action(DictModel):
     """Apply an action to the data."""
 
     type: ActionType
-    data: Any
+    data: DictModel
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+
+        type = ActionType.value_of(raw.get('type'))
+        raw_data = raw.get('data')
+        data = Action.__from_dict_data(type, raw_data)
+        return cls.construct(
+            type=type,
+            data=data,
+        )
+
+    @staticmethod
+    def __from_dict_data(type: ActionType, raw_data: Any) -> BaseModel:
+        """Transform the raw data into a model."""
+        if type not in _factory or _factory[type] is None:
+            raise Exception(f'Unknown action type: {type}')
+        elif not isinstance(raw_data, dict):
+            raise Exception(f'Unknown data format: {raw_data}')
+        return _factory[type].from_dict(raw_data)

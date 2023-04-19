@@ -1,9 +1,17 @@
-import json
 from datetime import datetime
+import json
 import pytest
 
-from ltspipe.messages import Message
-from ltspipe.messages import MessageSource
+from ltspipe.data.actions import Action, ActionType
+from ltspipe.data.competitions import (
+    CompetitionStage,
+    CompetitionStatus,
+    DiffLap,
+    InitialData,
+    Participant,
+)
+from ltspipe.data.enum import LengthUnit
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 
 
 class TestMessage:
@@ -42,55 +50,92 @@ class TestMessage:
         source = MessageSource.SOURCE_DUMMY
         created_at = datetime.utcnow().timestamp()
         updated_at = datetime.utcnow().timestamp()
+        decoder = None
         error_description = 'This is a sample error description'
         error_traceback = 'Sample error trace'
+
         message = Message(
             competition_code=competition_code,
             data=data,
             source=source,
             created_at=created_at,
             updated_at=updated_at,
+            decoder=decoder,
             error_description=error_description,
             error_traceback=error_traceback)
+
         expected_result = json.dumps({
             'competition_code': competition_code,
             'data': data,
             'source': source.value,
             'created_at': created_at,
             'updated_at': updated_at,
+            'decoder': decoder,
             'error_description': error_description,
             'error_traceback': error_traceback,
         })
 
         assert message.encode() == expected_result
 
-    def test_decode(self) -> None:
+    @pytest.mark.parametrize(
+        ('message'),
+        [
+            Message(
+                competition_code='sample-code',
+                data='Hello, world',
+                source=MessageSource.SOURCE_DUMMY,
+                created_at=1679944690.8801994,
+                updated_at=1679944690.8801994,
+                decoder=None,
+                error_description='This is a sample description',
+                error_traceback='Sample error trace'),
+            Message(
+                competition_code='sample-code',
+                data=Action(
+                    type=ActionType.INITIALIZE,
+                    data=InitialData(
+                        reference_time=None,
+                        reference_current_offset=None,
+                        stage=CompetitionStage.QUALIFYING,
+                        status=CompetitionStatus.ONGOING,
+                        remaining_length=DiffLap(
+                            value=10,
+                            unit=LengthUnit.MILLIS,
+                        ),
+                        participants={
+                            'r5625': Participant(
+                                participant_code='r5625',
+                                ranking=1,
+                                kart_number=1,
+                                team_name='CKM 1',
+                                last_lap_time=65142,  # 1:05.142
+                                best_time=64882,  # 1:04.882
+                            ),
+                        },
+                        parsers_settings=None,
+                    ),
+                ),
+                source=MessageSource.SOURCE_DUMMY,
+                created_at=1679944690.8801994,
+                updated_at=1679944690.8801994,
+                decoder=MessageDecoder.ACTION,
+                error_description='This is a sample description',
+                error_traceback='Sample error trace'),
+        ],
+    )
+    def test_encode_decode(self, message: Message) -> None:
         """Test decoding message."""
-        competition_code = 'sample-code'
-        data = 'Hello, World!'
-        source = MessageSource.SOURCE_DUMMY
-        created_at = datetime.utcnow().timestamp()
-        updated_at = datetime.utcnow().timestamp()
-        error_description = 'This is a sample error description'
-        error_traceback = 'Sample error trace'
-        message = Message(
-            competition_code=competition_code,
-            data=data,
-            source=source,
-            created_at=created_at,
-            updated_at=updated_at,
-            error_description=error_description,
-            error_traceback=error_traceback)
         encoded_message = message.encode()
         decoded_message: Message = Message.decode(encoded_message)
 
-        assert decoded_message.competition_code == competition_code
-        assert decoded_message.data == data
-        assert decoded_message.source == source
-        assert decoded_message.created_at == created_at
-        assert decoded_message.updated_at == updated_at
-        assert decoded_message.error_description == error_description
-        assert decoded_message.error_traceback == error_traceback
+        assert decoded_message.competition_code == message.competition_code
+        assert decoded_message.data == message.data
+        assert decoded_message.source == message.source
+        assert decoded_message.created_at == message.created_at
+        assert decoded_message.updated_at == message.updated_at
+        assert decoded_message.decoder == message.decoder
+        assert decoded_message.error_description == message.error_description
+        assert decoded_message.error_traceback == message.error_traceback
 
     def test_decode_with_missing_key(self) -> None:
         """Test decoding a message with a missing key."""

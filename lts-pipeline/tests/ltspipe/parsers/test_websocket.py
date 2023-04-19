@@ -3,19 +3,18 @@ from typing import Any, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
-    DiffLap,
-)
-from ltspipe.data.enum import (
     CompetitionStage,
     CompetitionStatus,
+    DiffLap,
+    InitialData,
+    Participant,
+)
+from ltspipe.data.enum import (
     LengthUnit,
     ParserSettings,
 )
 from ltspipe.messages import Message
-from tests.helpers import (
-    build_participant,
-    load_raw_message,
-)
+from tests.helpers import load_raw_message
 from ltspipe.parsers.websocket import WsInitParser
 
 
@@ -42,37 +41,37 @@ def _build_initial_3_teams() -> Tuple[Message, List[Action]]:
     in_data = load_raw_message('initial_3_teams.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
-        data={
-            'reference_time': 0,
-            'reference_current_offset': 0,
-            'stage': CompetitionStage.QUALIFYING.value,
-            'status': CompetitionStatus.ONGOING.value,
-            'remaining_length': DiffLap(
+        data=InitialData(
+            reference_time=0,
+            reference_current_offset=0,
+            stage=CompetitionStage.QUALIFYING.value,
+            status=CompetitionStatus.ONGOING.value,
+            remaining_length=DiffLap(
                 value=1200000,
                 unit=LengthUnit.MILLIS,
             ),
-            'parsers_settings': INITIAL_PARSERS_SETTINGS,
-            'participants': {
-                'r5625': build_participant(
+            parsers_settings=INITIAL_PARSERS_SETTINGS,
+            participants={
+                'r5625': Participant(
                     participant_code='r5625',
                     ranking=1,
                     kart_number=1,
                     team_name='CKM 1',
                 ),
-                'r5626': build_participant(
+                'r5626': Participant(
                     participant_code='r5626',
                     ranking=2,
                     kart_number=2,
                     team_name='CKM 2',
                 ),
-                'r5627': build_participant(
+                'r5627': Participant(
                     participant_code='r5627',
                     ranking=3,
                     kart_number=3,
                     team_name='CKM 3',
                 ),
             },
-        },
+        ),
     )
     return (in_data, [out_action])
 
@@ -81,58 +80,54 @@ def _build_initial_3_teams_with_times() -> Tuple[Message, List[Action]]:
     in_data = load_raw_message('initial_3_teams_with_times.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
-        data={
-            'reference_time': 0,
-            'reference_current_offset': 0,
-            'stage': CompetitionStage.QUALIFYING.value,
-            'status': CompetitionStatus.ONGOING.value,
-            'remaining_length': DiffLap(
+        data=InitialData(
+            reference_time=0,
+            reference_current_offset=0,
+            stage=CompetitionStage.QUALIFYING.value,
+            status=CompetitionStatus.ONGOING.value,
+            remaining_length=DiffLap(
                 value=1200000,
                 unit=LengthUnit.MILLIS,
             ),
-            'parsers_settings': INITIAL_PARSERS_SETTINGS,
-            'participants': {
-                'r5625': build_participant(
+            parsers_settings=INITIAL_PARSERS_SETTINGS,
+            participants={
+                'r5625': Participant(
                     participant_code='r5625',
                     ranking=1,
                     kart_number=1,
                     team_name='CKM 1',
                     last_lap_time=65142,  # 1:05.142
                     best_time=64882,  # 1:04.882
-                    gap=None,
-                    interval=None,
-                    pits=None,
-                    pit_time=None,
                 ),
-                'r5626': build_participant(
+                'r5626': Participant(
                     participant_code='r5626',
                     ranking=2,
                     kart_number=2,
                     team_name='CKM 2',
                     last_lap_time=65460,  # 1:05.460
                     best_time=64890,  # 1:04.890
-                    gap=None,
-                    interval=None,
                     pits=1,
-                    pit_time=None,
                 ),
-                'r5627': build_participant(
+                'r5627': Participant(
                     participant_code='r5627',
                     ranking=3,
                     kart_number=3,
                     team_name='CKM 3',
                     last_lap_time=65411,  # 1:05.411
                     best_time=64941,  # 1:04.941
-                    gap={'value': 1, 'unit': LengthUnit.LAPS.value},  # 1 vuelta
-                    interval={
-                        'value': 12293,  # 12.293
-                        'unit': LengthUnit.MILLIS.value,
-                    },
+                    gap=DiffLap(
+                        value=1,  # 1 lap
+                        unit=LengthUnit.LAPS.value,
+                    ),
+                    interval=DiffLap(
+                        value=12293,  # 12.293
+                        unit=LengthUnit.MILLIS.value,
+                    ),
                     pits=2,
                     pit_time=54000,  # 54.
                 ),
             },
-        },
+        ),
     )
     return (in_data, [out_action])
 

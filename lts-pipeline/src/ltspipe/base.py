@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from enum import Enum
 from pydantic import BaseModel as _BaseModel
 from typing import Any, Dict, Tuple
@@ -39,3 +40,25 @@ class BaseModel(_BaseModel):
             if field_value is not None and isinstance(field_value, Enum):
                 data[field_name] = field_value.value
         return data
+
+
+class DictModel(BaseModel, ABC):
+    """Base class to load models from dictionaries."""
+
+    @classmethod
+    @abstractmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        raise NotImplementedError
+
+    @staticmethod
+    def _validate_base_dict(cls: BaseModel, raw: dict) -> None:  # noqa: ANN102
+        """Do a basic validation on the raw data."""
+        for field_name, field_props in cls.__fields__.items():
+            if field_props.required and field_name not in raw:
+                raise Exception(f'Missing required field: {field_name}')
+
+        fields = set(cls.__fields__.keys())
+        raw_fields = set(raw)
+        if raw_fields.intersection(fields) != raw_fields:
+            raise Exception(f'There are unknown fields: {raw_fields}')
