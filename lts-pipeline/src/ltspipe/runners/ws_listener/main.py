@@ -32,7 +32,8 @@ def main(config: WsListenerConfig, logger: logging.Logger) -> None:
     logger.debug(config)
 
     logger.info(f'Competition code: {config.competition_code}')
-    logger.debug(f'Topic: {config.kafka_produce}')
+    logger.debug(f'Topic producer: {config.kafka_produce}')
+
     with Manager() as manager:
         logger.info('Init script...')
         flags = manager.dict()

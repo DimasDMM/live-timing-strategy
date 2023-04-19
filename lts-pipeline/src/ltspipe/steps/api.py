@@ -7,7 +7,7 @@ from ltspipe.messages import Message
 from ltspipe.steps.base import MidStep
 
 
-class ApiParserSettingsStep(MidStep):
+class ParserSettingsGetterStep(MidStep):
     """Retrieve the parser settings."""
 
     def __init__(

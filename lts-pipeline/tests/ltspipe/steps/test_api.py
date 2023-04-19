@@ -4,13 +4,13 @@ from unittest.mock import MagicMock
 
 from ltspipe.data.competitions import CompetitionInfo, ParserSettings
 from ltspipe.messages import Message
-from ltspipe.steps.api import ApiParserSettingsStep
+from ltspipe.steps.api import ParserSettingsGetterStep
 from tests.conftest import mock_requests_get
 from tests.mocks.logging import FakeLogger
 
 
-class TestApiParserSettingsStep:
-    """Test ltspipe.steps.bulk.ApiParserSettingsStep class."""
+class TestParserSettingsGetterStep:
+    """Test ltspipe.steps.api.ParserSettingsGetterStep class."""
 
     API_LTS = 'http://localhost:8090/'
 
@@ -29,7 +29,7 @@ class TestApiParserSettingsStep:
         # Create step
         in_competitions: Dict[str, CompetitionInfo] = {}
         fake_logger = FakeLogger()
-        step = ApiParserSettingsStep(
+        step = ParserSettingsGetterStep(
             logger=fake_logger,
             api_lts=self.API_LTS,
             competitions=in_competitions,

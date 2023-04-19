@@ -11,7 +11,7 @@ from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import WsInitParser
 from ltspipe.runners import BANNER_MSG
-from ltspipe.steps.api import ApiParserSettingsStep
+from ltspipe.steps.api import ParserSettingsGetterStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import FileStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
@@ -41,7 +41,9 @@ def main(config: ParserConfig, logger: Logger) -> None:
     logger.info(f'Create path if it does not exist: {config.unknowns_path}')
     os.makedirs(config.unknowns_path, exist_ok=True)
 
-    logger.debug(f'Topic: {config.kafka_produce}')
+    logger.debug(f'Topic producer: {config.kafka_produce}')
+    logger.debug(f'Topic consumer: {config.kafka_consume}')
+
     with Manager() as manager:
         logger.info('Init script...')
         flags = manager.dict()
@@ -90,7 +92,7 @@ def _build_raw_process(
     )
     kafka_consumer = KafkaConsumerStep(
         bootstrap_servers=config.kafka_servers,
-        topics=[config.kafka_subscribe],
+        topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
         next_step=info_step,
         group_id=config.kafka_group,
@@ -119,7 +121,7 @@ def _build_notifications_process(
         flag_value=False,
         next_step=queue_forward,
     )
-    api_getter = ApiParserSettingsStep(
+    api_getter = ParserSettingsGetterStep(
         logger=logger,
         api_lts=config.api_lts,
         next_step=flag_init_finished,

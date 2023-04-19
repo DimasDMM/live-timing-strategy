@@ -4,6 +4,8 @@ from typing import List
 from ltspipe.data.enum import EnumBase
 
 
+DEFAULT_API_SENDER_GROUP = 'api-sender'
+DEFAULT_API_SENDER_ERRORS_PATH = 'artifacts/api/errors/'
 DEFAULT_NOTIFICATIONS_TOPIC = 'notifications'
 DEFAULT_PARSER_GROUP = 'messages-parser'
 DEFAULT_PARSER_ERRORS_PATH = 'artifacts/parser/errors/'
@@ -25,13 +27,15 @@ class KafkaMode(EnumBase):
 
 
 @dataclass(frozen=True)
-class RawStorageConfig:
+class ApiSenderConfig:
     """Class to store the settings of the CLI script."""
 
+    api_lts: str
     kafka_servers: List[str]
-    kafka_group: str = field(default=DEFAULT_RAW_STORAGE_GROUP)
-    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
-    output_path: str = field(default=DEFAULT_RAW_DATA_PATH)
+    errors_path: str = field(default=DEFAULT_API_SENDER_ERRORS_PATH)
+    kafka_group: str = field(default=DEFAULT_API_SENDER_GROUP)
+    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
+    kafka_consume: str = field(default=DEFAULT_STD_MESSAGES_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 
@@ -42,7 +46,7 @@ class KafkaCheckConfig:
     kafka_servers: List[str]
     test_mode: KafkaMode
     kafka_group: str = field(default=DEFAULT_TEST_GROUP)
-    kafka_subscribe: str = field(default=DEFAULT_TEST_TOPIC)
+    kafka_topic: str = field(default=DEFAULT_TEST_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 
@@ -56,8 +60,19 @@ class ParserConfig:
     kafka_group: str = field(default=DEFAULT_PARSER_GROUP)
     kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
     kafka_produce: str = field(default=DEFAULT_STD_MESSAGES_TOPIC)
-    kafka_subscribe: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
+    kafka_consume: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     unknowns_path: str = field(default=DEFAULT_PARSER_UNKNOWNS_PATH)
+    verbosity: int = field(default=DEFAULT_VERBOSITY)
+
+
+@dataclass(frozen=True)
+class RawStorageConfig:
+    """Class to store the settings of the CLI script."""
+
+    kafka_servers: List[str]
+    kafka_group: str = field(default=DEFAULT_RAW_STORAGE_GROUP)
+    kafka_consume: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
+    output_path: str = field(default=DEFAULT_RAW_DATA_PATH)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 

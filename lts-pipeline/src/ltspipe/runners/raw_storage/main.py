@@ -25,6 +25,8 @@ def main(
     logger.info(f'Create path if it does not exist: {config.output_path}')
     os.makedirs(config.output_path, exist_ok=True)
 
+    logger.debug(f'Topic consumer: {config.kafka_consume}')
+
     logger.info('Init script...')
     file_storage = FileStorageStep(
         logger=logger,
@@ -36,7 +38,7 @@ def main(
     )
     kafka_consumer = KafkaConsumerStep(
         bootstrap_servers=config.kafka_servers,
-        topics=[config.kafka_subscribe],
+        topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
         next_step=info_step,
         group_id=config.kafka_group,

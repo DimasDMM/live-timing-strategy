@@ -90,7 +90,7 @@ Arguments:
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
 
-### Pipeline: API REST
+### Pipeline: API Sender
 
 ```mermaid
 graph TD;
@@ -147,7 +147,7 @@ Arguments:
   notifications. By default, it is `notifications`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_subscribe`: (optional) Topic of Kafka to suscribe. By default, it is
+- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
   `raw-messages`.
 - `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
   it is `standard`.
@@ -173,7 +173,7 @@ python -m ltspipe.runners.raw_storage \
 Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_subscribe`: (optional) Topic of Kafka to suscribe. By default, it is
+- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
   `raw-messages`.
 - `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
   By default, it is `raw-storage`.
@@ -203,7 +203,7 @@ Check that Kafka works correctly with a local dummy consumer:
 ```sh
 python -m ltspipe.runners.kafka_check \
   --kafka_servers localhost:9092 \
-  --kafka_subscribe test-topic \
+  --kafka_topic test-topic \
   --kafka_group test-group \
   --test_mode consumer \
   --verbosity 1
@@ -213,7 +213,7 @@ And a local dummy producer:
 ```sh
 python -m ltspipe.runners.kafka_check \
   --kafka_servers localhost:9092 \
-  --kafka_subscribe test-topic \
+  --kafka_topic test-topic \
   --test_mode producer \
   --verbosity 1
 ```

@@ -19,7 +19,7 @@ def test_raw_storage_config() -> None:
     kafka_servers = ['localhost:9092']
     raw_storage_config = RawStorageConfig(kafka_servers=kafka_servers)
     assert raw_storage_config.kafka_servers == kafka_servers
-    assert raw_storage_config.kafka_subscribe == DEFAULT_RAW_MESSAGES_TOPIC
+    assert raw_storage_config.kafka_consume == DEFAULT_RAW_MESSAGES_TOPIC
     assert raw_storage_config.kafka_group == DEFAULT_RAW_STORAGE_GROUP
     assert raw_storage_config.output_path == 'artifacts/raw/'
     assert raw_storage_config.verbosity == 2
@@ -34,7 +34,7 @@ def test_kafka_check_config() -> None:
     )
     assert kafka_check_config.kafka_servers == kafka_servers
     assert kafka_check_config.test_mode == KafkaMode.MODE_PRODUCER
-    assert kafka_check_config.kafka_subscribe == DEFAULT_TEST_TOPIC
+    assert kafka_check_config.kafka_topic == DEFAULT_TEST_TOPIC
     assert kafka_check_config.kafka_group == DEFAULT_TEST_GROUP
     assert kafka_check_config.verbosity == 2
 
@@ -48,7 +48,7 @@ def test_parser_config() -> None:
         kafka_servers=kafka_servers,
     )
     assert parser_config.kafka_servers == kafka_servers
-    assert parser_config.kafka_subscribe == DEFAULT_RAW_MESSAGES_TOPIC
+    assert parser_config.kafka_consume == DEFAULT_RAW_MESSAGES_TOPIC
     assert parser_config.kafka_produce == DEFAULT_STD_MESSAGES_TOPIC
     assert parser_config.errors_path == DEFAULT_PARSER_ERRORS_PATH
     assert parser_config.unknowns_path == DEFAULT_PARSER_UNKNOWNS_PATH
