@@ -10,11 +10,12 @@ class Parser(abc.ABC):
     """
 
     @abc.abstractmethod
-    def parse(self, data: Any) -> List[Action]:
+    def parse(self, competition_code: str, data: Any) -> List[Action]:
         """
         Analyse and/or parse a given data.
 
         Params:
+            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
@@ -22,6 +23,6 @@ class Parser(abc.ABC):
         """
         raise NotImplementedError
 
-    def __call__(self, data: Any) -> List[Action]:
+    def __call__(self, competition_code: str, data: Any) -> List[Action]:
         """Forward to method Parser.parse()."""
-        return self.parse(data)
+        return self.parse(competition_code, data)

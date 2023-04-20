@@ -94,6 +94,7 @@ class TestMessage:
                 data=Action(
                     type=ActionType.INITIALIZE,
                     data=InitialData(
+                        competition_code='sample-code',
                         reference_time=None,
                         reference_current_offset=None,
                         stage=CompetitionStage.QUALIFYING,
@@ -112,7 +113,6 @@ class TestMessage:
                                 best_time=64882,  # 1:04.882
                             ),
                         },
-                        parsers_settings=None,
                     ),
                 ),
                 source=MessageSource.SOURCE_DUMMY,

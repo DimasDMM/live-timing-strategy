@@ -2,8 +2,9 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 from ltspipe.data.notifications import Notification, NotificationType
-from ltspipe.messages import Message, MessageSource
-from ltspipe.steps.notifications import NotificationMapperStep
+from ltspipe.messages import Message, MessageDecoder, MessageSource
+from ltspipe.steps.mappers import NotificationMapperStep
+from tests.fixtures import TEST_COMPETITION_CODE
 from tests.helpers import build_magic_step
 from tests.mocks.logging import FakeLogger
 
@@ -14,11 +15,12 @@ class TestNotificationMapperStep:
     def _build_notification(self) -> Message:
         """Build a notification of init data."""
         return Message(
-            competition_code='sample-code',
+            competition_code=TEST_COMPETITION_CODE,
             data=Notification(
                 type=NotificationType.INIT_FINISHED,
             ),
             source=MessageSource.SOURCE_DUMMY,
+            decoder=MessageDecoder.NOTIFICATION,
             created_at=datetime.utcnow().timestamp(),
             updated_at=datetime.utcnow().timestamp(),
         )
@@ -63,7 +65,7 @@ class TestNotificationMapperStep:
         assert notify_step.run_step.call_count == 0
         assert on_other.run_step.call_count == 1
         received_msg: Message = on_other.run_step.call_args_list[0][0][0]
-        assert received_msg.competition_code == normal_msg.competition_code
+        assert received_msg.competition_code == TEST_COMPETITION_CODE
         assert received_msg.data == normal_msg.data
 
     def _second_step(
@@ -78,5 +80,5 @@ class TestNotificationMapperStep:
         assert notify_step.run_step.call_count == 1
         assert on_other.run_step.call_count == 1
         received_msg: Message = notify_step.run_step.call_args_list[0][0][0]
-        assert received_msg.competition_code == notification.competition_code
+        assert received_msg.competition_code == TEST_COMPETITION_CODE
         assert received_msg.data == notification.data

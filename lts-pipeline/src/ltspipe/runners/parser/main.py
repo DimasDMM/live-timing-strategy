@@ -11,17 +11,14 @@ from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import WsInitParser
 from ltspipe.runners import BANNER_MSG
-from ltspipe.steps.api import ParserSettingsGetterStep
+from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import FileStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.loggers import LogInfoStep
-from ltspipe.steps.notifications import (
-    FlagModifierStep,
-    NotificationMapperStep,
-)
+from ltspipe.steps.modifiers import FlagModifierStep
+from ltspipe.steps.mappers import NotificationMapperStep, ParsersStep
 from ltspipe.steps.triggers import WsInitTriggerStep
-from ltspipe.steps.wrappers import ParsersStep
 
 
 def main(config: ParserConfig, logger: Logger) -> None:
@@ -121,9 +118,10 @@ def _build_notifications_process(
         flag_value=False,
         next_step=queue_forward,
     )
-    api_getter = ParserSettingsGetterStep(
+    api_getter = CompetitionInfoInitStep(
         logger=logger,
         api_lts=config.api_lts,
+        competitions={},
         next_step=flag_init_finished,
     )
 
@@ -170,12 +168,6 @@ def _build_parsers_pipe(config: ParserConfig, logger: Logger) -> ParsersStep:
     unknowns_storage = FileStorageStep(
         logger=logger,
         output_path=config.unknowns_path,
-    )
-    kafka_producer = KafkaProducerStep(
-        logger=logger,
-        bootstrap_servers=config.kafka_servers,
-        topic=config.kafka_produce,
-        value_serializer=msgpack.dumps,
     )
     parser_step = ParsersStep(
         logger=logger,

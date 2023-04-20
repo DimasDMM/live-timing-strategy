@@ -65,7 +65,7 @@ CREATE TABLE `competitions_metadata_history` (
   `reference_time` INT NOT NULL DEFAULT 0 COMMENT 'Reference time (usually, the median) of the track during practice or early stages',
   `reference_current_offset` INT NOT NULL DEFAULT 0 COMMENT 'Time offset with respect to the track reference',
   `status` ENUM('paused', 'ongoing', 'finished') NOT NULL,
-  `stage` ENUM('free-practice', 'classification', 'race') NOT NULL,
+  `stage` ENUM('free-practice', 'qualifying', 'race') NOT NULL,
   `remaining_length` INT UNSIGNED NOT NULL,
   `remaining_length_unit` ENUM('millis', 'laps') NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -151,7 +151,7 @@ CREATE TABLE `timing_history` (
   CONSTRAINT `timing_history__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `participants_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `timing_karts_pits` (
+CREATE TABLE `timing_pits` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NULL,
@@ -160,8 +160,8 @@ CREATE TABLE `timing_karts_pits` (
   `fixed_kart_status` ENUM('good', 'medium', 'bad') NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `timing_karts_pits__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_karts_pits__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
+  CONSTRAINT `timing_pits__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  CONSTRAINT `timing_pits__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `strategy_karts_probs` (

@@ -66,9 +66,9 @@ INSERT INTO `timing_history`(`competition_id`, `team_id`, `driver_id`, `position
   (3, 3, 9, 1, 60000, 59000, 1, 0, 'millis', 'free-practice', 0, 'unknown', NULL, 0);
 
 INSERT INTO `parsers_settings`(`competition_id`, `name`, `value`) VALUES
-  (1, 'sample-setting-1', 'sample-value-1'),
-  (1, 'sample-setting-2', 'sample-value-2'),
-  (1, 'sample-setting-3', 'sample-value-3'),
-  (2, 'sample-setting-1', 'sample-value-1'),
-  (2, 'sample-setting-2', 'sample-value-2'),
-  (3, 'sample-setting-1', 'sample-value-1');
+  (1, 'timing-best-time', 'sample-value-1'),
+  (1, 'timing-gap', 'sample-value-2'),
+  (1, 'timing-interval', 'sample-value-3'),
+  (2, 'timing-best-time', 'sample-value-1'),
+  (2, 'timing-gap', 'sample-value-2'),
+  (3, 'timing-best-time', 'sample-value-1');

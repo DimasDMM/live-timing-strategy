@@ -1,5 +1,5 @@
 from pydantic import Field
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from ltspipe.base import BaseModel, EnumBase
 from ltspipe.data.enum import (
@@ -25,27 +25,76 @@ class CompetitionStage(str, EnumBase):
     RACE = 'race'
 
 
+class Driver(DictModel):
+    """Info of a driver."""
+
+    id: int
+    participant_code: str
+    name: str
+    team_id: Optional[int]
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            id=raw.get('id'),
+            participant_code=raw.get('participant_code'),
+            name=raw.get('name'),
+            team_id=raw.get('team_id', None),
+        )
+
+
+class Team(DictModel):
+    """Info of a team."""
+
+    id: int
+    participant_code: str
+    name: str
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            id=raw.get('id'),
+            participant_code=raw.get('participant_code'),
+            name=raw.get('name'),
+        )
+
+
 class CompetitionInfo(BaseModel):
     """Info of a competition."""
 
     id: Optional[int]
     competition_code: str
     parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
+    drivers: List[Driver] = Field(default_factory=list)
+    teams: List[Team] = Field(default_factory=list)
 
 
-class DiffLap(BaseModel):
+class DiffLap(DictModel):
     """Difference between two laps."""
 
     value: int
     unit: LengthUnit
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            value=raw.get('value'),
+            unit=LengthUnit(raw.get('unit')),
+        )
 
 
 class Participant(DictModel):
     """Details of a participant."""
 
     participant_code: str
+    kart_number: int
     ranking: Optional[int] = Field(default=None)
-    kart_number: Optional[int] = Field(default=None)
     team_name: Optional[str] = Field(default=None)
     driver_name: Optional[str] = Field(default=None)
     last_lap_time: Optional[int] = Field(default=None)
@@ -79,13 +128,14 @@ class Participant(DictModel):
 class InitialData(DictModel):
     """Details about the initial data of a competition."""
 
+    competition_code: str
     reference_time: Optional[int]
     reference_current_offset: Optional[int]
     stage: CompetitionStage
     status: CompetitionStatus
     remaining_length: DiffLap
-    participants: Dict[str, Participant]
-    parsers_settings: Optional[Dict[ParserSettings, str]]
+    participants: Dict[str, Participant] = Field(default_factory=dict)
+    parsers_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -98,12 +148,16 @@ class InitialData(DictModel):
         participants = {code: Participant.from_dict(p)
                         for code, p in raw_participants.items()}
 
+        parsers_settings: Dict[str, str] = raw.get('parsers_settings', {})
+        remaining_length: dict = raw.get('remaining_length')  # type: ignore
         return cls.construct(
+            competition_code=raw.get('competition_code'),
             reference_time=raw.get('reference_time', None),
             reference_current_offset=raw.get('reference_current_offset', None),
             stage=CompetitionStage(raw.get('stage')),
             status=CompetitionStatus(raw.get('status')),
-            remaining_length=raw.get('remaining_length'),
+            remaining_length=DiffLap.from_dict(remaining_length),
             participants=participants,
-            parsers_settings=raw.get('parsers_settings', None),
+            parsers_settings={ParserSettings(k): v
+                              for k, v in parsers_settings.items()},
         )

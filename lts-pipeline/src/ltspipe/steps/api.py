@@ -1,20 +1,25 @@
 from logging import Logger
-import requests
 from typing import Any, Dict, List, Optional
 
+from ltspipe.api.handlers import ApiHandler
+from ltspipe.api.competitions_base import (
+    init_competition_info,
+)
+from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.messages import Message
 from ltspipe.steps.base import MidStep
 
 
-class ParserSettingsGetterStep(MidStep):
-    """Retrieve the parser settings."""
+class ApiActionStep(MidStep):
+    """Do an action with the API REST."""
 
     def __init__(
             self,
             logger: Logger,
             api_lts: str,
-            competitions: Optional[Dict[str, CompetitionInfo]] = None,
+            competitions: Dict[str, CompetitionInfo],
+            action_handlers: Dict[ActionType, ApiHandler],
             next_step: Optional[MidStep] = None) -> None:
         """
         Construct.
@@ -22,13 +27,66 @@ class ParserSettingsGetterStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             api_lts (str): URI of API REST.
-            competitions (Dict[str, CompetitionInfo] | None): Storage of
+            competitions (Dict[str, CompetitionInfo]): Storage of
                 competitions info.
+            action_handlers (Dict[ActionType, ApiHandler]): Handler for each
+                type of action.
+            next_step (MidStep | None): Next step.
+        """
+        self._logger = logger
+        self._api_lts = api_lts
+        self._competitions = competitions
+        self._action_handlers = action_handlers
+        self._next_step = next_step
+
+    def get_children(self) -> List[Any]:
+        """Return list of children steps to this one."""
+        if self._next_step is not None:
+            return [self._next_step] + self._next_step.get_children()
+        return []
+
+    def run_step(self, msg: Message) -> None:
+        """Do an action with the API REST."""
+        if isinstance(msg.data, Action):
+            if msg.competition_code not in self._competitions:
+                raise Exception(
+                    f'Unknown competition with code {msg.competition_code}.')
+
+            action = msg.data
+            handler = self._action_handlers.get(action.type, None)
+            if handler is not None:
+                handler.handle(action.data)
+
+        if self._next_step is not None:
+            self._next_step.run_step(msg)
+
+
+class CompetitionInfoInitStep(MidStep):
+    """Retrieve the info of the competition."""
+
+    def __init__(
+            self,
+            logger: Logger,
+            api_lts: str,
+            competitions: Dict[str, CompetitionInfo],
+            force_update: bool = True,
+            next_step: Optional[MidStep] = None) -> None:
+        """
+        Construct.
+
+        Params:
+            logger (logging.Logger): Logger instance to display information.
+            api_lts (str): URI of API REST.
+            competitions (Dict[str, CompetitionInfo]): Storage of
+                competitions info.
+            force_update (bool): If the info of a competition is already set,
+                it forces to get again its information.
             next_step (MidStep | None): Next step.
         """
         self._logger = logger
         self._api_lts = api_lts.strip('/')
-        self._competitions = {} if competitions is None else competitions
+        self._competitions = competitions
+        self._force_update = force_update
         self._next_step = next_step
 
     def get_children(self) -> List[Any]:
@@ -40,53 +98,13 @@ class ParserSettingsGetterStep(MidStep):
 
     def run_step(self, msg: Message) -> None:
         """Update parsers settings of the competition."""
-        self._update_settings(msg.competition_code)
+        self._init_competition_info(msg.competition_code)
         if self._next_step is not None:
             self._next_step.run_step(msg)
 
-    def _update_settings(self, competition_code: str) -> None:
-        """Update the parsers settings."""
-        if (competition_code not in self._competitions
-                or self._competitions[competition_code].id is None):
-            self._init_competition_settings(competition_code)
-
-        info = self._competitions[competition_code]
-        competition_id: int = info.id  # type: ignore
-        uri = self._settings_endpoint(competition_id)
-        r = requests.get(url=uri)
-        response = r.json()
-
-        if not response or not isinstance(response, list):
-            raise Exception(f'Unknown API response ({uri}): {response}')
-
-        for item in response:
-            if 'name' not in item or 'value' not in item:
-                raise Exception(f'Unknown API response: {response}')
-            info.parser_settings[item['name']] = item['value']
-
-    def _init_competition_settings(self, competition_code: str) -> None:
-        """Initialize information of competition."""
-        uri = self._index_endpoint(competition_code)
-        r = requests.get(url=uri)
-        response = r.json()
-
-        if competition_code not in self._competitions:
-            info = CompetitionInfo(competition_code=competition_code)
+    def _init_competition_info(self, competition_code: str) -> None:
+        """Initialize competition info."""
+        if self._force_update or competition_code not in self._competitions:
+            info = init_competition_info(
+                self._api_lts, competition_code)
             self._competitions[competition_code] = info
-        else:
-            info = self._competitions[competition_code]
-
-        if not response or 'id' not in response:
-            raise Exception(f'Unknown API response ({uri}): {response}')
-
-        info.id = response['id']
-
-    def _index_endpoint(self, competition_code: str) -> str:
-        """Get endpoint of parsers settings."""
-        base = self._api_lts
-        return f'{base}/v1/competitions/filter/code/{competition_code}'
-
-    def _settings_endpoint(self, competition_id: int) -> str:
-        """Get endpoint of parsers settings."""
-        base = self._api_lts
-        return f'{base}/v1/competitions/{competition_id}/parsers/settings'

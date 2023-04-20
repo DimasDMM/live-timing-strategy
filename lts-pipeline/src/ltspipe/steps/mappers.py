@@ -1,11 +1,63 @@
 from datetime import datetime
-import logging
-from typing import Any, List, Optional
+from logging import Logger
+from typing import Any, Dict, List, Optional
 
 from ltspipe.data.actions import Action
+from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
+
+
+class NotificationMapperStep(MidStep):
+    """
+    Detect if the message is a notification and forward it.
+    """
+
+    def __init__(
+            self,
+            logger: Logger,
+            map_notification: Dict[NotificationType, MidStep],
+            on_other: Optional[MidStep] = None) -> None:
+        """
+        Construct.
+
+        Params:
+            logger (logging.Logger): Logger instance to display information.
+            map_notification (Dict[NotificationType, MidStep]): Map each type of
+                notification to a step.
+            on_other (MidStep): Next step when it is other kind of data.
+        """
+        self._logger = logger
+        self._map_notification = map_notification
+        self._on_other = on_other
+
+    def get_children(self) -> List[Any]:
+        """Return list of children steps to this one."""
+        children = []
+        if self._on_other is not None:
+            children += [self._on_other] + self._on_other.get_children()
+        for _, step in self._map_notification.items():
+            children += [step] + step.get_children()
+        return children
+
+    def run_step(self, msg: Message) -> None:
+        """Add message to queue or continue to the next step."""
+        type = self._get_notification_type(msg)
+        if type is not None and type in self._map_notification:
+            self._logger.info(f'Notification: {type}.')
+            msg.updated()
+            self._map_notification[type].run_step(msg)
+        elif self._on_other is not None:
+            msg.updated()
+            self._on_other.run_step(msg)
+
+    def _get_notification_type(
+            self, msg: Message) -> Optional[NotificationType]:
+        """Return the notification type if the message is a notification."""
+        if isinstance(msg.data, Notification):
+            return msg.data.type
+        return None
 
 
 class ParsersStep(MidStep):
@@ -13,7 +65,7 @@ class ParsersStep(MidStep):
 
     def __init__(
             self,
-            logger: logging.Logger,
+            logger: Logger,
             parsers: List[Parser],
             stop_on_first: bool = True,
             on_parsed: Optional[MidStep] = None,
@@ -57,7 +109,7 @@ class ParsersStep(MidStep):
         actions: List[Action] = []
         for parser in self._parsers:
             try:
-                actions += parser(msg.data)
+                actions += parser(msg.competition_code, msg.data)
                 if len(actions) > 0:
                     self._forward_actions(
                         actions=actions,
@@ -74,6 +126,8 @@ class ParsersStep(MidStep):
                         data=msg.data,
                         source=msg.source,
                         decoder=msg.decoder,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
                         error_description=str(e),
                         error_traceback=str(e.__traceback__),
                     )

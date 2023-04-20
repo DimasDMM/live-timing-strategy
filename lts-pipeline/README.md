@@ -64,6 +64,7 @@ graph TD;
   H[Kafka consumer: notifications] --> I[Is 'init-finished'?]
   I -- Yes --> J[Set wait_init as false]
   J --> K[Send messages in queue]
+
   F -. Shared memory .- K
 ```
 
@@ -80,28 +81,15 @@ Arguments:
 - `--competition_code`: (**mandatory**) Code of the competition.
 - `--kafka_notifications`: (optional) Topic of Kafka to read and write
   notifications. By default, it is `notifications`.
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
 - `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
   it is `raw-messages`.
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
 - `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
   Example: `ws://www.apex-timing.com:8092`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
-
-### Pipeline: API Sender
-
-```mermaid
-graph TD;
-  A[Kafka consumer: standard]
-  A --> B[Send data to API REST]
-  B --> C[Is init message?]
-  C -- Yes --> D[Create notification: 'init-finished']
-  D --> E[Kafka producer: notifications]
-```
-
-WIP
 
 ### Pipeline: Messages parser
 
@@ -125,12 +113,13 @@ graph TD;
   C --> D[Kafka producer: standard]
 
   F[Kafka consumer: notifications]
-  F -- 'init-finished' --> H[API: Get parsers settings]
+  F -- 'init-finished' --> H[API: Get info of competition]
   H --> I[Set wait_init as false]
   I --> J[Parse data in queue]
   J --> K[Kafka producer: standard]
-  E -. Shared memory .- J
   F -- 'init-ongoing' --> L[Set wait_init as true]
+
+  E -. Shared memory .- J
 ```
 
 Local Python command:
@@ -143,20 +132,60 @@ python -m ltspipe.runners.parser \
 
 Arguments:
 - `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--errors_path`: (optional) Path to store errors during parsing. By default,
+  it is `artifacts/parser/errors/`.
+- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
+  `raw-messages`.
+- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
+  By default, it is `messages-parser`.
+- `--kafka_notifications`: (optional) Topic of Kafka to read and write
+  notifications. By default, it is `notifications`.
+- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
+  it is `standard`.
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--unknowns_path`: (optional) Path to store unknown data (i.e. not recognized
+  by any parser). By default, it is `artifacts/parser/unknowns/`.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.
+
+### Pipeline: API Sender
+
+Similarly to the previous scripts, there are two parallel processes:
+- One takes all the messages from the topic "standard" and sends them to the
+  API REST (using the appropiate request).
+- The other is listening for notifications. Since there might be several scripts
+  of this kind, all of them must have the latest data of each competition.
+
+Note that this script does not have any flag (locker) like the previous scripts.
+
+```mermaid
+graph TD;
+  A[Kafka consumer: standard]
+  A --> B[Send data to API REST]
+  B --> C[Is init message?]
+  C -- Yes --> D[Create notification: 'init-finished']
+  D --> E[Kafka producer: notifications]
+
+  F[Kafka consumer: notifications]
+  F -- 'init-finished' --> H[API: Get info of competition]
+
+  B -. Shared memory .- H
+```
+
+Arguments:
+- `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--errors_path`: (optional) Path to store errors in running time. By default,
+  it is `artifacts/api/errors/`.
+- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
+  `standard`.
+- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
+  By default, it is `api-sender`.
 - `--kafka_notifications`: (optional) Topic of Kafka to read and write
   notifications. By default, it is `notifications`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
-  `raw-messages`.
-- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
-  it is `standard`.
-- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
-  By default, it is `messages-parser`.
-- `--errors_path`: (optional) Path to store errors during parsing. By default,
-  it is `artifacts/parser/errors/`.
-- `--unknowns_path`: (optional) Path to store unknown data (i.e. not recognized
-  by any parser). By default, it is `artifacts/parser/unknowns/`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
@@ -224,6 +253,10 @@ commas.
 
 ### Python code
 
+> The tests include some functional ones, thus this command requires that it
+  exists an API and a database running. These tests also require that the
+  environment variables file is imported.
+
 We may run the whole test pipeline (unit tests and code style) with the
 usual command:
 ```sh
@@ -233,4 +266,23 @@ tox
 We may generate the coverage report (and pass the unit tests) with this command:
 ```sh
 poe coverage
+```
+
+#### Environment variables
+
+There is a file with some environment variables located at `.env` that we need
+to run the tests. To import the environment variables, we may run this
+command in Linux:
+```sh
+source .env.local
+```
+
+In Windows, we have to use this command instead:
+```sh
+Get-Content .env.local | foreach {
+  $name, $value = $_.split('=')
+  if (![string]::IsNullOrWhiteSpace($name) -and !$name.Contains('#')) {
+    Set-Content Env:\$name $value
+  }
+}
 ```

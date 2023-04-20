@@ -30,12 +30,12 @@ from tests.conftest import (
     mock_kafka_producer_builder,
     mock_multiprocessing_dict,
     mock_requests_get,
+    TEST_COMPETITION_CODE,
 )
 from tests.helpers import load_raw_message
 from tests.mocks.logging import FakeLogger
 
 API_LTS = 'http://localhost:8090/'
-COMPETITION_CODE = 'test-competition'
 EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
@@ -65,7 +65,7 @@ PARSERS_SETTINGS = {
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'initial_3_teams_with_times.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -77,13 +77,13 @@ PARSERS_SETTINGS = {
                 ],
                 DEFAULT_STD_MESSAGES_TOPIC: [],
             },
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
             {},  # in_queue
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'initial_3_teams_with_times.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -95,12 +95,13 @@ PARSERS_SETTINGS = {
                 ],
                 DEFAULT_STD_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=Action(
                             type=ActionType.INITIALIZE,
                             data=InitialData(
-                                reference_time=0,
-                                reference_current_offset=0,
+                                competition_code=TEST_COMPETITION_CODE,
+                                reference_time=None,
+                                reference_current_offset=None,
                                 stage=CompetitionStage.QUALIFYING.value,
                                 status=CompetitionStatus.ONGOING.value,
                                 remaining_length=DiffLap(
@@ -155,7 +156,9 @@ PARSERS_SETTINGS = {
                 ],
             },
             {},  # expected_queue
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # expected_flags
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True},
+            },
         ),
         # Test case: When the flag 'wait-init' is enabled and it receives a
         # new message, it ends up in the queue.
@@ -164,7 +167,7 @@ PARSERS_SETTINGS = {
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -176,13 +179,13 @@ PARSERS_SETTINGS = {
                 ],
                 DEFAULT_STD_MESSAGES_TOPIC: [],
             },
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
             {},  # in_queue
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -195,9 +198,9 @@ PARSERS_SETTINGS = {
                 DEFAULT_STD_MESSAGES_TOPIC: [],
             },
             {  # expected_queue
-                COMPETITION_CODE: [
+                TEST_COMPETITION_CODE: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -208,7 +211,9 @@ PARSERS_SETTINGS = {
                     ),
                 ],
             },
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # expected_flags
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True},
+            },
         ),
     ],
 )

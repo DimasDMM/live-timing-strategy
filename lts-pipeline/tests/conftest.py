@@ -5,7 +5,11 @@ from ltspipe.messages import Message
 from ltspipe.steps.listeners import WebsocketListenerStep
 from tests.fixtures import *  # noqa: F401, F403
 from tests.mocks.kafka import MockKafkaConsumer, MockKafkaProducer
-from tests.mocks.requests import MockResponse
+from tests.mocks.requests import (
+    MockResponse,
+    MapRequests,
+    MapRequestItem,
+)
 from tests.mocks.websocket import MockWebSocketApp
 
 import warnings
@@ -44,6 +48,26 @@ def mock_kafka_producer_builder(
         'ltspipe.steps.kafka.KafkaProducerStep._build_kafka_producer',
         return_value=mocked_kafka)
     return mocked_kafka
+
+
+def mock_requests(
+        mocker: MockerFixture,
+        requests_map: List[MapRequestItem]) -> MapRequests:
+    """Mock get method of requests library."""
+    mapper = MapRequests(requests_map=requests_map)
+    mocker.patch(
+        'requests.get',
+        new=lambda url, *args, **kwargs: mapper.get(url))  # noqa: U100
+    mocker.patch(
+        'requests.delete',
+        new=lambda url, *args, **kwargs: mapper.delete(url))  # noqa: U100
+    mocker.patch(
+        'requests.put',
+        new=lambda url, *args, **kwargs: mapper.put(url))  # noqa: U100
+    mocker.patch(
+        'requests.post',
+        new=lambda url, *args, **kwargs: mapper.post(url))  # noqa: U100
+    return mapper
 
 
 def mock_requests_get(mocker: MockerFixture, responses: list) -> List[dict]:

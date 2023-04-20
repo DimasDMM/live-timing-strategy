@@ -42,8 +42,9 @@ def _build_initial_3_teams() -> Tuple[Message, List[Action]]:
     out_action = Action(
         type=ActionType.INITIALIZE,
         data=InitialData(
-            reference_time=0,
-            reference_current_offset=0,
+            competition_code=TEST_COMPETITION_CODE,
+            reference_time=None,
+            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING.value,
             status=CompetitionStatus.ONGOING.value,
             remaining_length=DiffLap(
@@ -81,8 +82,9 @@ def _build_initial_3_teams_with_times() -> Tuple[Message, List[Action]]:
     out_action = Action(
         type=ActionType.INITIALIZE,
         data=InitialData(
-            reference_time=0,
-            reference_current_offset=0,
+            competition_code=TEST_COMPETITION_CODE,
+            reference_time=None,
+            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING.value,
             status=CompetitionStatus.ONGOING.value,
             remaining_length=DiffLap(
@@ -149,7 +151,7 @@ class TestWsInitParser:
             expected_actions: List[Action]) -> None:
         """Test method parse with correct messages."""
         parser = WsInitParser()
-        out_actions = parser.parse(in_data)
+        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
 
@@ -158,7 +160,7 @@ class TestWsInitParser:
         in_data = load_raw_message('wrong_headers.txt')
         parser = WsInitParser()
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(in_data)
+            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
         e: Exception = e_info.value
         assert (str(e) == 'Cannot parse column 8 of headers '
                           '(timing-gap != timing-pits).')

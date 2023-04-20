@@ -12,10 +12,8 @@ from ltspipe.steps.bulk import (
     QueueForwardStep,
 )
 from ltspipe.steps.listeners import WebsocketListenerStep
-from ltspipe.steps.notifications import (
-    FlagModifierStep,
-    NotificationMapperStep,
-)
+from ltspipe.steps.modifiers import FlagModifierStep
+from ltspipe.steps.mappers import NotificationMapperStep
 from ltspipe.steps.triggers import WsInitTriggerStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 

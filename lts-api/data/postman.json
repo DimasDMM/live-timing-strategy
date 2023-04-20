@@ -34,7 +34,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"new-track-added\",\r\n    \"name\": \"New Karting\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"new-track-added\",\r\n    \"name\": \"New Karting Competition\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -79,7 +79,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/filter/code/santos-endurance-2023-02-26",
+							"raw": "{{api_url}}/v1/competitions/filter/code/north-endurance-2023-02-26",
 							"host": [
 								"{{api_url}}"
 							],
@@ -88,7 +88,7 @@
 								"competitions",
 								"filter",
 								"code",
-								"santos-endurance-2023-02-26"
+								"north-endurance-2023-02-26"
 							]
 						}
 					},
@@ -216,7 +216,7 @@
 			]
 		},
 		{
-			"name": "New Folder",
+			"name": "Misc.",
 			"item": [
 				{
 					"name": "Get all parsers settings",
@@ -522,7 +522,7 @@
 					"response": []
 				},
 				{
-					"name": "Get all drivers",
+					"name": "Get all drivers in a team",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -544,7 +544,7 @@
 					"response": []
 				},
 				{
-					"name": "Add a driver",
+					"name": "Add a driver to a team",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -575,7 +575,7 @@
 					"response": []
 				},
 				{
-					"name": "Update a driver",
+					"name": "Update a driver of a team",
 					"request": {
 						"method": "PUT",
 						"header": [],

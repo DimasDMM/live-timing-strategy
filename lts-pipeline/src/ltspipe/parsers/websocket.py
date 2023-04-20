@@ -60,18 +60,19 @@ class WsInitParser(Parser):
     # > '54.'
     REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
 
-    def parse(self, data: Any) -> List[Action]:
+    def parse(self, competition_code: str, data: Any) -> List[Action]:
         """
         Analyse and/or parse a given data.
 
         Params:
+            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
         """
         if self._is_initializer_data(data):
-            parsed_data = self._parse_init_data(data)
+            parsed_data = self._parse_init_data(competition_code, data)
             action = Action(
                 type=ActionType.INITIALIZE,
                 data=parsed_data,
@@ -84,7 +85,7 @@ class WsInitParser(Parser):
         return (isinstance(data, str)
                 and re.match(r'^init\|p\|', data) is not None)
 
-    def _parse_init_data(self, data: str) -> InitialData:
+    def _parse_init_data(self, competition_code: str, data: str) -> InitialData:
         """Parse content in the raw data."""
         raw_parts = re.split(r'\n+', data, flags=re.MULTILINE)
         raw_parts = [re.split(r'\|', p, flags=re.MULTILINE) for p in raw_parts]
@@ -103,8 +104,9 @@ class WsInitParser(Parser):
         participants = self._parse_participants(headers, initial_rows[1:])
 
         return InitialData(
-            reference_time=0,
-            reference_current_offset=0,
+            competition_code=competition_code,
+            reference_time=None,
+            reference_current_offset=None,
             stage=stage,
             status=status,
             remaining_length=remaining_length,
