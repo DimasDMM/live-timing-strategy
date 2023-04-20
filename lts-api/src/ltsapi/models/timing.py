@@ -20,7 +20,7 @@ class AddLapTime(BaseModel):
     interval: int
     interval_unit: LengthUnit
     stage: str
-    pits: Optional[int]
+    pit_time: Optional[int]
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
     number_pits: int
@@ -38,7 +38,7 @@ class GetLapTime(BaseModel):
     interval: int
     interval_unit: LengthUnit
     stage: str
-    pits: Optional[int]
+    pit_time: Optional[int]
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
     number_pits: int
@@ -57,7 +57,7 @@ class UpdateLapTime(BaseModel):
     interval: int
     interval_unit: LengthUnit
     stage: str
-    pits: Optional[int]
+    pit_time: Optional[int]
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
     number_pits: int
