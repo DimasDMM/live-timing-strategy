@@ -3,13 +3,12 @@
 import argparse
 
 from ltspipe.runners import build_logger
-from ltspipe.runners.parser.main import main
+from ltspipe.runners.api_sender.main import main
 from ltspipe.configs import ApiSenderConfig
 from ltspipe.configs import (
     DEFAULT_NOTIFICATIONS_TOPIC,
-    DEFAULT_PARSER_GROUP,
+    DEFAULT_API_SENDER_GROUP,
     DEFAULT_PARSER_ERRORS_PATH,
-    DEFAULT_RAW_MESSAGES_TOPIC,
     DEFAULT_STD_MESSAGES_TOPIC,
     DEFAULT_VERBOSITY,
 )
@@ -32,7 +31,7 @@ parser.add_argument(
     '--kafka_group',
     type=str,
     help='Suscribe to the topic with a specific group name.',
-    default=DEFAULT_PARSER_GROUP)
+    default=DEFAULT_API_SENDER_GROUP)
 parser.add_argument(
     '--kafka_notifications',
     type=str,
@@ -47,7 +46,7 @@ parser.add_argument(
     '--kafka_subscribe',
     type=str,
     help='Kafka topic to suscribe.',
-    default=DEFAULT_RAW_MESSAGES_TOPIC)
+    default=DEFAULT_STD_MESSAGES_TOPIC)
 parser.add_argument(
     '--verbosity',
     help='Level of verbosity of messages.',
