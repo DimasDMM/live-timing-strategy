@@ -1,6 +1,6 @@
 from datetime import datetime
 from pytest_mock import MockerFixture
-from typing import Dict
+from typing import Dict, List
 from unittest.mock import MagicMock
 
 from ltspipe.data.actions import Action, ActionType
@@ -21,9 +21,14 @@ from ltspipe.steps.api import (
     ApiActionStep,
     CompetitionInfoInitStep,
 )
-from tests.conftest import mock_requests_get
+from tests.conftest import mock_requests
 from tests.fixtures import TEST_COMPETITION_CODE
 from tests.mocks.logging import FakeLogger
+from tests.mocks.requests import (
+    MapRequestItem,
+    MapRequestMethod,
+    MockResponse,
+)
 
 
 class TestApiActionStep:
@@ -103,75 +108,6 @@ class TestParserSettingsGetterStep:
     """Test ltspipe.steps.api.ParserSettingsGetterStep class."""
 
     API_LTS = 'http://localhost:8090/'
-    RESPONSE_LIST_COMPETITIONS = {
-        'id': 1,
-        'track': {
-            'id': 1,
-            'name': 'Karting North',
-            'insert_date': '2023-04-15T21:43:26',
-            'update_date': '2023-04-15T21:43:26',
-        },
-        'competition_code': 'north-endurance-2023-02-26',
-        'name': 'Endurance North 26-02-2023',
-        'description': 'Endurance in Karting North',
-        'insert_date': '2023-04-15T21:43:26',
-        'update_date': '2023-04-15T21:43:26',
-    }
-    RESPONSE_LIST_SETTINGS = [
-        {
-            'name': ParserSettings.TIMING_NAME,
-            'value': 'sample-name',
-            'insert_date': '2023-04-15T21:43:26',
-            'update_date': '2023-04-15T21:43:26',
-        },
-        {
-            'name': ParserSettings.TIMING_RANKING,
-            'value': 'sample-ranking',
-            'insert_date': '2023-04-15T21:43:26',
-            'update_date': '2023-04-15T21:43:26',
-        },
-    ]
-    RESPONSE_LIST_DRIVERS = [
-        {
-            'id': 1,
-            'competition_id': 1,
-            'team_id': 1,
-            'participant_code': 'team-1',
-            'name': 'CKM 1 Driver 1',
-            'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': 0,
-            'insert_date': '2023-04-20T00:55:35',
-            'update_date': '2023-04-20T00:55:35',
-        },
-        {
-            'id': 2,
-            'competition_id': 1,
-            'team_id': 1,
-            'participant_code': 'team-1',
-            'name': 'CKM 1 Driver 2',
-            'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': 0,
-            'insert_date': '2023-04-20T00:55:35',
-            'update_date': '2023-04-20T00:55:35',
-        },
-    ]
-    RESPONSE_LIST_TEAMS = [
-        {
-            'id': 1,
-            'competition_id': 1,
-            'participant_code': 'team-1',
-            'name': 'CKM 1',
-            'number': 41,
-            'reference_time_offset': 0,
-            'drivers': [],
-            'insert_date': '2023-04-20T01:30:48',
-            'update_date': '2023-04-20T01:30:48',
-        },
-    ]
     EXPECTED_COMPETITIONS = {
         TEST_COMPETITION_CODE: CompetitionInfo(
             id=1,
@@ -209,7 +145,7 @@ class TestParserSettingsGetterStep:
             mocker: MockerFixture,
             sample_message: Message) -> None:
         """Test method run_step."""
-        self._apply_mock_api(mocker)
+        self._apply_mock_api(mocker, self.API_LTS)
         competition_code = sample_message.competition_code
 
         # Create a mock of the next step
@@ -239,12 +175,128 @@ class TestParserSettingsGetterStep:
         children = step.get_children()
         assert children == [next_step]
 
-    def _apply_mock_api(self, mocker: MockerFixture) -> None:
+    def _apply_mock_api(self, mocker: MockerFixture, api_url: str) -> None:
         """Apply mock to API."""
-        responses: list = [
-            self.RESPONSE_LIST_COMPETITIONS,
-            self.RESPONSE_LIST_SETTINGS,
-            self.RESPONSE_LIST_DRIVERS,
-            self.RESPONSE_LIST_TEAMS,
-        ]
-        _ = mock_requests_get(mocker, responses=responses)
+        api_url = api_url.strip('/')
+        requests_map = (
+            self._mock_response_get_competition_info(api_url)
+            + self._mock_response_get_parser_settings(api_url)
+            + self._mock_response_get_drivers(api_url)
+            + self._mock_response_get_teams(api_url))
+        mock_requests(mocker, requests_map=requests_map)
+
+    def _mock_response_get_competition_info(
+            self, api_url: str) -> List[MapRequestItem]:
+        """Get mocked response."""
+        response = MockResponse(
+            content={
+                'id': 1,
+                'track': {
+                    'id': 1,
+                    'name': 'Karting North',
+                    'insert_date': '2023-04-15T21:43:26',
+                    'update_date': '2023-04-15T21:43:26',
+                },
+                'competition_code': TEST_COMPETITION_CODE,
+                'name': 'Endurance North 26-02-2023',
+                'description': 'Endurance in Karting North',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+        )
+        item = MapRequestItem(
+            url=(f'{api_url}/v1/competitions/'
+                 f'filter/code/{TEST_COMPETITION_CODE}'),
+            method=MapRequestMethod.GET,
+            responses=[response],
+        )
+        return [item]
+
+    def _mock_response_get_parser_settings(
+            self, api_url: str) -> List[MapRequestItem]:
+        """Get mocked response."""
+        response = MockResponse(
+            content=[
+                {
+                    'name': ParserSettings.TIMING_NAME.value,
+                    'value': 'sample-name',
+                    'insert_date': '2023-04-15T21:43:26',
+                    'update_date': '2023-04-15T21:43:26',
+                },
+                {
+                    'name': ParserSettings.TIMING_RANKING.value,
+                    'value': 'sample-ranking',
+                    'insert_date': '2023-04-15T21:43:26',
+                    'update_date': '2023-04-15T21:43:26',
+                },
+            ],
+        )
+        item = MapRequestItem(
+            url=f'{api_url}/v1/competitions/1/parsers/settings',
+            method=MapRequestMethod.GET,
+            responses=[response],
+        )
+        return [item]
+
+    def _mock_response_get_drivers(self, api_url: str) -> List[MapRequestItem]:
+        """Get mocked response."""
+        response = MockResponse(
+            content=[
+                {
+                    'id': 1,
+                    'competition_id': 1,
+                    'team_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 1',
+                    'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                    'insert_date': '2023-04-20T00:55:35',
+                    'update_date': '2023-04-20T00:55:35',
+                },
+                {
+                    'id': 2,
+                    'competition_id': 1,
+                    'team_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'total_driving_time': 0,
+                    'partial_driving_time': 0,
+                    'reference_time_offset': 0,
+                    'insert_date': '2023-04-20T00:55:35',
+                    'update_date': '2023-04-20T00:55:35',
+                },
+            ],
+        )
+        item = MapRequestItem(
+            url=f'{api_url}/v1/competitions/1/drivers',
+            method=MapRequestMethod.GET,
+            responses=[response],
+        )
+        return [item]
+
+    def _mock_response_get_teams(self, api_url: str) -> List[MapRequestItem]:
+        """Get mocked response."""
+        response = MockResponse(
+            content=[
+                {
+                    'id': 1,
+                    'competition_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1',
+                    'number': 41,
+                    'reference_time_offset': 0,
+                    'drivers': [],
+                    'insert_date': '2023-04-20T01:30:48',
+                    'update_date': '2023-04-20T01:30:48',
+                },
+            ],
+        )
+        item = MapRequestItem(
+            url=f'{api_url}/v1/competitions/1/teams',
+            method=MapRequestMethod.GET,
+            responses=[response],
+        )
+        return [item]

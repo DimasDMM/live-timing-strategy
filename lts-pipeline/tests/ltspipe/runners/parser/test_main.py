@@ -24,12 +24,17 @@ from ltspipe.configs import (
     DEFAULT_STD_MESSAGES_TOPIC,
 )
 from ltspipe.messages import Message, MessageDecoder, MessageSource
+from tests.mocks.requests import (
+    MapRequestItem,
+    MapRequestMethod,
+    MockResponse,
+)
 from ltspipe.runners.parser.main import main
 from tests.conftest import (
     mock_kafka_consumer_builder,
     mock_kafka_producer_builder,
     mock_multiprocessing_dict,
-    mock_requests_get,
+    mock_requests,
     TEST_COMPETITION_CODE,
 )
 from tests.helpers import load_raw_message
@@ -234,7 +239,7 @@ def test_main(
             unknowns_path=tmp_path,
         )
 
-        _apply_mock_api(mocker)
+        _apply_mock_api(mocker, API_LTS)
         mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
         mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
         mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)
@@ -267,35 +272,62 @@ def _msg_to_dict(raw: List[Message]) -> List[dict]:
     return [x.dict(exclude=EXCLUDED_KEYS) for x in raw]
 
 
-def _apply_mock_api(mocker: MockerFixture) -> None:
-    """Apply mock to API."""
-    first_response = {
-        'id': 1,
-        'track': {
+def _mock_response_get_competition_info(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content={
             'id': 1,
-            'name': 'Karting North',
+            'track': {
+                'id': 1,
+                'name': 'Karting North',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            'competition_code': TEST_COMPETITION_CODE,
+            'name': 'Sample competition',
+            'description': 'Endurance in Karting North',
             'insert_date': '2023-04-15T21:43:26',
             'update_date': '2023-04-15T21:43:26',
         },
-        'competition_code': 'north-endurance-2023-02-26',
-        'name': 'Endurance North 26-02-2023',
-        'description': 'Endurance in Karting North',
-        'insert_date': '2023-04-15T21:43:26',
-        'update_date': '2023-04-15T21:43:26',
-    }
-    second_response = [
-        {
-            'name': ParserSettings.TIMING_NAME,
-            'value': 'sample-name',
-            'insert_date': '2023-04-15T21:43:26',
-            'update_date': '2023-04-15T21:43:26',
-        },
-        {
-            'name': ParserSettings.TIMING_RANKING,
-            'value': 'sample-ranking',
-            'insert_date': '2023-04-15T21:43:26',
-            'update_date': '2023-04-15T21:43:26',
-        },
-    ]
-    responses = [first_response, second_response]
-    mock_requests_get(mocker, responses=responses)
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/competitions/filter/code/{TEST_COMPETITION_CODE}',
+        method=MapRequestMethod.GET,
+        responses=[response],
+    )
+    return [item]
+
+
+def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content=[
+            {
+                'name': ParserSettings.TIMING_NAME.value,
+                'value': 'timing-name-value',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_RANKING.value,
+                'value': 'timing-ranking-value',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+        ],
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/competitions/1/parsers/settings',
+        method=MapRequestMethod.GET,
+        responses=[response],
+    )
+    return [item]
+
+
+def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
+    """Apply mock to API."""
+    api_url = api_url.strip('/')
+    requests_map = (
+        _mock_response_get_competition_info(api_url)
+        + _mock_response_get_parser_settings(api_url))
+    mock_requests(mocker, requests_map=requests_map)

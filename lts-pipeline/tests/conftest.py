@@ -6,7 +6,6 @@ from ltspipe.steps.listeners import WebsocketListenerStep
 from tests.fixtures import *  # noqa: F401, F403
 from tests.mocks.kafka import MockKafkaConsumer, MockKafkaProducer
 from tests.mocks.requests import (
-    MockResponse,
     MapRequests,
     MapRequestItem,
 )
@@ -68,14 +67,6 @@ def mock_requests(
         'requests.post',
         new=lambda url, *args, **kwargs: mapper.post(url))  # noqa: U100
     return mapper
-
-
-def mock_requests_get(mocker: MockerFixture, responses: list) -> List[dict]:
-    """Mock get method of requests library."""
-    mocker.patch(
-        'requests.get',
-        side_effect=[MockResponse(r) for r in responses])
-    return responses
 
 
 def mock_websocket_builder(
