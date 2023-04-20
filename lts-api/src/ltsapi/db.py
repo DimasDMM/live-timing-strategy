@@ -101,7 +101,7 @@ class SingleDBContext(DBContext):
             database: Optional[str],
             logger: Logger) -> Any:
         """Create singleton."""
-        if cls._instance is None:
+        if not hasattr(cls, '_instance') or cls._instance is None:
             logger.info('Create singleton of database connection')
             cls._instance = DBContext(
                 host=host,

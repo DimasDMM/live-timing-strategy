@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from ltsapi.models import BaseModel
 
@@ -23,4 +22,4 @@ class GetParserSetting(BaseModel):
 class UpdateParserSetting(BaseModel):
     """Data to update the value of a setting."""
 
-    value: Optional[str]
+    value: str

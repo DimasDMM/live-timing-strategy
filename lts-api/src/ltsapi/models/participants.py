@@ -34,12 +34,12 @@ class GetDriver(BaseModel):
 class UpdateDriver(BaseModel):
     """Update the data of a driver."""
 
-    participant_code: Optional[str]
-    name: Optional[str]
+    participant_code: str
+    name: str
     number: Optional[int]
-    total_driving_time: Optional[int]
-    partial_driving_time: Optional[int]
-    reference_time_offset: Optional[int]
+    total_driving_time: int
+    partial_driving_time: int
+    reference_time_offset: int
 
 
 class AddTeam(BaseModel):
@@ -68,7 +68,7 @@ class GetTeam(BaseModel):
 class UpdateTeam(BaseModel):
     """Update the data of a team."""
 
-    participant_code: Optional[str]
-    name: Optional[str]
+    participant_code: str
+    name: str
     number: Optional[int]
-    reference_time_offset: Optional[int]
+    reference_time_offset: int

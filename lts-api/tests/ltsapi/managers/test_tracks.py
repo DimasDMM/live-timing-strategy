@@ -7,11 +7,11 @@ from ltsapi.models.tracks import (
     UpdateTrack,
 )
 from ltsapi.managers.tracks import TracksManager
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
-class TestTracksManager(DatabaseTestInit):
+class TestTracksManager(DatabaseTest):
     """Test class ltsapi.managers.tracks.TracksManager."""
 
     EXCLUDED_KEYS = {
@@ -94,17 +94,8 @@ class TestTracksManager(DatabaseTestInit):
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
-        'track_id, update_data, expected_item, is_updated',
+        'track_id, update_data, expected_item',
         [
-            (
-                2,  # track_id
-                UpdateTrack(name=None),
-                {
-                    'id': 2,
-                    'name': 'Karting South',
-                },
-                False,  # is_updated
-            ),
             (
                 2,  # track_id
                 UpdateTrack(name='Karting South Updated'),
@@ -112,7 +103,6 @@ class TestTracksManager(DatabaseTestInit):
                     'id': 2,
                     'name': 'Karting South Updated',
                 },
-                True,  # is_updated
             ),
         ])
     def test_update_by_id(
@@ -120,7 +110,6 @@ class TestTracksManager(DatabaseTestInit):
             track_id: int,
             update_data: UpdateTrack,
             expected_item: dict,
-            is_updated: bool,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
@@ -138,7 +127,4 @@ class TestTracksManager(DatabaseTestInit):
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
-        if is_updated:
-            assert before_item.update_date < after_item.update_date
-        else:
-            assert before_item.update_date == after_item.update_date
+        assert before_item.update_date < after_item.update_date

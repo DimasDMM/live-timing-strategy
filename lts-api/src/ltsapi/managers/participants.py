@@ -207,7 +207,14 @@ class DriversManager:
                 self._db,
                 TimingManager.HISTORY_TABLE,
                 initial_data,
-                commit=commit)
+                commit=False)
+
+        if commit:
+            try:
+                self._db.commit()
+            except Exception as e:
+                self._db.rollback()
+                raise e
 
         return item_id
 

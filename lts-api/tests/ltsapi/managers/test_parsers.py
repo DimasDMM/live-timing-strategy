@@ -7,11 +7,11 @@ from ltsapi.models.parsers import (
     UpdateParserSetting,
 )
 from ltsapi.managers.parsers import ParsersSettingsManager
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
-class TestParsersSettingsManager(DatabaseTestInit):
+class TestParsersSettingsManager(DatabaseTest):
     """Test class ltsapi.managers.parsers.ParsersSettingsManager."""
 
     EXCLUDED_KEYS = {
@@ -23,11 +23,11 @@ class TestParsersSettingsManager(DatabaseTestInit):
         'setting_name, competition_id, expected_item',
         [
             (
-                'sample-setting-1',  # setting_name
+                'timing-gap',  # setting_name
                 2,  # competition_id
                 {
-                    'name': 'sample-setting-1',
-                    'value': 'sample-value-1',
+                    'name': 'timing-gap',
+                    'value': 'timing-gap-value',
                 },
             ),
         ])
@@ -54,12 +54,12 @@ class TestParsersSettingsManager(DatabaseTestInit):
                 2,  # competition_id
                 [
                     {
-                        'name': 'sample-setting-1',
-                        'value': 'sample-value-1',
+                        'name': 'timing-best-time',
+                        'value': 'timing-best-time-value',
                     },
                     {
-                        'name': 'sample-setting-2',
-                        'value': 'sample-value-2',
+                        'name': 'timing-gap',
+                        'value': 'timing-gap-value',
                     },
                 ],
             ),
@@ -82,12 +82,12 @@ class TestParsersSettingsManager(DatabaseTestInit):
             (
                 2,  # competition_id
                 AddParserSetting(
-                    name='new-name',
-                    value='new-value',
+                    name='timing-ranking',
+                    value='timing-ranking-value',
                 ),
                 {
-                    'name': 'new-name',
-                    'value': 'new-value',
+                    'name': 'timing-ranking',
+                    'value': 'timing-ranking-value',
                 },
             ),
         ])
@@ -109,31 +109,18 @@ class TestParsersSettingsManager(DatabaseTestInit):
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
-        'competition_id, setting_name, update_data, expected_item, is_updated',
+        'competition_id, setting_name, update_data, expected_item',
         [
             (
                 2,  # competition_id
-                'sample-setting-1',  # setting_name
+                'timing-gap',  # setting_name
                 UpdateParserSetting(
-                    value=None,
+                    value='timing-gap-value-updated',
                 ),
                 {
-                    'name': 'sample-setting-1',
-                    'value': 'sample-value-1',
+                    'name': 'timing-gap',
+                    'value': 'timing-gap-value-updated',
                 },
-                False,  # is_updated
-            ),
-            (
-                2,  # competition_id
-                'sample-setting-1',  # setting_name
-                UpdateParserSetting(
-                    value='sample-value-1-updated',
-                ),
-                {
-                    'name': 'sample-setting-1',
-                    'value': 'sample-value-1-updated',
-                },
-                True,  # is_updated
             ),
         ])
     def test_update_by_name(
@@ -142,7 +129,6 @@ class TestParsersSettingsManager(DatabaseTestInit):
             setting_name: str,
             update_data: UpdateParserSetting,
             expected_item: dict,
-            is_updated: bool,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method update_by_name."""
@@ -165,10 +151,7 @@ class TestParsersSettingsManager(DatabaseTestInit):
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
-        if is_updated:
-            assert before_item.update_date < after_item.update_date
-        else:
-            assert before_item.update_date == after_item.update_date
+        assert before_item.update_date < after_item.update_date
 
     @pytest.mark.parametrize(
         'competition_id',

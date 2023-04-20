@@ -21,7 +21,7 @@ def insert_model(
     Returns:
         int | None: ID of inserted model.
     """
-    fields = {k: v for k, v in model.items()}
+    fields = {k: v for k, v in model.items() if v is not None}
     headers, params = list(fields.keys()), list(fields.values())
     placeholders = ', '.join(['%s'] * len(headers))
     stmt_head = ', '.join([f'`{h}`' for h in headers])
@@ -46,7 +46,7 @@ def update_model(
         key_value: Union[int, str, list],
         commit: bool = True) -> None:
     """Update the model in the database (as a dictionary)."""
-    fields = {k: v for k, v in model.items() if v is not None}
+    fields = {k: v for k, v in model.items()}
     stmt_fields, params = list(fields.keys()), list(fields.values())
     stmt_fields = [f'`{field}` = %s' for field in stmt_fields]
 

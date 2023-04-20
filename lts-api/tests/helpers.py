@@ -2,10 +2,10 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 import os
 import pathlib
-from typing import Tuple
+from typing import Any, Tuple
 
 
-class DatabaseTestInit:
+class DatabaseTest:
     """
     Initialize a database to run the unit tests.
 
@@ -14,46 +14,29 @@ class DatabaseTestInit:
     """
 
     DATABASE_NAME = os.environ.get('DB_DATABASE')
-    INIT_DATA_FILE = os.path.join('data', 'init.sql')
-    SAMPLE_DATA_FILE = os.path.join('data', 'sample.sql')
-    SCHEMA_FILE = os.path.join('data', 'schema.sql')
+    INIT_DATA_FILE = 'data/init.sql'
+    SAMPLE_DATA_FILE = 'data/sample.sql'
+    SCHEMA_FILE = 'data/schema.sql'
 
-    def setup_method(self) -> None:
-        """Set up a database."""
-        # Connect to MySQL and create a database
-        cnx, cursor = self._build_db_connection()
-        self._drop_database(cursor)
-        self._create_database(cursor)
-        cnx.commit()
+    def setup_method(self, method: Any) -> None:  # noqa: U100
+        """Set up."""
+        DatabaseTest.reset_database()
 
-        # Create schema and import sample data
-        try:
-            self._import_sql_file(
-                cursor, self.SCHEMA_FILE)
-            cnx.commit()
+    def teardown_method(self, method: Any) -> None:  # noqa: U100
+        """Reset state of the database."""
+        pass
 
-            self._import_sql_file(
-                cursor, self.INIT_DATA_FILE)
-            self._import_sql_file(
-                cursor, self.SAMPLE_DATA_FILE)
-            cnx.commit()
-        except Exception as e:
-            self._drop_database(cursor)
-            cnx.commit()
-            raise e
-
-        # Close connection
+    @staticmethod
+    def reset_database() -> None:
+        """Reset (remove and create) the database."""
+        cnx, cursor = DatabaseTest._build_db_connection()
+        DatabaseTest._drop_database(cnx, cursor)
+        DatabaseTest._init_database(cnx, cursor)
         cursor.close()
         cnx.close()
 
-    def teardown_method(self) -> None:
-        """Remove a database."""
-        cnx, cursor = self._build_db_connection()
-        self._drop_database(cursor)
-        cursor.close()
-        cnx.close()
-
-    def _build_db_connection(self) -> Tuple[MySQLConnection, MySQLCursor]:
+    @staticmethod
+    def _build_db_connection() -> Tuple[MySQLConnection, MySQLCursor]:
         """Build connection with the database."""
         cnx = MySQLConnection(
             host=os.environ.get('DB_HOST', None),
@@ -65,12 +48,8 @@ class DatabaseTestInit:
         cursor.execute('SET NAMES "utf8";')
         return cnx, cursor
 
-    def _create_database(self, cursor: MySQLCursor) -> None:
-        """Create a database and select it."""
-        cursor.execute(f'CREATE DATABASE `{self.DATABASE_NAME}`')
-        cursor.execute(f'USE `{self.DATABASE_NAME}`')
-
-    def _import_sql_file(self, cursor: MySQLCursor, filepath: str) -> None:
+    @staticmethod
+    def _import_sql_file(cursor: MySQLCursor, filepath: str) -> None:
         """Initialize the schema and some sample data."""
         filepath = os.path.join(pathlib.Path().resolve(), filepath)
         with open(filepath, 'r', encoding='UTF-8') as fp:
@@ -79,6 +58,31 @@ class DatabaseTestInit:
             for s in statements:
                 cursor.execute(s)
 
-    def _drop_database(self, cursor: MySQLCursor) -> None:
+    @staticmethod
+    def _drop_database(cnx: MySQLConnection, cursor: MySQLCursor) -> None:
         """Run the statement to remove a database."""
-        cursor.execute(f'DROP DATABASE IF EXISTS `{self.DATABASE_NAME}`')
+        cursor.execute(
+            f'DROP DATABASE IF EXISTS `{DatabaseTest.DATABASE_NAME}`')
+        cnx.commit()
+
+    @staticmethod
+    def _init_database(cnx: MySQLConnection, cursor: MySQLCursor) -> None:
+        """Initialize a database and some sample content."""
+        try:
+            cursor.execute(f'CREATE DATABASE `{DatabaseTest.DATABASE_NAME}`')
+            cursor.execute(f'USE `{DatabaseTest.DATABASE_NAME}`')
+            cnx.commit()
+
+            DatabaseTest._import_sql_file(
+                cursor, DatabaseTest.SCHEMA_FILE)
+            cnx.commit()
+
+            DatabaseTest._import_sql_file(
+                cursor, DatabaseTest.INIT_DATA_FILE)
+            DatabaseTest._import_sql_file(
+                cursor, DatabaseTest.SAMPLE_DATA_FILE)
+            cnx.commit()
+        except Exception as e:
+            DatabaseTest._drop_database(cnx, cursor)
+            cnx.commit()
+            raise e

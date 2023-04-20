@@ -13,11 +13,11 @@ from ltsapi.models.participants import (
 )
 from ltsapi.managers.participants import DriversManager, TeamsManager
 from ltsapi.managers.timing import TimingManager
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
-class TestDriversManager(DatabaseTestInit):
+class TestDriversManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.DriversManager."""
 
     EXCLUDED_KEYS = {
@@ -438,35 +438,13 @@ class TestDriversManager(DatabaseTestInit):
                 1,  # team_id
                 1,  # competition_id
                 UpdateDriver(
-                    participant_code=None,
-                    name=None,
-                    number=None,
-                    total_driving_time=79000,
-                    partial_driving_time=80000,
-                    reference_time_offset=81000),
-                {
-                    'id': 2,
-                    'team_id': 1,
-                    'competition_id': 1,
-                    'participant_code': 'team-1',
-                    'name': 'CKM 1 Driver 2',
-                    'number': 41,
-                    'total_driving_time': 79000,
-                    'partial_driving_time': 80000,
-                    'reference_time_offset': 81000,
-                },
-            ),
-            (
-                2,  # driver_id
-                1,  # team_id
-                1,  # competition_id
-                UpdateDriver(
                     participant_code='team-1-updated',
                     name='CKM 1 Driver 2 Updated',
                     number=51,
                     total_driving_time=79000,
                     partial_driving_time=80000,
-                    reference_time_offset=81000),
+                    reference_time_offset=81000,
+                ),
                 {
                     'id': 2,
                     'team_id': 1,
@@ -507,7 +485,7 @@ class TestDriversManager(DatabaseTestInit):
         assert before_item.update_date < after_item.update_date
 
 
-class TestTeamsManager(DatabaseTestInit):
+class TestTeamsManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.TeamsManager."""
 
     EXCLUDED_KEYS = {
@@ -765,26 +743,6 @@ class TestTeamsManager(DatabaseTestInit):
     @pytest.mark.parametrize(
         'team_id, competition_id, update_data, expected_item',
         [
-            (
-                2,  # team_id
-                1,  # competition_id
-                UpdateTeam(
-                    id=2,
-                    name=None,
-                    participant_code=None,
-                    number=None,
-                    reference_time_offset=78000,
-                ),
-                {
-                    'id': 2,
-                    'competition_id': 1,
-                    'participant_code': 'team-2',
-                    'name': 'CKM 2',
-                    'number': 42,
-                    'reference_time_offset': 78000,
-                    'drivers': [],
-                },
-            ),
             (
                 2,  # team_id
                 1,  # competition_id

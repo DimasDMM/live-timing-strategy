@@ -2,7 +2,7 @@ import os
 import pytest
 
 from ltsapi.db import DBContext
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
@@ -20,7 +20,7 @@ def db_context() -> DBContext:
         port=os.environ.get('DB_PORT', None),
         user=os.environ.get('DB_USER', None),
         password=os.environ.get('DB_PASS', None),
-        database=DatabaseTestInit.DATABASE_NAME,
+        database=DatabaseTest.DATABASE_NAME,
         logger=FakeLogger(),
     )
     with db:

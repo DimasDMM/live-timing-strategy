@@ -10,11 +10,11 @@ from ltsapi.models.enum import (
     LengthUnit,
 )
 from ltsapi.models.timing import UpdateLapTime
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
-class TestTimingManager(DatabaseTestInit):
+class TestTimingManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.TimingManager."""
 
     EXCLUDED_KEYS = {
@@ -247,58 +247,24 @@ class TestTimingManager(DatabaseTestInit):
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
-        'competition_id, team_id, update_data, expected_item, is_updated',
+        'competition_id, team_id, update_data, expected_item',
         [
             (
                 2,  # competition_id
                 4,  # team_id
                 UpdateLapTime(
-                    driver_id=None,
-                    position=None,
-                    time=None,
-                    best_time=None,
-                    lap=None,
-                    interval=None,
-                    interval_unit=None,
-                    stage=None,
-                    pits=None,
-                    kart_status=None,
-                    fixed_kart_status=None,
-                    number_pits=None,
-                ),
-                {
-                    'team_id': 4,
-                    'driver_id': 5,
-                    'position': 1,
-                    'time': 58800,
-                    'best_time': 58800,
-                    'lap': 2,
-                    'interval': 0,
-                    'interval_unit': LengthUnit.MILLIS.value,
-                    'stage': CompetitionStage.RACE.value,
-                    'pits': 0,
-                    'kart_status': KartStatus.GOOD.value,
-                    'fixed_kart_status': None,
-                    'number_pits': 0,
-                },
-                False,  # is_updated
-            ),
-            (
-                2,  # competition_id
-                4,  # team_id
-                UpdateLapTime(
-                    driver_id=None,
-                    position=None,
-                    time=None,
+                    driver_id=5,
+                    position=1,
+                    time=58800,
                     best_time=58500,
-                    lap=None,
-                    interval=None,
-                    interval_unit=None,
-                    stage=None,
+                    lap=2,
+                    interval=0,
+                    interval_unit=LengthUnit.MILLIS,
+                    stage=CompetitionStage.RACE,
                     pits=None,
-                    kart_status=None,
+                    kart_status=KartStatus.GOOD,
                     fixed_kart_status=None,
-                    number_pits=None,
+                    number_pits=0,
                 ),
                 {
                     'team_id': 4,
@@ -310,12 +276,11 @@ class TestTimingManager(DatabaseTestInit):
                     'interval': 0,
                     'interval_unit': LengthUnit.MILLIS.value,
                     'stage': CompetitionStage.RACE.value,
-                    'pits': 0,
+                    'pits': None,
                     'kart_status': KartStatus.GOOD.value,
                     'fixed_kart_status': None,
                     'number_pits': 0,
                 },
-                True,  # is_updated
             ),
         ])
     def test_update_by_id(
@@ -324,7 +289,6 @@ class TestTimingManager(DatabaseTestInit):
             team_id: int,
             update_data: UpdateLapTime,
             expected_item: dict,
-            is_updated: bool,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
@@ -344,7 +308,4 @@ class TestTimingManager(DatabaseTestInit):
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
-        if is_updated:
-            assert before_item.update_date < after_item.update_date
-        else:
-            assert before_item.update_date == after_item.update_date
+        assert before_item.update_date < after_item.update_date

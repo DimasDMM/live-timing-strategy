@@ -19,11 +19,11 @@ from ltsapi.models.enum import (
     CompetitionStatus,
     LengthUnit,
 )
-from tests.helpers import DatabaseTestInit
+from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
 
-class TestCMetadataManager(DatabaseTestInit):
+class TestCMetadataManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CMetadataManager."""
 
     EXCLUDED_KEYS = {
@@ -107,37 +107,17 @@ class TestCMetadataManager(DatabaseTestInit):
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
-        'competition_id, update_data, expected_item, is_updated',
+        'competition_id, update_data, expected_item',
         [
             (
                 2,  # competition_id
                 UpdateCompetitionMetadata(
-                    reference_time=None,
-                    reference_current_offset=None,
-                    status=None,
-                    stage=None,
-                    remaining_length=None,
-                    remaining_length_unit=None,
-                ),
-                {
-                    'reference_time': 0,
-                    'reference_current_offset': 0,
-                    'status': CompetitionStatus.ONGOING.value,
-                    'stage': CompetitionStage.RACE.value,
-                    'remaining_length': 348,
-                    'remaining_length_unit': LengthUnit.LAPS.value,
-                },
-                False,  # is_updated
-            ),
-            (
-                2,  # competition_id
-                UpdateCompetitionMetadata(
-                    reference_time=None,
-                    reference_current_offset=None,
-                    status=None,
-                    stage=None,
+                    reference_time=0,
+                    reference_current_offset=0,
+                    status=CompetitionStatus.ONGOING,
+                    stage=CompetitionStage.RACE,
                     remaining_length=347,
-                    remaining_length_unit=None,
+                    remaining_length_unit=LengthUnit.LAPS,
                 ),
                 {
                     'reference_time': 0,
@@ -147,7 +127,6 @@ class TestCMetadataManager(DatabaseTestInit):
                     'remaining_length': 347,
                     'remaining_length_unit': LengthUnit.LAPS.value,
                 },
-                True,  # is_updated
             ),
         ])
     def test_update_by_id(
@@ -155,7 +134,6 @@ class TestCMetadataManager(DatabaseTestInit):
             competition_id: int,
             update_data: UpdateCompetitionMetadata,
             expected_item: dict,
-            is_updated: bool,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
@@ -173,13 +151,10 @@ class TestCMetadataManager(DatabaseTestInit):
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
-        if is_updated:
-            assert before_item.update_date < after_item.update_date
-        else:
-            assert before_item.update_date == after_item.update_date
+        assert before_item.update_date < after_item.update_date
 
 
-class TestCSettingsManager(DatabaseTestInit):
+class TestCSettingsManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CSettingsManager."""
 
     EXCLUDED_KEYS = {
@@ -216,29 +191,22 @@ class TestCSettingsManager(DatabaseTestInit):
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
-        'competition_id, update_data, expected_item, is_updated',
+        'competition_id, update_data, expected_item',
         [
             (
                 2,  # competition_id
-                UpdateCompetitionSettings(),
-                {
-                    'length': 320,
-                    'length_unit': LengthUnit.LAPS,
-                    'pit_time': 120000,
-                    'min_number_pits': 4,
-                },
-                False,  # is_updated
-            ),
-            (
-                2,  # competition_id
-                UpdateCompetitionSettings(length=321),
+                UpdateCompetitionSettings(
+                    length=321,
+                    length_unit=LengthUnit.LAPS,
+                    pit_time=120000,
+                    min_number_pits=3,
+                ),
                 {
                     'length': 321,
                     'length_unit': LengthUnit.LAPS,
                     'pit_time': 120000,
-                    'min_number_pits': 4,
+                    'min_number_pits': 3,
                 },
-                True,  # is_updated
             ),
         ])
     def test_update_by_id(
@@ -246,7 +214,6 @@ class TestCSettingsManager(DatabaseTestInit):
             competition_id: int,
             update_data: UpdateCompetitionSettings,
             expected_item: dict,
-            is_updated: bool,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method update_by_id."""
@@ -264,13 +231,10 @@ class TestCSettingsManager(DatabaseTestInit):
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
-        if is_updated:
-            assert before_item.update_date < after_item.update_date
-        else:
-            assert before_item.update_date == after_item.update_date
+        assert before_item.update_date < after_item.update_date
 
 
-class TestCompetitionsIndexManager(DatabaseTestInit):
+class TestCompetitionsIndexManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CompetitionsIndexManager."""
 
     ALL_COMPETITIONS = [

@@ -37,12 +37,12 @@ class GetCompetitionMetadata(BaseModel):
 class UpdateCompetitionMetadata(BaseModel):
     """Metadata of a competition."""
 
-    reference_time: Optional[int]
-    reference_current_offset: Optional[int]
-    status: Optional[CompetitionStatus]
-    stage: Optional[CompetitionStage]
-    remaining_length: Optional[int]
-    remaining_length_unit: Optional[LengthUnit]
+    reference_time: int
+    reference_current_offset: int
+    status: CompetitionStatus
+    stage: CompetitionStage
+    remaining_length: int
+    remaining_length_unit: LengthUnit
 
 
 class AddCompetitionSettings(BaseModel):
@@ -68,10 +68,10 @@ class GetCompetitionSettings(BaseModel):
 class UpdateCompetitionSettings(BaseModel):
     """Update the settings of a competition."""
 
-    length: Optional[int]
-    length_unit: Optional[LengthUnit]
+    length: int
+    length_unit: LengthUnit
     pit_time: Optional[int]
-    min_number_pits: Optional[int]
+    min_number_pits: int
 
 
 class AddCompetition(BaseModel):

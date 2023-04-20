@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from ltsapi.models import BaseModel
 
@@ -22,4 +21,4 @@ class GetTrack(BaseModel):
 class UpdateTrack(BaseModel):
     """Data to update a track."""
 
-    name: Optional[str]
+    name: str
