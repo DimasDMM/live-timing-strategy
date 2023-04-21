@@ -20,7 +20,7 @@ from tests.mocks.logging import FakeLogger
 class TestDriversManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.DriversManager."""
 
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
     }
@@ -141,7 +141,7 @@ class TestDriversManager(DatabaseTest):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_all."""
         manager = DriversManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_all()]
         expected_items = self.ALL_DRIVERS
         assert dict_items == expected_items
@@ -181,7 +181,7 @@ class TestDriversManager(DatabaseTest):
             driver_id, team_id=team_id, competition_id=competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -225,7 +225,7 @@ class TestDriversManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_by_team_id."""
         manager = DriversManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_by_team_id(team_id, competition_id)]
         assert dict_items == expected_items
 
@@ -268,7 +268,7 @@ class TestDriversManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
         manager = DriversManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_by_competition_id(competition_id)]
         assert dict_items == expected_items
 
@@ -309,7 +309,7 @@ class TestDriversManager(DatabaseTest):
             team_id=team_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -378,7 +378,7 @@ class TestDriversManager(DatabaseTest):
             item_id, team_id=team_id, competition_id=competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
         # Check that additional tables are filled too
@@ -478,7 +478,7 @@ class TestDriversManager(DatabaseTest):
 
         after_item = manager.get_by_id(driver_id, team_id, competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -488,7 +488,7 @@ class TestDriversManager(DatabaseTest):
 class TestTeamsManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.TeamsManager."""
 
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
     }
@@ -553,7 +553,7 @@ class TestTeamsManager(DatabaseTest):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_all."""
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_all()]
         expected_items = self.ALL_TEAMS
         assert dict_items == expected_items
@@ -586,7 +586,7 @@ class TestTeamsManager(DatabaseTest):
         db_item = manager.get_by_id(team_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -624,7 +624,7 @@ class TestTeamsManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_by_competition_id."""
         manager = TeamsManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_by_competition_id(competition_id)]
         assert dict_items == expected_items
 
@@ -657,7 +657,7 @@ class TestTeamsManager(DatabaseTest):
         db_item = manager.get_by_code(team_code, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -697,7 +697,7 @@ class TestTeamsManager(DatabaseTest):
         db_item = manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
         # Check that additional tables are filled too
@@ -783,7 +783,7 @@ class TestTeamsManager(DatabaseTest):
 
         after_item = manager.get_by_id(team_id, competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date

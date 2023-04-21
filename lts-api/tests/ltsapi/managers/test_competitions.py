@@ -26,7 +26,7 @@ from tests.mocks.logging import FakeLogger
 class TestCMetadataManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CMetadataManager."""
 
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
     }
@@ -58,7 +58,7 @@ class TestCMetadataManager(DatabaseTest):
         db_item = manager.get_current_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -102,7 +102,7 @@ class TestCMetadataManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_history_by_id."""
         manager = CMetadataManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_history_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -147,7 +147,7 @@ class TestCMetadataManager(DatabaseTest):
 
         after_item = manager.get_current_by_id(competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -157,7 +157,7 @@ class TestCMetadataManager(DatabaseTest):
 class TestCSettingsManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CSettingsManager."""
 
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
     }
@@ -187,7 +187,7 @@ class TestCSettingsManager(DatabaseTest):
         db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -227,7 +227,7 @@ class TestCSettingsManager(DatabaseTest):
 
         after_item = manager.get_by_id(competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -260,7 +260,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             'description': 'Endurance in Karting South',
         },
     ]
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
         'track': {'insert_date', 'update_date'},
@@ -270,7 +270,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_all."""
         manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_all()]
         assert dict_items == self.ALL_COMPETITIONS
 
@@ -300,7 +300,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
         db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -329,7 +329,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
         db_item = manager.get_by_code(competition_code)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -371,7 +371,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
         db_item = manager.get_by_id(item_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
         # Check that additional tables are filled too

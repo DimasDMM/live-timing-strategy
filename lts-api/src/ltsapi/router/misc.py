@@ -45,17 +45,24 @@ async def add_parser_setting(
     setting: AddParserSetting,
 ) -> GetParserSetting:
     """Add a new parser setting."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = ParsersSettingsManager(db=db, logger=_logger)
-        item_id = manager.add_one(
-            setting, competition_id=competition_id, commit=True)
-        if item_id is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = ParsersSettingsManager(db=db, logger=_logger)
+            item_id = manager.add_one(
+                setting, competition_id=competition_id, commit=True)
+            if item_id is None:
+                raise ApiError('No data was inserted or updated.')
+            item = manager.get_by_name(setting.name, competition_id=competition_id)
+            if item is None:
+                raise ApiError('It was not possible to locate the new data.')
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        item = manager.get_by_name(setting.name, competition_id=competition_id)
-        if item is None:
-            raise ApiError('It was not possible to locate the new data.')
-        return item
+    return item
 
 
 @router.delete(
@@ -125,16 +132,23 @@ async def get_all_tracks() -> List[GetTrack]:
         summary='Add a new track')
 async def add_track(track: AddTrack) -> GetTrack:
     """Add a new track."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = TracksManager(db=db, logger=_logger)
-        item_id = manager.add_one(track, commit=True)
-        if item_id is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = TracksManager(db=db, logger=_logger)
+            item_id = manager.add_one(track, commit=True)
+            if item_id is None:
+                raise ApiError('No data was inserted or updated.')
+            item = manager.get_by_id(item_id)
+            if item is None:
+                raise ApiError('It was not possible to locate the new data.')
+            return item
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        item = manager.get_by_id(item_id)
-        if item is None:
-            raise ApiError('It was not possible to locate the new data.')
-        return item
 
 
 @router.put(

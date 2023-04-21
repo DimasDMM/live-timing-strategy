@@ -17,7 +17,7 @@ from tests.mocks.logging import FakeLogger
 class TestTimingManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.TimingManager."""
 
-    EXCLUDED_KEYS = {
+    EXCLUDE = {
         'insert_date': True,
         'update_date': True,
     }
@@ -69,7 +69,7 @@ class TestTimingManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_current_all_by_id."""
         manager = TimingManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_current_all_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -132,7 +132,7 @@ class TestTimingManager(DatabaseTest):
             competition_id, team_id=team_id, driver_id=driver_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -242,7 +242,7 @@ class TestTimingManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_history_by_id."""
         manager = TimingManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDED_KEYS)
+        dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_history_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -304,7 +304,7 @@ class TestTimingManager(DatabaseTest):
         after_item = manager.get_current_single_by_id(
             competition_id, team_id=team_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDED_KEYS)
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date

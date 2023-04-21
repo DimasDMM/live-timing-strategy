@@ -70,7 +70,7 @@ async def get_competition_by_id(
 @router.get(
         path='/competitions/{competition_id}/metadata',  # noqa: FS003
         summary='Get the current metadata of a competition')
-async def get_current_competition_metadata_by_id(
+async def get_current_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> Union[GetCompetitionMetadata, Empty]:
     """Get the current metadata of a competition."""
@@ -84,7 +84,7 @@ async def get_current_competition_metadata_by_id(
 @router.put(
         path='/competitions/{competition_id}/metadata',  # noqa: FS003
         summary='Update the metadata of a competition')
-async def update_competition_metadata_by_id(
+async def update_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     metadata: UpdateCompetitionMetadata,
 ) -> GetCompetitionMetadata:
@@ -102,7 +102,7 @@ async def update_competition_metadata_by_id(
 @router.get(
         path='/competitions/{competition_id}/metadata/history',  # noqa: FS003
         summary='Get the history metadata of a competition')
-async def get_history_competition_metadata_by_id(
+async def get_history_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetCompetitionMetadata]:
     """Get the history metadata of a competition."""
@@ -115,7 +115,7 @@ async def get_history_competition_metadata_by_id(
 @router.get(
         path='/competitions/{competition_id}/settings',  # noqa: FS003
         summary='Get the settings of a competition')
-async def get_competition_settings_by_id(
+async def get_competition_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> Union[GetCompetitionSettings, Empty]:
     """Get the settings of a competition."""
@@ -129,7 +129,7 @@ async def get_competition_settings_by_id(
 @router.put(
         path='/competitions/{competition_id}/settings',  # noqa: FS003
         summary='Update the settings of a competition')
-async def update_competition_settings_by_id(
+async def update_competition_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     settings: UpdateCompetitionSettings,
 ) -> GetCompetitionSettings:

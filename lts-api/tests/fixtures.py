@@ -5,6 +5,8 @@ from ltsapi.db import DBContext
 from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
+TEST_COMPETITION_CODE = 'sample-code'
+
 
 @pytest.fixture
 def fake_logger() -> FakeLogger:
