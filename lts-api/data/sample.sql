@@ -38,12 +38,12 @@ INSERT INTO `participants_drivers`(`competition_id`, `team_id`, `participant_cod
   (1, 2, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),
   (1, 2, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
   -- Note that the team 3 does not have any driver yet
-  (2, 3, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
-  (2, 3, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0),
-  (2, 4, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),
-  (2, 4, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
-  (3, 5, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
-  (3, 5, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0);
+  (2, 4, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
+  (2, 4, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0),
+  (2, 5, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),
+  (2, 5, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
+  (3, 6, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
+  (3, 6, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0);
 
 INSERT INTO `timing_current`(`competition_id`, `team_id`, `driver_id`, `position`, `time`, `best_time`, `lap`, `interval`, `interval_unit`, `stage`, `pit_time`, `kart_status`, `fixed_kart_status`, `number_pits`) VALUES
   (1, 1, 1, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),

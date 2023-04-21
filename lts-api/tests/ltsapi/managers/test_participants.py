@@ -72,7 +72,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 5,
             'competition_id': 2,
-            'team_id': 3,
+            'team_id': 4,
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
@@ -83,7 +83,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 6,
             'competition_id': 2,
-            'team_id': 3,
+            'team_id': 4,
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
@@ -94,7 +94,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 7,
             'competition_id': 2,
-            'team_id': 4,
+            'team_id': 5,
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
@@ -105,7 +105,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 8,
             'competition_id': 2,
-            'team_id': 4,
+            'team_id': 5,
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
@@ -116,7 +116,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 9,
             'competition_id': 3,
-            'team_id': 5,
+            'team_id': 6,
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
@@ -127,7 +127,7 @@ class TestDriversManager(DatabaseTest):
         {
             'id': 10,
             'competition_id': 3,
-            'team_id': 5,
+            'team_id': 6,
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
@@ -238,7 +238,7 @@ class TestDriversManager(DatabaseTest):
                     {
                         'id': 9,
                         'competition_id': 3,
-                        'team_id': 5,
+                        'team_id': 6,
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 1',
                         'number': 41,
@@ -249,7 +249,7 @@ class TestDriversManager(DatabaseTest):
                     {
                         'id': 10,
                         'competition_id': 3,
-                        'team_id': 5,
+                        'team_id': 6,
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 2',
                         'number': 41,
@@ -402,7 +402,7 @@ class TestDriversManager(DatabaseTest):
         [
             (
                 2,  # competition_id
-                4,  # team_id
+                5,  # team_id
                 AddDriver(
                     participant_code='team-2',
                     name='CKM 2 Driver 1',
@@ -411,7 +411,7 @@ class TestDriversManager(DatabaseTest):
                     partial_driving_time=0,
                     reference_time_offset=0,
                 ),
-                'The driver "CKM 2 Driver 1" (team=4) already exists.',
+                'The driver "CKM 2 Driver 1" (team=5) already exists.',
             ),
         ])
     def test_add_one_duplicated_code(

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pydantic import BaseModel
 import pytest
-from typing import List, Type, Union
+from typing import Any, List, Type, Union
 
 from ltsapi.main import app
 from ltsapi.models.parsers import (
@@ -16,13 +16,7 @@ from ltsapi.models.tracks import (
     GetTrack,
     UpdateTrack,
 )
-from ltsapi.models.enum import (
-    CompetitionStage,
-    CompetitionStatus,
-    LengthUnit,
-)
 from ltsapi.models.responses import Empty, ErrorResponse
-from tests.fixtures import TEST_COMPETITION_CODE
 from tests.helpers import DatabaseTest
 
 
@@ -30,11 +24,7 @@ class TestMiscRouter(DatabaseTest):
     """Test endpoints of ltsapi.router.misc."""
 
     API = TestClient(app)
-    EXCLUDE = {
-        'track': {
-            'insert_date': True,
-            'update_date': True,
-        },
+    EXCLUDE: Any = {
         'insert_date': True,
         'update_date': True,
     }
@@ -75,22 +65,24 @@ class TestMiscRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_id}/parsers/settings."""
+        """Test GET /v1/competitions/<competition_id>/parsers/settings."""
         response: Response = self.API.get(
             f'/v1/competitions/{competition_id}/parsers/settings')
         assert response.status_code == expected_status_code, response
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
-            response_model = [expected_type(**x) for x in data]
-            response_dict = [x.dict(exclude=self.EXCLUDE)
-                             for x in response_model]
+            response_models = [expected_type(**x) for x in data]
+            response_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in response_models]
+            expected_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in expected_response]
+            assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
             response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == [x.dict(exclude=self.EXCLUDE)
-                                 for x in expected_response]
+            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
         ('competition_id, add_model, expected_status_code,'
@@ -129,12 +121,12 @@ class TestMiscRouter(DatabaseTest):
     def test_add_parser_setting(
             self,
             competition_id: int,
-            add_model: AddParserSetting,
+            add_model: BaseModel,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test POST /v1/competitions/{competition_id}/parsers/settings.
+        Test POST /v1/competitions/<competition_id>/parsers/settings.
         """
         response: Response = self.API.post(
             f'/v1/competitions/{competition_id}/parsers/settings',
@@ -167,10 +159,10 @@ class TestMiscRouter(DatabaseTest):
             self,
             competition_id: int,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test DELETE /v1/competitions/{competition_id}/parsers/settings.
+        Test DELETE /v1/competitions/<competition_id>/parsers/settings.
         """
         response: Response = self.API.delete(
             f'/v1/competitions/{competition_id}/parsers/settings')
@@ -210,10 +202,10 @@ class TestMiscRouter(DatabaseTest):
             competition_id: int,
             s_name: str,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/competitions/{competition_id}/parsers/settings/{s_name}.
+        Test GET /v1/competitions/<competition_id>/parsers/settings/<s_name>.
         """
         response: Response = self.API.get(
             f'/v1/competitions/{competition_id}/parsers/settings/{s_name}')
@@ -225,7 +217,7 @@ class TestMiscRouter(DatabaseTest):
         assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
 
     @pytest.mark.parametrize(
-        ('competition_id, s_name, add_model, expected_status_code,'
+        ('competition_id, s_name, update_model, expected_status_code,'
          'expected_response, expected_type'),
         [
             (
@@ -279,16 +271,16 @@ class TestMiscRouter(DatabaseTest):
             self,
             competition_id: int,
             s_name: str,
-            add_model: BaseModel,
+            update_model: BaseModel,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test PUT /v1/competitions/{competition_id}/parsers/settings/{s_name}.
+        Test PUT /v1/competitions/<competition_id>/parsers/settings/<s_name>.
         """
         response: Response = self.API.put(
             f'/v1/competitions/{competition_id}/parsers/settings/{s_name}',
-            json=add_model.dict())
+            json=update_model.dict())
         assert response.status_code == expected_status_code, response
 
         response_model = expected_type(**response.json())
@@ -329,15 +321,17 @@ class TestMiscRouter(DatabaseTest):
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
-            response_model = [expected_type(**x) for x in data]
-            response_dict = [x.dict(exclude=self.EXCLUDE)
-                             for x in response_model]
+            response_models = [expected_type(**x) for x in data]
+            response_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in response_models]
+            expected_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in expected_response]
+            assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
             response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == [x.dict(exclude=self.EXCLUDE)
-                                 for x in expected_response]
+            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
         ('add_model, expected_status_code,'
@@ -371,15 +365,13 @@ class TestMiscRouter(DatabaseTest):
         ])
     def test_add_track(
             self,
-            add_model: AddTrack,
+            add_model: BaseModel,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """
-        Test POST /v1/tracks.
-        """
+        """Test POST /v1/tracks."""
         response: Response = self.API.post(
-            f'/v1/tracks',
+            '/v1/tracks',
             json=add_model.dict())
         assert response.status_code == expected_status_code, response
 
@@ -423,13 +415,11 @@ class TestMiscRouter(DatabaseTest):
     def test_update_track(
             self,
             track_id: int,
-            update_model: UpdateTrack,
+            update_model: BaseModel,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """
-        Test POUT /v1/tracks/{track_id}.
-        """
+        """Test POST /v1/tracks/<track_id>."""
         response: Response = self.API.put(
             f'/v1/tracks/{track_id}',
             json=update_model.dict())

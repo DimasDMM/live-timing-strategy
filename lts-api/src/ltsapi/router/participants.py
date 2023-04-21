@@ -43,16 +43,23 @@ async def add_team_to_competition(
     team: AddTeam,
 ) -> GetTeam:
     """Add a new team."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = TeamsManager(db=db, logger=_logger)
-        item_id = manager.add_one(team, competition_id, commit=True)
-        if item_id is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = TeamsManager(db=db, logger=_logger)
+            item_id = manager.add_one(team, competition_id, commit=True)
+            if item_id is None:
+                raise ApiError('No data was inserted or updated.')
+            item = manager.get_by_id(team_id=item_id)
+            if item is None:
+                raise ApiError('It was not possible to locate the new data.')
+            return item
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        item = manager.get_by_id(team_id=item_id)
-        if item is None:
-            raise ApiError('It was not possible to locate the new data.')
-        return item
 
 
 @router.get(
@@ -79,15 +86,22 @@ async def update_team_by_id(
     team: UpdateTeam,
 ) -> GetTeam:
     """Update the data of a team."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = TeamsManager(db=db, logger=_logger)
-        manager.update_by_id(
-            team, team_id=team_id, competition_id=competition_id)
-        item = manager.get_by_id(team_id, competition_id)
-        if item is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = TeamsManager(db=db, logger=_logger)
+            manager.update_by_id(
+                team, team_id=team_id, competition_id=competition_id)
+            item = manager.get_by_id(team_id, competition_id)
+            if item is None:
+                raise ApiError('No data was inserted or updated.')
+            return item
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        return item
 
 
 @router.get(
@@ -113,23 +127,33 @@ async def add_team_driver(
     driver: AddDriver,
 ) -> GetDriver:
     """Add a new driver in the team."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = DriversManager(db=db, logger=_logger)
-        item_id = manager.add_one(
-            driver, competition_id=competition_id, team_id=team_id, commit=True)
-        if item_id is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = DriversManager(db=db, logger=_logger)
+            item_id = manager.add_one(
+                driver,
+                competition_id=competition_id,
+                team_id=team_id,
+                commit=True)
+            if item_id is None:
+                raise ApiError('No data was inserted or updated.')
+            item = manager.get_by_id(item_id)
+            if item is None:
+                raise ApiError('It was not possible to locate the new data.')
+            return item
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        item = manager.get_by_id(item_id)
-        if item is None:
-            raise ApiError('It was not possible to locate the new data.')
-        return item
 
 
 @router.get(
         path='/teams/{team_id}/drivers/{driver_id}',  # noqa: FS003
         summary='Get a driver of a team')
-async def get_team_driver_by_id(
+async def get_team_driver(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     team_id: Annotated[int, Path(description='ID of the team')],
     driver_id: Annotated[int, Path(description='ID of the driver')],
@@ -146,7 +170,7 @@ async def get_team_driver_by_id(
 @router.put(
         path='/teams/{team_id}/drivers/{driver_id}',  # noqa: FS003
         summary='Update a driver of a team')
-async def update_team_driver_by_id(
+async def update_team_driver(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     team_id: Annotated[int, Path(description='ID of the team')],
     driver_id: Annotated[int, Path(description='ID of the driver')],
@@ -168,7 +192,7 @@ async def update_team_driver_by_id(
 @router.get(
         path='/drivers',
         summary='Get all the drivers (w/wo team) in a competition')
-async def get_single_drivers_by_competition_id(
+async def get_all_drivers(
     competition_id: Annotated[int, Path(description='ID of the competition')],
 ) -> List[GetDriver]:
     """Get all drivers in a specific competition."""
@@ -186,17 +210,24 @@ async def add_single_driver(
     driver: AddDriver,
 ) -> GetDriver:
     """Add a new driver without team."""
-    db = _build_db_connection(_logger)
-    with db:
-        manager = DriversManager(db=db, logger=_logger)
-        item_id = manager.add_one(
-            driver, competition_id=competition_id, commit=True)
-        if item_id is None:
+    try:
+        db = _build_db_connection(_logger)
+        with db:
+            manager = DriversManager(db=db, logger=_logger)
+            item_id = manager.add_one(
+                driver, competition_id=competition_id, commit=True)
+            if item_id is None:
+                raise ApiError('No data was inserted or updated.')
+            item = manager.get_by_id(item_id)
+            if item is None:
+                raise ApiError('It was not possible to locate the new data.')
+            return item
+    except Exception as e:
+        _logger.critical(str(e), exc_info=e)
+        if isinstance(e, ApiError):
+            raise e
+        else:
             raise ApiError('No data was inserted or updated.')
-        item = manager.get_by_id(item_id)
-        if item is None:
-            raise ApiError('It was not possible to locate the new data.')
-        return item
 
 
 @router.get(

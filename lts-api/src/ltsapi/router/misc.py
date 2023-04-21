@@ -53,7 +53,8 @@ async def add_parser_setting(
                 setting, competition_id=competition_id, commit=True)
             if item_id is None:
                 raise ApiError('No data was inserted or updated.')
-            item = manager.get_by_name(setting.name, competition_id=competition_id)
+            item = manager.get_by_name(
+                setting.name, competition_id=competition_id)
             if item is None:
                 raise ApiError('It was not possible to locate the new data.')
     except Exception as e:

@@ -60,14 +60,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1",
+							"raw": "{{api_url}}/v1/competitions/2",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
 								"competitions",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -142,7 +142,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"reference_time\": null,\r\n    \"reference_current_offset\": null,\r\n    \"status\": null,\r\n    \"stage\": null,\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
+							"raw": "{\r\n    \"reference_time\": null,\r\n    \"reference_current_offset\": null,\r\n    \"status\": \"ongoing\",\r\n    \"stage\": \"qualifying\",\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -296,7 +296,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/sample-setting-2",
+							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/timing-gap",
 							"host": [
 								"{{api_url}}"
 							],
@@ -306,7 +306,7 @@
 								"2",
 								"parsers",
 								"settings",
-								"sample-setting-2"
+								"timing-gap"
 							]
 						}
 					},
@@ -319,7 +319,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"value\": \"sample-value-2-updated\"\r\n}",
+							"raw": "{\r\n    \"value\": \"timing-gap-value-updated\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -327,7 +327,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/sample-setting-2",
+							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/timing-gap",
 							"host": [
 								"{{api_url}}"
 							],
@@ -337,7 +337,7 @@
 								"2",
 								"parsers",
 								"settings",
-								"sample-setting-2"
+								"timing-gap"
 							]
 						}
 					},
@@ -427,14 +427,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams",
+							"raw": "{{api_url}}/v1/competitions/2/teams",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
 								"competitions",
-								"1",
+								"2",
 								"teams"
 							]
 						}
@@ -805,7 +805,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"driver_id\": 6,\r\n    \"position\": null,\r\n    \"time\": null,\r\n    \"best_time\": null,\r\n    \"lap\": 5,\r\n    \"interval\": null,\r\n    \"interval_unit\": null,\r\n    \"stage\": null,\r\n    \"pits\": null,\r\n    \"kart_status\": null,\r\n    \"fixed_kart_status\": null,\r\n    \"number_pits\": null\r\n}\r\n",
+							"raw": "{\r\n    \"driver_id\": 6,\r\n    \"position\": null,\r\n    \"time\": null,\r\n    \"best_time\": null,\r\n    \"lap\": 5,\r\n    \"interval\": null,\r\n    \"interval_unit\": null,\r\n    \"stage\": null,\r\n    \"pit_time\": null,\r\n    \"kart_status\": null,\r\n    \"fixed_kart_status\": null,\r\n    \"number_pits\": null\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from pydantic import BaseModel
 import pytest
-from typing import List, Type, Union
+from typing import Any, List, Type, Union
 
 from ltsapi.main import app
 from ltsapi.models.competitions import (
@@ -29,7 +29,7 @@ class TestCompetitionsRouter(DatabaseTest):
     """Test endpoints of ltsapi.router.competitions."""
 
     API = TestClient(app)
-    EXCLUDE = {
+    EXCLUDE: Any = {
         'track': {
             'insert_date': True,
             'update_date': True,
@@ -59,7 +59,7 @@ class TestCompetitionsRouter(DatabaseTest):
                 'id': 1,
                 'name': 'Karting North',
                 'insert_date': datetime.utcnow().timestamp(),
-                'update_date': '2023-04-21T09:37:11'
+                'update_date': datetime.utcnow().timestamp(),
             },
             competition_code='north-endurance-2023-03-25',
             name='Endurance North 25-03-2023',
@@ -90,7 +90,7 @@ class TestCompetitionsRouter(DatabaseTest):
 
         response_models = [GetCompetition(**x) for x in response.json()]
         assert ([x.dict(exclude=self.EXCLUDE) for x in response_models]
-                 == [x.dict(exclude=self.EXCLUDE) for x in self.COMPETITIONS])
+                == [x.dict(exclude=self.EXCLUDE) for x in self.COMPETITIONS])
 
     @pytest.mark.parametrize(
         ('add_model, expected_status_code,'
@@ -151,7 +151,7 @@ class TestCompetitionsRouter(DatabaseTest):
         ])
     def test_add_competition(
             self,
-            add_model: AddCompetition,
+            add_model: BaseModel,
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
@@ -160,8 +160,7 @@ class TestCompetitionsRouter(DatabaseTest):
             '/v1/competitions', json=add_model.dict())
         assert response.status_code == expected_status_code, response
 
-        cls = expected_response.__class__
-        response_model = cls.construct(**response.json())
+        response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
 
         assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
@@ -202,7 +201,7 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_id}."""
+        """Test GET /v1/competitions/<competition_id>."""
         response: Response = self.API.get(f'/v1/competitions/{competition_id}')
         assert response.status_code == expected_status_code, response
 
@@ -243,7 +242,7 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_id}/metadata."""
+        """Test GET /v1/competitions/<competition_id>/metadata."""
         response: Response = self.API.get(
             f'/v1/competitions/{competition_id}/metadata')
         assert response.status_code == expected_status_code, response
@@ -302,11 +301,11 @@ class TestCompetitionsRouter(DatabaseTest):
     def test_update_competition_metadata(
             self,
             competition_id: int,
-            update_model: UpdateCompetitionMetadata,
+            update_model: BaseModel,
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/competitions/{competition_id}/metadata."""
+        """Test PUT /v1/competitions/<competition_id>/metadata."""
         response: Response = self.API.put(
             f'/v1/competitions/{competition_id}/metadata',
             json=update_model.dict())
@@ -371,22 +370,24 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_id}/metadata/history."""
+        """Test GET /v1/competitions/<competition_id>/metadata/history."""
         response: Response = self.API.get(
             f'/v1/competitions/{competition_id}/metadata/history')
         assert response.status_code == expected_status_code, response
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
-            response_model = [expected_type(**x) for x in data]
-            response_dict = [x.dict(exclude=self.EXCLUDE)
-                             for x in response_model]
+            response_models = [expected_type(**x) for x in data]
+            response_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in response_models]
+            expected_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in expected_response]
+            assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
             response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == [x.dict(exclude=self.EXCLUDE)
-                                 for x in expected_response]
+            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
         ('competition_id, expected_status_code,'
@@ -416,9 +417,9 @@ class TestCompetitionsRouter(DatabaseTest):
             self,
             competition_id: int,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_id}/settings."""
+        """Test GET /v1/competitions/<competition_id>/settings."""
         response: Response = self.API.get(
             f'/v1/competitions/{competition_id}/settings')
         assert response.status_code == expected_status_code, response
@@ -471,20 +472,29 @@ class TestCompetitionsRouter(DatabaseTest):
     def test_update_competition_settings(
             self,
             competition_id: int,
-            update_model: UpdateCompetitionSettings,
+            update_model: BaseModel,
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/competitions/{competition_id}/settings."""
+        """Test PUT /v1/competitions/<competition_id>/settings."""
         response: Response = self.API.put(
             f'/v1/competitions/{competition_id}/settings',
             json=update_model.dict())
         assert response.status_code == expected_status_code, response
 
-        response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        if isinstance(expected_response, list):
+            data: list = response.json()  # type: ignore
+            response_models = [expected_type(**x) for x in data]
+            response_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in response_models]
+            expected_list = [x.dict(exclude=self.EXCLUDE)
+                             for x in expected_response]
+            assert response_list == expected_list
+        else:
+            response_model = expected_type(**response.json())
+            response_dict = response_model.dict(exclude=self.EXCLUDE)
+            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
         ('competition_code, expected_status_code,'
@@ -522,7 +532,7 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/{competition_code}."""
+        """Test GET /v1/competitions/filter/code/<competition_code>."""
         response: Response = self.API.get(
             f'/v1/competitions/filter/code/{competition_code}')
         assert response.status_code == expected_status_code, response
