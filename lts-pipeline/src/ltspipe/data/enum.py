@@ -34,6 +34,6 @@ class ParserSettings(str, EnumBase):
     TIMING_LAPS = 'timing-laps'
     TIMING_LAST_LAP_TIME = 'timing-last-lap-time'
     TIMING_NAME = 'timing-name'
+    TIMING_NUMBER_PITS = 'timing-number-pits'
     TIMING_PIT_TIME = 'timing-pit-time'
-    TIMING_PITS = 'timing-pits'
     TIMING_RANKING = 'timing-ranking'

@@ -50,12 +50,18 @@ class TestApiActionStep:
                 parsers_settings={},
                 participants={
                     'r5625': Participant(
-                        participant_code='r5625',
-                        ranking=1,
-                        kart_number=1,
-                        team_name='CKM 1',
-                        last_lap_time=65142,  # 1:05.142
                         best_time=64882,  # 1:04.882
+                        driver_name=None,
+                        gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                        interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                        kart_number=1,
+                        laps=5,
+                        last_lap_time=65142,  # 1:05.142
+                        number_pits=0,
+                        participant_code='r5625',
+                        pit_time=None,
+                        ranking=1,
+                        team_name='CKM 1',
                     ),
                 },
             ),
@@ -118,12 +124,14 @@ class TestParserSettingsGetterStep:
                     team_id=1,
                     participant_code='team-1',
                     name='CKM 1 Driver 1',
+                    number=41,
                 ),
                 Driver(
                     id=2,
                     team_id=1,
                     participant_code='team-1',
                     name='CKM 1 Driver 2',
+                    number=41,
                 ),
             ],
             teams=[
@@ -131,6 +139,7 @@ class TestParserSettingsGetterStep:
                     id=1,
                     participant_code='team-1',
                     name='CKM 1',
+                    number=41,
                 ),
             ],
             parser_settings={
@@ -251,7 +260,7 @@ class TestParserSettingsGetterStep:
                     'number': 41,
                     'total_driving_time': 0,
                     'partial_driving_time': 0,
-                    'reference_time_offset': 0,
+                    'reference_time_offset': None,
                     'insert_date': '2023-04-20T00:55:35',
                     'update_date': '2023-04-20T00:55:35',
                 },
@@ -264,7 +273,7 @@ class TestParserSettingsGetterStep:
                     'number': 41,
                     'total_driving_time': 0,
                     'partial_driving_time': 0,
-                    'reference_time_offset': 0,
+                    'reference_time_offset': None,
                     'insert_date': '2023-04-20T00:55:35',
                     'update_date': '2023-04-20T00:55:35',
                 },
@@ -287,7 +296,7 @@ class TestParserSettingsGetterStep:
                     'participant_code': 'team-1',
                     'name': 'CKM 1',
                     'number': 41,
-                    'reference_time_offset': 0,
+                    'reference_time_offset': None,
                     'drivers': [],
                     'insert_date': '2023-04-20T01:30:48',
                     'update_date': '2023-04-20T01:30:48',

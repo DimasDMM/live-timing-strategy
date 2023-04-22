@@ -28,7 +28,7 @@ class WsInitParser(Parser):
             'blp': ParserSettings.TIMING_BEST_TIME,
             'gap': ParserSettings.TIMING_GAP,
             'int': ParserSettings.TIMING_INTERVAL,
-            'pit': ParserSettings.TIMING_PITS,
+            'pit': ParserSettings.TIMING_NUMBER_PITS,
         },
         'by_name': {
             'equipo': ParserSettings.TIMING_NAME,
@@ -40,7 +40,7 @@ class WsInitParser(Parser):
             'intervalo': ParserSettings.TIMING_INTERVAL,
             'vueltas': ParserSettings.TIMING_LAPS,
             'tiempo en pit': ParserSettings.TIMING_PIT_TIME,
-            'pits': ParserSettings.TIMING_PITS,
+            'pits': ParserSettings.TIMING_NUMBER_PITS,
         },
     }
     FILTER_STAGES = {
@@ -196,14 +196,17 @@ class WsInitParser(Parser):
         """Remove HTML tags from a string."""
         return re.sub('<[^>]+>', '', text)
 
-    def _time_to_millis(self, lap_time: Optional[str]) -> Optional[int]:
+    def _time_to_millis(
+            self,
+            lap_time: Optional[str],
+            default: Optional[int] = None) -> Optional[int]:
         """Transform a lap time into milliseconds."""
         if lap_time is None:
-            return None
+            return default
         lap_time = lap_time.strip()
         match = re.search(self.REGEX_TIME, lap_time)
         if match is None:
-            return None
+            return default
         else:
             parts = [int(p) if p else 0 for p in match.groups()]
             return (parts[0] * 3600000
@@ -211,10 +214,17 @@ class WsInitParser(Parser):
                 + parts[2] * 1000
                 + parts[3])
 
-    def _parse_diff_lap(self, diff_lap: Optional[str]) -> Optional[DiffLap]:
+    def _parse_diff_lap(
+            self,
+            diff_lap: Optional[str],
+            default: Optional[int] = None) -> Optional[DiffLap]:
         """Parse the difference between laps."""
         if diff_lap is None:
-            return None
+            return DiffLap(
+                value=default,
+                unit=LengthUnit.MILLIS,
+            )
+
         diff_lap = diff_lap.strip()
         match_laps = re.search(
             r'^\+?(\d+) (?:vueltas?|laps?)$', diff_lap.lower())
@@ -224,7 +234,7 @@ class WsInitParser(Parser):
                 unit=LengthUnit.LAPS,
             )
 
-        diff_value = self._time_to_millis(diff_lap)
+        diff_value = self._time_to_millis(diff_lap, default=default)
         if diff_value is not None:
             return DiffLap(
                 value=diff_value,
@@ -233,9 +243,12 @@ class WsInitParser(Parser):
 
         return None
 
-    def _cast_number(self, value: Optional[str]) -> Optional[int]:
+    def _cast_number(
+            self,
+            value: Optional[str],
+            default: Optional[int] = None) -> Optional[int]:
         """Cast a string to int."""
-        return None if value is None else int(value)
+        return default if value is None else int(value)
 
     def _create_participant(
             self,
@@ -244,27 +257,33 @@ class WsInitParser(Parser):
             fields: Dict[ParserSettings, str]) -> Participant:
         """Create instance of participant."""
         return Participant(
-            participant_code=participant_code,
-            ranking=self._cast_number(ranking),
-            kart_number=self._cast_number(fields.get(
-                ParserSettings.TIMING_KART_NUMBER, None)),
-            team_name=fields.get(
-                ParserSettings.TIMING_NAME, None),
+            best_time=self._time_to_millis(
+                fields.get(ParserSettings.TIMING_BEST_TIME, None),
+                default=0),
             driver_name=None,
-            last_lap_time=self._time_to_millis(fields.get(
-                ParserSettings.TIMING_LAST_LAP_TIME, None)),
-            best_time=self._time_to_millis(fields.get(
-                ParserSettings.TIMING_BEST_TIME, None)),
-            gap=self._parse_diff_lap(fields.get(
-                ParserSettings.TIMING_GAP, None)),
-            interval=self._parse_diff_lap(fields.get(
-                ParserSettings.TIMING_INTERVAL, None)),
-            laps=self._cast_number(fields.get(
-                ParserSettings.TIMING_LAPS, None)),
-            pits=self._cast_number(fields.get(
-                ParserSettings.TIMING_PITS, None)),
-            pit_time=self._time_to_millis(fields.get(
-                ParserSettings.TIMING_PIT_TIME, None)),
+            gap=self._parse_diff_lap(
+                fields.get(ParserSettings.TIMING_GAP, None),
+                default=0),
+            interval=self._parse_diff_lap(
+                fields.get(ParserSettings.TIMING_INTERVAL, None),
+                default=0),
+            kart_number=self._cast_number(
+                fields.get(ParserSettings.TIMING_KART_NUMBER, None),
+                default=0),
+            laps=self._cast_number(
+                fields.get(ParserSettings.TIMING_LAPS, None),
+                default=0),
+            last_lap_time=self._time_to_millis(
+                fields.get(ParserSettings.TIMING_LAST_LAP_TIME, None),
+                default=0),
+            number_pits=self._cast_number(
+                fields.get(ParserSettings.TIMING_NUMBER_PITS, None),
+                default=0),
+            participant_code=participant_code,
+            ranking=self._cast_number(ranking, default=0),
+            team_name=fields.get(ParserSettings.TIMING_NAME, None),
+            pit_time=self._time_to_millis(
+                fields.get(ParserSettings.TIMING_PIT_TIME, None)),
         )
 
     def __get_by_key(

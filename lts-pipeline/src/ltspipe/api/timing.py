@@ -15,33 +15,31 @@ def update_timing_by_team(
         competition_id: int,
         team_id: int,
         driver_id: Optional[int],
-        position: Optional[int],
-        time: Optional[int],
-        best_time: Optional[int],
-        lap: Optional[int],
-        interval: Optional[DiffLap],
-        stage: Optional[CompetitionStage],
-        pits: Optional[int],
-        kart_status: Optional[KartStatus],
+        best_time: int,
         fixed_kart_status: Optional[KartStatus],
-        number_pits: Optional[int]) -> None:
+        interval: DiffLap,
+        kart_status: KartStatus,
+        lap: int,
+        number_pits: int,
+        pit_time: Optional[int],
+        position: int,
+        stage: CompetitionStage,
+        time: int) -> None:
     """Update timing data of a team."""
-    interval_value = None if interval is None else interval.value
-    interval_unit = None if interval is None else interval.unit.value
     data = {
-        'driver_id': driver_id,
-        'position': position,
-        'time': time,
         'best_time': best_time,
-        'lap': lap,
-        'interval': interval_value,
-        'interval_unit': interval_unit,
-        'stage': None if stage is None else stage.value,
-        'pits': pits,
-        'kart_status': None if kart_status is None else kart_status.value,
+        'driver_id': driver_id,
         'fixed_kart_status': (None if fixed_kart_status is None
                               else fixed_kart_status.value),
+        'kart_status': kart_status.value,
+        'interval': interval.value,
+        'interval_unit': interval.unit.value,
+        'lap': lap,
         'number_pits': number_pits,
+        'pit_time': pit_time,
+        'position': position,
+        'stage': stage.value,
+        'time': time,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/timing/team/{team_id}'
     r = requests.put(url=uri, json=data)

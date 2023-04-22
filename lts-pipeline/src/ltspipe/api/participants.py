@@ -120,7 +120,7 @@ def get_driver(
     if not response:
         return None
 
-    allowed_keys = {'id', 'participant_code', 'name', 'team_id'}
+    allowed_keys = {'id', 'participant_code', 'name', 'number', 'team_id'}
     response = {k: v for k, v in response.items() if k in allowed_keys}
     driver: Driver = Driver.from_dict(response)  # type: ignore
 
@@ -153,7 +153,7 @@ def get_team(
     if not response:
         return None
 
-    allowed_keys = {'id', 'participant_code', 'name'}
+    allowed_keys = {'id', 'participant_code', 'name', 'number'}
     response = {k: v for k, v in response.items() if k in allowed_keys}
     team: Team = Team.from_dict(response)  # type: ignore
 
@@ -188,7 +188,7 @@ def get_all_drivers(
 
     response: List[dict] = r.json()  # type: ignore
 
-    allowed_keys = {'id', 'participant_code', 'name', 'team_id'}
+    allowed_keys = {'id', 'participant_code', 'name', 'number', 'team_id'}
     drivers: List[Driver] = []
     for item in response:
         item = {k: v for k, v in item.items() if k in allowed_keys}
@@ -217,7 +217,7 @@ def get_all_teams(api_url: str, competition_id: int) -> List[Team]:
 
     response: List[dict] = r.json()  # type: ignore
 
-    allowed_keys = {'id', 'participant_code', 'name'}
+    allowed_keys = {'id', 'participant_code', 'name', 'number'}
     teams: List[Team] = []
     for item in response:
         item = {k: v for k, v in item.items() if k in allowed_keys}
@@ -230,13 +230,13 @@ def update_driver(
         api_url: str,
         competition_id: int,
         driver_id: int,
-        team_id: Optional[int] = None,
-        participant_code: Optional[str] = None,
-        name: Optional[str] = None,
-        number: Optional[int] = None,
-        total_driving_time: Optional[int] = None,
-        partial_driving_time: Optional[int] = None,
+        participant_code: str,
+        name: str,
+        number: int,
+        total_driving_time: int,
+        partial_driving_time: int,
         reference_time_offset: Optional[int] = None,
+        team_id: Optional[int] = None,
 ) -> int:
     """
     Update a driver.
@@ -245,13 +245,13 @@ def update_driver(
         api_url (str): Base URL of the API REST.
         competition_id (int): ID of the competition.
         driver_id (int): ID of the driver.
-        team_id (int | None): ID of the team if there is any.
-        participant_code (str | None): Code of the driver.
-        name (str | None): Name of the driver.
-        number (int | None): Number of the driver.
-        total_driving_time (int | None): Total driving time.
-        partial_driving_time (int | None): Partial driving time.
+        participant_code (str): Code of the driver.
+        name (str): Name of the driver.
+        number (int): Number of the driver.
+        total_driving_time (int): Total driving time.
+        partial_driving_time (int): Partial driving time.
         reference_time_offset (int | None): Offset of time reference.
+        team_id (int | None): ID of the team if there is any.
 
     Returns:
         int: ID of the new driver.
@@ -287,10 +287,10 @@ def update_team(
         api_url: str,
         competition_id: int,
         team_id: int,
-        participant_code: Optional[str] = None,
-        name: Optional[str] = None,
-        number: Optional[int] = None,
-        reference_time_offset: Optional[int] = None,
+        name: str,
+        number: int,
+        participant_code: str,
+        reference_time_offset: Optional[int],
 ) -> int:
     """
     Update a team.
@@ -299,9 +299,9 @@ def update_team(
         api_url (str): Base URL of the API REST.
         competition_id (int): ID of the competition.
         team_id (int): ID of the team.
-        participant_code (str | None): Code of the team.
-        name (str | None): Name of the team.
-        number (int | None): Number of the team.
+        participant_code (str): Code of the team.
+        name (str): Name of the team.
+        number (int): Number of the team.
         reference_time_offset (int | None): Offset of time reference.
 
     Returns:

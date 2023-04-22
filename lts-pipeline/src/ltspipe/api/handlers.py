@@ -16,12 +16,13 @@ from ltspipe.api.timing import update_timing_by_team
 from ltspipe.base import BaseModel
 from ltspipe.data.competitions import (
     CompetitionInfo,
+    CompetitionStage,
     Driver,
     InitialData,
     Participant,
     Team,
 )
-from ltspipe.data.enum import ParserSettings
+from ltspipe.data.enum import KartStatus, ParserSettings
 
 
 class ApiHandler(ABC):
@@ -58,8 +59,8 @@ class InitialDataHandler(ApiHandler):
         update_competition_metadata(
             api_url=self._api_url,
             competition_id=info.id,
-            reference_time=model.reference_time,
-            reference_current_offset=model.reference_current_offset,
+            reference_time=None,
+            reference_current_offset=None,
             status=model.status,
             stage=model.stage,
             remaining_length=model.remaining_length,
@@ -111,8 +112,8 @@ class InitialDataHandler(ApiHandler):
                     participant_code=participant.participant_code,
                     name=participant.driver_name,
                     number=participant.kart_number,
-                    total_driving_time=None,
-                    partial_driving_time=None,
+                    total_driving_time=0,
+                    partial_driving_time=0,
                     reference_time_offset=None,
                 )
                 driver.participant_code = participant.participant_code
@@ -135,6 +136,7 @@ class InitialDataHandler(ApiHandler):
                     participant_code=participant.participant_code,
                     name=participant.driver_name,
                     team_id=(None if team is None else team.id),
+                    number=participant.kart_number,
                 )
                 info.drivers.append(driver)
 
@@ -151,7 +153,7 @@ class InitialDataHandler(ApiHandler):
                     competition_id=info.id,  # type: ignore
                     team_id=team.id,
                     participant_code=participant.participant_code,
-                    name=participant.team_name,
+                    name=participant.team_name,  # type: ignore
                     number=participant.kart_number,
                     reference_time_offset=None,
                 )
@@ -173,6 +175,7 @@ class InitialDataHandler(ApiHandler):
                     id=p_id,
                     participant_code=participant.participant_code,
                     name=participant.team_name,
+                    number=participant.kart_number,
                 )
                 info.teams.append(team)
 
@@ -205,16 +208,16 @@ class InitialDataHandler(ApiHandler):
                 info.id,  # type: ignore
                 team_id=team.id,
                 driver_id=driver_id,
-                position=participant.ranking,
-                time=participant.last_lap_time,
                 best_time=participant.best_time,
-                lap=participant.laps,
-                interval=participant.interval,
-                stage=None,
-                pits=participant.pit_time,
-                kart_status=None,
                 fixed_kart_status=None,
-                number_pits=participant.pits,
+                interval=participant.interval,
+                kart_status=KartStatus.UNKNOWN,
+                lap=participant.laps,
+                number_pits=participant.number_pits,
+                pit_time=participant.pit_time,
+                position=participant.ranking,
+                stage=CompetitionStage.FREE_PRACTICE,  # TODO
+                time=participant.last_lap_time,
             )
 
     def _find_team_by_code(

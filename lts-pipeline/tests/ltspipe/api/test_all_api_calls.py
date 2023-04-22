@@ -42,32 +42,36 @@ class TestAllApiCalls(DatabaseTest):
     API_LTS = os.environ.get('API_LTS', '')
     PARTICIPANTS = [
         Participant(
-            participant_code='r5625',
-            ranking=1,
-            kart_number=41,
-            team_name='CKM 1',
-            driver_name='CKM 1 Driver 1',
-            last_lap_time=65142,  # 1:05.142
             best_time=64882,  # 1:04.882
-        ),
-        Participant(
-            participant_code='r5625',
-            ranking=1,
+            driver_name='CKM 1 Driver 1',
+            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
             kart_number=41,
+            laps=5,
+            last_lap_time=65142,  # 1:05.142
+            number_pits=0,
+            participant_code='r5625',
+            pit_time=None,
+            ranking=1,
             team_name='CKM 1',
-            driver_name='CKM 1 Driver 2',
-            last_lap_time=65460,  # 1:05.460
-            best_time=64890,  # 1:04.890
-            pits=1,
         ),
         Participant(
-            participant_code='r5626',
-            ranking=2,
-            kart_number=42,
-            team_name='CKM 2',
-            driver_name='CKM 2 Driver 1',
-            last_lap_time=65411,  # 1:05.411
+            best_time=64890,  # 1:04.890
+            driver_name='CKM 1 Driver 2',
+            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+            kart_number=41,
+            laps=5,
+            last_lap_time=65460,  # 1:05.460
+            number_pits=1,
+            participant_code='r5625',
+            pit_time=None,
+            ranking=1,
+            team_name='CKM 1',
+        ),
+        Participant(
             best_time=64941,  # 1:04.941
+            driver_name='CKM 2 Driver 1',
             gap=DiffLap(
                 value=1,  # 1 lap
                 unit=LengthUnit.LAPS.value,
@@ -76,8 +80,14 @@ class TestAllApiCalls(DatabaseTest):
                 value=12293,  # 12.293
                 unit=LengthUnit.MILLIS.value,
             ),
-            pits=2,
+            kart_number=42,
+            laps=5,
+            last_lap_time=65411,  # 1:05.411
+            number_pits=2,
+            participant_code='r5626',
             pit_time=54000,  # 54.
+            ranking=2,
+            team_name='CKM 2',
         ),
     ]
 
@@ -114,9 +124,14 @@ class TestAllApiCalls(DatabaseTest):
         update_driver(
             api_url=self.API_LTS,
             competition_id=competition_id,
-            team_id=driver.team_id,
             driver_id=driver.id,
+            participant_code=driver.participant_code,
             name=new_name,
+            number=driver.number,
+            partial_driving_time=0,
+            reference_time_offset=None,
+            total_driving_time=0,
+            team_id=driver.team_id,
         )
         updated_driver = get_driver(
             api_url=api_lts,
@@ -138,6 +153,9 @@ class TestAllApiCalls(DatabaseTest):
             competition_id=competition_id,
             team_id=team.id,
             name=new_name,
+            number=team.number,
+            participant_code=team.participant_code,
+            reference_time_offset=None,
         )
         updated_team = get_team(
             api_url=api_lts,
@@ -162,11 +180,14 @@ class TestAllApiCalls(DatabaseTest):
         participant_codes = set()
         expected_drivers: List[Driver] = []
         for p in expected_participants:
-            expected_drivers.append(Driver(
+            d = Driver(
                 id=0,
                 participant_code=p.participant_code,
                 name=p.driver_name,
-                team_id=code_to_team_id[p.participant_code]))
+                number=p.kart_number,
+                team_id=code_to_team_id[p.participant_code],
+            )
+            expected_drivers.append(d)
             participant_codes.add(p.participant_code)
 
         assert ([t.dict(exclude={'id': True}) for t in given_drivers]
@@ -186,10 +207,13 @@ class TestAllApiCalls(DatabaseTest):
         for p in expected_participants:
             if p.participant_code in participant_codes:
                 continue
-            expected_teams.append(Team(
+            t = Team(
                 id=0,
                 participant_code=p.participant_code,
-                name=p.team_name))
+                name=p.team_name,
+                number=p.kart_number,
+            )
+            expected_teams.append(t)
             participant_codes.add(p.participant_code)
 
         assert ([t.dict(exclude={'id': True}) for t in given_teams]
@@ -220,6 +244,7 @@ class TestAllApiCalls(DatabaseTest):
                 id=p_id,
                 participant_code=p_code,
                 name=participant.driver_name,
+                number=participant.kart_number,
             )
             info.drivers.append(driver)
 
@@ -246,6 +271,7 @@ class TestAllApiCalls(DatabaseTest):
                 id=p_id,
                 participant_code=participant.participant_code,
                 name=participant.team_name,
+                number=participant.kart_number,
             )
             info.teams.append(team)
             added_codes.add(p_code)

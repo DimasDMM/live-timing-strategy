@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, root_validator
 from typing import Dict, List, Optional
 
 from ltspipe.base import BaseModel, EnumBase
@@ -31,6 +31,7 @@ class Driver(DictModel):
     id: int
     participant_code: str
     name: str
+    number: int
     team_id: Optional[int]
 
     @classmethod
@@ -41,6 +42,7 @@ class Driver(DictModel):
             id=raw.get('id'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
+            number=raw.get('number'),
             team_id=raw.get('team_id', None),
         )
 
@@ -51,6 +53,7 @@ class Team(DictModel):
     id: int
     participant_code: str
     name: str
+    number: int
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -60,6 +63,7 @@ class Team(DictModel):
             id=raw.get('id'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
+            number=raw.get('number'),
         )
 
 
@@ -92,36 +96,45 @@ class DiffLap(DictModel):
 class Participant(DictModel):
     """Details of a participant."""
 
-    participant_code: str
+    best_time: int
+    gap: DiffLap
+    interval: DiffLap
     kart_number: int
-    ranking: Optional[int] = Field(default=None)
-    team_name: Optional[str] = Field(default=None)
+    laps: int
+    last_lap_time: int
+    number_pits: int
+    participant_code: str
+    ranking: int
     driver_name: Optional[str] = Field(default=None)
-    last_lap_time: Optional[int] = Field(default=None)
-    best_time: Optional[int] = Field(default=None)
-    gap: Optional[DiffLap] = Field(default=None)
-    interval: Optional[DiffLap] = Field(default=None)
-    laps: Optional[int] = Field(default=None)
-    pits: Optional[int] = Field(default=None)
+    team_name: Optional[str] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
+
+    @root_validator
+    def name_is_set(cls, values: dict) -> dict:  # noqa: N805, U100
+        """Validate that at least one name is set."""
+        driver_name = values.get('driver_name')
+        team_name = values.get('team_name')
+        if driver_name is None and team_name is None:
+            raise ValueError('Both driver and team name cannot be null.')
+        return values
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.construct(
-            participant_code=raw.get('participant_code'),
-            ranking=raw.get('ranking'),
-            kart_number=raw.get('kart_number'),
-            team_name=raw.get('team_name'),
-            driver_name=raw.get('driver_name'),
-            last_lap_time=raw.get('last_lap_time'),
             best_time=raw.get('best_time'),
-            gap=raw.get('gap'),
-            interval=raw.get('interval'),
+            driver_name=raw.get('driver_name'),
+            gap=DiffLap.from_dict(raw.get('gap')),  # type: ignore
+            kart_number=raw.get('kart_number'),
+            interval=DiffLap.from_dict(raw.get('interval')),  # type: ignore
             laps=raw.get('laps'),
-            pits=raw.get('pits'),
+            last_lap_time=raw.get('last_lap_time'),
+            number_pits=raw.get('number_pits'),
+            participant_code=raw.get('participant_code'),
             pit_time=raw.get('pit_time'),
+            ranking=raw.get('ranking'),
+            team_name=raw.get('team_name'),
         )
 
 

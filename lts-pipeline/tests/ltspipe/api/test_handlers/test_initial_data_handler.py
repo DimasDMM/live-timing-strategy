@@ -49,23 +49,22 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     participants={
                         'r5625': Participant(
-                            participant_code='r5625',
-                            ranking=1,
-                            kart_number=41,
-                            team_name='CKM 1',
-                            driver_name='CKM 1 Driver 1',
-                            last_lap_time=65460,  # 1:05.460
                             best_time=64890,  # 1:04.890
-                            pits=1,
+                            driver_name='CKM 1 Driver 1',
+                            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            kart_number=41,
+                            laps=5,
+                            last_lap_time=65460,  # 1:05.460
+                            number_pits=1,
+                            participant_code='r5625',
+                            pit_time=None,
+                            ranking=1,
+                            team_name='CKM 1',
                         ),
                         'r5626': Participant(
-                            participant_code='r5626',
-                            ranking=2,
-                            kart_number=42,
-                            team_name='CKM 2',
-                            driver_name='CKM 2 Driver 1',
-                            last_lap_time=65411,  # 1:05.411
                             best_time=64941,  # 1:04.941
+                            driver_name='CKM 2 Driver 1',
                             gap=DiffLap(
                                 value=1,  # 1 lap
                                 unit=LengthUnit.LAPS.value,
@@ -74,8 +73,14 @@ class TestInitialDataHandler(DatabaseTest):
                                 value=12293,  # 12.293
                                 unit=LengthUnit.MILLIS.value,
                             ),
-                            pits=2,
+                            kart_number=42,
+                            laps=5,
+                            last_lap_time=65411,  # 1:05.411
+                            number_pits=2,
+                            participant_code='r5626',
                             pit_time=54000,  # 54.
+                            ranking=2,
+                            team_name='CKM 2',
                         ),
                     },
                     parsers_settings={
@@ -87,7 +92,7 @@ class TestInitialDataHandler(DatabaseTest):
                         ParserSettings.TIMING_GAP: 'c8',
                         ParserSettings.TIMING_INTERVAL: 'c9',
                         ParserSettings.TIMING_PIT_TIME: 'c10',
-                        ParserSettings.TIMING_PITS: 'c11',
+                        ParserSettings.TIMING_NUMBER_PITS: 'c11',
                     },
                 ),
                 InitialData(  # initial_data_2
@@ -102,26 +107,46 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     participants={
                         'r5625': Participant(
-                            participant_code='r5625',
-                            ranking=1,
-                            kart_number=41,
-                            team_name='CKM 1',
+                            best_time=51000,
                             driver_name='CKM 1 Driver 1',
-                            pits=2,
+                            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            kart_number=41,
+                            laps=3,
+                            last_lap_time=61000,
+                            number_pits=2,
+                            participant_code='r5625',
+                            pit_time=0,
+                            ranking=1,
+                            team_name='CKM 1',
                         ),
                         'r5626': Participant(
-                            participant_code='r5626',
-                            ranking=2,
-                            kart_number=42,
-                            team_name='CKM 2',
+                            best_time=52000,
                             driver_name='CKM 2 Driver 2 New',
+                            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            kart_number=42,
+                            laps=3,
+                            last_lap_time=62000,
+                            number_pits=0,
+                            participant_code='r5626',
+                            pit_time=0,
+                            ranking=2,
+                            team_name='CKM 2',
                         ),
                         'r5627': Participant(
-                            participant_code='r5627',
-                            ranking=3,
-                            kart_number=43,
-                            team_name='CKM 3',
+                            best_time=53000,
                             driver_name=None,
+                            gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                            kart_number=43,
+                            laps=3,
+                            last_lap_time=63000,
+                            number_pits=0,
+                            participant_code='r5627',
+                            pit_time=0,
+                            ranking=3,
+                            team_name='CKM 3',
                         ),
                     },
                 ),
@@ -130,11 +155,13 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         participant_code='r5625',
                         name='CKM 1',
+                        number=41,
                     ),
                     Team(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2',
+                        number=42,
                     ),
                 ],
                 [  # expected_teams_2
@@ -142,16 +169,19 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         participant_code='r5625',
                         name='CKM 1',
+                        number=41,
                     ),
                     Team(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2',
+                        number=42,
                     ),
                     Team(
                         id=0,
                         participant_code='r5627',
                         name='CKM 3',
+                        number=43,
                     ),
                 ],
                 [  # expected_drivers_1
@@ -159,11 +189,13 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
+                        number=41,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
+                        number=42,
                     ),
                 ],
                 [  # expected_drivers_2
@@ -171,16 +203,19 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
+                        number=41,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
+                        number=42,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 2 New',
+                        number=42,
                     ),
                 ],
                 {  # expected_settings_1
@@ -192,7 +227,7 @@ class TestInitialDataHandler(DatabaseTest):
                     ParserSettings.TIMING_GAP: 'c8',
                     ParserSettings.TIMING_INTERVAL: 'c9',
                     ParserSettings.TIMING_PIT_TIME: 'c10',
-                    ParserSettings.TIMING_PITS: 'c11',
+                    ParserSettings.TIMING_NUMBER_PITS: 'c11',
                 },
                 {},  # expected_settings_2
             ),
@@ -250,6 +285,8 @@ class TestInitialDataHandler(DatabaseTest):
         }
         initial_data = InitialData(
             competition_code=TEST_COMPETITION_CODE,
+            reference_time=None,
+            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING,
             status=CompetitionStatus.ONGOING,
             remaining_length=DiffLap(
@@ -258,12 +295,18 @@ class TestInitialDataHandler(DatabaseTest):
             ),
             participants={
                 'r5625': Participant(
-                    participant_code='r5625',
-                    ranking=1,
-                    kart_number=41,
-                    team_name='CKM 1',
+                    best_time=59000,
                     driver_name='CKM 1 Driver 1',
+                    gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    kart_number=41,
+                    laps=5,
+                    last_lap_time=61000,
+                    number_pits=0,
+                    participant_code='r5625',
                     pits=2,
+                    ranking=1,
+                    team_name='CKM 1',
                 ),
             },
         )
@@ -295,14 +338,22 @@ class TestInitialDataHandler(DatabaseTest):
                 value=9,
                 unit=LengthUnit.LAPS,
             ),
+            reference_time=None,
+            reference_current_offset=None,
             participants={
                 'r5625': Participant(
-                    participant_code='r5625',
-                    ranking=1,
-                    kart_number=41,
-                    team_name=None,
+                    best_time=0,
                     driver_name='CKM 1 Driver 1',
+                    gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    kart_number=41,
+                    last_lap_time=0,
+                    laps=0,
+                    number_pits=0,
+                    participant_code='r5625',
                     pits=2,
+                    ranking=1,
+                    team_name=None,
                 ),
             },
         )

@@ -55,7 +55,7 @@ PARSERS_SETTINGS = {
     ParserSettings.TIMING_GAP: 'c8',
     ParserSettings.TIMING_INTERVAL: 'c9',
     ParserSettings.TIMING_PIT_TIME: 'c10',
-    ParserSettings.TIMING_PITS: 'c11',
+    ParserSettings.TIMING_NUMBER_PITS: 'c11',
 }
 
 
@@ -116,28 +116,34 @@ PARSERS_SETTINGS = {
                                 parsers_settings=PARSERS_SETTINGS,
                                 participants={
                                     'r5625': Participant(
+                                        best_time=64882,  # 1:04.882
+                                        gap=DiffLap(
+                                            value=0, unit=LengthUnit.MILLIS),
+                                        interval=DiffLap(
+                                            value=0, unit=LengthUnit.MILLIS),
+                                        kart_number=1,
+                                        laps=0,
+                                        last_lap_time=65142,  # 1:05.142
+                                        number_pits=0,
                                         participant_code='r5625',
                                         ranking=1,
-                                        kart_number=1,
                                         team_name='CKM 1',
-                                        last_lap_time=65142,  # 1:05.142
-                                        best_time=64882,  # 1:04.882
                                     ),
                                     'r5626': Participant(
+                                        best_time=64890,  # 1:04.890
+                                        gap=DiffLap(
+                                            value=0, unit=LengthUnit.MILLIS),
+                                        interval=DiffLap(
+                                            value=0, unit=LengthUnit.MILLIS),
+                                        kart_number=2,
+                                        laps=0,
+                                        last_lap_time=65460,  # 1:05.460
+                                        number_pits=1,
                                         participant_code='r5626',
                                         ranking=2,
-                                        kart_number=2,
                                         team_name='CKM 2',
-                                        last_lap_time=65460,  # 1:05.460
-                                        best_time=64890,  # 1:04.890
-                                        pits=1,
                                     ),
                                     'r5627': Participant(
-                                        participant_code='r5627',
-                                        ranking=3,
-                                        kart_number=3,
-                                        team_name='CKM 3',
-                                        last_lap_time=65411,  # 1:05.411
                                         best_time=64941,  # 1:04.941
                                         gap=DiffLap(
                                             value=1,  # 1 lap
@@ -147,8 +153,14 @@ PARSERS_SETTINGS = {
                                             value=12293,  # 12.293
                                             unit=LengthUnit.MILLIS.value,
                                         ),
-                                        pits=2,
+                                        kart_number=3,
+                                        laps=0,
+                                        last_lap_time=65411,  # 1:05.411
+                                        number_pits=2,
+                                        participant_code='r5627',
                                         pit_time=54000,  # 54.
+                                        ranking=3,
+                                        team_name='CKM 3',
                                     ),
                                 },
                             ),

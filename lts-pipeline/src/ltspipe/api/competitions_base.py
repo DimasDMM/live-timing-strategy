@@ -44,19 +44,17 @@ def update_competition_metadata(
         competition_id: int,
         reference_time: Optional[int],
         reference_current_offset: Optional[int],
-        status: Optional[CompetitionStatus],
-        stage: Optional[CompetitionStage],
-        remaining_length: Optional[DiffLap]) -> None:
+        status: CompetitionStatus,
+        stage: CompetitionStage,
+        remaining_length: DiffLap) -> None:
     """Update the metadata of a competition."""
     data = {
         'reference_time': reference_time,
         'reference_current_offset': reference_current_offset,
-        'status': None if status is None else status.value,
-        'stage': None if stage is None else stage.value,
-        'remaining_length': (None if remaining_length is None
-                             else remaining_length.value),
-        'remaining_length_unit': (None if remaining_length is None
-                                  else remaining_length.unit.value),
+        'status': status.value,
+        'stage': stage.value,
+        'remaining_length': remaining_length.value,
+        'remaining_length_unit': remaining_length.unit.value,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/metadata'
     r = requests.put(url=uri, json=data)

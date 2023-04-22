@@ -101,16 +101,21 @@ class TestMessage:
                         status=CompetitionStatus.ONGOING,
                         remaining_length=DiffLap(
                             value=10,
-                            unit=LengthUnit.MILLIS,
+                            unit=LengthUnit.LAPS,
                         ),
                         participants={
                             'r5625': Participant(
+                                best_time=64882,  # 1:04.882
+                                gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                                interval=DiffLap(
+                                    value=0, unit=LengthUnit.MILLIS),
+                                kart_number=1,
+                                laps=5,
+                                last_lap_time=65142,  # 1:05.142
+                                number_pits=2,
                                 participant_code='r5625',
                                 ranking=1,
-                                kart_number=1,
                                 team_name='CKM 1',
-                                last_lap_time=65142,  # 1:05.142
-                                best_time=64882,  # 1:04.882
                             ),
                         },
                     ),
