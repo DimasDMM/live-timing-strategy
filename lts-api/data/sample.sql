@@ -6,18 +6,18 @@ INSERT INTO `competitions_index`(`track_id`, `competition_code`, `name`, `descri
   (2, 'south-endurance-2023-03-26', 'Endurance South 26-03-2023', 'Endurance in Karting South');
 
 INSERT INTO `competitions_metadata_current`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
-  (1, 0, 0, 'finished', 'race', 0, 'laps'),
-  (2, 0, 0, 'ongoing', 'race', 348, 'laps'),
-  (3, 0, 0, 'paused', 'free-practice', 0, 'laps');
+  (1, NULL, NULL, 'finished', 'race', 0, 'laps'),
+  (2, NULL, NULL, 'ongoing', 'race', 348, 'laps'),
+  (3, NULL, NULL, 'paused', 'free-practice', 0, 'laps');
 
 INSERT INTO `competitions_metadata_history`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
-  (1, 0, 0, 'paused', 'free-practice', 0, 'laps'),
-  (1, 0, 0, 'ongoing', 'race', 350, 'laps'),
-  (1, 0, 0, 'finished', 'race', 0, 'laps'),
-  (2, 0, 0, 'paused', 'free-practice', 0, 'laps'),
-  (2, 0, 0, 'ongoing', 'race', 350, 'laps'),
-  (2, 0, 0, 'ongoing', 'race', 348, 'laps'),
-  (3, 0, 0, 'paused', 'free-practice', 0, 'laps');
+  (1, NULL, NULL, 'paused', 'free-practice', 0, 'laps'),
+  (1, NULL, NULL, 'ongoing', 'race', 350, 'laps'),
+  (1, NULL, NULL, 'finished', 'race', 0, 'laps'),
+  (2, NULL, NULL, 'paused', 'free-practice', 0, 'laps'),
+  (2, NULL, NULL, 'ongoing', 'race', 350, 'laps'),
+  (2, NULL, NULL, 'ongoing', 'race', 348, 'laps'),
+  (3, NULL, NULL, 'paused', 'free-practice', 0, 'laps');
 
 INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `pit_time`, `min_number_pits`) VALUES
   (1, 350, 'laps', 120000, 5),
@@ -25,25 +25,25 @@ INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `
   (3, 3600000, 'millis', 10000, 4);
 
 INSERT INTO `participants_teams`(`competition_id`, `participant_code`, `name`, `number`, `reference_time_offset`) VALUES
-  (1, 'team-1', 'CKM 1', 41, 0),
-  (1, 'team-2', 'CKM 2', 42, 0),
-  (1, 'team-3', 'CKM 3', 43, 0),
-  (2, 'team-1', 'CKM 1', 41, 0),
-  (2, 'team-2', 'CKM 2', 42, 0),
-  (3, 'team-1', 'CKM 1', 41, 0);
+  (1, 'team-1', 'CKM 1', 41, NULL),
+  (1, 'team-2', 'CKM 2', 42, NULL),
+  (1, 'team-3', 'CKM 3', 43, NULL),
+  (2, 'team-1', 'CKM 1', 41, NULL),
+  (2, 'team-2', 'CKM 2', 42, NULL),
+  (3, 'team-1', 'CKM 1', 41, NULL);
 
 INSERT INTO `participants_drivers`(`competition_id`, `team_id`, `participant_code`, `name`, `number`, `total_driving_time`, `partial_driving_time`, `reference_time_offset`) VALUES
-  (1, 1, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
-  (1, 1, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0),
-  (1, 2, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),
-  (1, 2, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
+  (1, 1, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, NULL),
+  (1, 1, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, NULL),
+  (1, 2, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, NULL),
+  (1, 2, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, NULL),
   -- Note that the team 3 does not have any driver yet
-  (2, 4, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
-  (2, 4, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0),
-  (2, 5, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, 0),
-  (2, 5, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, 0),
-  (3, 6, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, 0),
-  (3, 6, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, 0);
+  (2, 4, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, NULL),
+  (2, 4, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, NULL),
+  (2, 5, 'team-2', 'CKM 2 Driver 1', 42, 0, 0, NULL),
+  (2, 5, 'team-2', 'CKM 2 Driver 2', 42, 0, 0, NULL),
+  (3, 6, 'team-1', 'CKM 1 Driver 1', 41, 0, 0, NULL),
+  (3, 6, 'team-1', 'CKM 1 Driver 2', 41, 0, 0, NULL);
 
 INSERT INTO `timing_current`(`competition_id`, `team_id`, `driver_id`, `position`, `time`, `best_time`, `lap`, `interval`, `interval_unit`, `stage`, `pit_time`, `kart_status`, `fixed_kart_status`, `number_pits`) VALUES
   (1, 1, 1, 1, 60000, 59000, 1, 0, 'laps', 'race', 350, 'unknown', NULL, 0),

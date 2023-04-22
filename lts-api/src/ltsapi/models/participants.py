@@ -26,7 +26,7 @@ class GetDriver(BaseModel):
     number: Optional[int]
     total_driving_time: int
     partial_driving_time: int
-    reference_time_offset: int
+    reference_time_offset: Optional[int]
     insert_date: datetime
     update_date: datetime
 
@@ -39,7 +39,7 @@ class UpdateDriver(BaseModel):
     number: Optional[int]
     total_driving_time: int
     partial_driving_time: int
-    reference_time_offset: int
+    reference_time_offset: Optional[int]
 
 
 class AddTeam(BaseModel):
@@ -59,7 +59,7 @@ class GetTeam(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    reference_time_offset: int
+    reference_time_offset: Optional[int]
     drivers: List[GetDriver]
     insert_date: datetime
     update_date: datetime
@@ -71,4 +71,4 @@ class UpdateTeam(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    reference_time_offset: int
+    reference_time_offset: Optional[int]
