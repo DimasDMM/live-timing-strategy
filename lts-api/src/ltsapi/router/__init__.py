@@ -1,12 +1,12 @@
 from logging import Logger
 import os
 
-from ltsapi.db import SingleDBContext
+from ltsapi.db import DBContext, SingleDBContext
 
 
-def _build_db_connection(logger: Logger) -> SingleDBContext:
+def _build_db_connection(logger: Logger) -> DBContext:
     """Build connection with the database."""
-    return SingleDBContext(
+    return SingleDBContext.create(
         host=os.environ.get('DB_HOST', None),
         port=os.environ.get('DB_PORT', None),
         user=os.environ.get('DB_USER', None),

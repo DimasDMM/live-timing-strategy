@@ -4,14 +4,15 @@
 
 SET GLOBAL time_zone = 'Europe/Madrid';
 
-CREATE TABLE `api_tokens` (
+CREATE TABLE `api_auth` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `token` VARCHAR(255) NOT NULL,
+  `key` VARCHAR(255) NOT NULL,
+  `bearer` VARCHAR(255) NULL,
   `name` VARCHAR(255) NOT NULL,
   `role` ENUM('admin', 'batch', 'user') NOT NULL DEFAULT 'user',
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `token` (`token`)
+  UNIQUE KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `tracks` (

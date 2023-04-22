@@ -92,7 +92,8 @@ class SingleDBContext(DBContext):
 
     _instance: DBContext
 
-    def __new__(
+    @classmethod
+    def create(
             cls: Any,
             host: Optional[str],
             port: Optional[str],

@@ -37,8 +37,8 @@ class TestCMetadataManager(DatabaseTest):
             (
                 2,  # competition_id
                 {
-                    'reference_time': 0,
-                    'reference_current_offset': 0,
+                    'reference_time': None,
+                    'reference_current_offset': None,
                     'status': CompetitionStatus.ONGOING,
                     'stage': CompetitionStage.RACE,
                     'remaining_length': 348,
@@ -68,24 +68,24 @@ class TestCMetadataManager(DatabaseTest):
                 2,  # competition_id
                 [
                     {
-                        'reference_time': 0,
-                        'reference_current_offset': 0,
+                        'reference_time': None,
+                        'reference_current_offset': None,
                         'status': CompetitionStatus.PAUSED,
                         'stage': CompetitionStage.FREE_PRACTICE,
                         'remaining_length': 0,
                         'remaining_length_unit': LengthUnit.LAPS,
                     },
                     {
-                        'reference_time': 0,
-                        'reference_current_offset': 0,
+                        'reference_time': None,
+                        'reference_current_offset': None,
                         'status': CompetitionStatus.ONGOING,
                         'stage': CompetitionStage.RACE,
                         'remaining_length': 350,
                         'remaining_length_unit': LengthUnit.LAPS,
                     },
                     {
-                        'reference_time': 0,
-                        'reference_current_offset': 0,
+                        'reference_time': None,
+                        'reference_current_offset': None,
                         'status': CompetitionStatus.ONGOING,
                         'stage': CompetitionStage.RACE,
                         'remaining_length': 348,
@@ -112,16 +112,16 @@ class TestCMetadataManager(DatabaseTest):
             (
                 2,  # competition_id
                 UpdateCompetitionMetadata(
-                    reference_time=0,
-                    reference_current_offset=0,
+                    reference_time=None,
+                    reference_current_offset=None,
                     status=CompetitionStatus.ONGOING,
                     stage=CompetitionStage.RACE,
                     remaining_length=347,
                     remaining_length_unit=LengthUnit.LAPS,
                 ),
                 {
-                    'reference_time': 0,
-                    'reference_current_offset': 0,
+                    'reference_time': None,
+                    'reference_current_offset': None,
                     'status': CompetitionStatus.ONGOING.value,
                     'stage': CompetitionStage.RACE.value,
                     'remaining_length': 347,
