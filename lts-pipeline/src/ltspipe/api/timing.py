@@ -12,6 +12,7 @@ from ltspipe.data.enum import (
 
 def update_timing_by_team(
         api_url: str,
+        bearer: str,
         competition_id: int,
         team_id: int,
         driver_id: Optional[int],
@@ -42,6 +43,7 @@ def update_timing_by_team(
         'time': time,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/timing/team/{team_id}'
-    r = requests.put(url=uri, json=data)
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')

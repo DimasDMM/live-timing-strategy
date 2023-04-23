@@ -2,10 +2,9 @@ from logging import Logger
 from typing import Any, Dict, List, Optional
 
 from ltspipe.api.handlers import ApiHandler
-from ltspipe.api.competitions_base import (
-    init_competition_info,
-)
+from ltspipe.api.competitions_base import init_competition_info
 from ltspipe.data.actions import Action, ActionType
+from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.messages import Message
 from ltspipe.steps.base import MidStep
@@ -68,6 +67,7 @@ class CompetitionInfoInitStep(MidStep):
             self,
             logger: Logger,
             api_lts: str,
+            auth_data: AuthData,
             competitions: Dict[str, CompetitionInfo],
             force_update: bool = True,
             next_step: Optional[MidStep] = None) -> None:
@@ -77,6 +77,7 @@ class CompetitionInfoInitStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             api_lts (str): URI of API REST.
+            auth_data (AuthData): Authentication data.
             competitions (Dict[str, CompetitionInfo]): Storage of
                 competitions info.
             force_update (bool): If the info of a competition is already set,
@@ -85,6 +86,7 @@ class CompetitionInfoInitStep(MidStep):
         """
         self._logger = logger
         self._api_lts = api_lts.strip('/')
+        self._auth_data = auth_data
         self._competitions = competitions
         self._force_update = force_update
         self._next_step = next_step
@@ -106,5 +108,7 @@ class CompetitionInfoInitStep(MidStep):
         """Initialize competition info."""
         if self._force_update or competition_code not in self._competitions:
             info = init_competition_info(
-                self._api_lts, competition_code)
+                self._api_lts,
+                bearer=self._auth_data.bearer,
+                competition_code=competition_code)
             self._competitions[competition_code] = info

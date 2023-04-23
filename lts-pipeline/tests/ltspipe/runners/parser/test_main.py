@@ -5,6 +5,7 @@ import tempfile
 from typing import Any, Dict, List
 
 from ltspipe.data.actions import Action, ActionType
+from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
     CompetitionStatus,
     CompetitionStage,
@@ -284,6 +285,23 @@ def _msg_to_dict(raw: List[Message]) -> List[dict]:
     return [x.dict(exclude=EXCLUDED_KEYS) for x in raw]
 
 
+def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content={
+            'bearer': 'sample-bearer-token',
+            'role': AuthRole.BATCH.value,
+            'name': 'Test',
+        },
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/auth',
+        method=MapRequestMethod.POST,
+        responses=[response],
+    )
+    return [item]
+
+
 def _mock_response_get_competition_info(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(
@@ -340,6 +358,7 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     """Apply mock to API."""
     api_url = api_url.strip('/')
     requests_map = (
-        _mock_response_get_competition_info(api_url)
+        _mock_response_auth_key(api_url)
+        + _mock_response_get_competition_info(api_url)
         + _mock_response_get_parser_settings(api_url))
     mock_requests(mocker, requests_map=requests_map)

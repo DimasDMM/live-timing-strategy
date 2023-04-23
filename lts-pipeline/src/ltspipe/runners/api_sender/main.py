@@ -4,15 +4,16 @@ from multiprocessing import Manager, Process
 from multiprocessing.managers import DictProxy
 import os
 
-from ltspipe.data.actions import ActionType
-from ltspipe.data.notifications import NotificationType
-from ltspipe.configs import ApiSenderConfig
 from ltspipe.api.handlers import InitialDataHandler
+from ltspipe.configs import ApiSenderConfig
+from ltspipe.data.actions import ActionType
+from ltspipe.data.auth import AuthData
+from ltspipe.data.notifications import NotificationType
 from ltspipe.steps.api import CompetitionInfoInitStep, ApiActionStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.mappers import NotificationMapperStep
 from ltspipe.steps.triggers import ActionInitTriggerStep
-from ltspipe.runners import BANNER_MSG
+from ltspipe.runners import BANNER_MSG, do_auth
 
 
 def main(config: ApiSenderConfig, logger: Logger) -> None:
@@ -26,6 +27,8 @@ def main(config: ApiSenderConfig, logger: Logger) -> None:
     logger.info(BANNER_MSG)
     logger.debug(config)
 
+    auth_data = do_auth(api_url=config.api_lts.strip('/'))
+
     logger.info(f'Create path if it does not exist: {config.errors_path}')
     os.makedirs(config.errors_path, exist_ok=True)
 
@@ -34,9 +37,10 @@ def main(config: ApiSenderConfig, logger: Logger) -> None:
     with Manager() as manager:
         logger.info('Init script...')
         competitions = manager.dict()
-        std_consumer = _build_std_process(config, logger, competitions)
+        std_consumer = _build_std_process(
+            config, logger, auth_data, competitions)
         notification_listener = _build_notifications_process(
-            config, logger, competitions)
+            config, logger, auth_data, competitions)
 
         logger.info('Start notifications listener...')
         p_not = Process(
@@ -54,6 +58,7 @@ def main(config: ApiSenderConfig, logger: Logger) -> None:
 def _build_std_process(
         config: ApiSenderConfig,
         logger: Logger,
+        auth_data: AuthData,
         competitions: DictProxy) -> KafkaConsumerStep:
     """Build process that consumes the standard data."""
     kafka_notifications = KafkaProducerStep(
@@ -73,6 +78,7 @@ def _build_std_process(
         action_handlers={
             ActionType.INITIALIZE: InitialDataHandler(
                 api_url=config.api_lts.strip('/'),
+                auth_data=auth_data,
                 competitions=competitions,  # type: ignore
             ),
         },
@@ -81,6 +87,7 @@ def _build_std_process(
     info_init = CompetitionInfoInitStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
+        auth_data=auth_data,
         competitions=competitions,  # type: ignore
         force_update=False,
         next_step=api_actions,
@@ -97,11 +104,13 @@ def _build_std_process(
 def _build_notifications_process(
         config: ApiSenderConfig,
         logger: Logger,
+        auth_data: AuthData,
         competitions: DictProxy) -> KafkaConsumerStep:
     """Build process with notifications listener."""
     api_getter = CompetitionInfoInitStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
+        auth_data=auth_data,
         competitions=competitions,  # type: ignore
         next_step=None,
     )

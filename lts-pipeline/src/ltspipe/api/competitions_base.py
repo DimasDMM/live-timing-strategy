@@ -16,6 +16,7 @@ from ltspipe.data.competitions import DiffLap
 
 def init_competition_info(
         api_url: str,
+        bearer: str,
         competition_code: str) -> CompetitionInfo:
     """
     Initialize information of competition.
@@ -23,7 +24,7 @@ def init_competition_info(
     Note that this step is skipped if the information is already set.
     """
     uri = f'{api_url}/v1/competitions/filter/code/{competition_code}'
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     response = r.json()
 
     if not response or 'id' not in response:
@@ -33,14 +34,15 @@ def init_competition_info(
     return CompetitionInfo(
         id=competition_id,
         competition_code=competition_code,
-        parser_settings=get_parsers_settings(api_url, competition_id),
-        drivers=get_all_drivers(api_url, competition_id, team_id=None),
-        teams=get_all_teams(api_url, competition_id),
+        parser_settings=get_parsers_settings(api_url, bearer, competition_id),
+        drivers=get_all_drivers(api_url, bearer, competition_id, team_id=None),
+        teams=get_all_teams(api_url, bearer, competition_id),
     )
 
 
 def update_competition_metadata(
         api_url: str,
+        bearer: str,
         competition_id: int,
         reference_time: Optional[int],
         reference_current_offset: Optional[int],
@@ -57,13 +59,15 @@ def update_competition_metadata(
         'remaining_length_unit': remaining_length.unit.value,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/metadata'
-    r = requests.put(url=uri, json=data)
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
 
 def add_parsers_settings(
         api_url: str,
+        bearer: str,
         competition_id: int,
         setting_name: ParserSettings,
         setting_value: str) -> None:
@@ -73,27 +77,30 @@ def add_parsers_settings(
         'name': setting_name,
         'value': setting_value,
     }
-    r = requests.post(url=uri, json=data)
+    r = requests.post(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
 
 def delete_parsers_settings(
         api_url: str,
+        bearer: str,
         competition_id: int) -> None:
     """Delete all the parsers settings of a competition."""
     uri = f'{api_url}/v1/competitions/{competition_id}/parsers/settings'
-    r = requests.delete(url=uri)
+    r = requests.delete(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
 
 def get_parsers_settings(
         api_url: str,
+        bearer: str,
         competition_id: int) -> Dict[ParserSettings, str]:
     """Get the parsers settings."""
     uri = f'{api_url}/v1/competitions/{competition_id}/parsers/settings'
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -112,6 +119,7 @@ def get_parsers_settings(
 
 def update_parsers_settings(
         api_url: str,
+        bearer: str,
         competition_id: int,
         setting_name: ParserSettings,
         setting_value: str) -> None:
@@ -119,6 +127,7 @@ def update_parsers_settings(
     uri = (f'{api_url}/v1/competitions/{competition_id}'
            f'/parsers/settings/{setting_name}')
     data = {'value': setting_value}
-    r = requests.put(url=uri, json=data)
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')

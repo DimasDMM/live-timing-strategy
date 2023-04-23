@@ -10,6 +10,7 @@ from ltspipe.configs import (
     DEFAULT_STD_MESSAGES_TOPIC,
 )
 from ltspipe.data.actions import Action, ActionType
+from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
     CompetitionInfo,
     CompetitionStatus,
@@ -309,6 +310,23 @@ def test_main(
 def _raw_to_dict(raw: List[str]) -> List[dict]:
     """Transform messages into dictionaries."""
     return [Message.decode(x).dict(exclude=EXCLUDED_KEYS) for x in raw]
+
+
+def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content={
+            'bearer': 'sample-bearer-token',
+            'role': AuthRole.BATCH.value,
+            'name': 'Test',
+        },
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/auth',
+        method=MapRequestMethod.POST,
+        responses=[response],
+    )
+    return [item]
 
 
 def _mock_response_delete_parser_settings(api_url: str) -> List[MapRequestItem]:
@@ -675,7 +693,8 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     """Apply mock to API."""
     api_url = api_url.strip('/')
     requests_map = (
-        _mock_response_delete_parser_settings(api_url)
+        _mock_response_auth_key(api_url)
+        + _mock_response_delete_parser_settings(api_url)
         + _mock_response_get_competition_info(api_url)
         + _mock_response_get_competition_metadata(api_url)
         + _mock_response_get_drivers(api_url)

@@ -5,6 +5,9 @@ import uuid
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
+from ltspipe.api.auth import refresh_bearer
+from ltspipe.data.auth import AuthData
+
 
 BANNER_MSG = ('\n'
     + '     ____  _                         ___                 \n'
@@ -60,3 +63,12 @@ def build_logger(
     logger.addHandler(file_handler)
 
     return logger
+
+
+def do_auth(api_url: str) -> AuthData:
+    """Do authentication."""
+    key = os.environ.get('API_KEY', None)
+    if key is None:
+        raise Exception('It is necessary to set the the environment variable '
+                        '"API_KEY" in order to authenticate in the API REST.')
+    return refresh_bearer(api_url, key)

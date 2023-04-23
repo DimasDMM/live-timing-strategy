@@ -3,6 +3,7 @@ from pytest_mock import MockerFixture
 from typing import Dict, List
 from unittest.mock import MagicMock
 
+from ltspipe.data.auth import AuthData
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
     CompetitionInfo,
@@ -152,6 +153,7 @@ class TestParserSettingsGetterStep:
     def test_run_step(
             self,
             mocker: MockerFixture,
+            sample_auth_data: AuthData,
             sample_message: Message) -> None:
         """Test method run_step."""
         self._apply_mock_api(mocker, self.API_LTS)
@@ -167,6 +169,7 @@ class TestParserSettingsGetterStep:
         step = CompetitionInfoInitStep(
             logger=fake_logger,
             api_lts=self.API_LTS,
+            auth_data=sample_auth_data,
             competitions=in_competitions,
             next_step=next_step,
         )

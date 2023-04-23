@@ -26,7 +26,7 @@ def load_raw_message(filename: str) -> str:
         return fp.read()
 
 
-def create_competition(api_lts: str) -> int:
+def create_competition(api_lts: str, bearer: str) -> int:
     """Create a new competition for testing purposes."""
     data = {
         'track_id': 1,
@@ -41,7 +41,8 @@ def create_competition(api_lts: str) -> int:
         },
     }
     uri = f'{api_lts}/v1/competitions/'
-    r = requests.post(url=uri, json=data)
+    r = requests.post(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 

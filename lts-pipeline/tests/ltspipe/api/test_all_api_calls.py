@@ -1,9 +1,8 @@
 import os
 from typing import List
 
-from ltspipe.api.competitions_base import (
-    init_competition_info,
-)
+from ltspipe.api.auth import refresh_bearer
+from ltspipe.api.competitions_base import init_competition_info
 from ltspipe.api.participants import (
     add_driver,
     add_team,
@@ -14,6 +13,7 @@ from ltspipe.api.participants import (
     update_driver,
     update_team,
 )
+from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import (
     CompetitionInfo,
     DiffLap,
@@ -24,7 +24,7 @@ from ltspipe.data.competitions import (
 from ltspipe.data.enum import (
     LengthUnit,
 )
-from tests.fixtures import TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     create_competition,
@@ -93,36 +93,48 @@ class TestAllApiCalls(DatabaseTest):
 
     def test_all_api_calls(self) -> None:
         """Test all API calls."""
-        competition_id = create_competition(self.API_LTS)
+        # Do authentication and create a test competition
+        auth_data = refresh_bearer(self.API_LTS, AUTH_KEY)
+        competition_id = create_competition(
+            self.API_LTS, bearer=auth_data.bearer)
 
         # Initialize info of the competition
-        info = init_competition_info(self.API_LTS, TEST_COMPETITION_CODE)
+        info = init_competition_info(
+            self.API_LTS,
+            bearer=auth_data.bearer,
+            competition_code=TEST_COMPETITION_CODE)
         assert info.id == competition_id
 
         # Add teams and drivers and validate that data was sent successfully
-        self._add_teams(info, self.API_LTS, self.PARTICIPANTS)
-        self._add_drivers(info, self.API_LTS, self.PARTICIPANTS)
+        self._add_teams(info, self.API_LTS, auth_data, self.PARTICIPANTS)
+        self._add_drivers(info, self.API_LTS, auth_data, self.PARTICIPANTS)
 
-        retrieved_teams = get_all_teams(self.API_LTS, competition_id)
-        retrieved_drivers = get_all_drivers(self.API_LTS, competition_id)
+        retrieved_teams = get_all_teams(
+            self.API_LTS, auth_data.bearer, competition_id)
+        retrieved_drivers = get_all_drivers(
+            self.API_LTS, auth_data.bearer, competition_id)
         self._compare_teams(retrieved_teams, self.PARTICIPANTS)
         self._compare_drivers(info, retrieved_drivers, self.PARTICIPANTS)
 
         # Update the name of a driver and, also, a team
         driver = retrieved_drivers[0]
         team = retrieved_teams[0]
-        self._update_single_driver(self.API_LTS, competition_id, driver)
-        self._update_single_team(self.API_LTS, competition_id, team)
+        self._update_single_driver(
+            self.API_LTS, auth_data, competition_id, driver)
+        self._update_single_team(
+            self.API_LTS, auth_data, competition_id, team)
 
     def _update_single_driver(
             self,
             api_lts: str,
+            auth_data: AuthData,
             competition_id: int,
             driver: Driver) -> None:
         """Update a driver and validate that the data was modified."""
         new_name = f'{driver.name} - Updated'
         update_driver(
             api_url=self.API_LTS,
+            bearer=auth_data.bearer,
             competition_id=competition_id,
             driver_id=driver.id,
             participant_code=driver.participant_code,
@@ -135,6 +147,7 @@ class TestAllApiCalls(DatabaseTest):
         )
         updated_driver = get_driver(
             api_url=api_lts,
+            bearer=auth_data.bearer,
             competition_id=competition_id,
             driver_id=driver.id,
             team_id=driver.team_id)
@@ -144,12 +157,14 @@ class TestAllApiCalls(DatabaseTest):
     def _update_single_team(
             self,
             api_lts: str,
+            auth_data: AuthData,
             competition_id: int,
             team: Team) -> None:
         """Update a team and validate that the data was modified."""
         new_name = f'{team.name} - Updated'
         update_team(
             api_url=self.API_LTS,
+            bearer=auth_data.bearer,
             competition_id=competition_id,
             team_id=team.id,
             name=new_name,
@@ -159,6 +174,7 @@ class TestAllApiCalls(DatabaseTest):
         )
         updated_team = get_team(
             api_url=api_lts,
+            bearer=auth_data.bearer,
             competition_id=competition_id,
             team_id=team.id)
         assert updated_team is not None
@@ -223,6 +239,7 @@ class TestAllApiCalls(DatabaseTest):
             self,
             info: CompetitionInfo,
             api_lts: str,
+            auth_data: AuthData,
             participants: List[Participant]) -> None:
         """Add new drivers."""
         code_to_team_id = {team.participant_code: team.id
@@ -234,6 +251,7 @@ class TestAllApiCalls(DatabaseTest):
 
             p_id = add_driver(
                 api_url=api_lts,
+                bearer=auth_data.bearer,
                 competition_id=info.id,
                 participant_code=p_code,
                 name=participant.driver_name,
@@ -252,6 +270,7 @@ class TestAllApiCalls(DatabaseTest):
             self,
             info: CompetitionInfo,
             api_lts: str,
+            auth_data: AuthData,
             participants: List[Participant]) -> None:
         """Add new teams."""
         added_codes = set()
@@ -262,6 +281,7 @@ class TestAllApiCalls(DatabaseTest):
 
             p_id = add_team(
                 api_url=api_lts,
+                bearer=auth_data.bearer,
                 competition_id=info.id,
                 participant_code=p_code,
                 name=participant.team_name,

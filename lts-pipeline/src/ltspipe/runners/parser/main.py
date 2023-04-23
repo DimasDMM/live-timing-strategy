@@ -6,11 +6,12 @@ import os
 from typing import List
 
 from ltspipe.configs import ParserConfig
+from ltspipe.data.auth import AuthData
 from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import WsInitParser
-from ltspipe.runners import BANNER_MSG
+from ltspipe.runners import BANNER_MSG, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import FileStorageStep
@@ -32,6 +33,8 @@ def main(config: ParserConfig, logger: Logger) -> None:
     logger.info(BANNER_MSG)
     logger.debug(config)
 
+    auth_data = do_auth(api_url=config.api_lts.strip('/'))
+
     logger.info(f'Create path if it does not exist: {config.errors_path}')
     os.makedirs(config.errors_path, exist_ok=True)
 
@@ -47,7 +50,7 @@ def main(config: ParserConfig, logger: Logger) -> None:
         queue = manager.dict()
         raw_consumer = _build_raw_process(config, logger, flags, queue)
         notification_listener = _build_notifications_process(
-            config, logger, flags, queue)
+            config, logger, auth_data, flags, queue)
 
         logger.info('Start notifications listener...')
         p_not = Process(
@@ -100,6 +103,7 @@ def _build_raw_process(
 def _build_notifications_process(
         config: ParserConfig,
         logger: Logger,
+        auth_data: AuthData,
         flags: DictProxy,
         queue: DictProxy) -> KafkaConsumerStep:
     """Build process with notifications listener."""
@@ -121,6 +125,7 @@ def _build_notifications_process(
     api_getter = CompetitionInfoInitStep(
         logger=logger,
         api_lts=config.api_lts,
+        auth_data=auth_data,
         competitions={},
         next_step=flag_init_finished,
     )

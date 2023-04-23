@@ -9,6 +9,7 @@ from ltspipe.data.competitions import (
 
 def add_driver(
         api_url: str,
+        bearer: str,
         competition_id: int,
         participant_code: str,
         name: str,
@@ -19,6 +20,7 @@ def add_driver(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         participant_code (str): Code of the driver.
         name (str): Name of the driver.
@@ -41,7 +43,8 @@ def add_driver(
     else:
         uri = f'{url_prefix}/teams/{team_id}/drivers'
 
-    r = requests.post(url=uri, json=data)
+    r = requests.post(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -54,6 +57,7 @@ def add_driver(
 
 def add_team(
         api_url: str,
+        bearer: str,
         competition_id: int,
         participant_code: str,
         name: str,
@@ -63,6 +67,7 @@ def add_team(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         participant_code (str): Code of the team.
         name (str): Name of the team.
@@ -77,7 +82,8 @@ def add_team(
         'number': number,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/teams'
-    r = requests.post(url=uri, json=data)
+    r = requests.post(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -90,6 +96,7 @@ def add_team(
 
 def get_driver(
         api_url: str,
+        bearer: str,
         competition_id: int,
         driver_id: int,
         team_id: Optional[int] = None) -> Optional[Driver]:
@@ -98,6 +105,7 @@ def get_driver(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         driver_id (int): ID of the driver.
         team_id (int | None): ID of the team if there is any.
@@ -112,7 +120,7 @@ def get_driver(
     else:
         uri = f'{url_prefix}/teams/{team_id}/drivers/{driver_id}'
 
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -129,6 +137,7 @@ def get_driver(
 
 def get_team(
         api_url: str,
+        bearer: str,
         competition_id: int,
         team_id: int) -> Optional[Team]:
     """
@@ -136,6 +145,7 @@ def get_team(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         team_id (int): ID of the team.
 
@@ -145,7 +155,7 @@ def get_team(
     # Depending on there is a team or not, the endpoint is slightly different
     uri = f'{api_url}/v1/competitions/{competition_id}/teams/{team_id}'
 
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -162,6 +172,7 @@ def get_team(
 
 def get_all_drivers(
         api_url: str,
+        bearer: str,
         competition_id: int,
         team_id: Optional[int] = None) -> List[Driver]:
     """
@@ -169,6 +180,7 @@ def get_all_drivers(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         team_id (int | None): ID of the team if there is any.
 
@@ -182,7 +194,7 @@ def get_all_drivers(
     else:
         uri = f'{url_prefix}/teams/{team_id}/drivers'
 
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -197,12 +209,16 @@ def get_all_drivers(
     return drivers
 
 
-def get_all_teams(api_url: str, competition_id: int) -> List[Team]:
+def get_all_teams(
+        api_url: str,
+        bearer: str,
+        competition_id: int) -> List[Team]:
     """
     Get all teams.
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
 
     Returns:
@@ -211,7 +227,7 @@ def get_all_teams(api_url: str, competition_id: int) -> List[Team]:
     # Depending on there is a team or not, the endpoint is slightly different
     uri = f'{api_url}/v1/competitions/{competition_id}/teams'
 
-    r = requests.get(url=uri)
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -228,6 +244,7 @@ def get_all_teams(api_url: str, competition_id: int) -> List[Team]:
 
 def update_driver(
         api_url: str,
+        bearer: str,
         competition_id: int,
         driver_id: int,
         participant_code: str,
@@ -243,6 +260,7 @@ def update_driver(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         driver_id (int): ID of the driver.
         participant_code (str): Code of the driver.
@@ -272,7 +290,8 @@ def update_driver(
     else:
         uri = f'{url_prefix}/teams/{team_id}/drivers/{driver_id}'
 
-    r = requests.put(url=uri, json=data)
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
@@ -285,6 +304,7 @@ def update_driver(
 
 def update_team(
         api_url: str,
+        bearer: str,
         competition_id: int,
         team_id: int,
         name: str,
@@ -297,6 +317,7 @@ def update_team(
 
     Params:
         api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         team_id (int): ID of the team.
         participant_code (str): Code of the team.
@@ -314,7 +335,8 @@ def update_team(
         'reference_time_offset': reference_time_offset,
     }
     uri = f'{api_url}/v1/competitions/{competition_id}/teams/{team_id}'
-    r = requests.put(url=uri, json=data)
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 

@@ -14,6 +14,7 @@ from ltspipe.api.participants import (
 )
 from ltspipe.api.timing import update_timing_by_team
 from ltspipe.base import BaseModel
+from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import (
     CompetitionInfo,
     CompetitionStage,
@@ -40,9 +41,11 @@ class InitialDataHandler(ApiHandler):
     def __init__(
             self,
             api_url: str,
+            auth_data: AuthData,
             competitions: Dict[str, CompetitionInfo]) -> None:
         """Construct."""
         self._api_url = api_url
+        self._auth_data = auth_data
         self._competitions = competitions
 
     def handle(self, model: BaseModel) -> None:
@@ -58,6 +61,7 @@ class InitialDataHandler(ApiHandler):
 
         update_competition_metadata(
             api_url=self._api_url,
+            bearer=self._auth_data.bearer,
             competition_id=info.id,
             reference_time=None,
             reference_current_offset=None,
@@ -77,6 +81,7 @@ class InitialDataHandler(ApiHandler):
         """Add parser settings to competition."""
         delete_parsers_settings(
             api_url=self._api_url,
+            bearer=self._auth_data.bearer,
             competition_id=info.id,  # type: ignore
         )
         info.parser_settings = {}
@@ -84,6 +89,7 @@ class InitialDataHandler(ApiHandler):
         for setting_name, setting_value in settings.items():
             add_parsers_settings(
                 api_url=self._api_url,
+                bearer=self._auth_data.bearer,
                 competition_id=info.id,  # type: ignore
                 setting_name=setting_name,
                 setting_value=setting_value,
@@ -106,6 +112,7 @@ class InitialDataHandler(ApiHandler):
             if driver is not None:
                 update_driver(
                     api_url=self._api_url,
+                    bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
                     driver_id=driver.id,
                     team_id=driver.team_id,
@@ -125,6 +132,7 @@ class InitialDataHandler(ApiHandler):
                 )
                 p_id = add_driver(
                     api_url=self._api_url,
+                    bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
                     participant_code=participant.participant_code,
                     name=participant.driver_name,
@@ -150,6 +158,7 @@ class InitialDataHandler(ApiHandler):
             if team is not None:
                 update_team(
                     api_url=self._api_url,
+                    bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
                     team_id=team.id,
                     participant_code=participant.participant_code,
@@ -166,6 +175,7 @@ class InitialDataHandler(ApiHandler):
 
                 p_id = add_team(
                     api_url=self._api_url,
+                    bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
                     participant_code=participant.participant_code,
                     name=participant.team_name,
@@ -205,7 +215,8 @@ class InitialDataHandler(ApiHandler):
 
             update_timing_by_team(
                 self._api_url,
-                info.id,  # type: ignore
+                bearer=self._auth_data.bearer,
+                competition_id=info.id,  # type: ignore
                 team_id=team.id,
                 driver_id=driver_id,
                 best_time=participant.best_time,
