@@ -34,8 +34,7 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
 
     @pytest.mark.parametrize(
-        ('add_model, expected_status_code,'
-         'expected_response, expected_type'),
+        'add_model, expected_status_code, expected_response, expected_type',
         [
             (
                 SendAuthKey(key=AUTH_KEY),
