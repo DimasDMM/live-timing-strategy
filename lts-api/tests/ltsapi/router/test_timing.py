@@ -182,7 +182,7 @@ class TestTimingRouter(DatabaseTest):
             competition_id: int,
             driver_id: int,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
         Test GET /v1/competitions/<competition_id>/timing/driver/<driver_id>.
@@ -383,7 +383,7 @@ class TestTimingRouter(DatabaseTest):
             competition_id: int,
             team_id: int,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
         Test GET /v1/competitions/<competition_id>/timing/team/<team_id>.
@@ -523,7 +523,7 @@ class TestTimingRouter(DatabaseTest):
             team_id: int,
             update_model: BaseModel,
             expected_status_code: int,
-            expected_response: Union[List[BaseModel], BaseModel],
+            expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
         Test PUT /v1/competitions/<competition_id>/timing/team/<team_id>.

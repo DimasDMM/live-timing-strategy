@@ -7,11 +7,12 @@ from typing import Any, Type
 from ltsapi.main import app
 from ltsapi.models.health import GetHealth
 from ltsapi.models.auth import (
+    AuthRole,
     GetAuth,
     SendAuthKey,
 )
 from ltsapi.models.responses import ErrorResponse
-from tests.fixtures import AUTH_KEY
+from tests.fixtures import AUTH_KEY_BATCH
 from tests.helpers import DatabaseTest
 
 
@@ -37,12 +38,12 @@ class TestCompetitionsRouter(DatabaseTest):
         'add_model, expected_status_code, expected_response, expected_type',
         [
             (
-                SendAuthKey(key=AUTH_KEY),
+                SendAuthKey(key=AUTH_KEY_BATCH),
                 200,  # expected_status_code
                 GetAuth(
                     bearer='',
-                    name='Test',
-                    role='batch',
+                    name='Test batch without bearer',
+                    role=AuthRole.BATCH,
                 ),
                 GetAuth,  # expected_type
             ),
