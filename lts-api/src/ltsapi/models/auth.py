@@ -1,5 +1,6 @@
 from typing import Optional
 
+from ltsapi.models.enum import AuthRole
 from ltsapi.models import BaseModel
 
 
@@ -8,7 +9,7 @@ class GetAuth(BaseModel):
 
     bearer: Optional[str]
     name: str
-    role: str
+    role: AuthRole
 
 
 class SendAuthKey(BaseModel):
@@ -22,4 +23,4 @@ class UpdateAuth(BaseModel):
 
     bearer: Optional[str]
     name: str
-    role: str
+    role: AuthRole

@@ -11,6 +11,7 @@ from ltsapi.managers.utils.statements import (
     update_model,
     fetchone_model,
 )
+from ltsapi.models.enum import AuthRole
 from ltsapi.models.auth import GetAuth, UpdateAuth
 
 
@@ -82,6 +83,13 @@ class AuthManager:
         if model is None:
             raise ApiError('Invalid API key.', status_code=401)
 
+        # Do not update bearer token if the role is batch and the bearer token
+        # is already set
+        if (model.role == AuthRole.BATCH
+                and model.bearer is not None
+                and model.bearer != ''):
+            return model
+
         new_model = UpdateAuth(
             bearer=self._generate_bearer(key),
             name=model.name,
@@ -90,7 +98,7 @@ class AuthManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            model.dict(),
+            new_model.dict(),
             key_name='key',
             key_value=key,
             commit=commit)

@@ -2,7 +2,8 @@ import pytest
 
 from ltsapi.db import DBContext
 from ltsapi.managers.auth import AuthManager
-from tests.fixtures import AUTH_BEARER
+from ltsapi.models.enum import AuthRole
+from tests.fixtures import AUTH_BEARER, AUTH_KEY_BATCH, AUTH_KEY_VIEWER
 from tests.helpers import DatabaseTest
 from tests.mocks.logging import FakeLogger
 
@@ -14,10 +15,10 @@ class TestAuthManager(DatabaseTest):
         'key, expected_item',
         [
             (
-                'd265aed699f7409ac0ec6fe07ee9cb11',  # key
+                AUTH_KEY_BATCH,  # key
                 {
                     'bearer': None,
-                    'name': 'Test',
+                    'name': 'Test batch without bearer',
                     'role': 'batch',
                 },
             ),
@@ -37,25 +38,43 @@ class TestAuthManager(DatabaseTest):
         dict_item = db_item.dict()
         assert dict_item == expected_item
 
-    @pytest.mark.parametrize(
-        'key',
-        [
-            'd265aed699f7409ac0ec6fe07ee9cb11',  # key
-        ])
-    def test_refresh_bearer(
+    def test_refresh_bearer_when_batch_role(
             self,
-            key: int,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
-        """Test method refresh_bearer."""
+        """Test method refresh_bearer when the role is batch."""
+        key_role_batch = AUTH_KEY_BATCH
         manager = AuthManager(db=db_context, logger=fake_logger)
 
-        old_item = manager.get_by_key(key)
-        assert old_item is not None
+        first_model = manager.refresh_bearer(key_role_batch)
+        assert first_model is not None
+        assert first_model.role == AuthRole.BATCH
 
-        new_item = manager.refresh_bearer(key)
-        assert new_item is not None
-        assert old_item.bearer != new_item.bearer
+        second_model = manager.refresh_bearer(key_role_batch)
+        assert second_model is not None
+
+        assert first_model.bearer == second_model.bearer
+        assert first_model.name == second_model.name
+        assert first_model.role == second_model.role
+
+    def test_refresh_bearer_when_viewer_role(
+            self,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method refresh_bearer when the role is viewer."""
+        key_role_viewer = AUTH_KEY_VIEWER
+        manager = AuthManager(db=db_context, logger=fake_logger)
+
+        first_model = manager.refresh_bearer(key_role_viewer)
+        assert first_model is not None
+        assert first_model.role == AuthRole.VIEWER
+
+        second_model = manager.refresh_bearer(key_role_viewer)
+        assert second_model is not None
+
+        assert first_model.bearer != second_model.bearer
+        assert first_model.name == second_model.name
+        assert first_model.role == second_model.role
 
     @pytest.mark.parametrize(
         'bearer, expected_item',
@@ -64,7 +83,7 @@ class TestAuthManager(DatabaseTest):
                 f'Bearer {AUTH_BEARER}',
                 {
                     'bearer': f'{AUTH_BEARER}',
-                    'name': 'Test authenticated',
+                    'name': 'Test batch with bearer',
                     'role': 'batch',
                 },
             ),

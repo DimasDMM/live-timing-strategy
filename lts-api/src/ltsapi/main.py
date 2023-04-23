@@ -21,6 +21,8 @@ HEADER_BEARER = 'Authorization'
 
 # Endpoints that do not require authentication
 NON_AUTH_ENDPOINTS = [
+    '/docs',
+    '/openapi.json',
     '/v1/health',
     '/v1/auth',
 ]

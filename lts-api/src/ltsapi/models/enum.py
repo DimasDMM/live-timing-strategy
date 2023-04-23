@@ -18,6 +18,14 @@ class EnumBase(Enum):
         return hash(self.value)
 
 
+class AuthRole(str, EnumBase):
+    """Type of role."""
+
+    ADMIN = 'admin'
+    BATCH = 'batch'
+    VIEWER = 'viewer'
+
+
 class CompetitionStatus(str, EnumBase):
     """Status of a competition."""
 

@@ -13,7 +13,7 @@ from ltsapi.router import _build_db_connection
 
 router = APIRouter(
     prefix='/' + API_VERSION,  # noqa
-    tags=['Timing'])
+    tags=['Auth and health'])
 _logger = _build_logger(__package__)
 
 
@@ -21,7 +21,7 @@ _logger = _build_logger(__package__)
         path='/health',
         summary='Get API status')
 async def get_health() -> GetHealth:
-    """Get current timing of a specific competition."""
+    """Get API health."""
     return GetHealth(status='ok')
 
 

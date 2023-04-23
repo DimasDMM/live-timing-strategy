@@ -9,7 +9,7 @@ CREATE TABLE `api_auth` (
   `key` VARCHAR(255) NOT NULL,
   `bearer` VARCHAR(255) NULL,
   `name` VARCHAR(255) NOT NULL,
-  `role` ENUM('admin', 'batch', 'user') NOT NULL DEFAULT 'user',
+  `role` ENUM('admin', 'batch', 'viewer') NOT NULL DEFAULT 'viewer',
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `key` (`key`)

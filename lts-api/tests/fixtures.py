@@ -8,9 +8,14 @@ from tests.mocks.logging import FakeLogger
 # Sample code of a competition for testing
 TEST_COMPETITION_CODE = 'sample-code'
 
-# Bearer token and API key included in the sample data for testing
+# Bearer token in the sample data for testing
 AUTH_BEARER = 'e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9'
-AUTH_KEY = 'd265aed699f7409ac0ec6fe07ee9cb11'
+
+# API key included in the sample data that still has not a bearer token
+AUTH_KEY_BATCH = '912ec803b2ce49e4a541068d495ab570'
+
+# API key included in the sample data associated with the role viewer
+AUTH_KEY_VIEWER = 'd265aed699f7409ac0ec6fe07ee9cb11'
 
 
 @pytest.fixture
