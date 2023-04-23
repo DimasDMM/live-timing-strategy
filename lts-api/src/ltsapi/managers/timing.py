@@ -152,7 +152,7 @@ class TimingManager:
             competition_id=competition_id, team_id=team_id, driver_id=driver_id)
         if previous_model is None:
             raise ApiError(
-                message=('The requested timing data does not exist.'),
+                message='The requested timing data does not exist.',
                 status_code=400)
 
         key_name = ['competition_id']

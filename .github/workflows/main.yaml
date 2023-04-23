@@ -11,7 +11,7 @@ on:
 jobs:
   pre-clean-badge:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
     - name: Clean coverage badge
       run: |
@@ -20,7 +20,7 @@ jobs:
 
   test-lts-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -31,12 +31,40 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Load environment variables
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: 'lts-pipeline/.env.local'    
+        expand: 'true'
+
+    - name: Prepare network of Docker
+      run: |
+        docker network create lts-network
+
+    - name: Start API of LTS
+      run: |
+        cd lts-api
+        docker build --tag lts-api .
+        docker run -d --name lts-api --network lts-network --env-file .env.indocker -p ${{ env.API_PORT }}:80 lts-api
+
+    - name: Start MySQL
+      run: |
+        docker run -d --name lts-mysql --network lts-network -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
+
     - name: Install dependencies
       run: |
         cd lts-pipeline
         python -m pip install --upgrade pip
         python -m pip install tox==4.4.7 poetry==1.4.0
         poetry install
+
+    - name: Wait for MySQL
+      run: |
+        sh ./lts-api/bin/wait-database.sh
+
+    - name: Wait for API REST
+      run: |
+        sh ./lts-api/bin/wait-api.sh
 
     - name: Run tests
       run: |
@@ -67,7 +95,7 @@ jobs:
 
   linter-lts-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -90,7 +118,7 @@ jobs:
 
   mypy-lts-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -113,7 +141,7 @@ jobs:
 
   test-lts-api:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -132,7 +160,6 @@ jobs:
 
     - name: Start MySQL
       run: |
-        cd lts-api
         docker run -d --name lts-mysql -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
 
     - name: Install dependencies
@@ -175,7 +202,7 @@ jobs:
 
   linter-lts-api:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -198,7 +225,7 @@ jobs:
 
   mypy-lts-api:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs: pre-clean-badge
     steps:
     - name: Checkout
@@ -221,10 +248,14 @@ jobs:
 
   post-clean-badge:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     needs:
     - test-lts-api
     - test-lts-pipeline
+    - linter-lts-api
+    - linter-lts-pipeline
+    - mypy-lts-api
+    - mypy-lts-pipeline
     steps:
     - name: Clean coverage badge
       run: |

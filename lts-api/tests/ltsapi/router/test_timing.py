@@ -461,7 +461,7 @@ class TestTimingRouter(DatabaseTest):
                 400,  # expected_status_code
                 ErrorResponse(
                     status_code=400,
-                    message='The requested timing data does not exist.'
+                    message='The requested timing data does not exist.',
                 ),
                 ErrorResponse,  # expected_type
             ),
@@ -486,7 +486,7 @@ class TestTimingRouter(DatabaseTest):
                 400,  # expected_status_code
                 ErrorResponse(
                     status_code=400,
-                    message='The requested timing data does not exist.'
+                    message='The requested timing data does not exist.',
                 ),
                 ErrorResponse,  # expected_type
             ),
@@ -795,7 +795,7 @@ class TestTimingRouter(DatabaseTest):
                 ErrorResponse,  # expected_type
             ),
         ])
-    def test_get_history_driver_timing(
+    def test_get_history_timing(
             self,
             headers: Optional[Dict[str, str]],
             competition_id: int,
