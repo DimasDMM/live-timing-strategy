@@ -7,13 +7,69 @@
 	},
 	"item": [
 		{
+			"name": "Auth & Health",
+			"item": [
+				{
+					"name": "Refresh bearer token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"912ec803b2ce49e4a541068d495ab570\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/auth",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/v1/health",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Competitions (base)",
 			"item": [
 				{
 					"name": "Get all competitions",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions",
 							"host": [
@@ -31,7 +87,13 @@
 					"name": "Add a competition",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"new-track-added\",\r\n    \"name\": \"New Karting Competition\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
@@ -58,7 +120,13 @@
 					"name": "Get a competition",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2",
 							"host": [
@@ -77,7 +145,13 @@
 					"name": "Get a competition (by code)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/filter/code/north-endurance-2023-02-26",
 							"host": [
@@ -89,6 +163,13 @@
 								"filter",
 								"code",
 								"north-endurance-2023-02-26"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -98,7 +179,13 @@
 					"name": "Get the metadata",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/metadata",
 							"host": [
@@ -118,7 +205,13 @@
 					"name": "Get the metadata (history)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/metadata/history",
 							"host": [
@@ -139,7 +232,13 @@
 					"name": "Update the metadata",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"reference_time\": null,\r\n    \"reference_current_offset\": null,\r\n    \"status\": \"ongoing\",\r\n    \"stage\": \"qualifying\",\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
@@ -168,7 +267,13 @@
 					"name": "Get settings",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/1/settings",
 							"host": [
@@ -188,7 +293,13 @@
 					"name": "Update settings",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"length\": 321,\r\n    \"length_unit\": \"laps\",\r\n    \"pit_time\": null,\r\n    \"min_number_pits\": null\r\n}\r\n",
@@ -222,7 +333,13 @@
 					"name": "Get all parsers settings",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/parsers/settings",
 							"host": [
@@ -243,7 +360,13 @@
 					"name": "Add a parser setting",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"new-setting\",\r\n    \"value\": \"new-value\"\r\n}",
@@ -273,7 +396,13 @@
 					"name": "Delete all parsers settings",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/parsers/settings",
 							"host": [
@@ -294,7 +423,13 @@
 					"name": "Get a parser setting",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/timing-gap",
 							"host": [
@@ -316,7 +451,13 @@
 					"name": "Update a parser setting",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"value\": \"timing-gap-value-updated\"\r\n}",
@@ -347,7 +488,13 @@
 					"name": "Get all tracks",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/tracks",
 							"host": [
@@ -365,7 +512,13 @@
 					"name": "Add a track",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"New track 2\"\r\n}",
@@ -392,7 +545,13 @@
 					"name": "Update a track",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"Karting North Updated\"\r\n}",
@@ -425,7 +584,13 @@
 					"name": "Get all teams",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/teams",
 							"host": [
@@ -445,7 +610,13 @@
 					"name": "Add a team",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"participant_code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101,\r\n    \"reference_time_offset\": 0\r\n}",
@@ -474,7 +645,13 @@
 					"name": "Get team",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/1/teams/1",
 							"host": [
@@ -495,7 +672,13 @@
 					"name": "Update a team",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"CKM 1 Updated\",\r\n    \"number\": 51\r\n}",
@@ -525,18 +708,24 @@
 					"name": "Get all drivers in a team",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers",
+							"raw": "{{api_url}}/v1/competitions/2/teams/3/drivers",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
 								"competitions",
-								"1",
+								"2",
 								"teams",
-								"1",
+								"3",
 								"drivers"
 							]
 						}
@@ -547,7 +736,13 @@
 					"name": "Add a driver to a team",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
@@ -578,7 +773,13 @@
 					"name": "Update a driver of a team",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
@@ -610,7 +811,13 @@
 					"name": "Get all drivers",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/1/drivers",
 							"host": [
@@ -630,7 +837,13 @@
 					"name": "Add a driver (no team)",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
@@ -659,7 +872,13 @@
 					"name": "Get driver (w/wo team)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/1/drivers/1",
 							"host": [
@@ -680,7 +899,13 @@
 					"name": "Update driver (no team)",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
@@ -715,7 +940,13 @@
 					"name": "Get current timing",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing",
 							"host": [
@@ -735,7 +966,13 @@
 					"name": "Get current timing (by driver)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing/driver/5",
 							"host": [
@@ -757,7 +994,13 @@
 					"name": "Get history timing (by driver)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing/driver/5/history",
 							"host": [
@@ -780,7 +1023,13 @@
 					"name": "Get current timing (by team)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing/team/4",
 							"host": [
@@ -802,7 +1051,13 @@
 					"name": "Update current timing (by team)",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"driver_id\": 6,\r\n    \"position\": null,\r\n    \"time\": null,\r\n    \"best_time\": null,\r\n    \"lap\": 5,\r\n    \"interval\": null,\r\n    \"interval_unit\": null,\r\n    \"stage\": null,\r\n    \"pit_time\": null,\r\n    \"kart_status\": null,\r\n    \"fixed_kart_status\": null,\r\n    \"number_pits\": null\r\n}\r\n",
@@ -833,7 +1088,13 @@
 					"name": "Get history timing (by team)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing/team/4/history",
 							"host": [
@@ -856,7 +1117,13 @@
 					"name": "Get history timing (all)",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{api_url}}/v1/competitions/2/timing/history",
 							"host": [
@@ -900,6 +1167,11 @@
 		{
 			"key": "api_url",
 			"value": "localhost:8090",
+			"type": "string"
+		},
+		{
+			"key": "bearer",
+			"value": "e51489a37cf59a7cdc9fcc6320722ea089adfe0bfc26a8a9544a9fa13f90c08f",
 			"type": "string"
 		}
 	]
