@@ -192,8 +192,9 @@ def _build_file_listener_process(
     )
     ws_listener = FileListenerStep(
         logger,
-        single_file=True,
         competition_code=config.competition_code,
+        single_file=True,
+        infinite_loop=True,
         message_source=config.message_source,
         next_step=queue_distributor,
     )

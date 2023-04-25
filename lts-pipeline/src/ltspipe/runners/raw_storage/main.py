@@ -5,7 +5,7 @@ import os
 from ltspipe.configs import RawStorageConfig
 from ltspipe.steps.kafka import KafkaConsumerStep
 from ltspipe.steps.loggers import LogInfoStep
-from ltspipe.steps.filesystem import FileStorageStep
+from ltspipe.steps.filesystem import MessageStorageStep, RawStorageStep
 from ltspipe.runners import BANNER_MSG
 
 
@@ -28,13 +28,18 @@ def main(
     logger.debug(f'Topic consumer: {config.kafka_consume}')
 
     logger.info('Init processes...')
-    file_storage = FileStorageStep(
+    raw_storage = RawStorageStep(
         logger=logger,
         output_path=config.output_path,
     )
+    message_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.output_path,
+        next_step=raw_storage
+    )
     info_step = LogInfoStep(
         logger,
-        next_step=file_storage,
+        next_step=message_storage,
     )
     kafka_consumer = KafkaConsumerStep(
         bootstrap_servers=config.kafka_servers,

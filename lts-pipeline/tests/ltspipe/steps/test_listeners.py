@@ -47,34 +47,33 @@ class TestFileListenerStep:
 
     def test_start_step_without_file(self, mocker: MockerFixture) -> None:
         """Test method run_step."""
-        with tempfile.TemporaryDirectory() as tmp_path:
-            # Apply mock to input() function
-            file_path = 'unknown/file.txt'
-            mocker.patch('builtins.input', return_value=file_path)
+        # Apply mock to input() function
+        file_path = 'unknown/file.txt'
+        mocker.patch('builtins.input', return_value=file_path)
 
-            # Create a mock of the next step
-            next_step = MagicMock()
-            next_step.get_children.return_value = []
+        # Create a mock of the next step
+        next_step = MagicMock()
+        next_step.get_children.return_value = []
 
-            # Create an instance of FileListenerStep
-            fake_logger = FakeLogger()
-            step = FileListenerStep(
-                logger=fake_logger,
-                competition_code=TEST_COMPETITION_CODE,
-                single_file=True,
-                infinite_loop=False,
-                message_source=MessageSource.SOURCE_DUMMY,
-                next_step=next_step,
-            )
+        # Create an instance of FileListenerStep
+        fake_logger = FakeLogger()
+        step = FileListenerStep(
+            logger=fake_logger,
+            competition_code=TEST_COMPETITION_CODE,
+            single_file=True,
+            infinite_loop=False,
+            message_source=MessageSource.SOURCE_DUMMY,
+            next_step=next_step,
+        )
 
-            # Call start_step and validate that the next step did not receive
-            # anything
-            step.start_step()
-            assert next_step.run_step.call_count == 0
+        # Call start_step and validate that the next step did not receive
+        # anything
+        step.start_step()
+        assert next_step.run_step.call_count == 0
 
-            # Also, check that the get_children method returns the mocks
-            children = step.get_children()
-            assert children == [next_step]
+        # Also, check that the get_children method returns the mocks
+        children = step.get_children()
+        assert children == [next_step]
 
     def _create_sample_file(self, path: str, content: str) -> str:
         """Create a file with some sample content."""

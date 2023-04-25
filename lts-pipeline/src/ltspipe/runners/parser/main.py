@@ -15,7 +15,7 @@ from ltspipe.parsers.websocket import WsInitParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
-from ltspipe.steps.filesystem import FileStorageStep
+from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.loggers import LogInfoStep
 from ltspipe.steps.mappers import NotificationMapperStep, ParsersStep
@@ -229,11 +229,11 @@ def _build_parsers_pipe(config: ParserConfig, logger: Logger) -> ParsersStep:
         topic=config.kafka_produce,
         value_serializer=msgpack.dumps,
     )
-    errors_storage = FileStorageStep(
+    errors_storage = MessageStorageStep(
         logger=logger,
         output_path=config.errors_path,
     )
-    unknowns_storage = FileStorageStep(
+    unknowns_storage = MessageStorageStep(
         logger=logger,
         output_path=config.unknowns_path,
     )
