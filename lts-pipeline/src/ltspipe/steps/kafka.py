@@ -62,6 +62,7 @@ class KafkaConsumerStep(StartStep):
             group_id: Optional[str],
             value_deserializer: Callable) -> _KafkaConsumer:
         """Wrap builder of KafkaConsumer."""
+        raise Exception('>> NOT MOCKED')
         return _KafkaConsumer(
             *topics,
             bootstrap_servers=bootstrap_servers,
@@ -137,6 +138,7 @@ class KafkaProducerStep(MidStep):
             bootstrap_servers: List[str],
             value_serializer: Callable) -> _KafkaProducer:
         """Wrap builder of KafkaProducer."""
+        raise Exception('>> NOT MOCKED')
         return _KafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=value_serializer,

@@ -3,7 +3,8 @@ import msgpack  # type: ignore
 from multiprocessing import Manager, Process
 from multiprocessing.managers import DictProxy
 import os
-from typing import List
+from time import sleep
+from typing import Any, Callable, Dict, Iterable, List
 
 from ltspipe.configs import ParserConfig
 from ltspipe.data.auth import AuthData
@@ -11,14 +12,14 @@ from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import WsInitParser
-from ltspipe.runners import BANNER_MSG, do_auth
+from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import FileStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.loggers import LogInfoStep
-from ltspipe.steps.modifiers import FlagModifierStep
 from ltspipe.steps.mappers import NotificationMapperStep, ParsersStep
+from ltspipe.steps.modifiers import FlagModifierStep
 from ltspipe.steps.triggers import WsInitTriggerStep
 
 
@@ -45,24 +46,86 @@ def main(config: ParserConfig, logger: Logger) -> None:
     logger.debug(f'Topic consumer: {config.kafka_consume}')
 
     with Manager() as manager:
-        logger.info('Init script...')
+        logger.info('Init shared-memory...')
         flags = manager.dict()
         queue = manager.dict()
-        raw_consumer = _build_raw_process(config, logger, flags, queue)
-        notification_listener = _build_notifications_process(
-            config, logger, auth_data, flags, queue)
 
-        logger.info('Start notifications listener...')
-        p_not = Process(
-            target=notification_listener.start_step())  # type: ignore
+        logger.info('Init processes...')
+        p_not = _create_process(
+            target=_run_notifications_listener,
+            args=(config, auth_data, flags, queue))  # type: ignore
+        p_raw = _create_process(
+            target=_run_raw_listener,
+            args=(config, flags, queue))  # type: ignore
+        logger.info('Processes created')
+
         p_not.start()
-
-        logger.info('Start raw-data consumer...')
-        p_raw = Process(target=raw_consumer.start_step())  # type: ignore
         p_raw.start()
+        logger.info('Processes started')
 
-        p_not.join()
-        p_raw.join()
+        processes = {'notifications': p_not, 'raw': p_raw}
+        _join_processes(logger, processes)
+
+
+def _create_process(target: Callable, args: Iterable[Any]) -> Process:
+    """Create a parallel process."""
+    return Process(
+        target=target,
+        args=args)  # type: ignore
+
+
+def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
+    """Monitor processes and kill them if one of them dies."""
+    process_died = False
+    process_finished = False
+    while not process_finished:
+        for p_name, p in processes.items():
+            if not p.is_alive():
+                process_finished = True
+                if p.exitcode != 0:
+                    logger.warning(f'A process has died: {p_name}')
+                    process_died = True
+        if not process_finished:
+            sleep(5)
+
+    for p_name, p in processes.items():
+        logger.warning(f'Kill process: {p_name}')
+        p.kill()
+
+    for _, p in processes.items():
+        p.join()
+
+    if process_died:
+        exit(1)
+
+
+def _run_notifications_listener(
+        config: ParserConfig,
+        auth_data: AuthData,
+        flags: DictProxy,
+        queue: DictProxy) -> None:
+    """Run process with the notifications listener."""
+    logger = build_logger(__package__, config.verbosity)
+    logger.info('Create input listener...')
+    notification_listener = _build_notifications_process(
+        config, logger, auth_data, flags, queue)
+
+    logger.info('Start input listener...')
+    notification_listener.start_step()
+
+
+def _run_raw_listener(
+        config: ParserConfig,
+        flags: DictProxy,
+        queue: DictProxy) -> None:
+    """Run process with the raw data listener."""
+    logger = build_logger(__package__, config.verbosity)
+    logger.info('Create raw listener...')
+    notification_listener = _build_raw_process(
+        config, logger, flags, queue)
+
+    logger.info('Start raw listener...')
+    notification_listener.start_step()
 
 
 def _build_raw_process(

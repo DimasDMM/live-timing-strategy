@@ -107,6 +107,8 @@ class CompetitionInfoInitStep(MidStep):
     def _init_competition_info(self, competition_code: str) -> None:
         """Initialize competition info."""
         if self._force_update or competition_code not in self._competitions:
+            self._logger.debug(
+                f'Init competition info of {competition_code}...')
             info = init_competition_info(
                 self._api_lts,
                 bearer=self._auth_data.bearer,

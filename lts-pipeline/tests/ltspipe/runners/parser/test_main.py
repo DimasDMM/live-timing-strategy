@@ -40,6 +40,7 @@ from tests.conftest import (
 )
 from tests.helpers import load_raw_message
 from tests.mocks.logging import FakeLogger
+from tests.mocks.multiprocessing import MockProcess
 
 API_LTS = 'http://localhost:8090/'
 EXCLUDED_KEYS = {
@@ -58,6 +59,13 @@ PARSERS_SETTINGS = {
     ParserSettings.TIMING_PIT_TIME: 'c10',
     ParserSettings.TIMING_NUMBER_PITS: 'c11',
 }
+
+
+def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
+    """Mock parallel processes by sequential ones."""
+    mocker.patch(
+        'ltspipe.runners.parser.main._create_process',
+        new=MockProcess)
 
 
 @pytest.mark.parametrize(
@@ -253,6 +261,7 @@ def test_main(
         )
 
         _apply_mock_api(mocker, API_LTS)
+        _mock_multiprocessing_process(mocker)
         mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
         mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
         mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)

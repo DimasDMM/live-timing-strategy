@@ -36,6 +36,7 @@ from tests.conftest import (
     TEST_COMPETITION_CODE,
 )
 from tests.mocks.logging import FakeLogger
+from tests.mocks.multiprocessing import MockProcess
 from tests.mocks.requests import (
     MapRequestItem,
     MapRequestMethod,
@@ -52,6 +53,13 @@ PARSERS_SETTINGS = {
     ParserSettings.TIMING_NAME: 'timing-name-value',
     ParserSettings.TIMING_RANKING: 'timing-ranking-value',
 }
+
+
+def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
+    """Mock parallel processes by sequential ones."""
+    mocker.patch(
+        'ltspipe.runners.api_sender.main._create_process',
+        new=MockProcess)
 
 
 @pytest.mark.parametrize(
@@ -290,6 +298,7 @@ def test_main(
         )
 
         _apply_mock_api(mocker, API_LTS)
+        _mock_multiprocessing_process(mocker)
         mock_multiprocessing_dict(mocker, initial_dicts=[in_competitions])
         mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
         mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)

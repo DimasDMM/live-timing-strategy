@@ -20,6 +20,7 @@ from tests.conftest import (
 )
 from tests.helpers import load_raw_message
 from tests.mocks.logging import FakeLogger
+from tests.mocks.multiprocessing import MockProcess
 
 
 COMPETITION_CODE = 'test-competition'
@@ -29,6 +30,13 @@ EXCLUDED_KEYS = {
 }
 KAFKA_SERVERS = ['localhost:9092']
 WEBSOCKET_URI = 'ws://localhost:8000/ws/'
+
+
+def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
+    """Mock parallel processes by sequential ones."""
+    mocker.patch(
+        'ltspipe.runners.ws_listener.main._create_process',
+        new=MockProcess)
 
 
 @pytest.mark.parametrize(
@@ -159,6 +167,7 @@ def test_main(
     )
 
     in_flags: Dict[str, Dict[FlagName, Any]] = {}
+    _mock_multiprocessing_process(mocker)
     mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
     mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
     mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)

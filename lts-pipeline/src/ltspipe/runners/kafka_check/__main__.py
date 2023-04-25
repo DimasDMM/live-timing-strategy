@@ -16,20 +16,20 @@ parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the test kafka script.')
 parser.add_argument(
-    '--kafka_servers',
-    nargs='+',
-    help='File that contains the credentials.',
-    required=True)
-parser.add_argument(
-    '--kafka_subscribe',
+    '--kafka_consume',
     type=str,
-    help='Kafka topic to suscribe.',
+    help='Kafka topic to consume.',
     default=DEFAULT_TEST_TOPIC)
 parser.add_argument(
     '--kafka_group',
     type=str,
     help='Suscribe to the topic with a specific group name.',
     default=DEFAULT_TEST_GROUP)
+parser.add_argument(
+    '--kafka_servers',
+    nargs='+',
+    help='File that contains the credentials.',
+    required=True)
 parser.add_argument(
     '--test_mode',
     help='Test mode: "consumer" or "producer".',

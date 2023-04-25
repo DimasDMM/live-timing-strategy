@@ -27,7 +27,7 @@ def main(
 
     logger.debug(f'Topic consumer: {config.kafka_consume}')
 
-    logger.info('Init script...')
+    logger.info('Init processes...')
     file_storage = FileStorageStep(
         logger=logger,
         output_path=config.output_path,
@@ -43,6 +43,7 @@ def main(
         next_step=info_step,
         group_id=config.kafka_group,
     )
+    logger.info('Processes created')
 
     logger.info('Start Kafka consumer...')
     kafka_consumer.start_step()

@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(
     description='Arguments of the raw storage script.')
 parser.add_argument(
     '--api_lts',
-    nargs='+',
+    type=str,
     help='URI of API REST of LTS app.',
     required=True)
 parser.add_argument(
@@ -29,6 +29,11 @@ parser.add_argument(
     type=str,
     help='Path to store errors during parsing.',
     default=DEFAULT_PARSER_ERRORS_PATH)
+parser.add_argument(
+    '--kafka_consume',
+    type=str,
+    help='Kafka topic to consume.',
+    default=DEFAULT_RAW_MESSAGES_TOPIC)
 parser.add_argument(
     '--kafka_group',
     type=str,
@@ -49,11 +54,6 @@ parser.add_argument(
     nargs='+',
     help='List of Kafka brokers separated by commas.',
     required=True)
-parser.add_argument(
-    '--kafka_subscribe',
-    type=str,
-    help='Kafka topic to suscribe.',
-    default=DEFAULT_RAW_MESSAGES_TOPIC)
 parser.add_argument(
     '--unknowns_path',
     type=str,

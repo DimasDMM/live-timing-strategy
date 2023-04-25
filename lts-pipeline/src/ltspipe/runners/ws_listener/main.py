@@ -1,7 +1,9 @@
-import logging
+from logging import Logger
 import msgpack  # type: ignore
 from multiprocessing import Manager, Process
 from multiprocessing.managers import DictProxy
+from time import sleep
+from typing import Any, Callable, Dict, Iterable
 
 from ltspipe.configs import WsListenerConfig
 from ltspipe.data.enum import FlagName
@@ -18,13 +20,13 @@ from ltspipe.steps.triggers import WsInitTriggerStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 
 
-def main(config: WsListenerConfig, logger: logging.Logger) -> None:
+def main(config: WsListenerConfig, logger: Logger) -> None:
     """
     Process to listen incoming data from a websocket.
 
     Params:
         config (WsListenerConfig): configuration to run the method.
-        logger (logging.Logger): logging class.
+        logger (Logger): logging class.
     """
     logger.info(BANNER_MSG)
     logger.debug(config)
@@ -42,21 +44,53 @@ def main(config: WsListenerConfig, logger: logging.Logger) -> None:
             config, logger, flags, queue)
 
         logger.info('Start notifications listener...')
-        p_not = Process(
-            target=notification_listener.start_step())  # type: ignore
+        p_not = _create_process(
+            target=notification_listener.start_step, args=())
         p_not.start()
 
         logger.info('Start websocket listener...')
-        p_ws = Process(target=ws_listener.start_step())  # type: ignore
+        p_ws = _create_process(target=ws_listener.start_step, args=())
         p_ws.start()
 
-        p_not.join()
-        p_ws.join()
+        processes = {'notifications': p_not, 'websocket': p_ws}
+        _join_processes(logger, processes)
+
+
+def _create_process(target: Callable, args: Iterable[Any]) -> Process:
+    """Create a parallel process."""
+    return Process(
+        target=target,
+        args=args)  # type: ignore
+
+
+def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
+    """Monitor processes and kill them if one of them dies."""
+    process_died = False
+    process_finished = False
+    while not process_finished:
+        for p_name, p in processes.items():
+            if not p.is_alive():
+                process_finished = True
+                if p.exitcode != 0:
+                    logger.warning(f'A process has died: {p_name}')
+                    process_died = True
+        if not process_finished:
+            sleep(5)
+
+    for p_name, p in processes.items():
+        logger.warning(f'Kill process: {p_name}')
+        p.kill()
+
+    for _, p in processes.items():
+        p.join()
+
+    if process_died:
+        exit(1)
 
 
 def _build_notifications_process(
         config: WsListenerConfig,
-        logger: logging.Logger,
+        logger: Logger,
         flags: DictProxy,
         queue: DictProxy) -> KafkaConsumerStep:
     """Build process with notifications listener."""
@@ -95,7 +129,7 @@ def _build_notifications_process(
 
 def _build_websocket_process(
         config: WsListenerConfig,
-        logger: logging.Logger,
+        logger: Logger,
         flags: DictProxy,
         queue: DictProxy) -> WebsocketListenerStep:
     """Build process with websocket listener."""
