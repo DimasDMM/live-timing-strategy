@@ -125,7 +125,7 @@ graph TD;
 Local Python command:
 ```sh
 python -m ltspipe.runners.parser \
-  --api_lts localhost:8090 \
+  --api_lts http://localhost:8090 \
   --kafka_servers localhost:9092 \
   --verbosity 1
 ```
@@ -172,6 +172,14 @@ graph TD;
   F -- 'init-finished' --> H[API: Get info of competition]
 
   B -. Shared memory .- H
+```
+
+Local Python command:
+```sh
+python -m ltspipe.runners.api_sender \
+  --api_lts http://localhost:8090 \
+  --kafka_servers localhost:9092 \
+  --verbosity 1
 ```
 
 Arguments:
@@ -226,32 +234,7 @@ WIP
 
 ## Test
 
-### Kafka
-
-Check that Kafka works correctly with a local dummy consumer:
-```sh
-python -m ltspipe.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --kafka_group test-group \
-  --test_mode consumer \
-  --verbosity 1
-```
-
-And a local dummy producer:
-```sh
-python -m ltspipe.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --test_mode producer \
-  --verbosity 1
-```
-
-Note that, if we are using a different Kafka, we may need to replace the
-value of `--kafka_servers` with our list of Kafka brokers (separated) by
-commas.
-
-### Python code
+### Code tests
 
 > The tests include some functional ones, thus this command requires that it
   exists an API and a database running. These tests also require that the
@@ -286,3 +269,55 @@ Get-Content .env.local | foreach {
   }
 }
 ```
+
+### Pipeline: Check Kafka
+
+Check that Kafka works correctly with a local dummy consumer:
+```sh
+python -m ltspipe.runners.kafka_check \
+  --kafka_servers localhost:9092 \
+  --kafka_topic test-topic \
+  --kafka_group test-group \
+  --test_mode consumer \
+  --verbosity 1
+```
+
+And a local dummy producer:
+```sh
+python -m ltspipe.runners.kafka_check \
+  --kafka_servers localhost:9092 \
+  --kafka_topic test-topic \
+  --test_mode producer \
+  --verbosity 1
+```
+
+Note that, if we are using a different Kafka, we may need to replace the
+value of `--kafka_servers` with our list of Kafka brokers (separated) by
+commas.
+
+### Pipeline: Manual listener
+
+It is common that we want to introduce the input manually so we validate that
+the whole pipeline is working correctly.
+
+Local Python command:
+```sh
+python -m src.ltspipe.runners.manual_listener \
+  --competition_code test-competition \
+  --message_source ws-listener \
+  --kafka_servers localhost:9092 \
+  --verbosity 1
+```
+
+Arguments:
+- `--competition_code`: (**mandatory**) Code of the competition.
+- `--kafka_notifications`: (optional) Topic of Kafka to read and write
+  notifications. By default, it is `notifications`.
+- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
+  it is `raw-messages`.
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--message_source`: (**mandatory**) Source of the messages to mock.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.

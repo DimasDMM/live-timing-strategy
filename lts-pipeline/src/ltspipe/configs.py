@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from ltspipe.data.enum import EnumBase
+from ltspipe.messages import MessageSource
 
 
 DEFAULT_API_SENDER_GROUP = 'api-sender'
@@ -47,6 +48,18 @@ class KafkaCheckConfig:
     test_mode: KafkaMode
     kafka_group: str = field(default=DEFAULT_TEST_GROUP)
     kafka_topic: str = field(default=DEFAULT_TEST_TOPIC)
+    verbosity: int = field(default=DEFAULT_VERBOSITY)
+
+
+@dataclass(frozen=True)
+class ManualListenerConfig:
+    """Class to store the settings of the CLI script."""
+
+    competition_code: str
+    message_source: MessageSource
+    kafka_servers: List[str]
+    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
+    kafka_produce: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 
