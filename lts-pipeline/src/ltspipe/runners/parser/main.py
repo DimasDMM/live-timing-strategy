@@ -11,7 +11,7 @@ from ltspipe.data.auth import AuthData
 from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket import WsInitParser
+from ltspipe.parsers.websocket.initial import InitialDataParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
@@ -47,16 +47,17 @@ def main(config: ParserConfig, logger: Logger) -> None:
 
     with Manager() as manager:
         logger.info('Init shared-memory...')
+        competitions = manager.dict()
         flags = manager.dict()
         queue = manager.dict()
 
         logger.info('Init processes...')
         p_not = _create_process(
             target=_run_notifications_listener,
-            args=(config, auth_data, flags, queue))  # type: ignore
+            args=(config, auth_data, competitions, flags, queue))
         p_raw = _create_process(
             target=_run_raw_listener,
-            args=(config, flags, queue))  # type: ignore
+            args=(config, auth_data, competitions, flags, queue))
         logger.info('Processes created')
 
         p_not.start()
@@ -102,13 +103,14 @@ def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
 def _run_notifications_listener(
         config: ParserConfig,
         auth_data: AuthData,
+        competitions: DictProxy,
         flags: DictProxy,
         queue: DictProxy) -> None:
     """Run process with the notifications listener."""
     logger = build_logger(__package__, config.verbosity)
     logger.info('Create input listener...')
     notification_listener = _build_notifications_process(
-        config, logger, auth_data, flags, queue)
+        config, logger, auth_data, competitions, flags, queue)
 
     logger.info('Start input listener...')
     notification_listener.start_step()
@@ -116,31 +118,43 @@ def _run_notifications_listener(
 
 def _run_raw_listener(
         config: ParserConfig,
+        auth_data: AuthData,
+        competitions: DictProxy,
         flags: DictProxy,
         queue: DictProxy) -> None:
     """Run process with the raw data listener."""
     logger = build_logger(__package__, config.verbosity)
     logger.info('Create raw listener...')
-    notification_listener = _build_raw_process(
-        config, logger, flags, queue)
+    rawe_listener = _build_raw_process(
+        config, logger, auth_data, competitions, flags, queue)
 
     logger.info('Start raw listener...')
-    notification_listener.start_step()
+    rawe_listener.start_step()
 
 
 def _build_raw_process(
         config: ParserConfig,
         logger: Logger,
+        auth_data: AuthData,
+        competitions: DictProxy,
         flags: DictProxy,
         queue: DictProxy) -> KafkaConsumerStep:
     """Build process that consumes the raw data."""
-    parsers_pipe = _build_parsers_pipe(config=config, logger=logger)
+    parsers_pipe = _build_parsers_pipe(config, logger, competitions)
+
+    api_getter = CompetitionInfoInitStep(
+        logger=logger,
+        api_lts=config.api_lts,
+        auth_data=auth_data,
+        competitions=competitions,  # type: ignore
+        next_step=parsers_pipe,
+    )
     queue_distributor = QueueDistributorStep(
         logger=logger,
         flags=flags,  # type: ignore
         flag_name=FlagName.WAIT_INIT,
         queue=queue,  # type: ignore
-        next_step=parsers_pipe,
+        next_step=api_getter,
     )
     init_trigger = WsInitTriggerStep(
         logger=logger,
@@ -167,10 +181,11 @@ def _build_notifications_process(
         config: ParserConfig,
         logger: Logger,
         auth_data: AuthData,
+        competitions: DictProxy,
         flags: DictProxy,
         queue: DictProxy) -> KafkaConsumerStep:
     """Build process with notifications listener."""
-    parsers_pipe = _build_parsers_pipe(config=config, logger=logger)
+    parsers_pipe = _build_parsers_pipe(config, logger, competitions)
 
     queue_forward = QueueForwardStep(
         logger=logger,
@@ -189,7 +204,7 @@ def _build_notifications_process(
         logger=logger,
         api_lts=config.api_lts,
         auth_data=auth_data,
-        competitions={},
+        competitions=competitions,  # type: ignore
         next_step=flag_init_finished,
     )
 
@@ -217,11 +232,13 @@ def _build_notifications_process(
     return kafka_consumer
 
 
-def _build_parsers_pipe(config: ParserConfig, logger: Logger) -> ParsersStep:
+def _build_parsers_pipe(
+        config: ParserConfig,
+        logger: Logger,
+        competitions: DictProxy) -> ParsersStep:  # noqa
     """Build pipe with data parsers."""
-    parsers: List[Parser] = [
-        WsInitParser(),
-    ]
+    initial_parser = InitialDataParser()
+    parsers: List[Parser] = []
 
     kafka_producer = KafkaProducerStep(
         logger,
@@ -239,6 +256,7 @@ def _build_parsers_pipe(config: ParserConfig, logger: Logger) -> ParsersStep:
     )
     parser_step = ParsersStep(
         logger=logger,
+        initial_parser=initial_parser,
         parsers=parsers,
         on_parsed=kafka_producer,
         on_error=errors_storage,

@@ -5,9 +5,7 @@ from ltspipe.data.actions import Action
 
 
 class Parser(abc.ABC):
-    """
-    Unit of data parsing.
-    """
+    """Unit of data parsing."""
 
     @abc.abstractmethod
     def parse(self, competition_code: str, data: Any) -> List[Action]:
@@ -26,3 +24,12 @@ class Parser(abc.ABC):
     def __call__(self, competition_code: str, data: Any) -> List[Action]:
         """Forward to method Parser.parse()."""
         return self.parse(competition_code, data)
+
+
+class InitialParser(Parser, abc.ABC):
+    """Unit of data parsing to initialize competition."""
+
+    @abc.abstractmethod
+    def is_initializer_data(self, data: Any) -> bool:
+        """Check whether the given data is initializer or not."""
+        raise NotImplementedError

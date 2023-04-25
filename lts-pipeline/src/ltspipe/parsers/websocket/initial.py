@@ -11,10 +11,10 @@ from ltspipe.data.competitions import (
     Participant,
 )
 from ltspipe.data.enum import ParserSettings
-from ltspipe.parsers.base import Parser
+from ltspipe.parsers.base import InitialParser
 
 
-class WsInitParser(Parser):
+class InitialDataParser(InitialParser):
     """
     Parse the initializer data from a websocket.
     """
@@ -71,7 +71,7 @@ class WsInitParser(Parser):
         Returns:
             List[Action]: list of actions and their respective parsed data.
         """
-        if self._is_initializer_data(data):
+        if self.is_initializer_data(data):
             parsed_data = self._parse_init_data(competition_code, data)
             action = Action(
                 type=ActionType.INITIALIZE,
@@ -80,10 +80,10 @@ class WsInitParser(Parser):
             return [action]
         return []
 
-    def _is_initializer_data(self, data: Any) -> bool:
+    def is_initializer_data(self, data: Any) -> bool:
         """Check if it is an initializer data."""
         return (isinstance(data, str)
-                and re.match(r'^init\|p\|', data) is not None)
+                and re.match(r'^init\|', data) is not None)
 
     def _parse_init_data(self, competition_code: str, data: str) -> InitialData:
         """Parse content in the raw data."""
@@ -92,9 +92,9 @@ class WsInitParser(Parser):
         parts = {p[0]: p for p in raw_parts}
 
         stage = self._parse_stage(parts['title2'][2])
-        remaining_length = self._parse_length(parts['dyn1'][2])
-        status = (CompetitionStatus.ONGOING if remaining_length.value > 0
-                  else CompetitionStatus.FINISHED)
+        remaining_length = self._parse_length(
+            parts['dyn1'][1], parts['dyn1'][2])
+        status = CompetitionStatus.PAUSED
 
         # Parse intial content
         raw_content = parts['grid'][2]
@@ -114,18 +114,31 @@ class WsInitParser(Parser):
             parsers_settings=headers,
         )
 
-    def _parse_stage(self, raw: str) -> str:
+    def _parse_stage(self, raw: str) -> CompetitionStage:
         """Parse competition stage."""
-        if raw in self.FILTER_STAGES:
-            return self.FILTER_STAGES[raw]
+        for stage_filter, stage in self.FILTER_STAGES.items():
+            if raw.startswith(stage_filter):
+                return stage
         raise Exception(f'Unknown stage: {raw}')
 
-    def _parse_length(self, raw: str) -> DiffLap:
+    def _parse_length(self, type: str, raw: str) -> DiffLap:
         """Parse remaining length of the competition."""
-        return DiffLap(
-            value=self._time_to_millis(raw),
-            unit=LengthUnit.MILLIS,
-        )
+        if raw == '':
+            return DiffLap(
+                value=0,
+                unit=LengthUnit.MILLIS,
+            )
+        elif type == 'text':
+            return DiffLap(
+                value=self._time_to_millis(raw),
+                unit=LengthUnit.MILLIS,
+            )
+        elif type == 'countdown':
+            return DiffLap(
+                value=int(raw),
+                unit=LengthUnit.MILLIS,
+            )
+        raise Exception(f'Unknown dyn1 (type={type}, content={raw})')
 
     def _parse_headers(self, first_row: str) -> Dict[ParserSettings, str]:
         """Parse headers from the first row."""
@@ -283,7 +296,8 @@ class WsInitParser(Parser):
             ranking=self._cast_number(ranking, default=0),
             team_name=fields.get(ParserSettings.TIMING_NAME, None),
             pit_time=self._time_to_millis(
-                fields.get(ParserSettings.TIMING_PIT_TIME, None)),
+                fields.get(ParserSettings.TIMING_PIT_TIME, None),
+                default=None),
         )
 
     def __get_by_key(

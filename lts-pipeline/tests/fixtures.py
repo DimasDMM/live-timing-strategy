@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from ltspipe.data.auth import AuthData, AuthRole
@@ -11,6 +12,14 @@ AUTH_BEARER = 'e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9'
 
 # API key included in the sample data
 AUTH_KEY = '912ec803b2ce49e4a541068d495ab570'
+
+# API, Websocket and Kafka when they are real or mocked
+REAL_API_LTS = os.environ.get('API_LTS', '')
+MOCK_API_LTS = 'http://localhost:28090'
+MOCK_KAFKA = ['localhost:29092']
+MOCK_WS = 'ws://localhost:28000/ws/'
+
+assert REAL_API_LTS != '', 'Environment variable "API_LTS" must be set'
 
 
 @pytest.fixture

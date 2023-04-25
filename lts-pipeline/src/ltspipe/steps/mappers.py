@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from ltspipe.data.actions import Action
 from ltspipe.data.notifications import Notification, NotificationType
-from ltspipe.parsers.base import Parser
+from ltspipe.parsers.base import InitialParser, Parser
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
 
@@ -66,8 +66,8 @@ class ParsersStep(MidStep):
     def __init__(
             self,
             logger: Logger,
+            initial_parser: InitialParser,
             parsers: List[Parser],
-            stop_on_first: bool = True,
             on_parsed: Optional[MidStep] = None,
             on_unknown: Optional[MidStep] = None,
             on_error: Optional[MidStep] = None) -> None:
@@ -76,9 +76,8 @@ class ParsersStep(MidStep):
 
         Params:
             logger (logging.Logger): Logger instance to display information.
+            initial_parser (InitialParser): Parser for initial data.
             parsers (List[Parser]): List of parsers to apply.
-            stop_on_first (bool): Stop parsing after one parser has returned
-                some actions.
             on_parsed (MidStep | None): Optionally, apply another step to the
                 message when the data is parsed.
             on_unknown (MidStep | None): Optionally, apply another step to the
@@ -87,8 +86,8 @@ class ParsersStep(MidStep):
                 message if the current parser had some error parsing the data.
         """
         self._logger = logger
+        self._initial_parser = initial_parser
         self._parsers = parsers
-        self._stop_on_first = stop_on_first
         self._on_parsed = on_parsed
         self._on_unknown = on_unknown
         self._on_error = on_error
@@ -106,35 +105,40 @@ class ParsersStep(MidStep):
 
     def run_step(self, msg: Message) -> None:
         """Display a message."""
-        actions: List[Action] = []
-        for parser in self._parsers:
-            try:
-                actions += parser(msg.competition_code, msg.data)
-                if len(actions) > 0:
-                    self._forward_actions(
-                        actions=actions,
-                        competition_code=msg.competition_code,
-                        source=msg.source,
-                    )
-                    if self._stop_on_first:
-                        break
-            except Exception as e:
-                self._logger.critical(e, exc_info=True)
-                if self._on_error is not None:
-                    msg = Message(
-                        competition_code=msg.competition_code,
-                        data=msg.data,
-                        source=msg.source,
-                        decoder=msg.decoder,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        error_description=str(e),
-                        error_traceback=str(e.__traceback__),
-                    )
-                    msg.updated()
-                    self._on_error.run_step(msg)
+        try:
+            if self._initial_parser.is_initializer_data(msg.data):
+                self._apply_parsers(msg, parsers=[self._initial_parser])
+            else:
+                self._apply_parsers(msg, parsers=self._parsers)
+        except Exception as e:
+            self._logger.critical(e, exc_info=True)
+            if self._on_error is not None:
+                msg = Message(
+                    competition_code=msg.competition_code,
+                    data=msg.data,
+                    source=msg.source,
+                    decoder=msg.decoder,
+                    created_at=datetime.utcnow().timestamp(),
+                    updated_at=datetime.utcnow().timestamp(),
+                    error_description=str(e),
+                    error_traceback=str(e.__traceback__),
+                )
+                msg.updated()
+                self._on_error.run_step(msg)
 
-        if len(actions) == 0 and self._on_unknown is not None:
+    def _apply_parsers(self, msg: Message, parsers: List[Parser]) -> None:
+        """Apply a list of parsers to the given message."""
+        actions: List[Action] = []
+        for parser in parsers:
+            actions += parser(msg.competition_code, msg.data)
+
+        if len(actions) > 0:
+            self._forward_actions(
+                actions=actions,
+                competition_code=msg.competition_code,
+                source=msg.source,
+            )
+        elif len(actions) == 0 and self._on_unknown is not None:
             msg.updated()
             self._on_unknown.run_step(msg)
 

@@ -108,9 +108,10 @@ graph TD;
   A --> M[Is init message?]
   M -- No --> B[Has wait_init as true?]
   B -- Yes --> E[Add message to queue]
-  B -- No --> C[Parse data]
-  M -- Yes --> C
-  C --> D[Kafka producer: standard]
+  B -- No --> C[API: Get info of competition]
+  C --> N[Parse data]
+  M -- Yes --> N
+  N --> D[Kafka producer: standard]
 
   F[Kafka consumer: notifications]
   F -- 'init-finished' --> H[API: Get info of competition]

@@ -33,8 +33,8 @@ from tests.conftest import (
     mock_kafka_producer_builder,
     mock_multiprocessing_dict,
     mock_requests,
-    TEST_COMPETITION_CODE,
 )
+from tests.fixtures import MOCK_API_LTS, MOCK_KAFKA, TEST_COMPETITION_CODE
 from tests.mocks.logging import FakeLogger
 from tests.mocks.multiprocessing import MockProcess
 from tests.mocks.requests import (
@@ -43,12 +43,10 @@ from tests.mocks.requests import (
     MockResponse,
 )
 
-API_LTS = 'http://localhost:8090/'
 EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
 }
-KAFKA_SERVERS = ['localhost:9092']
 PARSERS_SETTINGS = {
     ParserSettings.TIMING_NAME: 'timing-name-value',
     ParserSettings.TIMING_RANKING: 'timing-ranking-value',
@@ -292,12 +290,12 @@ def test_main(
     """Test main method."""
     with tempfile.TemporaryDirectory() as tmp_path:
         config = ApiSenderConfig(
-            api_lts=API_LTS,
+            api_lts=MOCK_API_LTS,
             errors_path=tmp_path,
-            kafka_servers=KAFKA_SERVERS,
+            kafka_servers=MOCK_KAFKA,
         )
 
-        _apply_mock_api(mocker, API_LTS)
+        _apply_mock_api(mocker, MOCK_API_LTS)
         _mock_multiprocessing_process(mocker)
         mock_multiprocessing_dict(mocker, initial_dicts=[in_competitions])
         mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)

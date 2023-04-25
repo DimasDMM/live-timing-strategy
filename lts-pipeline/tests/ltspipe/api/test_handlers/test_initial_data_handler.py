@@ -1,4 +1,3 @@
-import os
 import pytest
 from typing import Dict, List
 
@@ -18,7 +17,7 @@ from ltspipe.data.enum import (
     LengthUnit,
     ParserSettings,
 )
-from tests.fixtures import AUTH_KEY, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import DatabaseTest, create_competition
 
 
@@ -29,8 +28,6 @@ class TestInitialDataHandler(DatabaseTest):
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
-
-    API_LTS = os.environ.get('API_LTS', '')
 
     @pytest.mark.parametrize(
         ('initial_data_1', 'initial_data_2', 'expected_teams_1',
@@ -245,9 +242,9 @@ class TestInitialDataHandler(DatabaseTest):
             expected_settings_1: Dict[ParserSettings, str],
             expected_settings_2: Dict[ParserSettings, str]) -> None:
         """Test handle method."""
-        auth_data = refresh_bearer(self.API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         competition_id = create_competition(
-            self.API_LTS, bearer=auth_data.bearer)
+            REAL_API_LTS, bearer=auth_data.bearer)
         competitions = {
             TEST_COMPETITION_CODE: CompetitionInfo(
                 id=competition_id,
@@ -257,7 +254,7 @@ class TestInitialDataHandler(DatabaseTest):
 
         # First call to handle method
         handler = InitialDataHandler(
-            api_url=self.API_LTS,
+            api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
         handler.handle(initial_data_1)
@@ -271,7 +268,7 @@ class TestInitialDataHandler(DatabaseTest):
 
         # Scond call to handle method
         handler = InitialDataHandler(
-            api_url=self.API_LTS,
+            api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
         handler.handle(initial_data_2)
@@ -284,7 +281,7 @@ class TestInitialDataHandler(DatabaseTest):
 
     def test_handle_raises_exception_id_none(self) -> None:
         """Test handle method raise exception about ID None."""
-        auth_data = refresh_bearer(self.API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         competitions = {
             TEST_COMPETITION_CODE: CompetitionInfo(
                 id=None,
@@ -322,7 +319,7 @@ class TestInitialDataHandler(DatabaseTest):
         # Call to handle method
         with pytest.raises(Exception) as e_info:
             handler = InitialDataHandler(
-                api_url=self.API_LTS,
+                api_url=REAL_API_LTS,
                 auth_data=auth_data,
                 competitions=competitions)
             handler.handle(initial_data)
@@ -333,9 +330,9 @@ class TestInitialDataHandler(DatabaseTest):
 
     def test_handle_raises_exception_unknown_team(self) -> None:
         """Test handle method raise exception about unkown team."""
-        auth_data = refresh_bearer(self.API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         competition_id = create_competition(
-            self.API_LTS, bearer=auth_data.bearer)
+            REAL_API_LTS, bearer=auth_data.bearer)
         competitions = {
             TEST_COMPETITION_CODE: CompetitionInfo(
                 id=competition_id,
@@ -373,7 +370,7 @@ class TestInitialDataHandler(DatabaseTest):
         # Call to handle method
         with pytest.raises(Exception) as e_info:
             handler = InitialDataHandler(
-                api_url=self.API_LTS,
+                api_url=REAL_API_LTS,
                 auth_data=auth_data,
                 competitions=competitions)
             handler.handle(initial_data)

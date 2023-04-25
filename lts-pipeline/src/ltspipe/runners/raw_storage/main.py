@@ -35,7 +35,7 @@ def main(
     message_storage = MessageStorageStep(
         logger=logger,
         output_path=config.output_path,
-        next_step=raw_storage
+        next_step=raw_storage,
     )
     info_step = LogInfoStep(
         logger,

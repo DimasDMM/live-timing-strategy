@@ -12,6 +12,12 @@ from ltspipe.configs import (
     DEFAULT_TEST_GROUP,
     DEFAULT_TEST_TOPIC,
 )
+from tests.fixtures import (
+    MOCK_API_LTS,
+    MOCK_KAFKA,
+    MOCK_WS,
+    TEST_COMPETITION_CODE,
+)
 
 
 def test_raw_storage_config() -> None:
@@ -41,13 +47,11 @@ def test_kafka_check_config() -> None:
 
 def test_parser_config() -> None:
     """Test ltspipe.configs.ParserConfig."""
-    api_lts = 'http://localhost:8090/'
-    kafka_servers = ['localhost:9092']
     parser_config = ParserConfig(
-        api_lts=api_lts,
-        kafka_servers=kafka_servers,
+        api_lts=MOCK_API_LTS,
+        kafka_servers=MOCK_KAFKA,
     )
-    assert parser_config.kafka_servers == kafka_servers
+    assert parser_config.kafka_servers == MOCK_KAFKA
     assert parser_config.kafka_consume == DEFAULT_RAW_MESSAGES_TOPIC
     assert parser_config.kafka_produce == DEFAULT_STD_MESSAGES_TOPIC
     assert parser_config.errors_path == DEFAULT_PARSER_ERRORS_PATH
@@ -57,14 +61,13 @@ def test_parser_config() -> None:
 
 def test_ws_listener_config() -> None:
     """Test ltspipe.configs.WsListenerConfig."""
-    kafka_servers = ['localhost:9092']
     ws_listener_config = WsListenerConfig(
-        competition_code='competition-sample-code',
-        kafka_servers=kafka_servers,
-        websocket_uri='ws://localhost:8000/ws/',
+        competition_code=TEST_COMPETITION_CODE,
+        kafka_servers=MOCK_KAFKA,
+        websocket_uri=MOCK_WS,
     )
-    assert ws_listener_config.competition_code == 'competition-sample-code'
-    assert ws_listener_config.kafka_servers == kafka_servers
+    assert ws_listener_config.competition_code == TEST_COMPETITION_CODE
+    assert ws_listener_config.kafka_servers == MOCK_KAFKA
     assert ws_listener_config.kafka_produce == DEFAULT_RAW_MESSAGES_TOPIC
-    assert ws_listener_config.websocket_uri == 'ws://localhost:8000/ws/'
+    assert ws_listener_config.websocket_uri == MOCK_WS
     assert ws_listener_config.verbosity == 2

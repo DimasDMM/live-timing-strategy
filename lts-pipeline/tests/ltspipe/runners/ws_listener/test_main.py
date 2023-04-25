@@ -18,18 +18,15 @@ from tests.conftest import (
     mock_multiprocessing_dict,
     mock_websocket_builder,
 )
+from tests.fixtures import MOCK_KAFKA, MOCK_WS, TEST_COMPETITION_CODE
 from tests.helpers import load_raw_message
 from tests.mocks.logging import FakeLogger
 from tests.mocks.multiprocessing import MockProcess
 
-
-COMPETITION_CODE = 'test-competition'
 EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
 }
-KAFKA_SERVERS = ['localhost:9092']
-WEBSOCKET_URI = 'ws://localhost:8000/ws/'
 
 
 def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
@@ -48,14 +45,14 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
             },
             [  # in_websocket
-                load_raw_message('initial_3_teams_with_times.txt'),
+                load_raw_message('init_qualy_with_times.txt'),
                 load_raw_message('display_driver_name.txt'),
             ],
             {},  # in_queue
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
                             type=NotificationType.INIT_ONGOING,
                         ),
@@ -67,9 +64,9 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 ],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'initial_3_teams_with_times.txt').strip(),
+                            'init_qualy_with_times.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -79,9 +76,9 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 ],
             },
             {  # expected_queue
-                COMPETITION_CODE: [
+                TEST_COMPETITION_CODE: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -92,13 +89,15 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     ),
                 ],
             },
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # expected_flags
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True},
+            },
         ),
         (
             {  # kafka_topics
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
                             type=NotificationType.INIT_FINISHED,
                         ),
@@ -111,9 +110,9 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
             },
             [],  # in_websocket
             {  # in_queue
-                COMPETITION_CODE: [
+                TEST_COMPETITION_CODE: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -125,7 +124,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
                             type=NotificationType.INIT_FINISHED,
                         ),
@@ -137,7 +136,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 ],
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
-                        competition_code=COMPETITION_CODE,
+                        competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
                             'display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -146,8 +145,10 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     ).encode(),
                 ],
             },
-            {COMPETITION_CODE: []},  # expected_queue
-            {COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # expected_flags
+            {TEST_COMPETITION_CODE: []},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
         ),
     ],
 )
@@ -161,9 +162,9 @@ def test_main(
         expected_flags: dict) -> None:
     """Test main method."""
     config = WsListenerConfig(
-        competition_code=COMPETITION_CODE,
-        kafka_servers=KAFKA_SERVERS,
-        websocket_uri=WEBSOCKET_URI,
+        competition_code=TEST_COMPETITION_CODE,
+        kafka_servers=MOCK_KAFKA,
+        websocket_uri=MOCK_WS,
     )
 
     in_flags: Dict[str, Dict[FlagName, Any]] = {}

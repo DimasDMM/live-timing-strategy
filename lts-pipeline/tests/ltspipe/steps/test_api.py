@@ -23,7 +23,7 @@ from ltspipe.steps.api import (
     CompetitionInfoInitStep,
 )
 from tests.conftest import mock_requests
-from tests.fixtures import TEST_COMPETITION_CODE
+from tests.fixtures import MOCK_API_LTS, TEST_COMPETITION_CODE
 from tests.mocks.logging import FakeLogger
 from tests.mocks.requests import (
     MapRequestItem,
@@ -35,7 +35,6 @@ from tests.mocks.requests import (
 class TestApiActionStep:
     """Test ltspipe.steps.api.ApiActionStep class."""
 
-    API_LTS = 'http://localhost:8090/'
     SAMPLE_MESSAGE = Message(
         competition_code=TEST_COMPETITION_CODE,
         data=Action(
@@ -90,7 +89,7 @@ class TestApiActionStep:
         fake_logger = FakeLogger()
         step = ApiActionStep(
             logger=fake_logger,
-            api_lts=self.API_LTS,
+            api_lts=MOCK_API_LTS,
             competitions=in_competitions,
             action_handlers={
                 ActionType.INITIALIZE: handler,
@@ -114,7 +113,6 @@ class TestApiActionStep:
 class TestParserSettingsGetterStep:
     """Test ltspipe.steps.api.ParserSettingsGetterStep class."""
 
-    API_LTS = 'http://localhost:8090/'
     EXPECTED_COMPETITIONS = {
         TEST_COMPETITION_CODE: CompetitionInfo(
             id=1,
@@ -156,7 +154,7 @@ class TestParserSettingsGetterStep:
             sample_auth_data: AuthData,
             sample_message: Message) -> None:
         """Test method run_step."""
-        self._apply_mock_api(mocker, self.API_LTS)
+        self._apply_mock_api(mocker, MOCK_API_LTS)
         competition_code = sample_message.competition_code
 
         # Create a mock of the next step
@@ -168,7 +166,7 @@ class TestParserSettingsGetterStep:
         fake_logger = FakeLogger()
         step = CompetitionInfoInitStep(
             logger=fake_logger,
-            api_lts=self.API_LTS,
+            api_lts=MOCK_API_LTS,
             auth_data=sample_auth_data,
             competitions=in_competitions,
             next_step=next_step,

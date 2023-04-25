@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
+    CompetitionInfo,
     CompetitionStatus,
     CompetitionStage,
     DiffLap,
@@ -36,18 +37,16 @@ from tests.conftest import (
     mock_kafka_producer_builder,
     mock_multiprocessing_dict,
     mock_requests,
-    TEST_COMPETITION_CODE,
 )
+from tests.fixtures import MOCK_API_LTS, MOCK_KAFKA, TEST_COMPETITION_CODE
 from tests.helpers import load_raw_message
 from tests.mocks.logging import FakeLogger
 from tests.mocks.multiprocessing import MockProcess
 
-API_LTS = 'http://localhost:8090/'
 EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
 }
-KAFKA_SERVERS = ['localhost:9092']
 PARSERS_SETTINGS = {
     ParserSettings.TIMING_RANKING: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
@@ -69,7 +68,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 
 @pytest.mark.parametrize(
-    ('kafka_topics, in_flags, in_queue,'
+    ('kafka_topics, in_competitions, in_flags, in_queue,'
      'expected_kafka, expected_queue, expected_flags'),
     [
         # Test case: When the flag 'wait-init' is enabled and it receives an
@@ -81,7 +80,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'initial_3_teams_with_times.txt').strip(),
+                            'init_qualy_with_times.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -91,6 +90,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 ],
                 DEFAULT_STD_MESSAGES_TOPIC: [],
             },
+            {},  # in_competitions
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
             {},  # in_queue
             {  # expected_kafka
@@ -99,7 +99,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'initial_3_teams_with_times.txt').strip(),
+                            'init_qualy_with_times.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -117,7 +117,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 reference_time=None,
                                 reference_current_offset=None,
                                 stage=CompetitionStage.QUALIFYING.value,
-                                status=CompetitionStatus.ONGOING.value,
+                                status=CompetitionStatus.PAUSED.value,
                                 remaining_length=DiffLap(
                                     value=1200000,
                                     unit=LengthUnit.MILLIS,
@@ -205,6 +205,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 ],
                 DEFAULT_STD_MESSAGES_TOPIC: [],
             },
+            {},  # in_competitions
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True}},  # in_flags
             {},  # in_queue
             {  # expected_kafka
@@ -246,6 +247,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 def test_main(
         mocker: MockerFixture,
         kafka_topics: Dict[str, List[str]],
+        in_competitions: Dict[str, CompetitionInfo],
         in_flags: Dict[str, Dict[FlagName, Any]],
         in_queue: Dict[str, List[Message]],
         expected_kafka: Dict[str, List[str]],
@@ -254,15 +256,16 @@ def test_main(
     """Test main method."""
     with tempfile.TemporaryDirectory() as tmp_path:
         config = ParserConfig(
-            api_lts=API_LTS,
+            api_lts=MOCK_API_LTS,
             errors_path=tmp_path,
-            kafka_servers=KAFKA_SERVERS,
+            kafka_servers=MOCK_KAFKA,
             unknowns_path=tmp_path,
         )
 
-        _apply_mock_api(mocker, API_LTS)
+        _apply_mock_api(mocker, MOCK_API_LTS)
         _mock_multiprocessing_process(mocker)
-        mock_multiprocessing_dict(mocker, initial_dicts=[in_flags, in_queue])
+        mock_multiprocessing_dict(
+            mocker, initial_dicts=[in_competitions, in_flags, in_queue])
         mock_kafka_consumer_builder(mocker, kafka_topics=kafka_topics)
         mock_kafka_producer_builder(mocker, kafka_topics=kafka_topics)
         fake_logger = FakeLogger()
