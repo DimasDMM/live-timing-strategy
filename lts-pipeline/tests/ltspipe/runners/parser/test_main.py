@@ -13,6 +13,8 @@ from ltspipe.data.competitions import (
     DiffLap,
     InitialData,
     Participant,
+    UpdateDriver,
+    UpdateTeam,
 )
 from ltspipe.data.enum import (
     FlagName,
@@ -242,6 +244,131 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: True},
             },
         ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with a driver name.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'display_driver_name.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {},  # in_competitions
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'display_driver_name.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_DRIVER,
+                            data=UpdateDriver(
+                                id=2,
+                                participant_code='r5625',
+                                name='DIMAS MUNOZ',
+                                number=41,
+                                team_id=1,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with a team name.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'display_team_name.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {},  # in_competitions
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'display_team_name.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_TEAM,
+                            data=UpdateTeam(
+                                id=1,
+                                participant_code='r5625',
+                                name='CKM 1',
+                                number=41,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
     ],
 )
 def test_main(
@@ -346,13 +473,13 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
         content=[
             {
                 'name': ParserSettings.TIMING_NAME.value,
-                'value': 'timing-name-value',
+                'value': 'c5',
                 'insert_date': '2023-04-15T21:43:26',
                 'update_date': '2023-04-15T21:43:26',
             },
             {
                 'name': ParserSettings.TIMING_RANKING.value,
-                'value': 'timing-ranking-value',
+                'value': 'c3',
                 'insert_date': '2023-04-15T21:43:26',
                 'update_date': '2023-04-15T21:43:26',
             },
@@ -366,11 +493,78 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
+def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content=[
+            {
+                'id': 1,
+                'competition_id': 1,
+                'team_id': 1,
+                'participant_code': 'r5625',
+                'name': 'OTHER DRIVER',
+                'number': 41,
+                'total_driving_time': 0,
+                'partial_driving_time': 0,
+                'reference_time_offset': None,
+                'insert_date': '2023-04-20T00:55:35',
+                'update_date': '2023-04-20T00:55:35',
+            },
+            {
+                'id': 2,
+                'competition_id': 1,
+                'team_id': 1,
+                'participant_code': 'r5625',
+                'name': 'DIMAS MUNOZ',
+                'number': 41,
+                'total_driving_time': 0,
+                'partial_driving_time': 0,
+                'reference_time_offset': None,
+                'insert_date': '2023-04-20T00:55:35',
+                'update_date': '2023-04-20T00:55:35',
+            },
+        ],
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/competitions/1/drivers',
+        method=MapRequestMethod.GET,
+        responses=[response],
+    )
+    return [item]
+
+
+def _mock_response_get_teams(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content=[
+            {
+                'id': 1,
+                'competition_id': 1,
+                'participant_code': 'r5625',
+                'name': 'CKM 1',
+                'number': 41,
+                'reference_time_offset': None,
+                'drivers': [],
+                'insert_date': '2023-04-20T01:30:48',
+                'update_date': '2023-04-20T01:30:48',
+            },
+        ],
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/competitions/1/teams',
+        method=MapRequestMethod.GET,
+        responses=[response],
+    )
+    return [item]
+
+
 def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     """Apply mock to API."""
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
         + _mock_response_get_competition_info(api_url)
-        + _mock_response_get_parser_settings(api_url))
+        + _mock_response_get_drivers(api_url)
+        + _mock_response_get_parser_settings(api_url)
+        + _mock_response_get_teams(api_url))
     mock_requests(mocker, requests_map=requests_map)

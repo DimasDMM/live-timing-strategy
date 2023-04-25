@@ -174,3 +174,45 @@ class InitialData(DictModel):
             parsers_settings={ParserSettings(k): v
                               for k, v in parsers_settings.items()},
         )
+
+
+class UpdateDriver(DictModel):
+    """Info update of a driver."""
+
+    id: Optional[int]
+    participant_code: str
+    name: str
+    number: int
+    team_id: Optional[int]
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            id=raw.get('id'),
+            participant_code=raw.get('participant_code'),
+            name=raw.get('name'),
+            number=raw.get('number'),
+            team_id=raw.get('team_id', None),
+        )
+
+
+class UpdateTeam(DictModel):
+    """Info update of a team."""
+
+    id: Optional[int]
+    participant_code: str
+    name: str
+    number: int
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            id=raw.get('id'),
+            participant_code=raw.get('participant_code'),
+            name=raw.get('name'),
+            number=raw.get('number'),
+        )

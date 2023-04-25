@@ -1,7 +1,11 @@
 from typing import Any, Dict, Type
 
 from ltspipe.base import BaseModel, DictModel, EnumBase
-from ltspipe.data.competitions import InitialData, Participant
+from ltspipe.data.competitions import (
+    InitialData,
+    UpdateDriver,
+    UpdateTeam,
+)
 
 
 class ActionType(str, EnumBase):
@@ -10,7 +14,7 @@ class ActionType(str, EnumBase):
     INITIALIZE = 'initialize'
     # UPDATE_COMPETITION_META = 'update-competition-meta'
     UPDATE_DRIVER = 'update-driver'
-    # UPDATE_TEAM = 'update-team'
+    UPDATE_TEAM = 'update-team'
     # UPDATE_TIMING_ALL = 'update-timing-all'
     # UPDATE_TIMING_SINGLE = 'update-timing-single'
     # ADD_PIT_IN = 'add-pit-in'
@@ -19,7 +23,8 @@ class ActionType(str, EnumBase):
 
 _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.INITIALIZE: InitialData,
-    ActionType.UPDATE_DRIVER: Participant,
+    ActionType.UPDATE_DRIVER: UpdateDriver,
+    ActionType.UPDATE_TEAM: UpdateTeam,
 }
 
 

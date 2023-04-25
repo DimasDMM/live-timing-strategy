@@ -12,13 +12,14 @@ from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.initial import InitialDataParser
+from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.loggers import LogInfoStep
-from ltspipe.steps.mappers import NotificationMapperStep, ParsersStep
+from ltspipe.steps.mappers import NotificationMapperStep, WsParsersStep
 from ltspipe.steps.modifiers import FlagModifierStep
 from ltspipe.steps.triggers import WsInitTriggerStep
 
@@ -235,10 +236,13 @@ def _build_notifications_process(
 def _build_parsers_pipe(
         config: ParserConfig,
         logger: Logger,
-        competitions: DictProxy) -> ParsersStep:  # noqa
+        competitions: DictProxy) -> WsParsersStep:  # noqa
     """Build pipe with data parsers."""
     initial_parser = InitialDataParser()
-    parsers: List[Parser] = []
+    parsers: List[Parser] = [
+        DriverNameParser(competitions),  # type: ignore
+        TeamNameParser(competitions),  # type: ignore
+    ]
 
     kafka_producer = KafkaProducerStep(
         logger,
@@ -254,7 +258,7 @@ def _build_parsers_pipe(
         logger=logger,
         output_path=config.unknowns_path,
     )
-    parser_step = ParsersStep(
+    parser_step = WsParsersStep(
         logger=logger,
         initial_parser=initial_parser,
         parsers=parsers,

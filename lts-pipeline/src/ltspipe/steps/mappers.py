@@ -60,7 +60,7 @@ class NotificationMapperStep(MidStep):
         return None
 
 
-class ParsersStep(MidStep):
+class WsParsersStep(MidStep):
     """Step to parse the initial info from a websocket."""
 
     def __init__(
@@ -107,9 +107,11 @@ class ParsersStep(MidStep):
         """Display a message."""
         try:
             if self._initial_parser.is_initializer_data(msg.data):
-                self._apply_parsers(msg, parsers=[self._initial_parser])
+                self._apply_parsers(
+                    msg, parsers=[self._initial_parser], split_lines=False)
             else:
-                self._apply_parsers(msg, parsers=self._parsers)
+                self._apply_parsers(
+                    msg, parsers=self._parsers, split_lines=True)
         except Exception as e:
             self._logger.critical(e, exc_info=True)
             if self._on_error is not None:
@@ -126,19 +128,40 @@ class ParsersStep(MidStep):
                 msg.updated()
                 self._on_error.run_step(msg)
 
-    def _apply_parsers(self, msg: Message, parsers: List[Parser]) -> None:
-        """Apply a list of parsers to the given message."""
-        actions: List[Action] = []
-        for parser in parsers:
-            actions += parser(msg.competition_code, msg.data)
+    def _apply_parsers(
+            self,
+            msg: Message,
+            parsers: List[Parser],
+            split_lines: bool) -> None:
+        """
+        Apply a list of parsers to the given message.
 
-        if len(actions) > 0:
-            self._forward_actions(
-                actions=actions,
-                competition_code=msg.competition_code,
-                source=msg.source,
-            )
-        elif len(actions) == 0 and self._on_unknown is not None:
+        Params:
+            msg (Message): Message to parse.
+            parsers (List[Parser]): List of parsers that we may apply.
+            split_lines (bool): If true, it splits the data by 'newline' and
+                applies a parser to each line.
+        """
+        if not isinstance(msg.data, str):
+            # Skip
+            return
+
+        parser_applied = False
+        lines = msg.data.split('\n') if split_lines else [msg.data]
+        for line in lines:
+            actions: List[Action] = []
+            for parser in parsers:
+                actions += parser(msg.competition_code, line)
+                if len(actions) > 0:
+                    parser_applied = True
+                    self._forward_actions(
+                        actions=actions,
+                        competition_code=msg.competition_code,
+                        source=msg.source,
+                    )
+                    break
+
+        if not parser_applied and self._on_unknown is not None:
             msg.updated()
             self._on_unknown.run_step(msg)
 

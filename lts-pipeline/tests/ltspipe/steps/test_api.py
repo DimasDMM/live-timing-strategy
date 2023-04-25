@@ -190,8 +190,8 @@ class TestParserSettingsGetterStep:
         api_url = api_url.strip('/')
         requests_map = (
             self._mock_response_get_competition_info(api_url)
-            + self._mock_response_get_parser_settings(api_url)
             + self._mock_response_get_drivers(api_url)
+            + self._mock_response_get_parser_settings(api_url)
             + self._mock_response_get_teams(api_url))
         mock_requests(mocker, requests_map=requests_map)
 
