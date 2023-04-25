@@ -25,8 +25,8 @@ from ltspipe.data.enum import (
     LengthUnit,
     ParserSettings,
 )
-from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.data.notifications import Notification, NotificationType
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.runners.api_sender.main import main
 from tests.conftest import (
     mock_kafka_consumer_builder,

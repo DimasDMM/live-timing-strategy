@@ -1,7 +1,7 @@
 from logging import Logger
 from typing import Any, Dict, List, Optional
 
-from ltspipe.api.handlers import ApiHandler
+from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.competitions_base import init_competition_info
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData

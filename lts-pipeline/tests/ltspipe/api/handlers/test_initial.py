@@ -2,7 +2,7 @@ import pytest
 from typing import Dict, List
 
 from ltspipe.api.auth import refresh_bearer
-from ltspipe.api.handlers import InitialDataHandler
+from ltspipe.api.handlers.initial import InitialDataHandler
 from ltspipe.data.competitions import (
     CompetitionInfo,
     CompetitionStage,

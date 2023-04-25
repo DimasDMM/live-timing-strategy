@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 
 from ltspipe.api.competitions_base import (
@@ -6,6 +5,7 @@ from ltspipe.api.competitions_base import (
     delete_parsers_settings,
     update_competition_metadata,
 )
+from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.participants import (
     add_driver,
     add_team,
@@ -24,15 +24,6 @@ from ltspipe.data.competitions import (
     Team,
 )
 from ltspipe.data.enum import KartStatus, ParserSettings
-
-
-class ApiHandler(ABC):
-    """Handler of API data."""
-
-    @abstractmethod
-    def handle(self, model: BaseModel) -> None:
-        """Handle a model."""
-        raise NotImplementedError
 
 
 class InitialDataHandler(ApiHandler):

@@ -6,7 +6,7 @@ import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable
 
-from ltspipe.api.handlers import InitialDataHandler
+from ltspipe.api.handlers.initial import InitialDataHandler
 from ltspipe.configs import ApiSenderConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
