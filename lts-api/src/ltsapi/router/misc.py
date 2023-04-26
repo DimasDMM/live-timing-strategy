@@ -45,25 +45,22 @@ async def add_parser_setting(
     setting: AddParserSetting,
 ) -> GetParserSetting:
     """Add a new parser setting."""
-    try:
-        db = _build_db_connection(_logger)
-        with db:
-            manager = ParsersSettingsManager(db=db, logger=_logger)
-            item_id = manager.add_one(
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = ParsersSettingsManager(db=db, logger=_logger)
+        try:
+            _ = manager.add_one(
                 setting, competition_id=competition_id, commit=True)
-            if item_id is None:
-                raise ApiError('No data was inserted or updated.')
-            item = manager.get_by_name(
-                setting.name, competition_id=competition_id)
-            if item is None:
-                raise ApiError('It was not possible to locate the new data.')
-    except Exception as e:
-        _logger.critical(str(e), exc_info=e)
-        if isinstance(e, ApiError):
+        except ApiError as e:
             raise e
-        else:
+        except Exception:
             raise ApiError('No data was inserted or updated.')
-    return item
+        item = manager.get_by_name(
+            setting.name, competition_id=competition_id)
+        if item is None:
+            raise ApiError('It was not possible to locate the new data.')
+        return item
 
 
 @router.delete(
@@ -75,6 +72,7 @@ async def delete_parsers_settings(
     """Delete all the parsers settings of a competition."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = ParsersSettingsManager(db=db, logger=_logger)
         manager.delete_by_competition(competition_id, commit=True)
         return Empty()
@@ -107,6 +105,7 @@ async def update_parser_setting(
     """Update the value of a parser setting."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = ParsersSettingsManager(db=db, logger=_logger)
         manager.update_by_name(
             setting, setting_name=setting_name, competition_id=competition_id)
@@ -133,23 +132,20 @@ async def get_all_tracks() -> List[GetTrack]:
         summary='Add a new track')
 async def add_track(track: AddTrack) -> GetTrack:
     """Add a new track."""
-    try:
-        db = _build_db_connection(_logger)
-        with db:
-            manager = TracksManager(db=db, logger=_logger)
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = TracksManager(db=db, logger=_logger)
+        try:
             item_id = manager.add_one(track, commit=True)
-            if item_id is None:
-                raise ApiError('No data was inserted or updated.')
-            item = manager.get_by_id(item_id)
-            if item is None:
-                raise ApiError('It was not possible to locate the new data.')
-            return item
-    except Exception as e:
-        _logger.critical(str(e), exc_info=e)
-        if isinstance(e, ApiError):
+        except ApiError as e:
             raise e
-        else:
+        except Exception:
             raise ApiError('No data was inserted or updated.')
+        item = manager.get_by_id(item_id)
+        if item is None:
+            raise ApiError('It was not possible to locate the new data.')
+        return item
 
 
 @router.put(
@@ -162,6 +158,7 @@ async def update_track_by_id(
     """Update the data of a track."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = TracksManager(db=db, logger=_logger)
         manager.update_by_id(track, track_id)
         item = manager.get_by_id(track_id)

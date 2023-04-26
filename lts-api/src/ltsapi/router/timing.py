@@ -87,6 +87,7 @@ async def update_timing_by_team(
     """Update the timing of a team in a competition."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = TimingManager(db=db, logger=_logger)
         manager.update_by_id(
             lap_time, competition_id=competition_id, team_id=team_id)

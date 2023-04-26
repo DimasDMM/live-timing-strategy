@@ -43,9 +43,13 @@ async def add_competition(competition: AddCompetition) -> GetCompetition:
     """Add a new competition."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = CompetitionsIndexManager(db=db, logger=_logger)
-        item_id = manager.add_one(competition, commit=True)
-        if item_id is None:
+        try:
+            item_id = manager.add_one(competition, commit=True)
+        except ApiError as e:
+            raise e
+        except Exception:
             raise ApiError('No data was inserted or updated.')
         item = manager.get_by_id(item_id)
         if item is None:
@@ -91,12 +95,13 @@ async def update_competition_metadata(
     """Update the metadata of a competition."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = CMetadataManager(db=db, logger=_logger)
         manager.update_by_id(metadata, competition_id=competition_id)
         item = manager.get_current_by_id(competition_id)
         if item is None:
             raise ApiError('No data was inserted or updated.')
-    return item
+        return item
 
 
 @router.get(
@@ -136,12 +141,13 @@ async def update_competition_settings(
     """Update the settings of a competition."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = CSettingsManager(db=db, logger=_logger)
         manager.update_by_id(settings, competition_id=competition_id)
         item = manager.get_by_id(competition_id)
         if item is None:
             raise ApiError('No data was inserted or updated.')
-    return item
+        return item
 
 
 @router.get(

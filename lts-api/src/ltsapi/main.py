@@ -45,7 +45,7 @@ async def api_error_handler(
     """Handle and display error messages."""
     return JSONResponse(
         status_code=exc.get_status_code(),
-        content=exc.error_response().dict(),
+        content=exc.to_error_response().dict(),
     )
 
 
@@ -98,9 +98,17 @@ async def auth_middleware(request: Request, call_next: Callable) -> Response:
         return response
     except Exception as e:
         if isinstance(e, ApiError):
-            raise e
+            error = e.to_error_response()
         else:
-            raise ApiError(message='An error has occured.', status_code=500)
+            error = ErrorResponse(
+                message='An error has occured.',
+                status_code=500,
+                extra_data={
+                    'exception': str(e),
+                    'traceback': str(e.__traceback__),
+                },
+            )
+        return JSONResponse(content=error.dict(), status_code=error.status_code)
 
 
 def _build_response_403() -> Response:

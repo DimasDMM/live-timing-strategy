@@ -118,7 +118,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-team',
                     name='New Team',
                     number=101,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetTeam(
@@ -127,7 +126,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-team',
                     name='New Team',
                     number=101,
-                    reference_time_offset=None,
                     drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
@@ -141,7 +139,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-team',
                     name='New Team',
                     number=101,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -158,7 +155,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-team',
                     name='New Team',
                     number=101,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(
@@ -205,7 +201,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1',
                     number=41,
-                    reference_time_offset=None,
                     drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
@@ -265,7 +260,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetTeam(
@@ -274,7 +268,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    reference_time_offset=None,
                     drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
@@ -289,7 +282,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -307,7 +299,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -325,7 +316,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(
@@ -375,9 +365,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 1',
                         number=41,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -388,9 +375,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 2',
                         number=41,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -467,9 +451,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetDriver(
@@ -479,9 +460,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -495,9 +473,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -515,9 +490,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -535,9 +507,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(
@@ -587,9 +556,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -672,9 +638,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetDriver(
@@ -684,9 +647,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -701,9 +661,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -722,9 +679,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -743,9 +697,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -764,9 +715,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(
@@ -818,9 +766,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 1',
                         number=41,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -831,9 +776,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 2',
                         number=41,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -844,9 +786,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-2',
                         name='CKM 2 Driver 1',
                         number=42,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -857,9 +796,6 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-2',
                         name='CKM 2 Driver 2',
                         number=42,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                        reference_time_offset=None,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -924,9 +860,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetDriver(
@@ -936,9 +869,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -951,9 +881,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -970,9 +897,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(
@@ -1020,9 +944,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -1089,9 +1010,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 200,  # expected_status_code
                 GetDriver(
@@ -1101,9 +1019,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -1117,9 +1032,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -1137,9 +1049,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 400,  # expected_status_code
                 ErrorResponse(
@@ -1157,9 +1066,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 403,  # expected_status_code
                 ErrorResponse(

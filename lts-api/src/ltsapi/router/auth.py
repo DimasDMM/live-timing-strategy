@@ -32,9 +32,10 @@ async def do_auth(auth_key: SendAuthKey) -> GetAuth:
     """Do authentication in the API REST."""
     db = _build_db_connection(_logger)
     with db:
+        db.start_transaction()
         manager = AuthManager(db=db, logger=_logger)
         item = manager.refresh_bearer(auth_key.key, commit=True)
         if item is None:
-            raise ApiError()
+            raise ApiError('An error occured with the bearer token.')
         else:
             return item

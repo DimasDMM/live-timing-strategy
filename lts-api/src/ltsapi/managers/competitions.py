@@ -279,7 +279,7 @@ class CompetitionsIndexManager:
     def add_one(
             self,
             competition: AddCompetition,
-            commit: bool = True) -> Optional[int]:
+            commit: bool = True) -> int:
         """
         Add a new competition.
 
@@ -288,7 +288,7 @@ class CompetitionsIndexManager:
             commit (bool): Commit transaction.
 
         Returns:
-            int | None: ID of inserted model.
+            int: ID of inserted model.
         """
         code = competition.competition_code
         if self.get_by_code(code) is not None:
@@ -300,6 +300,8 @@ class CompetitionsIndexManager:
         model_data = competition.dict(exclude={'settings': True})
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
 
         # Create settings of the competition
         model_data = competition.settings.dict()

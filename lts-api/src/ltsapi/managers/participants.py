@@ -161,7 +161,7 @@ class DriversManager:
             driver: AddDriver,
             competition_id: int,
             team_id: Optional[int] = None,
-            commit: bool = True) -> Optional[int]:
+            commit: bool = True) -> int:
         """
         Add a new driver.
 
@@ -173,7 +173,7 @@ class DriversManager:
             commit (bool): Commit transaction.
 
         Returns:
-            int | None: ID of inserted model.
+            int: ID of inserted model.
         """
         if self._exists_by_name(driver.name, team_id, competition_id):
             raise ApiError(
@@ -186,12 +186,14 @@ class DriversManager:
         model_data['team_id'] = team_id
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
 
         # Additional information required when we create a new driver.
         # Note that this section is executed only if the driver does not have
         # any team (otherwise, it asumes that these records already exist
         # because they were created along the team).
-        if team_id is None and item_id is not None:
+        if team_id is None:
             initial_model = self._initial_timing(driver_id=item_id)
             initial_data = initial_model.dict()
             initial_data['competition_id'] = competition_id
@@ -387,7 +389,7 @@ class TeamsManager:
             self,
             team: AddTeam,
             competition_id: int,
-            commit: bool = True) -> Optional[int]:
+            commit: bool = True) -> int:
         """
         Add a new team.
 
@@ -397,7 +399,7 @@ class TeamsManager:
             commit (bool): Commit transaction.
 
         Returns:
-            int | None: ID of inserted model.
+            int: ID of inserted model.
         """
         if self._exists_by_code(competition_id, team.participant_code):
             raise ApiError(
@@ -409,22 +411,23 @@ class TeamsManager:
         model_data['competition_id'] = competition_id
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
 
         # Additional information required when we create a new team.
-        if item_id is not None:
-            initial_model = self._initial_timing(team_id=item_id)
-            initial_data = initial_model.dict()
-            initial_data['competition_id'] = competition_id
-            _ = insert_model(
-                self._db,
-                TimingManager.CURRENT_TABLE,
-                initial_data,
-                commit=False)
-            _ = insert_model(
-                self._db,
-                TimingManager.HISTORY_TABLE,
-                initial_data,
-                commit=commit)
+        initial_model = self._initial_timing(team_id=item_id)
+        initial_data = initial_model.dict()
+        initial_data['competition_id'] = competition_id
+        _ = insert_model(
+            self._db,
+            TimingManager.CURRENT_TABLE,
+            initial_data,
+            commit=False)
+        _ = insert_model(
+            self._db,
+            TimingManager.HISTORY_TABLE,
+            initial_data,
+            commit=commit)
 
         return item_id
 

@@ -22,7 +22,7 @@ class ApiError(Exception):
         """Return HTTP status code."""
         return self._status_code
 
-    def error_response(self) -> ErrorResponse:
+    def to_error_response(self) -> ErrorResponse:
         """Transform exception into a response model."""
         return ErrorResponse(
             status_code=self.get_status_code(),

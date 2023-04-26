@@ -55,7 +55,7 @@ class TracksManager:
             self._db, self._raw_to_track, query, params=(track_id,))
         return model
 
-    def add_one(self, track: AddTrack, commit: bool = True) -> Optional[int]:
+    def add_one(self, track: AddTrack, commit: bool = True) -> int:
         """
         Add a new track.
 
@@ -64,10 +64,13 @@ class TracksManager:
             commit (bool): Commit transaction.
 
         Returns:
-            int | None: ID of inserted model.
+            int: ID of inserted model.
         """
-        return insert_model(
+        item_id = insert_model(
             self._db, self.TABLE_NAME, track.dict(), commit=commit)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
+        return item_id
 
     def update_by_id(
             self,
