@@ -80,20 +80,27 @@ async def auth_middleware(request: Request, call_next: Callable) -> Response:
             response = await call_next(request)
             return response
 
-    # Validate bearer token
-    db = _build_db_connection(_logger)
-    with db:
-        manager = AuthManager(db=db, logger=_logger)
-        bearer = request.headers.get(HEADER_BEARER, None)
-        if bearer is None:
-            return _build_response_403()
+    try:
+        # Validate bearer token
+        db = _build_db_connection(_logger)
+        with db:
+            manager = AuthManager(db=db, logger=_logger)
+            bearer = request.headers.get(HEADER_BEARER, None)
+            if bearer is None:
+                return _build_response_403()
 
-        auth = manager.get_by_bearer(bearer=bearer)
-        if auth is None:
-            return _build_response_403()
+            auth = manager.get_by_bearer(bearer=bearer)
+            if auth is None:
+                return _build_response_403()
 
-    response: Response = await call_next(request)  # type: ignore
-    return response
+        # Forward response if bearer token was valid
+        response: Response = await call_next(request)  # type: ignore
+        return response
+    except Exception as e:
+        if isinstance(e, ApiError):
+            raise e
+        else:
+            raise ApiError(message='An error has occured.', status_code=500)
 
 
 def _build_response_403() -> Response:
