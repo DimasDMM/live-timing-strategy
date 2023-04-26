@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from ltsapi.models import BaseModel
 
@@ -10,9 +10,6 @@ class AddDriver(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    total_driving_time: Optional[int]
-    partial_driving_time: Optional[int]
-    reference_time_offset: Optional[int]
 
 
 class GetDriver(BaseModel):
@@ -24,9 +21,6 @@ class GetDriver(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    total_driving_time: int
-    partial_driving_time: int
-    reference_time_offset: Optional[int]
     insert_date: datetime
     update_date: datetime
 
@@ -37,9 +31,6 @@ class UpdateDriver(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    total_driving_time: int
-    partial_driving_time: int
-    reference_time_offset: Optional[int]
 
 
 class AddTeam(BaseModel):
@@ -48,7 +39,6 @@ class AddTeam(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    reference_time_offset: Optional[int]
 
 
 class GetTeam(BaseModel):
@@ -59,8 +49,6 @@ class GetTeam(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    reference_time_offset: Optional[int]
-    drivers: List[GetDriver]
     insert_date: datetime
     update_date: datetime
 
@@ -71,4 +59,3 @@ class UpdateTeam(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
-    reference_time_offset: Optional[int]

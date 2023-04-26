@@ -106,8 +106,6 @@ class CMetadataManager:
     BASE_SELECT = '''
         SELECT
             cm.`competition_id` AS cm_competition_id,
-            cm.`reference_time` AS cm_reference_time,
-            cm.`reference_current_offset` AS cm_reference_current_offset,
             cm.`status` AS cm_status,
             cm.`stage` AS cm_stage,
             cm.`remaining_length` AS cm_remaining_length,
@@ -206,8 +204,6 @@ class CMetadataManager:
     def _raw_to_metadata(self, row: dict) -> GetCompetitionMetadata:
         """Build an instance of GetCompetitionMetadata."""
         return GetCompetitionMetadata(
-            reference_time=row['cm_reference_time'],
-            reference_current_offset=row['cm_reference_current_offset'],
             status=row['cm_status'],
             stage=row['cm_stage'],
             remaining_length=row['cm_remaining_length'],
@@ -324,8 +320,6 @@ class CompetitionsIndexManager:
     def _initial_metadata(self) -> AddCompetitionMetadata:
         """Create initial metadata of a competition."""
         return AddCompetitionMetadata(
-            reference_time=0,
-            reference_current_offset=0,
             status=CompetitionStatus.PAUSED,
             stage=CompetitionStage.FREE_PRACTICE,
             remaining_length=0,

@@ -13,8 +13,6 @@ from ltsapi.models.tracks import GetTrack
 class AddCompetitionMetadata(BaseModel):
     """Metadata of a competition."""
 
-    reference_time: Optional[int]
-    reference_current_offset: Optional[int]
     status: CompetitionStatus
     stage: CompetitionStage
     remaining_length: int
@@ -24,8 +22,6 @@ class AddCompetitionMetadata(BaseModel):
 class GetCompetitionMetadata(BaseModel):
     """Metadata of a competition."""
 
-    reference_time: Optional[int]
-    reference_current_offset: Optional[int]
     status: CompetitionStatus
     stage: CompetitionStage
     remaining_length: int
@@ -37,8 +33,6 @@ class GetCompetitionMetadata(BaseModel):
 class UpdateCompetitionMetadata(BaseModel):
     """Metadata of a competition."""
 
-    reference_time: Optional[int]
-    reference_current_offset: Optional[int]
     status: CompetitionStatus
     stage: CompetitionStage
     remaining_length: int

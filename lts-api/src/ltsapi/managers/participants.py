@@ -37,9 +37,6 @@ class DriversManager:
             cd.`participant_code` AS cd_participant_code,
             cd.`name` AS cd_name,
             cd.`number` AS cd_number,
-            cd.`total_driving_time` AS cd_total_driving_time,
-            cd.`partial_driving_time` AS cd_partial_driving_time,
-            cd.`reference_time_offset` AS cd_reference_time_offset,
             cd.`insert_date` AS cd_insert_date,
             cd.`update_date` AS cd_update_date
         FROM participants_drivers AS cd'''
@@ -295,9 +292,6 @@ class DriversManager:
             participant_code=row['cd_participant_code'],
             name=row['cd_name'],
             number=row['cd_number'],
-            total_driving_time=row['cd_total_driving_time'],
-            partial_driving_time=row['cd_partial_driving_time'],
-            reference_time_offset=row['cd_reference_time_offset'],
             insert_date=row['cd_insert_date'],
             update_date=row['cd_update_date'],
         )
@@ -313,7 +307,6 @@ class TeamsManager:
             ct.`participant_code` AS ct_participant_code,
             ct.`name` AS ct_name,
             ct.`number` AS ct_number,
-            ct.`reference_time_offset` AS ct_reference_time_offset,
             ct.`insert_date` AS ct_insert_date,
             ct.`update_date` AS ct_update_date
         FROM participants_teams AS ct'''
@@ -500,8 +493,6 @@ class TeamsManager:
             participant_code=row['ct_participant_code'],
             name=row['ct_name'],
             number=row['ct_number'],
-            reference_time_offset=row['ct_reference_time_offset'],
-            drivers=[],
             insert_date=row['ct_insert_date'],
             update_date=row['ct_update_date'],
         )

@@ -32,9 +32,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 2,
@@ -43,9 +40,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 3,
@@ -54,9 +48,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 4,
@@ -65,9 +56,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 5,
@@ -76,9 +64,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 6,
@@ -87,9 +72,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 7,
@@ -98,9 +80,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 8,
@@ -109,9 +88,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 9,
@@ -120,9 +96,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
         {
             'id': 10,
@@ -131,9 +104,6 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
-            'total_driving_time': 0,
-            'partial_driving_time': 0,
-            'reference_time_offset': None,
         },
     ]
 
@@ -160,9 +130,6 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 2',
                     'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'reference_time_offset': None,
                 },
             ),
         ])
@@ -198,9 +165,6 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-2',
                         'name': 'CKM 2 Driver 1',
                         'number': 42,
-                        'total_driving_time': 0,
-                        'partial_driving_time': 0,
-                        'reference_time_offset': None,
                     },
                     {
                         'id': 4,
@@ -209,9 +173,6 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-2',
                         'name': 'CKM 2 Driver 2',
                         'number': 42,
-                        'total_driving_time': 0,
-                        'partial_driving_time': 0,
-                        'reference_time_offset': None,
                     },
                 ],
             ),
@@ -242,9 +203,6 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 1',
                         'number': 41,
-                        'total_driving_time': 0,
-                        'partial_driving_time': 0,
-                        'reference_time_offset': None,
                     },
                     {
                         'id': 10,
@@ -253,9 +211,6 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 2',
                         'number': 41,
-                        'total_driving_time': 0,
-                        'partial_driving_time': 0,
-                        'reference_time_offset': None,
                     },
                 ],
             ),
@@ -286,9 +241,6 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 2',
                     'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'reference_time_offset': None,
                 },
             ),
         ])
@@ -322,9 +274,6 @@ class TestDriversManager(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 3',
                     number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 {
                     'competition_id': 1,
@@ -332,9 +281,6 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 3',
                     'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'reference_time_offset': None,
                 },
             ),
             (
@@ -344,9 +290,6 @@ class TestDriversManager(DatabaseTest):
                     participant_code='team-new',
                     name='New Team Driver 1',
                     number=101,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 {
                     'competition_id': 1,
@@ -354,9 +297,6 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-new',
                     'name': 'New Team Driver 1',
                     'number': 101,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'reference_time_offset': None,
                 },
             ),
         ])
@@ -407,9 +347,6 @@ class TestDriversManager(DatabaseTest):
                     participant_code='team-2',
                     name='CKM 2 Driver 1',
                     number=42,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 ),
                 'The driver "CKM 2 Driver 1" (team=5) already exists.',
             ),
@@ -441,9 +378,6 @@ class TestDriversManager(DatabaseTest):
                     participant_code='team-1-updated',
                     name='CKM 1 Driver 2 Updated',
                     number=51,
-                    total_driving_time=79000,
-                    partial_driving_time=80000,
-                    reference_time_offset=81000,
                 ),
                 {
                     'id': 2,
@@ -452,9 +386,6 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1-updated',
                     'name': 'CKM 1 Driver 2 Updated',
                     'number': 51,
-                    'total_driving_time': 79000,
-                    'partial_driving_time': 80000,
-                    'reference_time_offset': 81000,
                 },
             ),
         ])
@@ -499,8 +430,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
-            'reference_time_offset': None,
-            'drivers': [],
         },
         {
             'id': 2,
@@ -508,8 +437,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
-            'reference_time_offset': None,
-            'drivers': [],
         },
         {
             'id': 3,
@@ -517,8 +444,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-3',
             'name': 'CKM 3',
             'number': 43,
-            'reference_time_offset': None,
-            'drivers': [],
         },
         {
             'id': 4,
@@ -526,8 +451,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
-            'reference_time_offset': None,
-            'drivers': [],
         },
         {
             'id': 5,
@@ -535,8 +458,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2',
             'number': 42,
-            'reference_time_offset': None,
-            'drivers': [],
         },
         {
             'id': 6,
@@ -544,8 +465,6 @@ class TestTeamsManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1',
             'number': 41,
-            'reference_time_offset': None,
-            'drivers': [],
         },
     ]
 
@@ -569,8 +488,6 @@ class TestTeamsManager(DatabaseTest):
                     'participant_code': 'team-2',
                     'name': 'CKM 2',
                     'number': 42,
-                    'reference_time_offset': None,
-                    'drivers': [],
                 },
             ),
         ])
@@ -601,8 +518,6 @@ class TestTeamsManager(DatabaseTest):
                         'participant_code': 'team-1',
                         'name': 'CKM 1',
                         'number': 41,
-                        'reference_time_offset': None,
-                        'drivers': [],
                     },
                     {
                         'id': 5,
@@ -610,8 +525,6 @@ class TestTeamsManager(DatabaseTest):
                         'participant_code': 'team-2',
                         'name': 'CKM 2',
                         'number': 42,
-                        'reference_time_offset': None,
-                        'drivers': [],
                     },
                 ],
             ),
@@ -640,8 +553,6 @@ class TestTeamsManager(DatabaseTest):
                     'participant_code': 'team-2',
                     'name': 'CKM 2',
                     'number': 42,
-                    'reference_time_offset': None,
-                    'drivers': [],
                 },
             ),
         ])
@@ -669,7 +580,6 @@ class TestTeamsManager(DatabaseTest):
                     participant_code='team-2',
                     name='CKM 2',
                     number=42,
-                    reference_time_offset=None,
                 ),
                 {
                     'id': None,
@@ -677,8 +587,6 @@ class TestTeamsManager(DatabaseTest):
                     'participant_code': 'team-2',
                     'name': 'CKM 2',
                     'number': 42,
-                    'reference_time_offset': None,
-                    'drivers': [],
                 },
             ),
         ])
@@ -720,7 +628,6 @@ class TestTeamsManager(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1',
                     number=41,
-                    reference_time_offset=None,
                 ),
                 'The team "team-1" (competition=3) already exists.',
             ),
@@ -751,7 +658,6 @@ class TestTeamsManager(DatabaseTest):
                     name='CKM 2 Updated',
                     participant_code='team-2-updated',
                     number=52,
-                    reference_time_offset=78000,
                 ),
                 {
                     'id': 2,
@@ -759,8 +665,6 @@ class TestTeamsManager(DatabaseTest):
                     'participant_code': 'team-2-updated',
                     'name': 'CKM 2 Updated',
                     'number': 52,
-                    'reference_time_offset': 78000,
-                    'drivers': [],
                 },
             ),
         ])
