@@ -31,6 +31,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 4,
                         'driver_id': 5,
+                        'participant_code': 'team-1',
                         'position': 1,
                         'time': 58800,
                         'best_time': 58800,
@@ -46,6 +47,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 5,
                         'driver_id': 7,
+                        'participant_code': 'team-2',
                         'position': 2,
                         'time': 59700,
                         'best_time': 59500,
@@ -83,6 +85,7 @@ class TestTimingManager(DatabaseTest):
                 {
                     'team_id': 5,
                     'driver_id': 7,
+                    'participant_code': 'team-2',
                     'position': 2,
                     'time': 59700,
                     'best_time': 59500,
@@ -103,6 +106,7 @@ class TestTimingManager(DatabaseTest):
                 {
                     'team_id': 5,
                     'driver_id': 7,
+                    'participant_code': 'team-2',
                     'position': 2,
                     'time': 59700,
                     'best_time': 59500,
@@ -144,6 +148,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 4,
                         'driver_id': 5,
+                        'participant_code': 'team-1',
                         'position': 1,
                         'time': 0,
                         'best_time': 0,
@@ -159,6 +164,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 5,
                         'driver_id': 7,
+                        'participant_code': 'team-2',
                         'position': 2,
                         'time': 0,
                         'best_time': 0,
@@ -174,6 +180,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 4,
                         'driver_id': 5,
+                        'participant_code': 'team-1',
                         'position': 1,
                         'time': 59000,
                         'best_time': 59000,
@@ -189,6 +196,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 5,
                         'driver_id': 7,
+                        'participant_code': 'team-2',
                         'position': 2,
                         'time': 59500,
                         'best_time': 59500,
@@ -204,6 +212,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 4,
                         'driver_id': 5,
+                        'participant_code': 'team-1',
                         'position': 1,
                         'time': 58800,
                         'best_time': 58800,
@@ -219,6 +228,7 @@ class TestTimingManager(DatabaseTest):
                     {
                         'team_id': 5,
                         'driver_id': 7,
+                        'participant_code': 'team-2',
                         'position': 2,
                         'time': 59700,
                         'best_time': 59500,
@@ -269,6 +279,7 @@ class TestTimingManager(DatabaseTest):
                 {
                     'team_id': 4,
                     'driver_id': 5,
+                    'participant_code': 'team-1',
                     'position': 1,
                     'time': 58800,
                     'best_time': 58500,

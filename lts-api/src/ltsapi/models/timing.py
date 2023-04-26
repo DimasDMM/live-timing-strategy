@@ -31,6 +31,7 @@ class GetLapTime(BaseModel):
 
     team_id: Optional[int]
     driver_id: Optional[int]
+    participant_code: str
     position: int
     time: int
     best_time: int

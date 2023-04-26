@@ -20,6 +20,8 @@ class TimingManager:
 
     BASE_SELECT = '''
         SELECT
+            drivers.`participant_code` AS driver_code,
+            teams.`participant_code` AS team_code,
             timing.`team_id` AS timing_team_id,
             timing.`driver_id` AS timing_driver_id,
             timing.`position` AS timing_position,
@@ -35,8 +37,20 @@ class TimingManager:
             timing.`number_pits` AS timing_number_pits,
             timing.`insert_date` AS timing_insert_date,
             timing.`update_date` AS timing_update_date'''
-    CURRENT_QUERY = f'{BASE_SELECT} FROM timing_current as timing'
-    HISTORY_QUERY = f'{BASE_SELECT} FROM timing_history as timing'
+    CURRENT_QUERY = f'''
+        {BASE_SELECT} FROM timing_current AS timing
+        LEFT JOIN participants_drivers AS drivers
+            ON drivers.id = timing.`driver_id`
+        LEFT JOIN participants_teams AS teams
+            ON teams.id = timing.`team_id`
+    '''
+    HISTORY_QUERY = f'''
+        {BASE_SELECT} FROM timing_history AS timing
+        LEFT JOIN participants_drivers AS drivers
+            ON drivers.id = timing.`driver_id`
+        LEFT JOIN participants_teams AS teams
+            ON teams.id = timing.`team_id`
+    '''
     CURRENT_TABLE = 'timing_current'
     HISTORY_TABLE = 'timing_history'
 
@@ -187,7 +201,11 @@ class TimingManager:
         """Insert record in the history table."""
         new_data = new_model.dict()
         previous_data = previous_model.dict(exclude={
-            'insert_date': True, 'update_date': True})
+            'participant_code': True,
+            'insert_date': True,
+            'update_date': True,
+        })
+
         for field_name, _ in previous_data.items():
             if field_name in new_data and new_data[field_name] is not None:
                 previous_data[field_name] = new_data[field_name]
@@ -200,9 +218,12 @@ class TimingManager:
 
     def _raw_to_timing(self, row: dict) -> GetLapTime:
         """Build an instance of GetLapTime."""
+        participant_code = (row['team_code'] if row['team_code'] is not None
+                            else row['driver_code'])
         return GetLapTime(
             team_id=row['timing_team_id'],
             driver_id=row['timing_driver_id'],
+            participant_code=participant_code,
             position=row['timing_position'],
             time=row['timing_time'],
             best_time=row['timing_best_time'],
