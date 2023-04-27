@@ -79,9 +79,9 @@ class TestMiscRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/<competition_id>/parsers/settings."""
+        """Test GET /v1/c/<competition_id>/parsers/settings."""
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}/parsers/settings',
+            f'/v1/c/{competition_id}/parsers/settings',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -158,10 +158,10 @@ class TestMiscRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test POST /v1/competitions/<competition_id>/parsers/settings.
+        Test POST /v1/c/<competition_id>/parsers/settings.
         """
         response: Response = self.API.post(
-            f'/v1/competitions/{competition_id}/parsers/settings',
+            f'/v1/c/{competition_id}/parsers/settings',
             json=add_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
@@ -208,10 +208,10 @@ class TestMiscRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test DELETE /v1/competitions/<competition_id>/parsers/settings.
+        Test DELETE /v1/c/<competition_id>/parsers/settings.
         """
         response: Response = self.API.delete(
-            f'/v1/competitions/{competition_id}/parsers/settings',
+            f'/v1/c/{competition_id}/parsers/settings',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -266,10 +266,10 @@ class TestMiscRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/competitions/<competition_id>/parsers/settings/<s_name>.
+        Test GET /v1/c/<competition_id>/parsers/settings/<s_name>.
         """
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}/parsers/settings/{s_name}',
+            f'/v1/c/{competition_id}/parsers/settings/{s_name}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -357,10 +357,10 @@ class TestMiscRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test PUT /v1/competitions/<competition_id>/parsers/settings/<s_name>.
+        Test PUT /v1/c/<competition_id>/parsers/settings/<s_name>.
         """
         response: Response = self.API.put(
-            f'/v1/competitions/{competition_id}/parsers/settings/{s_name}',
+            f'/v1/c/{competition_id}/parsers/settings/{s_name}',
             json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response

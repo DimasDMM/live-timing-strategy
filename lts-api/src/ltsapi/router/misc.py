@@ -25,7 +25,7 @@ _logger = _build_logger(__package__)
 
 
 @router.get(
-        path='/competitions/{competition_id}/parsers/settings',  # noqa: FS003
+        path='/c/{competition_id}/parsers/settings',  # noqa: FS003
         summary='Get parsers settings')
 async def get_parsers_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -38,7 +38,7 @@ async def get_parsers_settings(
 
 
 @router.post(
-        path='/competitions/{competition_id}/parsers/settings',  # noqa: FS003
+        path='/c/{competition_id}/parsers/settings',  # noqa: FS003
         summary='Add a new parser setting')
 async def add_parser_setting(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -64,7 +64,7 @@ async def add_parser_setting(
 
 
 @router.delete(
-        path='/competitions/{competition_id}/parsers/settings',  # noqa: FS003
+        path='/c/{competition_id}/parsers/settings',  # noqa: FS003
         summary='Delete all the parsers settings of a competition')
 async def delete_parsers_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -79,7 +79,7 @@ async def delete_parsers_settings(
 
 
 @router.get(
-        path='/competitions/{competition_id}/parsers/settings/{setting_name}',  # noqa
+        path='/c/{competition_id}/parsers/settings/{setting_name}',  # noqa
         summary='Get a specific parser setting')
 async def get_single_parser_setting(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -95,7 +95,7 @@ async def get_single_parser_setting(
 
 
 @router.put(
-        path='/competitions/{competition_id}/parsers/settings/{setting_name}',  # noqa
+        path='/c/{competition_id}/parsers/settings/{setting_name}',  # noqa
         summary='Update the value of a parser setting')
 async def update_parser_setting(
     competition_id: Annotated[int, Path(description='ID of the competition')],
