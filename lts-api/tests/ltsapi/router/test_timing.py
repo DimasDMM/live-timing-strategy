@@ -188,10 +188,10 @@ class TestTimingRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/c/<competition_id>/timing/driver/<driver_id>.
+        Test GET /v1/c/<competition_id>/timing/drivers/<driver_id>.
         """
         response: Response = self.API.get(
-            f'/v1/c/{competition_id}/timing/driver/{driver_id}',
+            f'/v1/c/{competition_id}/timing/drivers/{driver_id}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -304,10 +304,10 @@ class TestTimingRouter(DatabaseTest):
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/c/<competition_id>/timing/driver/<driver_id>/history.
+        Test GET /v1/c/<competition_id>/timing/drivers/<driver_id>/history.
         """
         url = (f'/v1/c/{competition_id}/'
-               f'timing/driver/{driver_id}/history')
+               f'timing/drivers/{driver_id}/history')
         response: Response = self.API.get(
             url,
             headers=headers)
@@ -393,10 +393,10 @@ class TestTimingRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/c/<competition_id>/timing/team/<team_id>.
+        Test GET /v1/c/<competition_id>/timing/teams/<team_id>.
         """
         response: Response = self.API.get(
-            f'/v1/c/{competition_id}/timing/team/{team_id}',
+            f'/v1/c/{competition_id}/timing/teams/{team_id}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -534,10 +534,10 @@ class TestTimingRouter(DatabaseTest):
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """
-        Test PUT /v1/c/<competition_id>/timing/team/<team_id>.
+        Test PUT /v1/c/<competition_id>/timing/teams/<team_id>.
         """
         response: Response = self.API.put(
-            f'/v1/c/{competition_id}/timing/team/{team_id}',
+            f'/v1/c/{competition_id}/timing/teams/{team_id}',
             json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
@@ -651,10 +651,10 @@ class TestTimingRouter(DatabaseTest):
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
         """
-        Test GET /v1/c/<competition_id>/timing/team/<team_id>/history.
+        Test GET /v1/c/<competition_id>/timing/teams/<team_id>/history.
         """
         url = (f'/v1/c/{competition_id}/'
-               f'timing/team/{team_id}/history')
+               f'timing/teams/{team_id}/history')
         response: Response = self.API.get(
             url,
             headers=headers)

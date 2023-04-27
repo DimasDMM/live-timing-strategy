@@ -32,7 +32,7 @@ async def get_current_global_timing(
 
 
 @router.get(
-        path='/timing/driver/{driver_id}',  # noqa: FS003
+        path='/timing/drivers/{driver_id}',  # noqa: FS003
         summary='Get current timing in a competition of a specific driver')
 async def get_current_driver_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -48,7 +48,7 @@ async def get_current_driver_timing(
 
 
 @router.get(
-        path='/timing/driver/{driver_id}/history',  # noqa: FS003
+        path='/timing/drivers/{driver_id}/history',  # noqa: FS003
         summary='Get history timing in a competition of a specific driver')
 async def get_history_driver_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -62,7 +62,7 @@ async def get_history_driver_timing(
 
 
 @router.get(
-        path='/timing/team/{team_id}',  # noqa: FS003
+        path='/timing/teams/{team_id}',  # noqa: FS003
         summary='Get current timing in a competition of a specific team')
 async def get_current_team_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -77,7 +77,7 @@ async def get_current_team_timing(
 
 
 @router.put(
-        path='/timing/team/{team_id}',  # noqa: FS003
+        path='/timing/teams/{team_id}',  # noqa: FS003
         summary='Update the timing of a team in a competition')
 async def update_timing_by_team(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -98,7 +98,7 @@ async def update_timing_by_team(
 
 
 @router.get(
-        path='/timing/team/{team_id}/history',  # noqa: FS003
+        path='/timing/teams/{team_id}/history',  # noqa: FS003
         summary='Get history timing in a competition of a specific team')
 async def get_history_team_timing(
     competition_id: Annotated[int, Path(description='ID of the competition')],
