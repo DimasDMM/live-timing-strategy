@@ -79,6 +79,8 @@ python -m ltspipe.runners.ws_listener \
 
 Arguments:
 - `--competition_code`: (**mandatory**) Code of the competition.
+- `--errors_path`: (optional) Path to store errors in running time. By default,
+  it is `artifacts/websocket/errors/`.
 - `--kafka_notifications`: (optional) Topic of Kafka to read and write
   notifications. By default, it is `notifications`.
 - `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
@@ -209,6 +211,8 @@ python -m ltspipe.runners.raw_storage \
 ```
 
 Arguments:
+- `--errors_path`: (optional) Path to store errors in running time. By default,
+  it is `artifacts/raw/errors/`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
 - `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
@@ -216,7 +220,7 @@ Arguments:
 - `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
   By default, it is `raw-storage`.
 - `--output_path`: (optional) Path to store the raw data. By default, it is
-  `./artifacts/logs`.
+  `artifacts/raw/data/`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.

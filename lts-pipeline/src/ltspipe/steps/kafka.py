@@ -1,4 +1,5 @@
-import logging
+from datetime import datetime
+from logging import Logger
 from kafka import (  # type: ignore
     KafkaConsumer as _KafkaConsumer,
     KafkaProducer as _KafkaProducer,
@@ -16,15 +17,18 @@ class KafkaConsumerStep(StartStep):
 
     def __init__(
             self,
+            logger: Logger,
             bootstrap_servers: List[str],
             topics: List[str],
             value_deserializer: Callable,
             next_step: MidStep,
-            group_id: Optional[str] = None) -> None:
+            group_id: Optional[str] = None,
+            on_error: Optional[MidStep] = None) -> None:
         """
         Construct.
 
         Params:
+            logger (Logger): Logger instance to display information.
             bootstrap_servers (List[str]): list of 'host[:port]' strings that
                 the consumer should contact to bootstrap initial cluster
                 metadata. This does not have to be the full node list.
@@ -36,8 +40,12 @@ class KafkaConsumerStep(StartStep):
                 dynamic partition assignment (if enabled), and to use for
                 fetching and committing offsets. If None, auto-partition
                 assignment and offset commits are disabled.
+            on_error (MidStep | None): Optionally, apply another step to the
+                message if there is any error on running time.
         """
+        self._logger = logger
         self._next_step = next_step
+        self._on_error = on_error
         self._consumer = self._build_kafka_consumer(
             topics,
             bootstrap_servers=bootstrap_servers,
@@ -46,14 +54,34 @@ class KafkaConsumerStep(StartStep):
 
     def get_children(self) -> List[Any]:
         """Return list of children steps to this one."""
-        return [self._next_step] + self._next_step.get_children()
+        children = [self._next_step] + self._next_step.get_children()
+        if self._on_error is not None:
+            children += [self._on_error] + self._on_error.get_children()
+        return children
 
     def start_step(self) -> None:
         """Start listening to Kafka broker for new messages."""
         for data in self._consumer:
-            msg: Message = Message.decode(data.value)
-            msg.updated()
-            self._next_step.run_step(msg)
+            try:
+                msg: Message = Message.decode(data.value)
+                self._logger.info(f'Kafka data: {msg}')
+                msg.updated()
+                self._next_step.run_step(msg)
+            except Exception as e:
+                self._logger.critical(e, exc_info=True)
+                if self._on_error is not None:
+                    msg = Message(
+                        competition_code=msg.competition_code,
+                        data=msg.data,
+                        source=msg.source,
+                        decoder=msg.decoder,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=str(e),
+                        error_traceback=str(e.__traceback__),
+                    )
+                    msg.updated()
+                    self._on_error.run_step(msg)
 
     def _build_kafka_consumer(
             self,
@@ -62,7 +90,6 @@ class KafkaConsumerStep(StartStep):
             group_id: Optional[str],
             value_deserializer: Callable) -> _KafkaConsumer:
         """Wrap builder of KafkaConsumer."""
-        raise Exception('>> NOT MOCKED')
         return _KafkaConsumer(
             *topics,
             bootstrap_servers=bootstrap_servers,
@@ -76,7 +103,7 @@ class KafkaProducerStep(MidStep):
 
     def __init__(
             self,
-            logger: logging.Logger,
+            logger: Logger,
             bootstrap_servers: List[str],
             topic: str,
             value_serializer: Callable,
@@ -87,7 +114,7 @@ class KafkaProducerStep(MidStep):
         Construct.
 
         Params:
-            logger (logging.Logger): Logger instance to display information.
+            logger (Logger): Logger instance to display information.
             bootstrap_servers (List[str]): List of 'host[:port]' strings that
                 the consumer should contact to bootstrap initial cluster
                 metadata. This does not have to be the full node list.
@@ -138,7 +165,6 @@ class KafkaProducerStep(MidStep):
             bootstrap_servers: List[str],
             value_serializer: Callable) -> _KafkaProducer:
         """Wrap builder of KafkaProducer."""
-        raise Exception('>> NOT MOCKED')
         return _KafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=value_serializer,

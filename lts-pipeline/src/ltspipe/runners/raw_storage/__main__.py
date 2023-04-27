@@ -6,9 +6,10 @@ from ltspipe.runners import build_logger
 from ltspipe.runners.raw_storage.main import main
 from ltspipe.configs import RawStorageConfig
 from ltspipe.configs import (
-    DEFAULT_RAW_STORAGE_GROUP,
     DEFAULT_RAW_DATA_PATH,
+    DEFAULT_RAW_ERRORS_PATH,
     DEFAULT_RAW_MESSAGES_TOPIC,
+    DEFAULT_RAW_STORAGE_GROUP,
     DEFAULT_VERBOSITY,
 )
 
@@ -16,6 +17,11 @@ from ltspipe.configs import (
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the raw storage script.')
+parser.add_argument(
+    '--errors_path',
+    type=str,
+    help='Path to store errors on running time.',
+    default=DEFAULT_RAW_ERRORS_PATH)
 parser.add_argument(
     '--kafka_consume',
     type=str,

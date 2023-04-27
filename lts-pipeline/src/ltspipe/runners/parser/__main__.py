@@ -27,7 +27,7 @@ parser.add_argument(
 parser.add_argument(
     '--errors_path',
     type=str,
-    help='Path to store errors during parsing.',
+    help='Path to store errors on running time.',
     default=DEFAULT_PARSER_ERRORS_PATH)
 parser.add_argument(
     '--kafka_consume',

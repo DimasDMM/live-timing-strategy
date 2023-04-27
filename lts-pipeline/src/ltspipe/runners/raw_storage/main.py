@@ -4,7 +4,6 @@ import os
 
 from ltspipe.configs import RawStorageConfig
 from ltspipe.steps.kafka import KafkaConsumerStep
-from ltspipe.steps.loggers import LogInfoStep
 from ltspipe.steps.filesystem import MessageStorageStep, RawStorageStep
 from ltspipe.runners import BANNER_MSG
 
@@ -37,16 +36,18 @@ def main(
         output_path=config.output_path,
         next_step=raw_storage,
     )
-    info_step = LogInfoStep(
-        logger,
-        next_step=message_storage,
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
     )
     kafka_consumer = KafkaConsumerStep(
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
-        next_step=info_step,
         group_id=config.kafka_group,
+        next_step=message_storage,
+        on_error=errors_storage,
     )
     logger.info('Processes created')
 

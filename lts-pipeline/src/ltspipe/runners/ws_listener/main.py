@@ -9,10 +9,8 @@ from ltspipe.configs import WsListenerConfig
 from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.runners import BANNER_MSG
-from ltspipe.steps.bulk import (
-    QueueDistributorStep,
-    QueueForwardStep,
-)
+from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
+from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.listeners import WebsocketListenerStep
 from ltspipe.steps.modifiers import FlagModifierStep
 from ltspipe.steps.mappers import NotificationMapperStep
@@ -118,11 +116,17 @@ def _build_notifications_process(
             NotificationType.INIT_FINISHED: flag_modifier,
         },
     )
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
+    )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
         next_step=mapper,
+        on_error=errors_storage,
     )
     return kafka_consumer
 
@@ -166,11 +170,16 @@ def _build_websocket_process(
         queue=queue,  # type: ignore
         next_step=init_trigger,
     )
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
+    )
     ws_listener = WebsocketListenerStep(
         logger,
         competition_code=config.competition_code,
         uri=config.websocket_uri,
         next_step=queue_distributor,
+        on_error=errors_storage,
     )
 
     return ws_listener

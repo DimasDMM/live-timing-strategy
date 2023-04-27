@@ -22,6 +22,8 @@ class TestFileListenerStep:
             # Create a mock of the next step
             next_step = MagicMock()
             next_step.get_children.return_value = []
+            on_error = MagicMock()
+            on_error.get_children.return_value = []
 
             # Create an instance of FileListenerStep
             fake_logger = FakeLogger()
@@ -32,6 +34,7 @@ class TestFileListenerStep:
                 infinite_loop=False,
                 message_source=MessageSource.SOURCE_DUMMY,
                 next_step=next_step,
+                on_error=on_error,
             )
 
             # Call start_step and validate that the next step has received it
@@ -43,7 +46,7 @@ class TestFileListenerStep:
 
             # Also, check that the get_children method returns the mocks
             children = step.get_children()
-            assert children == [next_step]
+            assert children == [next_step, on_error]
 
     def test_start_step_without_file(self, mocker: MockerFixture) -> None:
         """Test method run_step."""

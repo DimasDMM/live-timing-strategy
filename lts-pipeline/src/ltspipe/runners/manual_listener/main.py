@@ -119,7 +119,7 @@ def _build_notifications_process(
         queue: DictProxy) -> KafkaConsumerStep:
     """Build process with the notifications listener."""
     kafka_raw = KafkaProducerStep(
-        logger,
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topic=config.kafka_produce,
         value_serializer=msgpack.dumps,
@@ -143,6 +143,7 @@ def _build_notifications_process(
         },
     )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
@@ -158,13 +159,13 @@ def _build_file_listener_process(
         queue: DictProxy) -> FileListenerStep:
     """Build process with input listener."""
     kafka_raw = KafkaProducerStep(
-        logger,
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topic=config.kafka_produce,
         value_serializer=msgpack.dumps,
     )
     kafka_notifications = KafkaProducerStep(
-        logger,
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topic=config.kafka_notifications,
         value_serializer=msgpack.dumps,
@@ -191,7 +192,7 @@ def _build_file_listener_process(
         next_step=init_trigger,
     )
     ws_listener = FileListenerStep(
-        logger,
+        logger=logger,
         competition_code=config.competition_code,
         single_file=True,
         infinite_loop=True,

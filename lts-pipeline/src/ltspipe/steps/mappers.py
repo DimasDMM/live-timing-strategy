@@ -45,7 +45,7 @@ class NotificationMapperStep(MidStep):
         """Add message to queue or continue to the next step."""
         type = self._get_notification_type(msg)
         if type is not None and type in self._map_notification:
-            self._logger.info(f'Notification: {type}.')
+            self._logger.debug(f'Notification: {type}.')
             msg.updated()
             self._map_notification[type].run_step(msg)
         elif self._on_other is not None:
@@ -69,8 +69,7 @@ class WsParsersStep(MidStep):
             initial_parser: InitialParser,
             parsers: List[Parser],
             on_parsed: Optional[MidStep] = None,
-            on_unknown: Optional[MidStep] = None,
-            on_error: Optional[MidStep] = None) -> None:
+            on_unknown: Optional[MidStep] = None) -> None:
         """
         Construct.
 
@@ -82,15 +81,12 @@ class WsParsersStep(MidStep):
                 message when the data is parsed.
             on_unknown (MidStep | None): Optionally, apply another step to the
                 message if the current parser could not detect the format.
-            on_error (MidStep | None): Optionally, apply another step to the
-                message if the current parser had some error parsing the data.
         """
         self._logger = logger
         self._initial_parser = initial_parser
         self._parsers = parsers
         self._on_parsed = on_parsed
         self._on_unknown = on_unknown
-        self._on_error = on_error
 
     def get_children(self) -> List[Any]:
         """Return list of children steps to this one."""
@@ -99,34 +95,18 @@ class WsParsersStep(MidStep):
             children += [self._on_parsed] + self._on_parsed.get_children()
         if self._on_unknown is not None:
             children += [self._on_unknown] + self._on_unknown.get_children()
-        if self._on_error is not None:
-            children += [self._on_error] + self._on_error.get_children()
         return children
 
     def run_step(self, msg: Message) -> None:
         """Display a message."""
-        try:
-            if self._initial_parser.is_initializer_data(msg.data):
-                self._apply_parsers(
-                    msg, parsers=[self._initial_parser], split_lines=False)
-            else:
-                self._apply_parsers(
-                    msg, parsers=self._parsers, split_lines=True)
-        except Exception as e:
-            self._logger.critical(e, exc_info=True)
-            if self._on_error is not None:
-                msg = Message(
-                    competition_code=msg.competition_code,
-                    data=msg.data,
-                    source=msg.source,
-                    decoder=msg.decoder,
-                    created_at=datetime.utcnow().timestamp(),
-                    updated_at=datetime.utcnow().timestamp(),
-                    error_description=str(e),
-                    error_traceback=str(e.__traceback__),
-                )
-                msg.updated()
-                self._on_error.run_step(msg)
+        if self._initial_parser.is_initializer_data(msg.data):
+            self._logger.debug('Apply parser for initializer data')
+            self._apply_parsers(
+                msg, parsers=[self._initial_parser], split_lines=False)
+        else:
+            self._logger.debug('Apply set of parsers')
+            self._apply_parsers(
+                msg, parsers=self._parsers, split_lines=True)
 
     def _apply_parsers(
             self,

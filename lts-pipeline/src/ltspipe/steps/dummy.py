@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-from typing import List
+from typing import Any, List, Optional
 
 from ltspipe.messages import Message, MessageSource
 from ltspipe.steps.base import StartStep, MidStep
@@ -41,3 +41,30 @@ class DummyStartStep(StartStep):
             )
             self._next_step.run_step(msg)
             time.sleep(0.5)
+
+
+class NullStep(MidStep):
+    """Step that does nothing."""
+
+    def __init__(self, next_step: Optional[MidStep] = None) -> None:
+        """
+        Construct.
+
+        Params:
+            next_step (MidStep | None): Optionally, apply another step to the
+                message.
+        """
+        self._next_step = next_step
+
+    def get_children(self) -> List[Any]:
+        """Return list of children steps to this one."""
+        if self._next_step is None:
+            return []
+        else:
+            return [self._next_step] + self._next_step.get_children()
+
+    def run_step(self, msg: Message) -> None:
+        """Do nothing."""
+        if self._next_step is not None:
+            msg.updated()
+            self._next_step.run_step(msg)

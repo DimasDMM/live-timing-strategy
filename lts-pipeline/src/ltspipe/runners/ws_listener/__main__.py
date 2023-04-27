@@ -9,6 +9,7 @@ from ltspipe.configs import (
     DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_RAW_MESSAGES_TOPIC,
     DEFAULT_VERBOSITY,
+    DEFAULT_WS_ERRORS_PATH,
 )
 
 
@@ -20,6 +21,11 @@ parser.add_argument(
     type=str,
     help='Verbose code to identify the competition.',
     required=True)
+parser.add_argument(
+    '--errors_path',
+    type=str,
+    help='Path to store errors on running time.',
+    default=DEFAULT_WS_ERRORS_PATH)
 parser.add_argument(
     '--kafka_notifications',
     type=str,

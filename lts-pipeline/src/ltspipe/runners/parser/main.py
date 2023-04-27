@@ -18,7 +18,6 @@ from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
-from ltspipe.steps.loggers import LogInfoStep
 from ltspipe.steps.mappers import NotificationMapperStep, WsParsersStep
 from ltspipe.steps.modifiers import FlagModifierStep
 from ltspipe.steps.triggers import WsInitTriggerStep
@@ -164,16 +163,18 @@ def _build_raw_process(
         on_other=queue_distributor,
     )
 
-    info_step = LogInfoStep(
-        logger,
-        next_step=init_trigger,
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
     )
     kafka_consumer = KafkaConsumerStep(
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
-        next_step=info_step,
         group_id=config.kafka_group,
+        next_step=init_trigger,
+        on_error=errors_storage,
     )
     return kafka_consumer
 
@@ -224,11 +225,17 @@ def _build_notifications_process(
             NotificationType.INIT_FINISHED: api_getter,
         },
     )
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
+    )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
         next_step=mapper,
+        on_error=errors_storage,
     )
     return kafka_consumer
 
@@ -250,10 +257,6 @@ def _build_parsers_pipe(
         topic=config.kafka_produce,
         value_serializer=msgpack.dumps,
     )
-    errors_storage = MessageStorageStep(
-        logger=logger,
-        output_path=config.errors_path,
-    )
     unknowns_storage = MessageStorageStep(
         logger=logger,
         output_path=config.unknowns_path,
@@ -263,7 +266,6 @@ def _build_parsers_pipe(
         initial_parser=initial_parser,
         parsers=parsers,
         on_parsed=kafka_producer,
-        on_error=errors_storage,
         on_unknown=unknowns_storage,
     )
     return parser_step

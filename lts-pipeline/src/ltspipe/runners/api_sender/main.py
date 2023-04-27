@@ -13,6 +13,7 @@ from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import NotificationType
 from ltspipe.steps.api import CompetitionInfoInitStep, ApiActionStep
+from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.mappers import NotificationMapperStep
 from ltspipe.steps.triggers import ActionInitTriggerStep
@@ -157,7 +158,7 @@ def _build_std_process(
         },
         next_step=init_trigger,
     )
-    info_init = CompetitionInfoInitStep(
+    competition_info_init = CompetitionInfoInitStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
         auth_data=auth_data,
@@ -165,11 +166,17 @@ def _build_std_process(
         force_update=False,
         next_step=api_actions,
     )
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
+    )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
-        next_step=info_init,
+        next_step=competition_info_init,
+        on_error=errors_storage,
     )
     return kafka_consumer
 
@@ -193,10 +200,16 @@ def _build_notifications_process(
             NotificationType.INIT_FINISHED: api_getter,
         },
     )
+    errors_storage = MessageStorageStep(
+        logger=logger,
+        output_path=config.errors_path,
+    )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
+        logger=logger,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
         next_step=mapper,
+        on_error=errors_storage,
     )
     return kafka_consumer

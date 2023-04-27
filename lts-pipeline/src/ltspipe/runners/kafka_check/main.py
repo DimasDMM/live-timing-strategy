@@ -3,8 +3,7 @@ import msgpack  # type: ignore
 
 from ltspipe.configs import KafkaCheckConfig, KafkaMode
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
-from ltspipe.steps.loggers import LogInfoStep
-from ltspipe.steps.dummy import DummyStartStep
+from ltspipe.steps.dummy import DummyStartStep, NullStep
 from ltspipe.runners import BANNER_MSG
 
 
@@ -28,13 +27,14 @@ def main(
     if config.test_mode == KafkaMode.MODE_CONSUMER:
         # Consumer mode: it just prints the data on the console
         logger.info('Init script...')
-        log_step = LogInfoStep(logger)
+        null_step = NullStep()
         kafka_consumer = KafkaConsumerStep(
+            logger=logger,
             bootstrap_servers=config.kafka_servers,
             topics=[config.kafka_topic],
             value_deserializer=msgpack.loads,
-            next_step=log_step,
             group_id=config.kafka_group,
+            next_step=null_step,
         )
         logger.info('Start consumer...')
         kafka_consumer.start_step()
