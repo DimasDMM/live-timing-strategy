@@ -54,8 +54,6 @@ def _build_init_qualy() -> Tuple[Message, List[Action]]:
         type=ActionType.INITIALIZE,
         data=InitialData(
             competition_code=TEST_COMPETITION_CODE,
-            reference_time=None,
-            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING.value,
             status=CompetitionStatus.PAUSED.value,
             remaining_length=DiffLap(
@@ -118,8 +116,6 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
         type=ActionType.INITIALIZE,
         data=InitialData(
             competition_code=TEST_COMPETITION_CODE,
-            reference_time=None,
-            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING.value,
             status=CompetitionStatus.PAUSED.value,
             remaining_length=DiffLap(
@@ -188,8 +184,6 @@ def _build_init_race() -> Tuple[Message, List[Action]]:
         type=ActionType.INITIALIZE,
         data=InitialData(
             competition_code=TEST_COMPETITION_CODE,
-            reference_time=None,
-            reference_current_offset=None,
             stage=CompetitionStage.RACE.value,
             status=CompetitionStatus.PAUSED.value,
             remaining_length=DiffLap(

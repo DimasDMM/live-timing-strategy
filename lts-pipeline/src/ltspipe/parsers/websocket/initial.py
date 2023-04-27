@@ -105,8 +105,6 @@ class InitialDataParser(InitialParser):
 
         return InitialData(
             competition_code=competition_code,
-            reference_time=None,
-            reference_current_offset=None,
             stage=stage,
             status=status,
             remaining_length=remaining_length,

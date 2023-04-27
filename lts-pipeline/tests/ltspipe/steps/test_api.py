@@ -124,6 +124,8 @@ class TestParserSettingsGetterStep:
                     participant_code='team-1',
                     name='CKM 1 Driver 1',
                     number=41,
+                    total_driving_time=0,
+                    partial_driving_time=0,
                 ),
                 Driver(
                     id=2,
@@ -131,6 +133,8 @@ class TestParserSettingsGetterStep:
                     participant_code='team-1',
                     name='CKM 1 Driver 2',
                     number=41,
+                    total_driving_time=0,
+                    partial_driving_time=0,
                 ),
             ],
             teams=[
@@ -215,7 +219,7 @@ class TestParserSettingsGetterStep:
             },
         )
         item = MapRequestItem(
-            url=(f'{api_url}/v1/competitions/'
+            url=(f'{api_url}/v1/c/'
                  f'filter/code/{TEST_COMPETITION_CODE}'),
             method=MapRequestMethod.GET,
             responses=[response],
@@ -242,7 +246,7 @@ class TestParserSettingsGetterStep:
             ],
         )
         item = MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/parsers/settings',
+            url=f'{api_url}/v1/c/1/parsers/settings',
             method=MapRequestMethod.GET,
             responses=[response],
         )
@@ -261,7 +265,6 @@ class TestParserSettingsGetterStep:
                     'number': 41,
                     'total_driving_time': 0,
                     'partial_driving_time': 0,
-                    'reference_time_offset': None,
                     'insert_date': '2023-04-20T00:55:35',
                     'update_date': '2023-04-20T00:55:35',
                 },
@@ -274,14 +277,13 @@ class TestParserSettingsGetterStep:
                     'number': 41,
                     'total_driving_time': 0,
                     'partial_driving_time': 0,
-                    'reference_time_offset': None,
                     'insert_date': '2023-04-20T00:55:35',
                     'update_date': '2023-04-20T00:55:35',
                 },
             ],
         )
         item = MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/drivers',
+            url=f'{api_url}/v1/c/1/drivers',
             method=MapRequestMethod.GET,
             responses=[response],
         )
@@ -297,7 +299,6 @@ class TestParserSettingsGetterStep:
                     'participant_code': 'team-1',
                     'name': 'CKM 1',
                     'number': 41,
-                    'reference_time_offset': None,
                     'drivers': [],
                     'insert_date': '2023-04-20T01:30:48',
                     'update_date': '2023-04-20T01:30:48',
@@ -305,7 +306,7 @@ class TestParserSettingsGetterStep:
             ],
         )
         item = MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/teams',
+            url=f'{api_url}/v1/c/1/teams',
             method=MapRequestMethod.GET,
             responses=[response],
         )

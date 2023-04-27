@@ -56,8 +56,9 @@ class TestDriverNameParser:
                         type=ActionType.UPDATE_DRIVER,
                         data=UpdateDriver(
                             id=None,
-                            name='DIMAS MUNOZ',
+                            competition_code=TEST_COMPETITION_CODE,
                             participant_code='r5625',
+                            name='DIMAS MUNOZ',
                             number=41,
                             team_id=1,
                         ),
@@ -77,6 +78,8 @@ class TestDriverNameParser:
                                 name='DIMAS MUNOZ',
                                 number=41,
                                 team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
                             ),
                         ],
                         teams=[
@@ -95,8 +98,9 @@ class TestDriverNameParser:
                         type=ActionType.UPDATE_DRIVER,
                         data=UpdateDriver(
                             id=3,
-                            name='DIMAS MUNOZ',
+                            competition_code=TEST_COMPETITION_CODE,
                             participant_code='r5625',
+                            name='DIMAS MUNOZ',
                             number=41,
                             team_id=1,
                         ),
@@ -236,8 +240,9 @@ class TestTeamNameParser:
                         type=ActionType.UPDATE_TEAM,
                         data=UpdateTeam(
                             id=1,
-                            name='CKM 1',
+                            competition_code=TEST_COMPETITION_CODE,
                             participant_code='r5625',
+                            name='CKM 1',
                             number=41,
                         ),
                     ),

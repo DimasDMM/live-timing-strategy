@@ -1,7 +1,7 @@
 from typing import List
 
 from ltspipe.api.auth import refresh_bearer
-from ltspipe.api.competitions_base import init_competition_info
+from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.participants import (
     add_driver,
     add_team,
@@ -101,7 +101,7 @@ class TestAllApiCalls(DatabaseTest):
             REAL_API_LTS, bearer=auth_data.bearer)
 
         # Initialize info of the competition
-        info = init_competition_info(
+        info = build_competition_info(
             REAL_API_LTS,
             bearer=auth_data.bearer,
             competition_code=TEST_COMPETITION_CODE)
@@ -142,17 +142,12 @@ class TestAllApiCalls(DatabaseTest):
             participant_code=driver.participant_code,
             name=new_name,
             number=driver.number,
-            partial_driving_time=0,
-            reference_time_offset=None,
-            total_driving_time=0,
-            team_id=driver.team_id,
         )
         updated_driver = get_driver(
             api_url=api_lts,
             bearer=auth_data.bearer,
             competition_id=competition_id,
-            driver_id=driver.id,
-            team_id=driver.team_id)
+            driver_id=driver.id)
         assert updated_driver is not None
         assert updated_driver.name == new_name
 
@@ -172,7 +167,6 @@ class TestAllApiCalls(DatabaseTest):
             name=new_name,
             number=team.number,
             participant_code=team.participant_code,
-            reference_time_offset=None,
         )
         updated_team = get_team(
             api_url=api_lts,
@@ -204,6 +198,8 @@ class TestAllApiCalls(DatabaseTest):
                 name=p.driver_name,
                 number=p.kart_number,
                 team_id=code_to_team_id[p.participant_code],
+                total_driving_time=0,
+                partial_driving_time=0,
             )
             expected_drivers.append(d)
             participant_codes.add(p.participant_code)
@@ -251,7 +247,7 @@ class TestAllApiCalls(DatabaseTest):
             p_code = participant.participant_code
             team_id = code_to_team_id[p_code]
 
-            p_id = add_driver(
+            driver = add_driver(
                 api_url=api_lts,
                 bearer=auth_data.bearer,
                 competition_id=info.id,
@@ -259,12 +255,6 @@ class TestAllApiCalls(DatabaseTest):
                 name=participant.driver_name,
                 number=participant.kart_number,
                 team_id=team_id,
-            )
-            driver = Driver(
-                id=p_id,
-                participant_code=p_code,
-                name=participant.driver_name,
-                number=participant.kart_number,
             )
             info.drivers.append(driver)
 
@@ -281,17 +271,11 @@ class TestAllApiCalls(DatabaseTest):
             if p_code in added_codes:
                 continue
 
-            p_id = add_team(
+            team = add_team(
                 api_url=api_lts,
                 bearer=auth_data.bearer,
                 competition_id=info.id,
                 participant_code=p_code,
-                name=participant.team_name,
-                number=participant.kart_number,
-            )
-            team = Team(
-                id=p_id,
-                participant_code=participant.participant_code,
                 name=participant.team_name,
                 number=participant.kart_number,
             )

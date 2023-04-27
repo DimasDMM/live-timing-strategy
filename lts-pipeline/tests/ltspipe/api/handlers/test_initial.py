@@ -37,8 +37,6 @@ class TestInitialDataHandler(DatabaseTest):
             (
                 InitialData(  # initial_data_1
                     competition_code=TEST_COMPETITION_CODE,
-                    reference_time=None,
-                    reference_current_offset=None,
                     stage=CompetitionStage.QUALIFYING,
                     status=CompetitionStatus.ONGOING,
                     remaining_length=DiffLap(
@@ -95,8 +93,6 @@ class TestInitialDataHandler(DatabaseTest):
                 ),
                 InitialData(  # initial_data_2
                     competition_code=TEST_COMPETITION_CODE,
-                    reference_time=None,
-                    reference_current_offset=None,
                     stage=CompetitionStage.QUALIFYING,
                     status=CompetitionStatus.ONGOING,
                     remaining_length=DiffLap(
@@ -188,12 +184,16 @@ class TestInitialDataHandler(DatabaseTest):
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
                         number=41,
+                        total_driving_time=0,
+                        partial_driving_time=0,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
                         number=42,
+                        total_driving_time=0,
+                        partial_driving_time=0,
                     ),
                 ],
                 [  # expected_drivers_2
@@ -202,18 +202,24 @@ class TestInitialDataHandler(DatabaseTest):
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
                         number=41,
+                        total_driving_time=0,
+                        partial_driving_time=0,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
                         number=42,
+                        total_driving_time=0,
+                        partial_driving_time=0,
                     ),
                     Driver(
                         id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 2 New',
                         number=42,
+                        total_driving_time=0,
+                        partial_driving_time=0,
                     ),
                 ],
                 {  # expected_settings_1
@@ -266,7 +272,7 @@ class TestInitialDataHandler(DatabaseTest):
                 == [d.dict(exclude={'id': True}) for d in expected_drivers_1])
         assert info.parser_settings == expected_settings_1
 
-        # Scond call to handle method
+        # Second call to handle method
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
@@ -290,8 +296,6 @@ class TestInitialDataHandler(DatabaseTest):
         }
         initial_data = InitialData(
             competition_code=TEST_COMPETITION_CODE,
-            reference_time=None,
-            reference_current_offset=None,
             stage=CompetitionStage.QUALIFYING,
             status=CompetitionStatus.ONGOING,
             remaining_length=DiffLap(
@@ -329,7 +333,13 @@ class TestInitialDataHandler(DatabaseTest):
                                   f'be None: {TEST_COMPETITION_CODE}')
 
     def test_handle_raises_exception_unknown_team(self) -> None:
-        """Test handle method raise exception about unkown team."""
+        """
+        Test handle method raise exception about unkown team.
+
+        It creates a competition without any team or driver, and tries to add
+        a driver without team. It should return in an error since the driver
+        needs that a team exists.
+        """
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         competition_id = create_competition(
             REAL_API_LTS, bearer=auth_data.bearer)
@@ -347,8 +357,6 @@ class TestInitialDataHandler(DatabaseTest):
                 value=9,
                 unit=LengthUnit.LAPS,
             ),
-            reference_time=None,
-            reference_current_offset=None,
             participants={
                 'r5625': Participant(
                     best_time=0,

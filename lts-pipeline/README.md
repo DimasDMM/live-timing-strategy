@@ -322,3 +322,10 @@ Arguments:
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
+
+# TO DO
+
+- At the moment, the pipeline parses drivers by their name. That is, if a driver
+  changes its name during the competition, the pipeline will handle it as a new
+  driver. In the case of websocket, there is no solution for this problem.
+  However, in the case of API REST (source of data), it might be possible.

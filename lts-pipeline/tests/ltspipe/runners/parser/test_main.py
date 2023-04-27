@@ -116,8 +116,6 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.INITIALIZE,
                             data=InitialData(
                                 competition_code=TEST_COMPETITION_CODE,
-                                reference_time=None,
-                                reference_current_offset=None,
                                 stage=CompetitionStage.QUALIFYING.value,
                                 status=CompetitionStatus.PAUSED.value,
                                 remaining_length=DiffLap(
@@ -287,6 +285,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.UPDATE_DRIVER,
                             data=UpdateDriver(
                                 id=2,
+                                competition_code=TEST_COMPETITION_CODE,
                                 participant_code='r5625',
                                 name='DIMAS MUNOZ',
                                 number=41,
@@ -350,6 +349,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.UPDATE_TEAM,
                             data=UpdateTeam(
                                 id=1,
+                                competition_code=TEST_COMPETITION_CODE,
                                 participant_code='r5625',
                                 name='CKM 1',
                                 number=41,
@@ -460,7 +460,7 @@ def _mock_response_get_competition_info(api_url: str) -> List[MapRequestItem]:
         },
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/filter/code/{TEST_COMPETITION_CODE}',
+        url=f'{api_url}/v1/c/filter/code/{TEST_COMPETITION_CODE}',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -486,7 +486,7 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
         ],
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/parsers/settings',
+        url=f'{api_url}/v1/c/1/parsers/settings',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -506,7 +506,6 @@ def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
                 'number': 41,
                 'total_driving_time': 0,
                 'partial_driving_time': 0,
-                'reference_time_offset': None,
                 'insert_date': '2023-04-20T00:55:35',
                 'update_date': '2023-04-20T00:55:35',
             },
@@ -519,14 +518,13 @@ def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
                 'number': 41,
                 'total_driving_time': 0,
                 'partial_driving_time': 0,
-                'reference_time_offset': None,
                 'insert_date': '2023-04-20T00:55:35',
                 'update_date': '2023-04-20T00:55:35',
             },
         ],
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/drivers',
+        url=f'{api_url}/v1/c/1/drivers',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -543,7 +541,6 @@ def _mock_response_get_teams(api_url: str) -> List[MapRequestItem]:
                 'participant_code': 'r5625',
                 'name': 'CKM 1',
                 'number': 41,
-                'reference_time_offset': None,
                 'drivers': [],
                 'insert_date': '2023-04-20T01:30:48',
                 'update_date': '2023-04-20T01:30:48',
@@ -551,7 +548,7 @@ def _mock_response_get_teams(api_url: str) -> List[MapRequestItem]:
         ],
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/teams',
+        url=f'{api_url}/v1/c/1/teams',
         method=MapRequestMethod.GET,
         responses=[response],
     )

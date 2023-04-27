@@ -115,6 +115,7 @@ class DriverNameParser(Parser):
 
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),
+            competition_code=competition_code,
             participant_code=driver_code,
             name=driver_name,
             number=team.number,
@@ -174,6 +175,7 @@ class TeamNameParser(Parser):
 
         updated_team = UpdateTeam(
             id=old_team.id,
+            competition_code=competition_code,
             participant_code=team_code,
             name=matches[3],
             number=old_team.number,

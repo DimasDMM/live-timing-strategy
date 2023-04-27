@@ -2,7 +2,7 @@ from logging import Logger
 from typing import Any, Dict, List, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.api.competitions_base import init_competition_info
+from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import CompetitionInfo
@@ -109,7 +109,7 @@ class CompetitionInfoInitStep(MidStep):
         if self._force_update or competition_code not in self._competitions:
             self._logger.debug(
                 f'Init competition info of {competition_code}...')
-            info = init_competition_info(
+            info = build_competition_info(
                 self._api_lts,
                 bearer=self._auth_data.bearer,
                 competition_code=competition_code)

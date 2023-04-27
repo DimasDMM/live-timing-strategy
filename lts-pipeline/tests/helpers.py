@@ -40,7 +40,7 @@ def create_competition(api_lts: str, bearer: str) -> int:
             'min_number_pits': 0,
         },
     }
-    uri = f'{api_lts}/v1/competitions/'
+    uri = f'{api_lts}/v1/c/'
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:

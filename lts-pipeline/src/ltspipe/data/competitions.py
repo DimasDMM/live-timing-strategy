@@ -33,6 +33,8 @@ class Driver(DictModel):
     name: str
     number: int
     team_id: Optional[int]
+    total_driving_time: int
+    partial_driving_time: int
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -43,7 +45,9 @@ class Driver(DictModel):
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
-            team_id=raw.get('team_id', None),
+            team_id=raw.get('team_id'),
+            total_driving_time=raw.get('total_driving_time'),
+            partial_driving_time=raw.get('partial_driving_time'),
         )
 
 
@@ -65,16 +69,6 @@ class Team(DictModel):
             name=raw.get('name'),
             number=raw.get('number'),
         )
-
-
-class CompetitionInfo(BaseModel):
-    """Info of a competition."""
-
-    id: Optional[int]
-    competition_code: str
-    parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
-    drivers: List[Driver] = Field(default_factory=list)
-    teams: List[Team] = Field(default_factory=list)
 
 
 class DiffLap(DictModel):
@@ -126,8 +120,8 @@ class Participant(DictModel):
             best_time=raw.get('best_time'),
             driver_name=raw.get('driver_name'),
             gap=DiffLap.from_dict(raw.get('gap')),  # type: ignore
-            kart_number=raw.get('kart_number'),
             interval=DiffLap.from_dict(raw.get('interval')),  # type: ignore
+            kart_number=raw.get('kart_number'),
             laps=raw.get('laps'),
             last_lap_time=raw.get('last_lap_time'),
             number_pits=raw.get('number_pits'),
@@ -138,12 +132,66 @@ class Participant(DictModel):
         )
 
 
+class ParticipantTiming(DictModel):
+    """Timing details of a participant."""
+
+    best_time: int
+    gap: DiffLap
+    interval: DiffLap
+    kart_number: int
+    laps: int
+    last_lap_time: int
+    number_pits: int
+    participant_code: str
+    ranking: int
+    driver_id: Optional[int] = Field(default=None)
+    team_id: Optional[int] = Field(default=None)
+    pit_time: Optional[int] = Field(default=None)
+
+    @root_validator
+    def name_is_set(cls, values: dict) -> dict:  # noqa: N805, U100
+        """Validate that at least one name is set."""
+        driver_name = values.get('driver_name')
+        team_name = values.get('team_name')
+        if driver_name is None and team_name is None:
+            raise ValueError('Both driver and team name cannot be null.')
+        return values
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            best_time=raw.get('best_time'),
+            driver_name=raw.get('driver_id'),
+            gap=DiffLap.from_dict(raw.get('gap')),  # type: ignore
+            interval=DiffLap.from_dict(raw.get('interval')),  # type: ignore
+            kart_number=raw.get('kart_number'),
+            laps=raw.get('laps'),
+            last_lap_time=raw.get('last_lap_time'),
+            number_pits=raw.get('number_pits'),
+            participant_code=raw.get('participant_code'),
+            pit_time=raw.get('pit_time'),
+            ranking=raw.get('ranking'),
+            team_name=raw.get('team_id'),
+        )
+
+
+class CompetitionInfo(BaseModel):
+    """Info of a competition."""
+
+    id: Optional[int]
+    competition_code: str
+    parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
+    drivers: List[Driver] = Field(default_factory=list)
+    teams: List[Team] = Field(default_factory=list)
+    timing: Dict[str, ParticipantTiming] = Field(default_factory=dict)
+
+
 class InitialData(DictModel):
     """Details about the initial data of a competition."""
 
     competition_code: str
-    reference_time: Optional[int]
-    reference_current_offset: Optional[int]
     stage: CompetitionStage
     status: CompetitionStatus
     remaining_length: DiffLap
@@ -165,8 +213,6 @@ class InitialData(DictModel):
         remaining_length: dict = raw.get('remaining_length')  # type: ignore
         return cls.construct(
             competition_code=raw.get('competition_code'),
-            reference_time=raw.get('reference_time', None),
-            reference_current_offset=raw.get('reference_current_offset', None),
             stage=CompetitionStage(raw.get('stage')),
             status=CompetitionStatus(raw.get('status')),
             remaining_length=DiffLap.from_dict(remaining_length),
@@ -180,6 +226,7 @@ class UpdateDriver(DictModel):
     """Info update of a driver."""
 
     id: Optional[int]
+    competition_code: str
     participant_code: str
     name: str
     number: int
@@ -191,6 +238,7 @@ class UpdateDriver(DictModel):
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.construct(
             id=raw.get('id'),
+            competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
@@ -202,6 +250,7 @@ class UpdateTeam(DictModel):
     """Info update of a team."""
 
     id: Optional[int]
+    competition_code: str
     participant_code: str
     name: str
     number: int
@@ -212,6 +261,7 @@ class UpdateTeam(DictModel):
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.construct(
             id=raw.get('id'),
+            competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),

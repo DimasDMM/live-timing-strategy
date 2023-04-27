@@ -7,6 +7,7 @@ from time import sleep
 from typing import Any, Callable, Dict, Iterable
 
 from ltspipe.api.handlers.initial import InitialDataHandler
+from ltspipe.api.handlers.names import UpdateDriverHandler, UpdateTeamHandler
 from ltspipe.configs import ApiSenderConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
@@ -139,6 +140,16 @@ def _build_std_process(
         competitions=competitions,  # type: ignore
         action_handlers={
             ActionType.INITIALIZE: InitialDataHandler(
+                api_url=config.api_lts.strip('/'),
+                auth_data=auth_data,
+                competitions=competitions,  # type: ignore
+            ),
+            ActionType.UPDATE_DRIVER: UpdateDriverHandler(
+                api_url=config.api_lts.strip('/'),
+                auth_data=auth_data,
+                competitions=competitions,  # type: ignore
+            ),
+            ActionType.UPDATE_TEAM: UpdateTeamHandler(
                 api_url=config.api_lts.strip('/'),
                 auth_data=auth_data,
                 competitions=competitions,  # type: ignore

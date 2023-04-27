@@ -7,6 +7,22 @@ from ltspipe.data.competitions import (
 )
 
 
+def _build_driver(raw: dict) -> Driver:
+    """Build a driver instance from a dictionary."""
+    ignore_keys = {'competition_id', 'insert_date', 'update_date'}
+    raw = {k: v for k, v in raw.items() if k not in ignore_keys}
+    driver: Driver = Driver.from_dict(raw)  # type: ignore
+    return driver
+
+
+def _build_team(raw: dict) -> Team:
+    """Build a team instance from a dictionary."""
+    ignore_keys = {'competition_id', 'drivers', 'insert_date', 'update_date'}
+    raw = {k: v for k, v in raw.items() if k not in ignore_keys}
+    team: Team = Team.from_dict(raw)  # type: ignore
+    return team
+
+
 def add_driver(
         api_url: str,
         bearer: str,
@@ -14,7 +30,7 @@ def add_driver(
         participant_code: str,
         name: str,
         number: int,
-        team_id: Optional[int] = None) -> int:
+        team_id: Optional[int] = None) -> Driver:
     """
     Add a new driver.
 
@@ -28,7 +44,7 @@ def add_driver(
         team_id (int | None): ID of the team if there is any.
 
     Returns:
-        int: ID of the new driver.
+        Driver: New driver instance.
     """
     data = {
         'participant_code': participant_code,
@@ -37,7 +53,7 @@ def add_driver(
     }
 
     # Depending on there is a team or not, the endpoint is slightly different
-    url_prefix = f'{api_url}/v1/competitions/{competition_id}'
+    url_prefix = f'{api_url}/v1/c/{competition_id}'
     if team_id is None:
         uri = f'{url_prefix}/drivers'
     else:
@@ -52,7 +68,7 @@ def add_driver(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return response['id']
+    return _build_driver(response)
 
 
 def add_team(
@@ -61,7 +77,7 @@ def add_team(
         competition_id: int,
         participant_code: str,
         name: str,
-        number: int) -> int:
+        number: int) -> Team:
     """
     Add a new team.
 
@@ -74,14 +90,14 @@ def add_team(
         number (int): Number of the team.
 
     Returns:
-        int: ID of the new team.
+        Team: New team instance.
     """
     data = {
         'participant_code': participant_code,
         'name': name,
         'number': number,
     }
-    uri = f'{api_url}/v1/competitions/{competition_id}/teams'
+    uri = f'{api_url}/v1/c/{competition_id}/teams'
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
@@ -91,15 +107,14 @@ def add_team(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return response['id']
+    return _build_team(response)
 
 
 def get_driver(
         api_url: str,
         bearer: str,
         competition_id: int,
-        driver_id: int,
-        team_id: Optional[int] = None) -> Optional[Driver]:
+        driver_id: int) -> Optional[Driver]:
     """
     Get a single driver.
 
@@ -108,18 +123,11 @@ def get_driver(
         bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         driver_id (int): ID of the driver.
-        team_id (int | None): ID of the team if there is any.
 
     Returns:
         Optional[Driver]: Instance of the driver.
     """
-    # Depending on there is a team or not, the endpoint is slightly different
-    url_prefix = f'{api_url}/v1/competitions/{competition_id}'
-    if team_id is None:
-        uri = f'{url_prefix}/drivers/{driver_id}'
-    else:
-        uri = f'{url_prefix}/teams/{team_id}/drivers/{driver_id}'
-
+    uri = f'{api_url}/v1/c/{competition_id}/drivers/{driver_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
@@ -128,11 +136,7 @@ def get_driver(
     if not response:
         return None
 
-    allowed_keys = {'id', 'participant_code', 'name', 'number', 'team_id'}
-    response = {k: v for k, v in response.items() if k in allowed_keys}
-    driver: Driver = Driver.from_dict(response)  # type: ignore
-
-    return driver
+    return _build_driver(response)
 
 
 def get_team(
@@ -153,7 +157,7 @@ def get_team(
         Optional[Team]: Instance of the team.
     """
     # Depending on there is a team or not, the endpoint is slightly different
-    uri = f'{api_url}/v1/competitions/{competition_id}/teams/{team_id}'
+    uri = f'{api_url}/v1/c/{competition_id}/teams/{team_id}'
 
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
@@ -163,11 +167,7 @@ def get_team(
     if not response:
         return None
 
-    allowed_keys = {'id', 'participant_code', 'name', 'number'}
-    response = {k: v for k, v in response.items() if k in allowed_keys}
-    team: Team = Team.from_dict(response)  # type: ignore
-
-    return team
+    return _build_team(response)
 
 
 def get_all_drivers(
@@ -188,7 +188,7 @@ def get_all_drivers(
         List[Driver]: List of drivers.
     """
     # Depending on there is a team or not, the endpoint is slightly different
-    url_prefix = f'{api_url}/v1/competitions/{competition_id}'
+    url_prefix = f'{api_url}/v1/c/{competition_id}'
     if team_id is None:
         uri = f'{url_prefix}/drivers'
     else:
@@ -199,12 +199,9 @@ def get_all_drivers(
         raise Exception(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
-
-    allowed_keys = {'id', 'participant_code', 'name', 'number', 'team_id'}
     drivers: List[Driver] = []
     for item in response:
-        item = {k: v for k, v in item.items() if k in allowed_keys}
-        drivers.append(Driver.from_dict(item))  # type: ignore
+        drivers.append(_build_driver(item))
 
     return drivers
 
@@ -225,19 +222,16 @@ def get_all_teams(
         List[Team]: List of teams.
     """
     # Depending on there is a team or not, the endpoint is slightly different
-    uri = f'{api_url}/v1/competitions/{competition_id}/teams'
+    uri = f'{api_url}/v1/c/{competition_id}/teams'
 
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
-
-    allowed_keys = {'id', 'participant_code', 'name', 'number'}
     teams: List[Team] = []
     for item in response:
-        item = {k: v for k, v in item.items() if k in allowed_keys}
-        teams.append(Team.from_dict(item))  # type: ignore
+        teams.append(_build_team(item))
 
     return teams
 
@@ -250,11 +244,7 @@ def update_driver(
         participant_code: str,
         name: str,
         number: int,
-        total_driving_time: int,
-        partial_driving_time: int,
-        reference_time_offset: Optional[int] = None,
-        team_id: Optional[int] = None,
-) -> int:
+) -> Driver:
     """
     Update a driver.
 
@@ -266,30 +256,17 @@ def update_driver(
         participant_code (str): Code of the driver.
         name (str): Name of the driver.
         number (int): Number of the driver.
-        total_driving_time (int): Total driving time.
-        partial_driving_time (int): Partial driving time.
-        reference_time_offset (int | None): Offset of time reference.
-        team_id (int | None): ID of the team if there is any.
 
     Returns:
-        int: ID of the new driver.
+        Driver: Updated driver instance.
     """
     data = {
         'participant_code': participant_code,
         'name': name,
         'number': number,
-        'total_driving_time': total_driving_time,
-        'partial_driving_time': partial_driving_time,
-        'reference_time_offset': reference_time_offset,
     }
 
-    # Depending on there is a team or not, the endpoint is slightly different
-    url_prefix = f'{api_url}/v1/competitions/{competition_id}'
-    if team_id is None:
-        uri = f'{url_prefix}/drivers/{driver_id}'
-    else:
-        uri = f'{url_prefix}/teams/{team_id}/drivers/{driver_id}'
-
+    uri = f'{api_url}/v1/c/{competition_id}/drivers/{driver_id}'
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
@@ -299,7 +276,7 @@ def update_driver(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return response['id']
+    return _build_driver(response)
 
 
 def update_team(
@@ -310,8 +287,7 @@ def update_team(
         name: str,
         number: int,
         participant_code: str,
-        reference_time_offset: Optional[int],
-) -> int:
+) -> Team:
     """
     Update a team.
 
@@ -323,18 +299,16 @@ def update_team(
         participant_code (str): Code of the team.
         name (str): Name of the team.
         number (int): Number of the team.
-        reference_time_offset (int | None): Offset of time reference.
 
     Returns:
-        int: ID of the new team.
+        Team: Updated team instance
     """
     data = {
         'participant_code': participant_code,
         'name': name,
         'number': number,
-        'reference_time_offset': reference_time_offset,
     }
-    uri = f'{api_url}/v1/competitions/{competition_id}/teams/{team_id}'
+    uri = f'{api_url}/v1/c/{competition_id}/teams/{team_id}'
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
@@ -344,4 +318,4 @@ def update_team(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return response['id']
+    return _build_team(response)

@@ -54,8 +54,6 @@ class InitialDataHandler(ApiHandler):
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=info.id,
-            reference_time=None,
-            reference_current_offset=None,
             status=model.status,
             stage=model.stage,
             remaining_length=model.remaining_length,
@@ -101,18 +99,14 @@ class InitialDataHandler(ApiHandler):
                 drivers=info.drivers,
             )
             if driver is not None:
-                update_driver(
+                _ = update_driver(
                     api_url=self._api_url,
                     bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
                     driver_id=driver.id,
-                    team_id=driver.team_id,
                     participant_code=participant.participant_code,
                     name=participant.driver_name,
                     number=participant.kart_number,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                    reference_time_offset=None,
                 )
                 driver.participant_code = participant.participant_code
                 driver.name = participant.driver_name
@@ -121,7 +115,7 @@ class InitialDataHandler(ApiHandler):
                     code=p_code,
                     teams=info.teams,
                 )
-                p_id = add_driver(
+                driver = add_driver(
                     api_url=self._api_url,
                     bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
@@ -129,13 +123,6 @@ class InitialDataHandler(ApiHandler):
                     name=participant.driver_name,
                     number=participant.kart_number,
                     team_id=(None if team is None else team.id),
-                )
-                driver = Driver(
-                    id=p_id,
-                    participant_code=participant.participant_code,
-                    name=participant.driver_name,
-                    team_id=(None if team is None else team.id),
-                    number=participant.kart_number,
                 )
                 info.drivers.append(driver)
 
@@ -147,7 +134,7 @@ class InitialDataHandler(ApiHandler):
         for p_code, participant in participants.items():
             team = self._find_team_by_code(p_code, info.teams)
             if team is not None:
-                update_team(
+                _ = update_team(
                     api_url=self._api_url,
                     bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
@@ -155,7 +142,6 @@ class InitialDataHandler(ApiHandler):
                     participant_code=participant.participant_code,
                     name=participant.team_name,  # type: ignore
                     number=participant.kart_number,
-                    reference_time_offset=None,
                 )
                 team.participant_code = participant.participant_code
                 team.name = participant.team_name  # type: ignore
@@ -164,16 +150,10 @@ class InitialDataHandler(ApiHandler):
                         or participant.kart_number is None):
                     continue
 
-                p_id = add_team(
+                team = add_team(
                     api_url=self._api_url,
                     bearer=self._auth_data.bearer,
                     competition_id=info.id,  # type: ignore
-                    participant_code=participant.participant_code,
-                    name=participant.team_name,
-                    number=participant.kart_number,
-                )
-                team = Team(
-                    id=p_id,
                     participant_code=participant.participant_code,
                     name=participant.team_name,
                     number=participant.kart_number,

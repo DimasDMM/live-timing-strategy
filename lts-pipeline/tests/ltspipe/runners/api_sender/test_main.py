@@ -117,7 +117,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                     ),
                                     'r5627': Participant(
                                         best_time=0,
-                                        driver_name='CKM 3 Driver 3',
+                                        driver_name='CKM 3 Driver 1',
                                         gap=DiffLap(
                                             value=0, unit=LengthUnit.MILLIS),
                                         interval=DiffLap(
@@ -204,7 +204,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                     ),
                                     'r5627': Participant(
                                         best_time=0,
-                                        driver_name='CKM 3 Driver 3',
+                                        driver_name='CKM 3 Driver 1',
                                         gap=DiffLap(
                                             value=0, unit=LengthUnit.MILLIS),
                                         interval=DiffLap(
@@ -240,6 +240,8 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             name='CKM 1 Driver 1',
                             team_id=1,
                             number=41,
+                            partial_driving_time=0,
+                            total_driving_time=0,
                         ),
                         Driver(
                             id=2,
@@ -247,13 +249,17 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             name='CKM 2 Driver 1',
                             team_id=2,
                             number=42,
+                            partial_driving_time=0,
+                            total_driving_time=0,
                         ),
                         Driver(
                             id=3,
                             participant_code='r5627',
-                            name='CKM 3 Driver 3',
+                            name='CKM 3 Driver 1',
                             team_id=3,
                             number=43,
+                            partial_driving_time=0,
+                            total_driving_time=0,
                         ),
                     ],
                     teams=[
@@ -340,7 +346,7 @@ def _mock_response_delete_parser_settings(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(content={})
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/parsers/settings',
+        url=f'{api_url}/v1/c/1/parsers/settings',
         method=MapRequestMethod.DELETE,
         responses=[response],
     )
@@ -366,7 +372,7 @@ def _mock_response_get_competition_info(api_url: str) -> List[MapRequestItem]:
         },
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/filter/code/{TEST_COMPETITION_CODE}',
+        url=f'{api_url}/v1/c/filter/code/{TEST_COMPETITION_CODE}',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -379,8 +385,6 @@ def _mock_response_get_competition_metadata(
     responses = [
         MockResponse(
             content={
-                'reference_time': 0,
-                'reference_current_offset': 0,
                 'status': 'ongoing',
                 'stage': 'qualifying',
                 'remaining_length': 350,
@@ -391,7 +395,7 @@ def _mock_response_get_competition_metadata(
         ),
     ]
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/metadata',
+        url=f'{api_url}/v1/c/1/metadata',
         method=MapRequestMethod.GET,
         responses=responses,
     )
@@ -417,7 +421,7 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
         ],
     )
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/parsers/settings',
+        url=f'{api_url}/v1/c/1/parsers/settings',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -428,7 +432,7 @@ def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(content=[])
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/drivers',
+        url=f'{api_url}/v1/c/1/drivers',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -439,7 +443,7 @@ def _mock_response_get_teams(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(content=[])
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/teams',
+        url=f'{api_url}/v1/c/1/teams',
         method=MapRequestMethod.GET,
         responses=[response],
     )
@@ -450,7 +454,7 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/teams/1/drivers',
+            url=f'{api_url}/v1/c/1/teams/1/drivers',
             method=MapRequestMethod.POST,
             responses=[
                 MockResponse(
@@ -463,7 +467,6 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
                         'number': 41,
                         'total_driving_time': 0,
                         'partial_driving_time': 0,
-                        'reference_time_offset': 0,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T20:42:51',
                     },
@@ -471,7 +474,7 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
             ],
         ),
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/teams/2/drivers',
+            url=f'{api_url}/v1/c/1/teams/2/drivers',
             method=MapRequestMethod.POST,
             responses=[
                 MockResponse(
@@ -484,7 +487,6 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
                         'number': 42,
                         'total_driving_time': 0,
                         'partial_driving_time': 0,
-                        'reference_time_offset': 0,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T20:42:51',
                     },
@@ -492,7 +494,7 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
             ],
         ),
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/teams/3/drivers',
+            url=f'{api_url}/v1/c/1/teams/3/drivers',
             method=MapRequestMethod.POST,
             responses=[
                 MockResponse(
@@ -505,7 +507,6 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
                         'number': 43,
                         'total_driving_time': 0,
                         'partial_driving_time': 0,
-                        'reference_time_offset': 0,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T20:42:51',
                     },
@@ -519,7 +520,7 @@ def _mock_response_post_parsers_settings(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/parsers/settings',
+            url=f'{api_url}/v1/c/1/parsers/settings',
             method=MapRequestMethod.POST,
             responses=[
                 MockResponse(
@@ -549,7 +550,6 @@ def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
                 'participant_code': 'r5625',
                 'name': 'CKM 1',
                 'number': 41,
-                'reference_time_offset': 0,
                 'drivers': [],
                 'insert_date': '2023-04-20T20:42:51',
                 'update_date': '2023-04-20T20:42:51',
@@ -562,7 +562,6 @@ def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
                 'participant_code': 'r5626',
                 'name': 'CKM 2',
                 'number': 42,
-                'reference_time_offset': 0,
                 'drivers': [],
                 'insert_date': '2023-04-20T20:42:51',
                 'update_date': '2023-04-20T20:42:51',
@@ -575,7 +574,6 @@ def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
                 'participant_code': 'r5627',
                 'name': 'CKM 3',
                 'number': 43,
-                'reference_time_offset': 0,
                 'drivers': [],
                 'insert_date': '2023-04-20T20:42:51',
                 'update_date': '2023-04-20T20:42:51',
@@ -583,7 +581,7 @@ def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
         ),
     ]
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/teams',
+        url=f'{api_url}/v1/c/1/teams',
         method=MapRequestMethod.POST,
         responses=responses,
     )
@@ -596,8 +594,6 @@ def _mock_response_update_competition_metadata(
     responses = [
         MockResponse(
             content={
-                'reference_time': 0,
-                'reference_current_offset': 0,
                 'status': 'ongoing',
                 'stage': 'race',
                 'remaining_length': 350,
@@ -608,7 +604,7 @@ def _mock_response_update_competition_metadata(
         ),
     ]
     item = MapRequestItem(
-        url=f'{api_url}/v1/competitions/1/metadata',
+        url=f'{api_url}/v1/c/1/metadata',
         method=MapRequestMethod.PUT,
         responses=responses,
     )
@@ -619,7 +615,7 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/timing/team/1',
+            url=f'{api_url}/v1/c/1/timing/teams/1',
             method=MapRequestMethod.PUT,
             responses=[
                 MockResponse(
@@ -644,7 +640,7 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
             ],
         ),
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/timing/team/2',
+            url=f'{api_url}/v1/c/1/timing/teams/2',
             method=MapRequestMethod.PUT,
             responses=[
                 MockResponse(
@@ -669,7 +665,7 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
             ],
         ),
         MapRequestItem(
-            url=f'{api_url}/v1/competitions/1/timing/team/3',
+            url=f'{api_url}/v1/c/1/timing/teams/3',
             method=MapRequestMethod.PUT,
             responses=[
                 MockResponse(
