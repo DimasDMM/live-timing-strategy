@@ -106,9 +106,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions."""
+        """Test GET /v1/c."""
         response: Response = self.API.get(
-            '/v1/competitions',
+            '/v1/c',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -213,9 +213,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test POST /v1/competitions."""
+        """Test POST /v1/c."""
         response: Response = self.API.post(
-            '/v1/competitions',
+            '/v1/c',
             json=add_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
@@ -274,9 +274,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/<competition_id>."""
+        """Test GET /v1/c/<competition_id>."""
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}',
+            f'/v1/c/{competition_id}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -330,9 +330,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/<competition_id>/metadata."""
+        """Test GET /v1/c/<competition_id>/metadata."""
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}/metadata',
+            f'/v1/c/{competition_id}/metadata',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -415,9 +415,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/competitions/<competition_id>/metadata."""
+        """Test PUT /v1/c/<competition_id>/metadata."""
         response: Response = self.API.put(
-            f'/v1/competitions/{competition_id}/metadata',
+            f'/v1/c/{competition_id}/metadata',
             json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
@@ -494,9 +494,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/<competition_id>/metadata/history."""
+        """Test GET /v1/c/<competition_id>/metadata/history."""
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}/metadata/history',
+            f'/v1/c/{competition_id}/metadata/history',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -557,9 +557,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/<competition_id>/settings."""
+        """Test GET /v1/c/<competition_id>/settings."""
         response: Response = self.API.get(
-            f'/v1/competitions/{competition_id}/settings',
+            f'/v1/c/{competition_id}/settings',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -634,9 +634,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/competitions/<competition_id>/settings."""
+        """Test PUT /v1/c/<competition_id>/settings."""
         response: Response = self.API.put(
-            f'/v1/competitions/{competition_id}/settings',
+            f'/v1/c/{competition_id}/settings',
             json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
@@ -704,9 +704,9 @@ class TestCompetitionsRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test GET /v1/competitions/filter/code/<competition_code>."""
+        """Test GET /v1/c/filter/code/<competition_code>."""
         response: Response = self.API.get(
-            f'/v1/competitions/filter/code/{competition_code}',
+            f'/v1/c/filter/code/{competition_code}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 

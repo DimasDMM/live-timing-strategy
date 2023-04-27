@@ -13,7 +13,7 @@ from ltsapi.router import _build_db_connection
 
 
 router = APIRouter(
-    prefix='/' + API_VERSION + '/competitions/{competition_id}',  # noqa
+    prefix='/' + API_VERSION + '/c/{competition_id}',  # noqa
     tags=['Timing'])
 _logger = _build_logger(__package__)
 

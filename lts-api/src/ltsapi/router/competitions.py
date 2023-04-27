@@ -26,7 +26,7 @@ _logger = _build_logger(__package__)
 
 
 @router.get(
-        path='/competitions',
+        path='/c',
         summary='Get all the competitions')
 async def get_all_competitions() -> List[GetCompetition]:
     """Get all competitions in the database."""
@@ -37,7 +37,7 @@ async def get_all_competitions() -> List[GetCompetition]:
 
 
 @router.post(
-        path='/competitions',
+        path='/c',
         summary='Add a new competition')
 async def add_competition(competition: AddCompetition) -> GetCompetition:
     """Add a new competition."""
@@ -58,7 +58,7 @@ async def add_competition(competition: AddCompetition) -> GetCompetition:
 
 
 @router.get(
-        path='/competitions/{competition_id}',  # noqa: FS003
+        path='/c/{competition_id}',  # noqa: FS003
         summary='Get a competition')
 async def get_competition_by_id(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -72,7 +72,7 @@ async def get_competition_by_id(
 
 
 @router.get(
-        path='/competitions/{competition_id}/metadata',  # noqa: FS003
+        path='/c/{competition_id}/metadata',  # noqa: FS003
         summary='Get the current metadata of a competition')
 async def get_current_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -86,7 +86,7 @@ async def get_current_competition_metadata(
 
 
 @router.put(
-        path='/competitions/{competition_id}/metadata',  # noqa: FS003
+        path='/c/{competition_id}/metadata',  # noqa: FS003
         summary='Update the metadata of a competition')
 async def update_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -105,7 +105,7 @@ async def update_competition_metadata(
 
 
 @router.get(
-        path='/competitions/{competition_id}/metadata/history',  # noqa: FS003
+        path='/c/{competition_id}/metadata/history',  # noqa: FS003
         summary='Get the history metadata of a competition')
 async def get_history_competition_metadata(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -118,7 +118,7 @@ async def get_history_competition_metadata(
 
 
 @router.get(
-        path='/competitions/{competition_id}/settings',  # noqa: FS003
+        path='/c/{competition_id}/settings',  # noqa: FS003
         summary='Get the settings of a competition')
 async def get_competition_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -132,7 +132,7 @@ async def get_competition_settings(
 
 
 @router.put(
-        path='/competitions/{competition_id}/settings',  # noqa: FS003
+        path='/c/{competition_id}/settings',  # noqa: FS003
         summary='Update the settings of a competition')
 async def update_competition_settings(
     competition_id: Annotated[int, Path(description='ID of the competition')],
@@ -151,7 +151,7 @@ async def update_competition_settings(
 
 
 @router.get(
-        path='/competitions/filter/code/{competition_code}',  # noqa: FS003
+        path='/c/filter/code/{competition_code}',  # noqa: FS003
         summary='Get a competition (by its code)')
 async def get_competition_by_code(
     competition_code: Annotated[str, Path(
