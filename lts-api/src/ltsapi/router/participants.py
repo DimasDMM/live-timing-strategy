@@ -11,6 +11,8 @@ from ltsapi.models.participants import (
     GetTeam,
     UpdateDriver,
     UpdateTeam,
+    UpdatePartialTimeDriver,
+    UpdateTotalTimeDriver,
 )
 from ltsapi.models.responses import Empty
 from ltsapi.router import _build_db_connection
@@ -205,6 +207,48 @@ async def update_single_driver_by_id(
         db.start_transaction()
         manager = DriversManager(db=db, logger=_logger)
         manager.update_by_id(driver, driver_id, competition_id=competition_id)
+        item = manager.get_by_id(driver_id, competition_id=competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.put(
+        path='/drivers/{driver_id}/partial_driving_time',  # noqa: FS003
+        summary='Update the partial driving time of a driver in a competition')
+async def update_driver_partial_driving_time(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+    time: UpdatePartialTimeDriver,
+) -> GetDriver:
+    """Update the partial driving time of a driver in a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = DriversManager(db=db, logger=_logger)
+        manager.update_partial_driving_time_by_id(
+            time, driver_id, competition_id=competition_id)
+        item = manager.get_by_id(driver_id, competition_id=competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.put(
+        path='/drivers/{driver_id}/total_driving_time',  # noqa: FS003
+        summary='Update the total driving time of a driver in a competition')
+async def update_driver_total_driving_time(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    driver_id: Annotated[int, Path(description='ID of the driver')],
+    time: UpdateTotalTimeDriver,
+) -> GetDriver:
+    """Update the total driving time of a driver in a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = DriversManager(db=db, logger=_logger)
+        manager.update_total_driving_time_by_id(
+            time, driver_id, competition_id=competition_id)
         item = manager.get_by_id(driver_id, competition_id=competition_id)
         if item is None:
             raise ApiError('No data was inserted or updated.')

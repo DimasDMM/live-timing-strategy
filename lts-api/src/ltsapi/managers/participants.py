@@ -22,6 +22,8 @@ from ltsapi.models.participants import (
     GetTeam,
     UpdateDriver,
     UpdateTeam,
+    UpdatePartialTimeDriver,
+    UpdateTotalTimeDriver,
 )
 from ltsapi.models.timing import AddLapTime
 
@@ -37,6 +39,8 @@ class DriversManager:
             cd.`participant_code` AS cd_participant_code,
             cd.`name` AS cd_name,
             cd.`number` AS cd_number,
+            cd.`total_driving_time` AS cd_total_driving_time,
+            cd.`partial_driving_time` AS cd_partial_driving_time,
             cd.`insert_date` AS cd_insert_date,
             cd.`update_date` AS cd_update_date
         FROM participants_drivers AS cd'''
@@ -228,7 +232,7 @@ class DriversManager:
         Update the data of a driver (it must already exist).
 
         Params:
-            driver (UpdateDriver): New data of the driver ('None' is ignored).
+            driver (UpdateDriver): New data of the driver.
             driver_id (int): ID of the driver.
             team_id (int | None): If given, the driver must exist in the team.
             competition_id (int | None): If given, the driver must exist
@@ -243,6 +247,81 @@ class DriversManager:
             self._db,
             self.TABLE_NAME,
             driver.dict(),
+            key_name='id',
+            key_value=driver_id,
+            commit=commit)
+
+    def update_partial_driving_time_by_id(
+            self,
+            time: UpdatePartialTimeDriver,
+            driver_id: int,
+            team_id: Optional[int] = None,
+            competition_id: Optional[int] = None,
+            commit: bool = True) -> None:
+        """
+        Update the partial driving time of a driver (it must already exist).
+
+        Note that, if time.auto_compute_total is True, then it computes the
+        total driving time too.
+
+        Params:
+            time (UpdatePartialTimeDriver): Partial driving time of the driver.
+            driver_id (int): ID of the driver.
+            team_id (int | None): If given, the driver must exist in the team.
+            competition_id (int | None): If given, the driver must exist
+                in the competition.
+            commit (bool): Commit transaction.
+        """
+        item = self.get_by_id(driver_id, team_id, competition_id)
+        if item is None:
+            raise ApiError(
+                message=f'The driver with ID={driver_id} does not exist.',
+                status_code=400)
+
+        data = {'partial_driving_time': time.partial_driving_time}
+
+        if (time.auto_compute_total
+                and item.partial_driving_time < time.partial_driving_time):
+            data['total_driving_time'] = (
+                item.total_driving_time + time.partial_driving_time)
+
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            data,
+            key_name='id',
+            key_value=driver_id,
+            commit=commit)
+
+    def update_total_driving_time_by_id(
+            self,
+            time: UpdateTotalTimeDriver,
+            driver_id: int,
+            team_id: Optional[int] = None,
+            competition_id: Optional[int] = None,
+            commit: bool = True) -> None:
+        """
+        Update the total driving time of a driver (it must already exist).
+
+        Params:
+            time (UpdateTotalTimeDriver): Total driving time of the driver.
+            driver_id (int): ID of the driver.
+            team_id (int | None): If given, the driver must exist in the team.
+            competition_id (int | None): If given, the driver must exist
+                in the competition.
+            commit (bool): Commit transaction.
+        """
+        item = self.get_by_id(driver_id, team_id, competition_id)
+        if item is None:
+            raise ApiError(
+                message=f'The driver with ID={driver_id} does not exist.',
+                status_code=400)
+
+        data = {'total_driving_time': time.total_driving_time}
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            data,
             key_name='id',
             key_value=driver_id,
             commit=commit)
@@ -294,6 +373,8 @@ class DriversManager:
             participant_code=row['cd_participant_code'],
             name=row['cd_name'],
             number=row['cd_number'],
+            total_driving_time=row['cd_total_driving_time'],
+            partial_driving_time=row['cd_partial_driving_time'],
             insert_date=row['cd_insert_date'],
             update_date=row['cd_update_date'],
         )
@@ -441,7 +522,7 @@ class TeamsManager:
         Update the data of a team.
 
         Params:
-            team (UpdateTeam): New data of the team ('None' is ignored).
+            team (UpdateTeam): New data of the team.
             team_id (int): ID of the team.
             competition_id (int | None): If given, the team must exist
                 in the competition.

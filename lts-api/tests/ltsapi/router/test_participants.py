@@ -13,6 +13,8 @@ from ltsapi.models.participants import (
     GetTeam,
     UpdateDriver,
     UpdateTeam,
+    UpdatePartialTimeDriver,
+    UpdateTotalTimeDriver,
 )
 from ltsapi.models.responses import Empty, ErrorResponse
 from tests.fixtures import AUTH_BEARER
@@ -365,6 +367,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 1',
                         number=41,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -375,6 +379,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 2',
                         number=41,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -460,6 +466,8 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
+                    partial_driving_time=0,
+                    total_driving_time=0,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -555,6 +563,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 1',
                         number=41,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -565,6 +575,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-1',
                         name='CKM 1 Driver 2',
                         number=41,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -575,6 +587,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-2',
                         name='CKM 2 Driver 1',
                         number=42,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -585,6 +599,8 @@ class TestMiscRouter(DatabaseTest):
                         participant_code='team-2',
                         name='CKM 2 Driver 2',
                         number=42,
+                        partial_driving_time=0,
+                        total_driving_time=0,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -658,6 +674,8 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-driver',
                     name='New Driver',
                     number=101,
+                    partial_driving_time=0,
+                    total_driving_time=0,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -733,6 +751,8 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1',
                     number=41,
+                    partial_driving_time=0,
+                    total_driving_time=0,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -788,8 +808,8 @@ class TestMiscRouter(DatabaseTest):
         assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
 
     @pytest.mark.parametrize(
-        ('headers, competition_id, driver_id, add_model, expected_status_code,'
-         'expected_response, expected_type'),
+        ('headers, competition_id, driver_id, update_model,'
+         'expected_status_code, expected_response, expected_type'),
         [
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -808,6 +828,8 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Driver 1 Updated',
                     number=41,
+                    partial_driving_time=0,
+                    total_driving_time=0,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -869,7 +891,7 @@ class TestMiscRouter(DatabaseTest):
             headers: Optional[Dict[str, str]],
             competition_id: int,
             driver_id: str,
-            add_model: BaseModel,
+            update_model: BaseModel,
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
@@ -878,7 +900,214 @@ class TestMiscRouter(DatabaseTest):
         """
         response: Response = self.API.put(
             f'/v1/c/{competition_id}/drivers/{driver_id}',
-            json=add_model.dict(),
+            json=update_model.dict(),
+            headers=headers)
+        assert response.status_code == expected_status_code, response
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+
+    @pytest.mark.parametrize(
+        ('headers, competition_id, driver_id, update_model,'
+         'expected_status_code, expected_response, expected_type'),
+        [
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                5,  # driver_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=True,
+                ),
+                200,  # expected_status_code
+                GetDriver(
+                    id=5,
+                    competition_id=2,
+                    team_id=4,
+                    participant_code='team-1',
+                    name='CKM 1 Driver 1',
+                    number=41,
+                    partial_driving_time=34000,
+                    total_driving_time=34000,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetDriver,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                5,  # driver_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=False,
+                ),
+                200,  # expected_status_code
+                GetDriver(
+                    id=5,
+                    competition_id=2,
+                    team_id=4,
+                    participant_code='team-1',
+                    name='CKM 1 Driver 1',
+                    number=41,
+                    partial_driving_time=34000,
+                    total_driving_time=0,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetDriver,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2000000,  # competition_id
+                5,  # driver_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=False,
+                ),
+                400,  # expected_status_code
+                ErrorResponse(
+                    status_code=400,
+                    message='The driver with ID=5 does not exist.',
+                    extra_data={},
+                ),
+                ErrorResponse,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                2000000,  # driver_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=False,
+                ),
+                400,  # expected_status_code
+                ErrorResponse(
+                    status_code=400,
+                    message='The driver with ID=2000000 does not exist.',
+                    extra_data={},
+                ),
+                ErrorResponse,  # expected_type
+            ),
+            (
+                None,  # headers
+                2,  # competition_id
+                5,  # driver_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=False,
+                ),
+                403,  # expected_status_code
+                ErrorResponse(
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_update_driver_partial_driving_time(
+            self,
+            headers: Optional[Dict[str, str]],
+            competition_id: int,
+            driver_id: str,
+            update_model: BaseModel,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """
+        Test PUT .../<competition_id>/drivers/<driver_id>/partial_driving_time.
+        """
+        response: Response = self.API.put(
+            f'/v1/c/{competition_id}/drivers/{driver_id}/partial_driving_time',
+            json=update_model.dict(),
+            headers=headers)
+        assert response.status_code == expected_status_code, response
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+
+    @pytest.mark.parametrize(
+        ('headers, competition_id, driver_id, update_model,'
+         'expected_status_code, expected_response, expected_type'),
+        [
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                5,  # driver_id
+                UpdateTotalTimeDriver(total_driving_time=34000),
+                200,  # expected_status_code
+                GetDriver(
+                    id=5,
+                    competition_id=2,
+                    team_id=4,
+                    participant_code='team-1',
+                    name='CKM 1 Driver 1',
+                    number=41,
+                    partial_driving_time=0,
+                    total_driving_time=34000,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetDriver,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2000000,  # competition_id
+                5,  # driver_id
+                UpdateTotalTimeDriver(total_driving_time=34000),
+                400,  # expected_status_code
+                ErrorResponse(
+                    status_code=400,
+                    message='The driver with ID=5 does not exist.',
+                    extra_data={},
+                ),
+                ErrorResponse,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                2000000,  # driver_id
+                UpdateTotalTimeDriver(total_driving_time=34000),
+                400,  # expected_status_code
+                ErrorResponse(
+                    status_code=400,
+                    message='The driver with ID=2000000 does not exist.',
+                    extra_data={},
+                ),
+                ErrorResponse,  # expected_type
+            ),
+            (
+                None,  # headers
+                2,  # competition_id
+                5,  # driver_id
+                UpdateTotalTimeDriver(total_driving_time=34000),
+                403,  # expected_status_code
+                ErrorResponse(
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_update_driver_total_driving_time(
+            self,
+            headers: Optional[Dict[str, str]],
+            competition_id: int,
+            driver_id: str,
+            update_model: BaseModel,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """
+        Test PUT .../<competition_id>/drivers/<driver_id>/total_driving_time.
+        """
+        response: Response = self.API.put(
+            f'/v1/c/{competition_id}/drivers/{driver_id}/total_driving_time',
+            json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response
 

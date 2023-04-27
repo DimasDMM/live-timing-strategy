@@ -1,4 +1,5 @@
 from datetime import datetime
+from pydantic import Field
 from typing import Optional
 
 from ltsapi.models import BaseModel
@@ -21,6 +22,8 @@ class GetDriver(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
+    total_driving_time: int
+    partial_driving_time: int
     insert_date: datetime
     update_date: datetime
 
@@ -31,6 +34,19 @@ class UpdateDriver(BaseModel):
     participant_code: str
     name: str
     number: Optional[int]
+
+
+class UpdatePartialTimeDriver(BaseModel):
+    """Update the partial driving time of a driver."""
+
+    partial_driving_time: int
+    auto_compute_total: bool = Field(default=True)
+
+
+class UpdateTotalTimeDriver(BaseModel):
+    """Update the total driving time of a driver."""
+
+    total_driving_time: int
 
 
 class AddTeam(BaseModel):

@@ -10,6 +10,8 @@ from ltsapi.models.participants import (
     GetTeam,
     UpdateDriver,
     UpdateTeam,
+    UpdatePartialTimeDriver,
+    UpdateTotalTimeDriver,
 )
 from ltsapi.managers.participants import DriversManager, TeamsManager
 from ltsapi.managers.timing import TimingManager
@@ -32,6 +34,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 2,
@@ -40,6 +44,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 3,
@@ -48,6 +54,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 4,
@@ -56,6 +64,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 5,
@@ -64,6 +74,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 6,
@@ -72,6 +84,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 7,
@@ -80,6 +94,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 1',
             'number': 42,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 8,
@@ -88,6 +104,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-2',
             'name': 'CKM 2 Driver 2',
             'number': 42,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 9,
@@ -96,6 +114,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 1',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
         {
             'id': 10,
@@ -104,6 +124,8 @@ class TestDriversManager(DatabaseTest):
             'participant_code': 'team-1',
             'name': 'CKM 1 Driver 2',
             'number': 41,
+            'partial_driving_time': 0,
+            'total_driving_time': 0,
         },
     ]
 
@@ -130,6 +152,8 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 2',
                     'number': 41,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 0,
                 },
             ),
         ])
@@ -165,6 +189,8 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-2',
                         'name': 'CKM 2 Driver 1',
                         'number': 42,
+                        'partial_driving_time': 0,
+                        'total_driving_time': 0,
                     },
                     {
                         'id': 4,
@@ -173,6 +199,8 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-2',
                         'name': 'CKM 2 Driver 2',
                         'number': 42,
+                        'partial_driving_time': 0,
+                        'total_driving_time': 0,
                     },
                 ],
             ),
@@ -203,6 +231,8 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 1',
                         'number': 41,
+                        'partial_driving_time': 0,
+                        'total_driving_time': 0,
                     },
                     {
                         'id': 10,
@@ -211,6 +241,8 @@ class TestDriversManager(DatabaseTest):
                         'participant_code': 'team-1',
                         'name': 'CKM 1 Driver 2',
                         'number': 41,
+                        'partial_driving_time': 0,
+                        'total_driving_time': 0,
                     },
                 ],
             ),
@@ -241,6 +273,8 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 2',
                     'number': 41,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 0,
                 },
             ),
         ])
@@ -281,6 +315,8 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'name': 'CKM 1 Driver 3',
                     'number': 41,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 0,
                 },
             ),
             (
@@ -297,6 +333,8 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-new',
                     'name': 'New Team Driver 1',
                     'number': 101,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 0,
                 },
             ),
         ])
@@ -386,6 +424,8 @@ class TestDriversManager(DatabaseTest):
                     'participant_code': 'team-1-updated',
                     'name': 'CKM 1 Driver 2 Updated',
                     'number': 51,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 0,
                 },
             ),
         ])
@@ -406,6 +446,122 @@ class TestDriversManager(DatabaseTest):
 
         time.sleep(1)
         manager.update_by_id(update_data, driver_id, team_id, competition_id)
+
+        after_item = manager.get_by_id(driver_id, team_id, competition_id)
+        assert after_item is not None
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
+
+        assert dict_item == expected_item
+        assert before_item.insert_date == after_item.insert_date
+        assert before_item.update_date < after_item.update_date
+
+    @pytest.mark.parametrize(
+        'driver_id, team_id, competition_id, update_data, expected_item',
+        [
+            (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=True,
+                ),
+                {
+                    'id': 2,
+                    'team_id': 1,
+                    'competition_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'partial_driving_time': 34000,
+                    'total_driving_time': 34000,
+                },
+            ),
+            (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
+                UpdatePartialTimeDriver(
+                    partial_driving_time=34000,
+                    auto_compute_total=False,
+                ),
+                {
+                    'id': 2,
+                    'team_id': 1,
+                    'competition_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'partial_driving_time': 34000,
+                    'total_driving_time': 0,
+                },
+            ),
+        ])
+    def test_update_partial_driving_time_by_id(
+            self,
+            driver_id: int,
+            team_id: Optional[int],
+            competition_id: Optional[int],
+            update_data: UpdateDriver,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method update_partial_driving_time_by_id."""
+        manager = DriversManager(db=db_context, logger=fake_logger)
+
+        before_item = manager.get_by_id(driver_id, team_id, competition_id)
+        assert before_item is not None
+
+        time.sleep(1)
+        manager.update_partial_driving_time_by_id(
+            update_data, driver_id, team_id, competition_id)
+
+        after_item = manager.get_by_id(driver_id, team_id, competition_id)
+        assert after_item is not None
+        dict_item = after_item.dict(exclude=self.EXCLUDE)
+
+        assert dict_item == expected_item
+        assert before_item.insert_date == after_item.insert_date
+        assert before_item.update_date < after_item.update_date
+
+    @pytest.mark.parametrize(
+        'driver_id, team_id, competition_id, update_data, expected_item',
+        [
+            (
+                2,  # driver_id
+                1,  # team_id
+                1,  # competition_id
+                UpdateTotalTimeDriver(total_driving_time=34000),
+                {
+                    'id': 2,
+                    'team_id': 1,
+                    'competition_id': 1,
+                    'participant_code': 'team-1',
+                    'name': 'CKM 1 Driver 2',
+                    'number': 41,
+                    'partial_driving_time': 0,
+                    'total_driving_time': 34000,
+                },
+            ),
+        ])
+    def test_update_total_driving_time_by_id(
+            self,
+            driver_id: int,
+            team_id: Optional[int],
+            competition_id: Optional[int],
+            update_data: UpdateDriver,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method update_total_driving_time_by_id."""
+        manager = DriversManager(db=db_context, logger=fake_logger)
+
+        before_item = manager.get_by_id(driver_id, team_id, competition_id)
+        assert before_item is not None
+
+        time.sleep(1)
+        manager.update_total_driving_time_by_id(
+            update_data, driver_id, team_id, competition_id)
 
         after_item = manager.get_by_id(driver_id, team_id, competition_id)
         assert after_item is not None
