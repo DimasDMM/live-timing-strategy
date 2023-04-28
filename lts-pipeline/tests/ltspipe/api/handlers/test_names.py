@@ -14,6 +14,7 @@ from ltspipe.data.competitions import (
     UpdateDriver,
     UpdateTeam,
 )
+from ltspipe.data.notifications import Notification, NotificationType
 from tests.fixtures import AUTH_KEY, REAL_API_LTS
 from tests.helpers import DatabaseTest
 
@@ -28,7 +29,8 @@ class TestUpdateDriverHandler(DatabaseTest):
 
     @pytest.mark.parametrize(
         ('competition_code', 'update_data_1', 'update_data_2',
-         'expected_drivers_1', 'expected_drivers_2'),
+         'expected_drivers_1', 'expected_drivers_2',
+         'expected_notification_1', 'expected_notification_2'),
         [
             (
                 'south-endurance-2023-03-26',  # competition_code
@@ -106,6 +108,30 @@ class TestUpdateDriverHandler(DatabaseTest):
                         partial_driving_time=0,
                     ),
                 ],
+                Notification(  # expected_notification_1
+                    type=NotificationType.UPDATED_DRIVER,
+                    data=Driver(
+                        id=0,
+                        participant_code='team-1',
+                        name='CKM 1 Driver 3',
+                        number=41,
+                        team_id=6,
+                        total_driving_time=0,
+                        partial_driving_time=0,
+                    ),
+                ),
+                Notification(  # expected_notification_2
+                    type=NotificationType.UPDATED_DRIVER,
+                    data=Driver(
+                        id=0,
+                        participant_code='team-1',
+                        name='CKM 1 Driver 3',
+                        number=51,
+                        team_id=6,
+                        total_driving_time=0,
+                        partial_driving_time=0,
+                    ),
+                ),
             ),
         ],
     )
@@ -115,7 +141,9 @@ class TestUpdateDriverHandler(DatabaseTest):
             update_data_1: UpdateDriver,
             update_data_2: UpdateDriver,
             expected_drivers_1: List[Driver],
-            expected_drivers_2: List[Driver]) -> None:
+            expected_drivers_2: List[Driver],
+            expected_notification_1: Notification,
+            expected_notification_2: Notification) -> None:
         """Test handle method."""
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         info = build_competition_info(
@@ -129,28 +157,39 @@ class TestUpdateDriverHandler(DatabaseTest):
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        handler.handle(update_data_1)
+        notification = handler.handle(update_data_1)
         assert ([d.dict(exclude={'id': True}) for d in info.drivers]
                 == [d.dict(exclude={'id': True}) for d in expected_drivers_1])
+        assert notification is not None
+        assert (notification.dict(exclude={'data': {'id': True}})
+                == expected_notification_1.dict(exclude={'data': {'id': True}}))
+
+        # Clear driver in update model, so we force to refresh it
+        model = self._find_driver(
+            info, update_data_2.participant_code, update_data_2.name)
+        info.drivers = [d for d in info.drivers if d.id != model.id]
 
         # Second call to handle method
         handler = UpdateDriverHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        model = self._find_driver(info, update_data_2.name)
         update_data_2.id = model.id
-        handler.handle(update_data_2)
+        notification = handler.handle(update_data_2)
         assert ([d.dict(exclude={'id': True}) for d in info.drivers]
                 == [d.dict(exclude={'id': True}) for d in expected_drivers_2])
+        assert notification is not None
+        assert (notification.dict(exclude={'data': {'id': True}})
+                == expected_notification_2.dict(exclude={'data': {'id': True}}))
 
     def _find_driver(
             self,
             info: CompetitionInfo,
+            participant_code: str,
             driver_name: str) -> Driver:
         """Find a driver in the competition info."""
         for d in info.drivers:
-            if d.name == driver_name:
+            if d.name == driver_name and d.participant_code == participant_code:
                 return d
         raise Exception(f'Driver "{driver_name}" not found')
 
@@ -165,7 +204,8 @@ class TestUpdateTeamHandler(DatabaseTest):
 
     @pytest.mark.parametrize(
         ('competition_code', 'update_data_1', 'update_data_2',
-         'expected_teams_1', 'expected_teams_2'),
+         'expected_teams_1', 'expected_teams_2',
+         'expected_notification_1', 'expected_notification_2'),
         [
             (
                 'north-endurance-2023-03-25',  # competition_code
@@ -223,6 +263,24 @@ class TestUpdateTeamHandler(DatabaseTest):
                         number=53,
                     ),
                 ],
+                Notification(  # expected_notification_1
+                    type=NotificationType.UPDATED_TEAM,
+                    data=Team(
+                        id=0,
+                        participant_code='team-3',
+                        name='CKM 3',
+                        number=43,
+                    ),
+                ),
+                Notification(  # expected_notification_2
+                    type=NotificationType.UPDATED_TEAM,
+                    data=Team(
+                        id=0,
+                        participant_code='team-3',
+                        name='CKM 3 Updated',
+                        number=53,
+                    ),
+                ),
             ),
         ],
     )
@@ -232,7 +290,9 @@ class TestUpdateTeamHandler(DatabaseTest):
             update_data_1: UpdateTeam,
             update_data_2: UpdateTeam,
             expected_teams_1: List[Team],
-            expected_teams_2: List[Team]) -> None:
+            expected_teams_2: List[Team],
+            expected_notification_1: Notification,
+            expected_notification_2: Notification) -> None:
         """Test handle method."""
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         info = build_competition_info(
@@ -246,20 +306,30 @@ class TestUpdateTeamHandler(DatabaseTest):
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        handler.handle(update_data_1)
+        notification = handler.handle(update_data_1)
         assert ([d.dict(exclude={'id': True}) for d in info.teams]
                 == [d.dict(exclude={'id': True}) for d in expected_teams_1])
+        assert notification is not None
+        assert (notification.dict(exclude={'data': {'id': True}})
+                == expected_notification_1.dict(exclude={'data': {'id': True}}))
+
+        # Clear team in update model, so we force to refresh it
+        model = self._find_team(
+            info, update_data_2.participant_code)
+        info.teams = [t for t in info.teams if t.id != model.id]
 
         # Second call to handle method
         handler = UpdateTeamHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        model = self._find_team(info, update_data_2.participant_code)
         update_data_2.id = model.id
-        handler.handle(update_data_2)
+        notification = handler.handle(update_data_2)
         assert ([d.dict(exclude={'id': True}) for d in info.teams]
                 == [d.dict(exclude={'id': True}) for d in expected_teams_2])
+        assert notification is not None
+        assert (notification.dict(exclude={'data': {'id': True}})
+                == expected_notification_2.dict(exclude={'data': {'id': True}}))
 
     def _find_team(
             self,

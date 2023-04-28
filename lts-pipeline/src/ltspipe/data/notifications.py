@@ -9,6 +9,8 @@ class NotificationType(str, EnumBase):
 
     INIT_ONGOING = 'init-ongoing'
     INIT_FINISHED = 'init-finished'
+    UPDATED_DRIVER = 'updated-driver'
+    UPDATED_TEAM = 'updaated-team'
 
 
 class Notification(DictModel):

@@ -157,7 +157,9 @@ Arguments:
 
 Similarly to the previous scripts, there are two parallel processes:
 - One takes all the messages from the topic "standard" and sends them to the
-  API REST (using the appropiate request).
+  API REST (using the appropiate request). After it sends the data to the API,
+  it might generate a notification. For example, after initialize the data,
+  it generates a notification of type "init-finished".
 - The other is listening for notifications. Since there might be several scripts
   of this kind, all of them must have the latest data of each competition.
 
@@ -167,8 +169,7 @@ Note that this script does not have any flag (locker) like the previous scripts.
 graph TD;
   A[Kafka consumer: standard]
   A --> B[Send data to API REST]
-  B --> C[Is init message?]
-  C -- Yes --> D[Create notification: 'init-finished']
+  B -- Message contains action: X --> D[Create notification: 'X']
   D --> E[Kafka producer: notifications]
 
   F[Kafka consumer: notifications]

@@ -32,7 +32,7 @@ class Driver(DictModel):
     participant_code: str
     name: str
     number: int
-    team_id: Optional[int]
+    team_id: int
     total_driving_time: int
     partial_driving_time: int
 
@@ -230,7 +230,7 @@ class UpdateDriver(DictModel):
     participant_code: str
     name: str
     number: int
-    team_id: Optional[int]
+    team_id: int
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -242,7 +242,7 @@ class UpdateDriver(DictModel):
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
-            team_id=raw.get('team_id', None),
+            team_id=raw.get('team_id'),
         )
 
 

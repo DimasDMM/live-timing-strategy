@@ -63,8 +63,6 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 @pytest.mark.parametrize(
     ('kafka_topics, in_competitions, expected_kafka, expected_competitions'),
     [
-        # Test case: When the flag 'wait-init' is enabled and it receives an
-        # initializer message, it parses the data anyway.
         (
             {  # kafka_topics
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
@@ -293,7 +291,12 @@ def test_main(
         in_competitions: Dict[str, CompetitionInfo],
         expected_kafka: Dict[str, List[str]],
         expected_competitions: Dict[str, CompetitionInfo]) -> None:
-    """Test main method."""
+    """
+    Test main method.
+
+    Test case: it receives an action with data to initialize in the API REST.
+    After it sends the data to the API, it should generate a notification.
+    """
     with tempfile.TemporaryDirectory() as tmp_path:
         config = ApiSenderConfig(
             api_lts=MOCK_API_LTS,

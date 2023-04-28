@@ -6,6 +6,7 @@ import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable
 
+from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.handlers.initial import InitialDataHandler
 from ltspipe.api.handlers.names import UpdateDriverHandler, UpdateTeamHandler
 from ltspipe.configs import ApiSenderConfig
@@ -16,7 +17,6 @@ from ltspipe.steps.api import CompetitionInfoInitStep, ApiActionStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.mappers import NotificationMapperStep
-from ltspipe.steps.triggers import ActionInitTriggerStep
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 
 
@@ -131,32 +131,13 @@ def _build_std_process(
         topic=config.kafka_notifications,
         value_serializer=msgpack.dumps,
     )
-    init_trigger = ActionInitTriggerStep(
-        logger=logger,
-        on_init_trigger=kafka_notifications,
-    )
     api_actions = ApiActionStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
         competitions=competitions,  # type: ignore
-        action_handlers={
-            ActionType.INITIALIZE: InitialDataHandler(
-                api_url=config.api_lts.strip('/'),
-                auth_data=auth_data,
-                competitions=competitions,  # type: ignore
-            ),
-            ActionType.UPDATE_DRIVER: UpdateDriverHandler(
-                api_url=config.api_lts.strip('/'),
-                auth_data=auth_data,
-                competitions=competitions,  # type: ignore
-            ),
-            ActionType.UPDATE_TEAM: UpdateTeamHandler(
-                api_url=config.api_lts.strip('/'),
-                auth_data=auth_data,
-                competitions=competitions,  # type: ignore
-            ),
-        },
-        next_step=init_trigger,
+        action_handlers=_build_action_handlers(config, auth_data, competitions),
+        notification_step=kafka_notifications,
+        next_step=None,
     )
     competition_info_init = CompetitionInfoInitStep(
         logger=logger,
@@ -213,3 +194,27 @@ def _build_notifications_process(
         on_error=errors_storage,
     )
     return kafka_consumer
+
+
+def _build_action_handlers(
+        config: ApiSenderConfig,
+        auth_data: AuthData,
+        competitions: DictProxy) -> Dict[ActionType, ApiHandler]:
+    """Build map of handlers applied to action types."""
+    return {
+        ActionType.INITIALIZE: InitialDataHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            competitions=competitions,  # type: ignore
+        ),
+        ActionType.UPDATE_DRIVER: UpdateDriverHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            competitions=competitions,  # type: ignore
+        ),
+        ActionType.UPDATE_TEAM: UpdateTeamHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            competitions=competitions,  # type: ignore
+        ),
+    }

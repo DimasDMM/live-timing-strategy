@@ -17,6 +17,7 @@ from ltspipe.data.enum import (
     LengthUnit,
     ParserSettings,
 )
+from ltspipe.data.notifications import Notification, NotificationType
 from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import DatabaseTest, create_competition
 
@@ -32,7 +33,8 @@ class TestInitialDataHandler(DatabaseTest):
     @pytest.mark.parametrize(
         ('initial_data_1', 'initial_data_2', 'expected_teams_1',
          'expected_teams_2', 'expected_drivers_1', 'expected_drivers_2',
-         'expected_settings_1', 'expected_settings_2'),
+         'expected_settings_1', 'expected_settings_2',
+         'expected_notification_1', 'expected_notification_2'),
         [
             (
                 InitialData(  # initial_data_1
@@ -181,6 +183,7 @@ class TestInitialDataHandler(DatabaseTest):
                 [  # expected_drivers_1
                     Driver(
                         id=0,
+                        team_id=0,
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
                         number=41,
@@ -189,6 +192,7 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     Driver(
                         id=0,
+                        team_id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
                         number=42,
@@ -199,6 +203,7 @@ class TestInitialDataHandler(DatabaseTest):
                 [  # expected_drivers_2
                     Driver(
                         id=0,
+                        team_id=0,
                         participant_code='r5625',
                         name='CKM 1 Driver 1',
                         number=41,
@@ -207,6 +212,7 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     Driver(
                         id=0,
+                        team_id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 1',
                         number=42,
@@ -215,6 +221,7 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     Driver(
                         id=0,
+                        team_id=0,
                         participant_code='r5626',
                         name='CKM 2 Driver 2 New',
                         number=42,
@@ -234,6 +241,12 @@ class TestInitialDataHandler(DatabaseTest):
                     ParserSettings.TIMING_NUMBER_PITS: 'c11',
                 },
                 {},  # expected_settings_2
+                Notification(  # expected_notification_1
+                    type=NotificationType.INIT_FINISHED,
+                ),
+                Notification(  # expected_notification_2
+                    type=NotificationType.INIT_FINISHED,
+                ),
             ),
         ],
     )
@@ -246,7 +259,9 @@ class TestInitialDataHandler(DatabaseTest):
             expected_drivers_1: List[Driver],
             expected_drivers_2: List[Driver],
             expected_settings_1: Dict[ParserSettings, str],
-            expected_settings_2: Dict[ParserSettings, str]) -> None:
+            expected_settings_2: Dict[ParserSettings, str],
+            expected_notification_1: Notification,
+            expected_notification_2: Notification) -> None:
         """Test handle method."""
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
         competition_id = create_competition(
@@ -263,7 +278,7 @@ class TestInitialDataHandler(DatabaseTest):
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        handler.handle(initial_data_1)
+        notification = handler.handle(initial_data_1)
         info = competitions[TEST_COMPETITION_CODE]
         self._add_team_id_to_drivers(info, expected_drivers_1)
         assert ([t.dict(exclude={'id': True}) for t in info.teams]
@@ -271,19 +286,23 @@ class TestInitialDataHandler(DatabaseTest):
         assert ([d.dict(exclude={'id': True}) for d in info.drivers]
                 == [d.dict(exclude={'id': True}) for d in expected_drivers_1])
         assert info.parser_settings == expected_settings_1
+        assert notification is not None
+        assert notification == expected_notification_1
 
         # Second call to handle method
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
             competitions=competitions)
-        handler.handle(initial_data_2)
+        notification = handler.handle(initial_data_2)
         self._add_team_id_to_drivers(info, expected_drivers_2)
         assert ([t.dict(exclude={'id': True}) for t in info.teams]
                 == [t.dict(exclude={'id': True}) for t in expected_teams_2])
         assert ([d.dict(exclude={'id': True}) for d in info.drivers]
                 == [d.dict(exclude={'id': True}) for d in expected_drivers_2])
         assert info.parser_settings == expected_settings_2
+        assert notification is not None
+        assert notification == expected_notification_2
 
     def test_handle_raises_exception_id_none(self) -> None:
         """Test handle method raise exception about ID None."""

@@ -24,6 +24,7 @@ from ltspipe.data.competitions import (
     Team,
 )
 from ltspipe.data.enum import KartStatus, ParserSettings
+from ltspipe.data.notifications import Notification, NotificationType
 
 
 class InitialDataHandler(ApiHandler):
@@ -39,7 +40,7 @@ class InitialDataHandler(ApiHandler):
         self._auth_data = auth_data
         self._competitions = competitions
 
-    def handle(self, model: BaseModel) -> None:
+    def handle(self, model: BaseModel) -> Optional[Notification]:
         """Initialize the data of a competition."""
         if not isinstance(model, InitialData):
             raise Exception('The model must be an instance of InitialData.')
@@ -62,6 +63,14 @@ class InitialDataHandler(ApiHandler):
         self._add_teams(info=info, participants=model.participants)
         self._add_drivers(info=info, participants=model.participants)
         self._update_timing(info=info, participants=model.participants)
+
+        return self._create_notification()
+
+    def _create_notification(self) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.INIT_FINISHED,
+        )
 
     def _add_parsers_settings(
             self,

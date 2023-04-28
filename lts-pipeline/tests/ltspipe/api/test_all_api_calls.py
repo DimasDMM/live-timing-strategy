@@ -7,8 +7,10 @@ from ltspipe.api.participants import (
     add_team,
     get_all_drivers,
     get_all_teams,
-    get_driver,
+    get_driver_by_id,
     get_team,
+    get_team_by_code,
+    get_team_driver_by_name,
     update_driver,
     update_team,
 )
@@ -108,9 +110,28 @@ class TestAllApiCalls(DatabaseTest):
         assert info.id == competition_id
 
         # Add teams and drivers and validate that data was sent successfully
+        retrieved_data = self._test_add_teams_and_drivers(info, auth_data)
+        retrieved_drivers, retrieved_teams = retrieved_data
+
+        # Get drivers and teams using filters
+        self._test_filter_teams_and_drivers(
+            info, auth_data, retrieved_drivers, retrieved_teams)
+
+        # Update the name of a driver and, also, a team
+        self._test_update_teams_and_drivers(
+            info, auth_data, retrieved_drivers, retrieved_teams)
+
+    def _test_add_teams_and_drivers(
+            self,
+            info: CompetitionInfo,
+            auth_data: AuthData) -> tuple:
+        """
+        Add teams and drivers and validate that data was sent successfully.
+        """
         self._add_teams(info, REAL_API_LTS, auth_data, self.PARTICIPANTS)
         self._add_drivers(info, REAL_API_LTS, auth_data, self.PARTICIPANTS)
 
+        competition_id = info.id
         retrieved_teams = get_all_teams(
             REAL_API_LTS, auth_data.bearer, competition_id)
         retrieved_drivers = get_all_drivers(
@@ -118,13 +139,49 @@ class TestAllApiCalls(DatabaseTest):
         self._compare_teams(retrieved_teams, self.PARTICIPANTS)
         self._compare_drivers(info, retrieved_drivers, self.PARTICIPANTS)
 
-        # Update the name of a driver and, also, a team
+        return (retrieved_drivers, retrieved_teams)
+
+    def _test_update_teams_and_drivers(
+            self,
+            info: CompetitionInfo,
+            auth_data: AuthData,
+            retrieved_drivers: List[Driver],
+            retrieved_teams: List[Driver]) -> None:
+        """Update the name of a driver and, also, a team."""
+        competition_id = info.id
         driver = retrieved_drivers[0]
         team = retrieved_teams[0]
         self._update_single_driver(
             REAL_API_LTS, auth_data, competition_id, driver)
         self._update_single_team(
             REAL_API_LTS, auth_data, competition_id, team)
+
+    def _test_filter_teams_and_drivers(
+            self,
+            info: CompetitionInfo,
+            auth_data: AuthData,
+            retrieved_drivers: List[Driver],
+            retrieved_teams: List[Driver]) -> None:
+        """Test that filtering works correctly."""
+        competition_id = info.id
+        expected_driver = retrieved_drivers[0]
+        found_driver = get_team_driver_by_name(
+            api_url=REAL_API_LTS,
+            bearer=auth_data.bearer,
+            competition_id=competition_id,
+            team_id=expected_driver.team_id,
+            driver_name=expected_driver.name,
+        )
+        assert found_driver == expected_driver
+
+        expected_team = retrieved_teams[0]
+        found_team = get_team_by_code(
+            api_url=REAL_API_LTS,
+            bearer=auth_data.bearer,
+            competition_id=competition_id,
+            participant_code=expected_team.participant_code,
+        )
+        assert found_team == expected_team
 
     def _update_single_driver(
             self,
@@ -143,7 +200,7 @@ class TestAllApiCalls(DatabaseTest):
             name=new_name,
             number=driver.number,
         )
-        updated_driver = get_driver(
+        updated_driver = get_driver_by_id(
             api_url=api_lts,
             bearer=auth_data.bearer,
             competition_id=competition_id,

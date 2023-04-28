@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging import Logger
 from typing import Any, Dict, List, Optional
 
@@ -6,7 +7,8 @@ from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import CompetitionInfo
-from ltspipe.messages import Message
+from ltspipe.data.notifications import Notification
+from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
 
 
@@ -19,6 +21,7 @@ class ApiActionStep(MidStep):
             api_lts: str,
             competitions: Dict[str, CompetitionInfo],
             action_handlers: Dict[ActionType, ApiHandler],
+            notification_step: Optional[MidStep],
             next_step: Optional[MidStep] = None) -> None:
         """
         Construct.
@@ -30,19 +33,26 @@ class ApiActionStep(MidStep):
                 competitions info.
             action_handlers (Dict[ActionType, ApiHandler]): Handler for each
                 type of action.
+            notification_step (MidStep | None): Step to send a notification when
+                a handler is applied.
             next_step (MidStep | None): Next step.
         """
         self._logger = logger
         self._api_lts = api_lts
         self._competitions = competitions
         self._action_handlers = action_handlers
+        self._notification_step = notification_step
         self._next_step = next_step
 
     def get_children(self) -> List[Any]:
         """Return list of children steps to this one."""
+        children = []
         if self._next_step is not None:
-            return [self._next_step] + self._next_step.get_children()
-        return []
+            children += [self._next_step] + self._next_step.get_children()
+        if self._notification_step is not None:
+            children += [self._notification_step]
+            children += self._notification_step.get_children()
+        return children
 
     def run_step(self, msg: Message) -> None:
         """Do an action with the API REST."""
@@ -54,10 +64,33 @@ class ApiActionStep(MidStep):
             action = msg.data
             handler = self._action_handlers.get(action.type, None)
             if handler is not None:
-                handler.handle(action.data)
+                notification = handler.handle(action.data)
+                self._forward_notification(
+                    msg.competition_code,
+                    msg.source,
+                    notification)
 
         if self._next_step is not None:
             self._next_step.run_step(msg)
+
+    def _forward_notification(
+            self,
+            competition_code: str,
+            source: MessageSource,
+            notification: Optional[Notification]) -> None:
+        """Forward the notification to another step in a message."""
+        if notification is None or self._notification_step is None:
+            return
+
+        message = Message(
+            competition_code=competition_code,
+            data=notification,
+            source=source,
+            decoder=MessageDecoder.NOTIFICATION,
+            created_at=datetime.utcnow().timestamp(),
+            updated_at=datetime.utcnow().timestamp(),
+        )
+        self._notification_step.run_step(message)
 
 
 class CompetitionInfoInitStep(MidStep):
