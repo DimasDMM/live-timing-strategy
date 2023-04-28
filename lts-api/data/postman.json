@@ -71,13 +71,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions",
+							"raw": "{{api_url}}/v1/c",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions"
+								"c"
 							]
 						}
 					},
@@ -96,7 +96,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"new-track-added\",\r\n    \"name\": \"New Karting Competition\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
+							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"test-competition\",\r\n    \"name\": \"New Karting Competition\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -104,13 +104,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions",
+							"raw": "{{api_url}}/v1/c",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions"
+								"c"
 							]
 						}
 					},
@@ -128,14 +128,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2",
+							"raw": "{{api_url}}/v1/c/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2"
+								"c",
+								"1"
 							]
 						}
 					},
@@ -153,16 +153,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/filter/code/north-endurance-2023-02-26",
+							"raw": "{{api_url}}/v1/c/filter/code/test-competition",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"filter",
 								"code",
-								"north-endurance-2023-02-26"
+								"test-competition"
 							],
 							"query": [
 								{
@@ -187,14 +187,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/metadata",
+							"raw": "{{api_url}}/v1/c/1/metadata",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"metadata"
 							]
 						}
@@ -213,14 +213,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/metadata/history",
+							"raw": "{{api_url}}/v1/c/1/metadata/history",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"metadata",
 								"history"
 							]
@@ -241,7 +241,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"reference_time\": null,\r\n    \"reference_current_offset\": null,\r\n    \"status\": \"ongoing\",\r\n    \"stage\": \"qualifying\",\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
+							"raw": "{\r\n    \"status\": \"ongoing\",\r\n    \"stage\": \"qualifying\",\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -249,14 +249,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/metadata",
+							"raw": "{{api_url}}/v1/c/1/metadata",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"metadata"
 							]
 						}
@@ -275,13 +275,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/settings",
+							"raw": "{{api_url}}/v1/c/1/settings",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"settings"
 							]
@@ -310,13 +310,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/settings",
+							"raw": "{{api_url}}/v1/c/1/settings",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"settings"
 							]
@@ -341,13 +341,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings",
+							"raw": "{{api_url}}/v1/c/2/parsers/settings",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"parsers",
 								"settings"
@@ -377,13 +377,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings",
+							"raw": "{{api_url}}/v1/c/2/parsers/settings",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"parsers",
 								"settings"
@@ -404,13 +404,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings",
+							"raw": "{{api_url}}/v1/c/2/parsers/settings",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"parsers",
 								"settings"
@@ -431,13 +431,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/timing-gap",
+							"raw": "{{api_url}}/v1/c/2/parsers/settings/timing-gap",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"parsers",
 								"settings",
@@ -468,13 +468,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/parsers/settings/timing-gap",
+							"raw": "{{api_url}}/v1/c/2/parsers/settings/timing-gap",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"parsers",
 								"settings",
@@ -592,14 +592,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/teams",
+							"raw": "{{api_url}}/v1/c/1/teams",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"teams"
 							]
 						}
@@ -619,7 +619,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101,\r\n    \"reference_time_offset\": 0\r\n}",
+							"raw": "{\r\n    \"participant_code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -627,13 +627,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams",
+							"raw": "{{api_url}}/v1/c/1/teams",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"teams"
 							]
@@ -642,7 +642,7 @@
 					"response": []
 				},
 				{
-					"name": "Get team",
+					"name": "Get a team",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -653,16 +653,45 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams/1",
+							"raw": "{{api_url}}/v1/c/1/teams/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"teams",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a team by participant code",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/teams/filter/code/team-1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"teams",
+								"filter",
+								"code",
+								"team-1"
 							]
 						}
 					},
@@ -689,13 +718,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams/1",
+							"raw": "{{api_url}}/v1/c/1/teams/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"teams",
 								"1"
@@ -716,17 +745,48 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/teams/3/drivers",
+							"raw": "{{api_url}}/v1/c/1/teams/1/drivers",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"teams",
-								"3",
+								"1",
 								"drivers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a driver in a team by name",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/teams/1/drivers/filter/name/CKM%201%20Driver%201",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"teams",
+								"1",
+								"drivers",
+								"filter",
+								"name",
+								"CKM%201%20Driver%201"
 							]
 						}
 					},
@@ -745,7 +805,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
+							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -753,55 +813,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers",
+							"raw": "{{api_url}}/v1/c/1/teams/1/drivers",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"teams",
 								"1",
 								"drivers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update a driver of a team",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/teams/1/drivers/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"competitions",
-								"1",
-								"teams",
-								"1",
-								"drivers",
-								"1"
 							]
 						}
 					},
@@ -819,13 +841,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/drivers",
+							"raw": "{{api_url}}/v1/c/1/drivers",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"drivers"
 							]
@@ -846,7 +868,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40,\r\n    \"total_driving_time\": 0,\r\n    \"partial_driving_time\": 0,\r\n    \"reference_time_offset\": 0\r\n}",
+							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -854,13 +876,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/drivers",
+							"raw": "{{api_url}}/v1/c/1/drivers",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"drivers"
 							]
@@ -869,7 +891,7 @@
 					"response": []
 				},
 				{
-					"name": "Get driver (w/wo team)",
+					"name": "Get a driver",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -880,13 +902,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/drivers/1",
+							"raw": "{{api_url}}/v1/c/1/drivers/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"drivers",
 								"1"
@@ -896,7 +918,7 @@
 					"response": []
 				},
 				{
-					"name": "Update driver (no team)",
+					"name": "Update a driver",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -916,16 +938,90 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/1/drivers/1",
+							"raw": "{{api_url}}/v1/c/1/drivers/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"1",
 								"drivers",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update partial driving time",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"partial_driving_time\": 34000,\r\n    \"auto_compute_total\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/drivers/1/partial_driving_time",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"drivers",
+								"1",
+								"partial_driving_time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update total driving time",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"total_driving_time\": 34000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/drivers/1/total_driving_time",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"drivers",
+								"1",
+								"total_driving_time"
 							]
 						}
 					},
@@ -948,14 +1044,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing",
+							"raw": "{{api_url}}/v1/c/1/timing",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"timing"
 							]
 						}
@@ -974,17 +1070,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/driver/5",
+							"raw": "{{api_url}}/v1/c/1/timing/drivers/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"timing",
-								"driver",
-								"5"
+								"drivers",
+								"1"
 							]
 						}
 					},
@@ -1002,16 +1098,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/driver/5/history",
+							"raw": "{{api_url}}/v1/c/1/timing/drivers/5/history",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"timing",
-								"driver",
+								"drivers",
 								"5",
 								"history"
 							]
@@ -1031,17 +1127,17 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/team/4",
+							"raw": "{{api_url}}/v1/c/1/timing/teams/1",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"timing",
-								"team",
-								"4"
+								"teams",
+								"1"
 							]
 						}
 					},
@@ -1068,16 +1164,16 @@
 							}
 						},
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/team/4",
+							"raw": "{{api_url}}/v1/c/2/timing/teams/4",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"timing",
-								"team",
+								"teams",
 								"4"
 							]
 						}
@@ -1096,16 +1192,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/team/4/history",
+							"raw": "{{api_url}}/v1/c/2/timing/teams/4/history",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
+								"c",
 								"2",
 								"timing",
-								"team",
+								"teams",
 								"4",
 								"history"
 							]
@@ -1125,14 +1221,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{api_url}}/v1/competitions/2/timing/history",
+							"raw": "{{api_url}}/v1/c/1/timing/history",
 							"host": [
 								"{{api_url}}"
 							],
 							"path": [
 								"v1",
-								"competitions",
-								"2",
+								"c",
+								"1",
 								"timing",
 								"history"
 							]
@@ -1171,7 +1267,7 @@
 		},
 		{
 			"key": "bearer",
-			"value": "e51489a37cf59a7cdc9fcc6320722ea089adfe0bfc26a8a9544a9fa13f90c08f",
+			"value": "e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9",
 			"type": "string"
 		}
 	]

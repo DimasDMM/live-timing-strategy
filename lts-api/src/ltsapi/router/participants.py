@@ -98,6 +98,25 @@ async def update_team_by_id(
 
 
 @router.get(
+        path='/teams/filter/code/{participant_code}',  # noqa
+        summary='Get a team by its code')
+async def get_team_by_code(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    participant_code: Annotated[str, Path(
+        description='Code of the participant')],
+) -> Union[GetTeam, Empty]:
+    """Get a team by its code."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = TeamsManager(db=db, logger=_logger)
+        item = manager.get_by_code(
+            participant_code=participant_code,
+            competition_id=competition_id)
+        return Empty() if item is None else item
+
+
+@router.get(
         path='/teams/{team_id}/drivers',  # noqa: FS003
         summary='Get all the drivers in a team')
 async def get_team_drivers_by_team_id(
@@ -138,6 +157,26 @@ async def add_team_driver(
         if item is None:
             raise ApiError('It was not possible to locate the new data.')
         return item
+
+
+@router.get(
+        path='/teams/{team_id}/drivers/filter/name/{driver_name}',  # noqa
+        summary='Get a driver by its name in a team')
+async def get_team_driver_by_driver_name(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+    driver_name: Annotated[str, Path(description='Name of the driver')],
+) -> Union[GetDriver, Empty]:
+    """Get a driver by its name in a team."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = DriversManager(db=db, logger=_logger)
+        item = manager.get_by_name(
+            driver_name=driver_name,
+            competition_id=competition_id,
+            team_id=team_id)
+        return Empty() if item is None else item
 
 
 @router.get(

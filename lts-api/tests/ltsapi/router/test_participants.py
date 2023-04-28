@@ -128,7 +128,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='new-team',
                     name='New Team',
                     number=101,
-                    drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -203,7 +202,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1',
                     number=41,
-                    drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -270,7 +268,6 @@ class TestMiscRouter(DatabaseTest):
                     participant_code='team-1',
                     name='CKM 1 Updated',
                     number=41,
-                    drivers=[],
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -342,6 +339,75 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.put(
             f'/v1/c/{competition_id}/teams/{team_id}',
             json=add_model.dict(),
+            headers=headers)
+        assert response.status_code == expected_status_code, response
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+
+    @pytest.mark.parametrize(
+        ('headers, competition_id, participant_code,'
+         'expected_status_code, expected_response, expected_type'),
+        [
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                'team-1',  # participant_code
+                200,  # expected_status_code
+                GetTeam(
+                    id=4,
+                    competition_id=2,
+                    participant_code='team-1',
+                    name='CKM 1',
+                    number=41,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetTeam,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2000000,  # competition_id
+                'team-1',  # participant_code
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                'unknown-code',  # participant_code
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                None,  # headers
+                2,  # competition_id
+                'team-1',  # participant_code
+                403,  # expected_status_code
+                ErrorResponse(
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_get_team_by_code(
+            self,
+            headers: Optional[Dict[str, str]],
+            competition_id: int,
+            participant_code: str,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """
+        Test GET /v1/c/<competition_id>/teams/filter/code/<participant_code>.
+        """
+        response: Response = self.API.get(
+            f'/v1/c/{competition_id}/teams/filter/code/{participant_code}',
             headers=headers)
         assert response.status_code == expected_status_code, response
 
@@ -540,6 +606,92 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/teams/{team_id}/drivers',
             json=add_model.dict(),
             headers=headers)
+        assert response.status_code == expected_status_code, response
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+
+    @pytest.mark.parametrize(
+        ('headers, competition_id, team_id, driver_name,'
+         'expected_status_code, expected_response, expected_type'),
+        [
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                4,  # team_id
+                'CKM 1 Driver 1',  # driver_name
+                200,  # expected_status_code
+                GetDriver(
+                    id=5,
+                    competition_id=2,
+                    team_id=4,
+                    participant_code='team-1',
+                    name='CKM 1 Driver 1',
+                    number=41,
+                    partial_driving_time=0,
+                    total_driving_time=0,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetDriver,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2000000,  # competition_id
+                4,  # team_id
+                'CKM 1 Driver 1',  # driver_name
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                4,  # team_id
+                'Unknown driver name',  # driver_name
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                2000000,  # team_id
+                'CKM 1 Driver 1',  # driver_name
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                None,  # headers
+                2,  # competition_id
+                4,  # team_id
+                'CKM 1 Driver 1',  # driver_name
+                403,  # expected_status_code
+                ErrorResponse(
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_get_team_driver_by_driver_name(
+            self,
+            headers: Optional[Dict[str, str]],
+            competition_id: int,
+            team_id: int,
+            driver_name: str,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """
+        Test GET .../teams/<team_id>/drivers/filter/name/<driver_name>.
+        """
+        url = (f'/v1/c/{competition_id}/teams/{team_id}'
+               f'/drivers/filter/name/{driver_name}')
+        response: Response = self.API.get(url, headers=headers)
         assert response.status_code == expected_status_code, response
 
         response_model = expected_type(**response.json())

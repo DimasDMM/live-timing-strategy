@@ -100,7 +100,7 @@ CREATE TABLE `participants_drivers` (
   `reference_time_offset` INT NULL COMMENT 'Time offset with respect to the track reference',
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `team_driver` (`team_id`, `name`),
+  UNIQUE KEY `team_driver_name` (`team_id`, `name`),
   CONSTRAINT `participants_drivers__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
   CONSTRAINT `participants_drivers__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
