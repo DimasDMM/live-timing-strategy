@@ -1,6 +1,6 @@
 import pytest
 import time
-from typing import List
+from typing import List, Union
 
 from ltsapi.db import DBContext
 from ltsapi.models.competitions import (
@@ -8,6 +8,9 @@ from ltsapi.models.competitions import (
     AddCompetitionSettings,
     UpdateCompetitionMetadata,
     UpdateCompetitionSettings,
+    UpdateStatus,
+    UpdateStage,
+    UpdateRemainingLength,
 )
 from ltsapi.managers.competitions import (
     CompetitionsIndexManager,
@@ -116,11 +119,45 @@ class TestCMetadataManager(DatabaseTest):
                     'remaining_length_unit': LengthUnit.LAPS.value,
                 },
             ),
+            (
+                2,  # competition_id
+                UpdateRemainingLength(
+                    remaining_length=340,
+                    remaining_length_unit=LengthUnit.LAPS,
+                ),
+                {
+                    'status': CompetitionStatus.ONGOING.value,
+                    'stage': CompetitionStage.RACE.value,
+                    'remaining_length': 340,
+                    'remaining_length_unit': LengthUnit.LAPS.value,
+                },
+            ),
+            (
+                2,  # competition_id
+                UpdateStatus(status=CompetitionStatus.FINISHED),
+                {
+                    'status': CompetitionStatus.FINISHED.value,
+                    'stage': CompetitionStage.RACE.value,
+                    'remaining_length': 348,
+                    'remaining_length_unit': LengthUnit.LAPS.value,
+                },
+            ),
+            (
+                2,  # competition_id
+                UpdateStage(stage=CompetitionStage.QUALIFYING),
+                {
+                    'status': CompetitionStatus.ONGOING.value,
+                    'stage': CompetitionStage.QUALIFYING.value,
+                    'remaining_length': 348,
+                    'remaining_length_unit': LengthUnit.LAPS.value,
+                },
+            ),
         ])
     def test_update_by_id(
             self,
             competition_id: int,
-            update_data: UpdateCompetitionMetadata,
+            update_data: Union[UpdateCompetitionMetadata, UpdateRemainingLength,
+                               UpdateStatus, UpdateStage],
             expected_item: dict,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:

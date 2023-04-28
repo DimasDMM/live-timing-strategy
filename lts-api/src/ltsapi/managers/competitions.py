@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
@@ -17,6 +17,9 @@ from ltsapi.models.competitions import (
     GetCompetitionSettings,
     UpdateCompetitionMetadata,
     UpdateCompetitionSettings,
+    UpdateStatus,
+    UpdateStage,
+    UpdateRemainingLength,
 )
 from ltsapi.models.enum import (
     CompetitionStage,
@@ -71,7 +74,7 @@ class CSettingsManager:
 
         Params:
             settings (UpdateCompetitionSettings): New settings of the
-                competition ('None' is ignored).
+                competition.
             competition_id (int): ID of the competition.
             commit (bool): Commit transaction.
         """
@@ -158,7 +161,8 @@ class CMetadataManager:
 
     def update_by_id(
             self,
-            metadata: UpdateCompetitionMetadata,
+            metadata: Union[UpdateCompetitionMetadata, UpdateStatus,
+                            UpdateStage, UpdateRemainingLength],
             competition_id: int,
             commit: bool = True) -> None:
         """
@@ -168,8 +172,8 @@ class CMetadataManager:
         history table.
 
         Params:
-            metadata (UpdateCompetitionMetadata): New metadata of the
-                competition ('None' is ignored).
+            metadata (UpdateCompetitionMetadata | ...): New metadata of the
+                competition.
             competition_id (int): ID of the competition.
             commit (bool): Commit transaction.
         """
@@ -192,7 +196,7 @@ class CMetadataManager:
         previous_data = previous_model.dict(exclude={
             'insert_date': True, 'update_date': True})
         for field_name, _ in previous_data.items():
-            if new_data[field_name] is not None:
+            if field_name in new_data and new_data[field_name] is not None:
                 previous_data[field_name] = new_data[field_name]
         previous_data['competition_id'] = competition_id
         _ = insert_model(

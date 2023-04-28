@@ -15,6 +15,9 @@ from ltsapi.models.competitions import (
     GetCompetitionSettings,
     UpdateCompetitionMetadata,
     UpdateCompetitionSettings,
+    UpdateStatus,
+    UpdateStage,
+    UpdateRemainingLength,
 )
 from ltsapi.models.responses import Empty
 from ltsapi.router import _build_db_connection
@@ -93,6 +96,63 @@ async def update_competition_metadata(
     metadata: UpdateCompetitionMetadata,
 ) -> GetCompetitionMetadata:
     """Update the metadata of a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = CMetadataManager(db=db, logger=_logger)
+        manager.update_by_id(metadata, competition_id=competition_id)
+        item = manager.get_current_by_id(competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.put(
+        path='/c/{competition_id}/metadata/remaining_length',  # noqa: FS003
+        summary='Update the metadata (remaining length) of a competition')
+async def update_competition_metadata_remaining_length(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    metadata: UpdateRemainingLength,
+) -> GetCompetitionMetadata:
+    """Update the metadata (remaining length) of a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = CMetadataManager(db=db, logger=_logger)
+        manager.update_by_id(metadata, competition_id=competition_id)
+        item = manager.get_current_by_id(competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.put(
+        path='/c/{competition_id}/metadata/stage',  # noqa: FS003
+        summary='Update the metadata (stage) of a competition')
+async def update_competition_metadata_stage(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    metadata: UpdateStage,
+) -> GetCompetitionMetadata:
+    """Update the metadata (stage) of a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = CMetadataManager(db=db, logger=_logger)
+        manager.update_by_id(metadata, competition_id=competition_id)
+        item = manager.get_current_by_id(competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.put(
+        path='/c/{competition_id}/metadata/status',  # noqa: FS003
+        summary='Update the metadata (status) of a competition')
+async def update_competition_metadata_status(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    metadata: UpdateStatus,
+) -> GetCompetitionMetadata:
+    """Update the metadata (status) of a competition."""
     db = _build_db_connection(_logger)
     with db:
         db.start_transaction()

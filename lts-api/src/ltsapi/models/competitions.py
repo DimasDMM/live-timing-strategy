@@ -31,7 +31,7 @@ class GetCompetitionMetadata(BaseModel):
 
 
 class UpdateCompetitionMetadata(BaseModel):
-    """Metadata of a competition."""
+    """Update the metadata of a competition."""
 
     status: CompetitionStatus
     stage: CompetitionStage
@@ -88,3 +88,22 @@ class GetCompetition(BaseModel):
     description: str
     insert_date: datetime
     update_date: datetime
+
+
+class UpdateRemainingLength(BaseModel):
+    """Update the remaining length of a competition."""
+
+    remaining_length: int
+    remaining_length_unit: LengthUnit
+
+
+class UpdateStage(BaseModel):
+    """Update the stage of a competition."""
+
+    stage: CompetitionStage
+
+
+class UpdateStatus(BaseModel):
+    """Update the status of a competition."""
+
+    status: CompetitionStatus

@@ -264,6 +264,114 @@
 					"response": []
 				},
 				{
+					"name": "Update the metadata (remaining length)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"remaining_length\": 340,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/metadata/remaining_length",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"metadata",
+								"remaining_length"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update the metadata (stage)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stage\": \"qualifying\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/metadata/stage",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"metadata",
+								"stage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update the metadata (status)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{bearer}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"paused\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_url}}/v1/c/1/metadata/status",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"v1",
+								"c",
+								"1",
+								"metadata",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get settings",
 					"request": {
 						"method": "GET",
