@@ -208,7 +208,7 @@ class InitialDataHandler(ApiHandler):
                 pit_time=participant.pit_time,
                 position=participant.ranking,
                 stage=CompetitionStage.FREE_PRACTICE,  # TODO
-                time=participant.last_lap_time,
+                last_time=participant.last_lap_time,
             )
 
     def _find_team_by_code(

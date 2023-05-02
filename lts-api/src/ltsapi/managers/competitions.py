@@ -27,6 +27,10 @@ from ltsapi.models.enum import (
     LengthUnit,
 )
 
+# Alias of all fields that we may update in competition metadata
+TypeUpdateMetadata = Union[UpdateCompetitionMetadata, UpdateStatus,
+                           UpdateStage, UpdateRemainingLength]
+
 
 class CSettingsManager:
     """Manage settings of competitions."""
@@ -161,8 +165,7 @@ class CMetadataManager:
 
     def update_by_id(
             self,
-            metadata: Union[UpdateCompetitionMetadata, UpdateStatus,
-                            UpdateStage, UpdateRemainingLength],
+            metadata: TypeUpdateMetadata,
             competition_id: int,
             commit: bool = True) -> None:
         """
@@ -196,7 +199,7 @@ class CMetadataManager:
         previous_data = previous_model.dict(exclude={
             'insert_date': True, 'update_date': True})
         for field_name, _ in previous_data.items():
-            if field_name in new_data and new_data[field_name] is not None:
+            if field_name in new_data:
                 previous_data[field_name] = new_data[field_name]
         previous_data['competition_id'] = competition_id
         _ = insert_model(
@@ -217,7 +220,7 @@ class CMetadataManager:
         )
 
 
-class CompetitionsIndexManager:
+class CIndexManager:
     """Manage data of competitions."""
 
     BASE_QUERY = '''

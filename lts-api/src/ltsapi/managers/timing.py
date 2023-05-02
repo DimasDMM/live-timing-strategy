@@ -1,5 +1,6 @@
+from copy import deepcopy
 from logging import Logger
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from ltsapi.db import DBContext
 from ltsapi.exceptions import ApiError
@@ -9,10 +10,49 @@ from ltsapi.managers.utils.statements import (
     insert_model,
     update_model,
 )
+from ltsapi.models import BaseModel
 from ltsapi.models.timing import (
-    GetLapTime,
-    UpdateLapTime,
+    GetTiming,
+    UpdateTiming,
+    UpdateTimingDriver,
+    UpdateTimingPosition,
+    UpdateTimingLastTime,
+    UpdateTimingLastTimeWBest,
+    UpdateTimingBestTime,
+    UpdateTimingLap,
+    UpdateTimingGap,
+    UpdateTimingInterval,
+    UpdateTimingStage,
+    UpdateTimingPitTime,
+    UpdateTimingKartStatus,
+    UpdateTimingFixedKartStatus,
+    UpdateTimingNumberPits,
 )
+
+# Alias of all fields that we may update in timing
+TypeUpdateTiming = Union[
+    UpdateTiming,
+    UpdateTimingDriver,
+    UpdateTimingPosition,
+    UpdateTimingLastTime,
+    UpdateTimingLastTimeWBest,
+    UpdateTimingBestTime,
+    UpdateTimingLap,
+    UpdateTimingGap,
+    UpdateTimingInterval,
+    UpdateTimingStage,
+    UpdateTimingPitTime,
+    UpdateTimingKartStatus,
+    UpdateTimingFixedKartStatus,
+    UpdateTimingNumberPits,
+]
+
+# Alias to update the last time and, maybe, the best time too
+TypeUpdateTimingLastTime = Union[
+    UpdateTiming,
+    UpdateTimingLastTime,
+    UpdateTimingLastTimeWBest,
+]
 
 
 class TimingManager:
@@ -25,9 +65,11 @@ class TimingManager:
             timing.`team_id` AS timing_team_id,
             timing.`driver_id` AS timing_driver_id,
             timing.`position` AS timing_position,
-            timing.`time` AS timing_time,
+            timing.`last_time` AS timing_last_time,
             timing.`best_time` AS timing_best_time,
             timing.`lap` AS timing_lap,
+            timing.`gap` AS timing_gap,
+            timing.`gap_unit` AS timing_gap_unit,
             timing.`interval` AS timing_interval,
             timing.`interval_unit` AS timing_interval_unit,
             timing.`stage` AS timing_stage,
@@ -54,12 +96,22 @@ class TimingManager:
     CURRENT_TABLE = 'timing_current'
     HISTORY_TABLE = 'timing_history'
 
+    # Fields that the model might have and they should be exluded when we run
+    # an update or insert statement
+    EXCLUDE_ON_UPDATE = {
+        'auto_best_time': True,
+        'auto_other_positions': True,
+        'participant_code': True,
+        'insert_date': True,
+        'update_date': True,
+    }
+
     def __init__(self, db: DBContext, logger: Logger) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
 
-    def get_current_all_by_id(self, competition_id: int) -> List[GetLapTime]:
+    def get_current_all_by_id(self, competition_id: int) -> List[GetTiming]:
         """
         Retrieve the current timing of a competition.
 
@@ -67,11 +119,11 @@ class TimingManager:
             competition_id (int): ID of the competition.
 
         Returns:
-            List[GetLapTime]: List of all lap times of the
+            List[GetTiming]: List of all lap times of the
                 competition of all participants.
         """
         query = f'{self.CURRENT_QUERY} WHERE timing.competition_id = %s'
-        models: List[GetLapTime] = fetchmany_models(  # type: ignore
+        models: List[GetTiming] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_timing, query, (competition_id,))
         return models
 
@@ -79,7 +131,7 @@ class TimingManager:
             self,
             competition_id: int,
             team_id: Optional[int] = None,
-            driver_id: Optional[int] = None) -> Optional[GetLapTime]:
+            driver_id: Optional[int] = None) -> Optional[GetTiming]:
         """
         Retrieve the current timing of a specific participant.
 
@@ -93,7 +145,7 @@ class TimingManager:
                 given driver.
 
         Returns:
-            Optional[GetLapTime]: Lap times of the competition of
+            Optional[GetTiming]: Timing of the competition of
                 given participant.
         """
         if team_id is None and driver_id is None:
@@ -108,7 +160,7 @@ class TimingManager:
         if driver_id is not None:
             query = f'{query} AND timing.driver_id = %s'
             params.append(driver_id)
-        model: Optional[GetLapTime] = fetchone_model(  # type: ignore
+        model: Optional[GetTiming] = fetchone_model(  # type: ignore
             self._db, self._raw_to_timing, query, tuple(params))
         return model
 
@@ -116,7 +168,7 @@ class TimingManager:
             self,
             competition_id: int,
             team_id: Optional[int] = None,
-            driver_id: Optional[int] = None) -> List[GetLapTime]:
+            driver_id: Optional[int] = None) -> List[GetTiming]:
         """
         Retrieve the timing history of a competition.
 
@@ -128,7 +180,7 @@ class TimingManager:
                 given driver.
 
         Returns:
-            List[GetLapTime]: History of all lap times of the
+            List[GetTiming]: History of all lap times of the
                 competition.
         """
         query = f'{self.HISTORY_QUERY} WHERE timing.competition_id = %s'
@@ -139,13 +191,43 @@ class TimingManager:
         if driver_id is not None:
             query = f'{query} AND timing.driver_id = %s'
             params.append(driver_id)
-        models: List[GetLapTime] = fetchmany_models(  # type: ignore
+        models: List[GetTiming] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_timing, query, tuple(params))
+        return models
+
+    def get_current_between_positions(
+            self,
+            competition_id: int,
+            start_position: int,
+            end_position: int) -> List[GetTiming]:
+        """
+        Retrieve the timing of participants between the given positions.
+
+        The timing items that retrieves are in the range [start, end], that is,
+        start and end are included.
+
+        Params:
+            competition_id (int): ID of the competition.
+            start_position (int): Start position to filter.
+            end_position (int): End position to filter.
+
+        Returns:
+            List[GetTiming]: Timing of the competition of participants in the
+                specified range of positions.
+        """
+        query = f'''
+            {self.CURRENT_QUERY}
+            WHERE timing.competition_id = %s
+                AND timing.position >= %s
+                AND timing.position <= %s'''
+        params = (competition_id, start_position, end_position)
+        models: List[GetTiming] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_timing, query, params)
         return models
 
     def update_by_id(
             self,
-            lap_time: UpdateLapTime,
+            timing: TypeUpdateTiming,
             competition_id: int,
             team_id: Optional[int] = None,
             driver_id: Optional[int] = None,
@@ -157,7 +239,7 @@ class TimingManager:
         history table.
 
         Params:
-            lap_time (UpdateLapTime): New timing data of the
+            timing (UpdateTiming | ...): New timing data of the
                 competition ('None' is ignored).
             competition_id (int): ID of the competition.
             commit (bool): Commit transaction.
@@ -169,18 +251,24 @@ class TimingManager:
                 message='The requested timing data does not exist.',
                 status_code=400)
 
-        key_name = ['competition_id']
-        key_value = [competition_id]
-        if team_id is not None:
-            key_name.append('team_id')
-            key_value.append(team_id)
-        if driver_id is not None:
-            key_name.append('driver_id')
-            key_value.append(driver_id)
+        # If the position is modified, change other participant's positions too
+        if (isinstance(timing, (UpdateTiming, UpdateTimingPosition))):
+            self.__update_other_positions(
+                competition_id,
+                new_model=timing,
+                previous_model=previous_model)
+
+        # Update best time if given
+        if (isinstance(timing, (UpdateTiming, UpdateTimingLastTime))):
+            timing = self.__override_best_time(  # type: ignore
+                timing, previous_model)
+
+        key_name, key_value = self.__prepare_key_for_update(
+            competition_id, team_id, driver_id)
         update_model(
             self._db,
             self.CURRENT_TABLE,
-            lap_time.dict(),
+            timing.dict(exclude=self.EXCLUDE_ON_UPDATE),
             key_name=key_name,
             key_value=key_value,
             commit=False)
@@ -189,25 +277,82 @@ class TimingManager:
         self._insert_history(
             competition_id=competition_id,
             previous_model=previous_model,
-            new_model=lap_time,
+            new_model=timing,
             commit=commit)
+
+    def __update_other_positions(
+            self,
+            competition_id: int,
+            new_model: Union[UpdateTiming, UpdateTimingPosition],
+            previous_model: GetTiming) -> None:
+        """
+        Update the position of other participants.
+
+        When the position of a driver changes, the position of the other
+        participants should change too.
+        """
+        if (not new_model.auto_other_positions
+                or new_model.position == previous_model.position):
+            # No need to update positions
+            return
+        elif new_model.position > previous_model.position:
+            # The participant is behind
+            start_position = previous_model.position + 1
+            end_position = new_model.position
+            order = -1
+        else:
+            # The participant is in the front
+            start_position = new_model.position
+            end_position = previous_model.position - 1
+            order = 1
+
+        other_participants = self.get_current_between_positions(
+            competition_id, start_position, end_position)
+        for p in other_participants:
+            previous_p = deepcopy(p)
+            p.position += order
+            key_name, key_value = self.__prepare_key_for_update(
+                competition_id, p.team_id, p.driver_id)
+            update_model(
+                self._db,
+                self.CURRENT_TABLE,
+                p.dict(exclude=self.EXCLUDE_ON_UPDATE),
+                key_name=key_name,
+                key_value=key_value,
+                commit=False)
+            self._insert_history(
+                competition_id,
+                previous_model=previous_p,
+                new_model=p.to_adder(),
+                commit=False)
+
+    def __override_best_time(
+            self,
+            timing: Union[UpdateTiming, UpdateTimingLastTime],
+            previous_model: GetTiming) -> TypeUpdateTimingLastTime:
+        """Override best time field if the last time is better."""
+        if not timing.auto_best_time:
+            return timing
+        elif previous_model.best_time > timing.last_time:
+            return UpdateTimingLastTimeWBest(
+                last_time=timing.last_time,
+                best_time=timing.last_time,
+            )
+        else:
+            return timing
 
     def _insert_history(
             self,
             competition_id: int,
-            previous_model: GetLapTime,
-            new_model: UpdateLapTime,
+            previous_model: GetTiming,
+            new_model: BaseModel,
             commit: bool = True) -> None:
         """Insert record in the history table."""
-        new_data = new_model.dict()
-        previous_data = previous_model.dict(exclude={
-            'participant_code': True,
-            'insert_date': True,
-            'update_date': True,
-        })
+        previous_data = previous_model.dict(exclude=self.EXCLUDE_ON_UPDATE)
+        new_data = new_model.dict(exclude=self.EXCLUDE_ON_UPDATE)
 
         for field_name, _ in previous_data.items():
-            if field_name in new_data and new_data[field_name] is not None:
+            if field_name in new_data:
                 previous_data[field_name] = new_data[field_name]
         previous_data['competition_id'] = competition_id
         _ = insert_model(
@@ -216,18 +361,20 @@ class TimingManager:
             previous_data,
             commit=commit)
 
-    def _raw_to_timing(self, row: dict) -> GetLapTime:
-        """Build an instance of GetLapTime."""
+    def _raw_to_timing(self, row: dict) -> GetTiming:
+        """Build an instance of GetTiming."""
         participant_code = (row['team_code'] if row['team_code'] is not None
                             else row['driver_code'])
-        return GetLapTime(
+        return GetTiming(
             team_id=row['timing_team_id'],
             driver_id=row['timing_driver_id'],
             participant_code=participant_code,
             position=row['timing_position'],
-            time=row['timing_time'],
+            last_time=row['timing_last_time'],
             best_time=row['timing_best_time'],
             lap=row['timing_lap'],
+            gap=row['timing_gap'],
+            gap_unit=row['timing_gap_unit'],
             interval=row['timing_interval'],
             interval_unit=row['timing_interval_unit'],
             stage=row['timing_stage'],
@@ -238,3 +385,23 @@ class TimingManager:
             insert_date=row['timing_insert_date'],
             update_date=row['timing_update_date'],
         )
+
+    def __prepare_key_for_update(
+            self,
+            competition_id: int,
+            team_id: Optional[int],
+            driver_id: Optional[int]) -> tuple:
+        """
+        Prepare key to run update statement.
+
+        This is an auxiliar method of update_by_id().
+        """
+        key_name = ['competition_id']
+        key_value = [competition_id]
+        if team_id is not None:
+            key_name.append('team_id')
+            key_value.append(team_id)
+        if driver_id is not None:
+            key_name.append('driver_id')
+            key_value.append(driver_id)
+        return (key_name, key_value)

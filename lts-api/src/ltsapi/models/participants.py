@@ -40,6 +40,7 @@ class UpdatePartialTimeDriver(BaseModel):
     """Update the partial driving time of a driver."""
 
     partial_driving_time: int
+    # If True, it should compute the total driving time automatically
     auto_compute_total: bool = Field(default=True)
 
 

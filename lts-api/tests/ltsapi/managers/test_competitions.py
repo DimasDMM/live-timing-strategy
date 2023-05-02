@@ -13,7 +13,7 @@ from ltsapi.models.competitions import (
     UpdateRemainingLength,
 )
 from ltsapi.managers.competitions import (
-    CompetitionsIndexManager,
+    CIndexManager,
     CMetadataManager,
     CSettingsManager,
 )
@@ -178,6 +178,11 @@ class TestCMetadataManager(DatabaseTest):
         assert before_item.insert_date == after_item.insert_date
         assert before_item.update_date < after_item.update_date
 
+        # Validate history
+        history = manager.get_history_by_id(competition_id)
+        dict_item = history[-1].dict(exclude=self.EXCLUDE)
+        assert dict_item == expected_item
+
 
 class TestCSettingsManager(DatabaseTest):
     """Test class ltsapi.managers.competitions.CSettingsManager."""
@@ -259,8 +264,8 @@ class TestCSettingsManager(DatabaseTest):
         assert before_item.update_date < after_item.update_date
 
 
-class TestCompetitionsIndexManager(DatabaseTest):
-    """Test class ltsapi.managers.competitions.CompetitionsIndexManager."""
+class TestCIndexManager(DatabaseTest):
+    """Test class ltsapi.managers.competitions.CIndexManager."""
 
     ALL_COMPETITIONS = [
         {
@@ -294,7 +299,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
     def test_get_all(
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_all."""
-        manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
+        manager = CIndexManager(db=db_context, logger=fake_logger)
         dict_items = [x.dict(exclude=self.EXCLUDE)
                       for x in manager.get_all()]
         assert dict_items == self.ALL_COMPETITIONS
@@ -320,7 +325,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method get_by_id."""
-        manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
+        manager = CIndexManager(db=db_context, logger=fake_logger)
 
         db_item = manager.get_by_id(competition_id)
         assert db_item is not None
@@ -349,7 +354,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method get_by_code."""
-        manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
+        manager = CIndexManager(db=db_context, logger=fake_logger)
 
         db_item = manager.get_by_code(competition_code)
         assert db_item is not None
@@ -389,7 +394,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
+        manager = CIndexManager(db=db_context, logger=fake_logger)
         item_id = manager.add_one(model, commit=True)
 
         expected_item['id'] = item_id
@@ -434,7 +439,7 @@ class TestCompetitionsIndexManager(DatabaseTest):
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        manager = CompetitionsIndexManager(db=db_context, logger=fake_logger)
+        manager = CIndexManager(db=db_context, logger=fake_logger)
         with pytest.raises(Exception) as e_info:
             manager.add_one(model, commit=True)
 

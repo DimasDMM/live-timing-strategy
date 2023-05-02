@@ -12,8 +12,8 @@ from ltsapi.models.enum import (
     LengthUnit,
 )
 from ltsapi.models.timing import (
-    GetLapTime,
-    UpdateLapTime,
+    GetTiming,
+    UpdateTiming,
 )
 from ltsapi.models.responses import Empty, ErrorResponse
 from tests.fixtures import AUTH_BEARER
@@ -38,14 +38,16 @@ class TestTimingRouter(DatabaseTest):
                 2,  # competition_id
                 200,  # expected_status_code
                 [
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=58800,
+                        last_time=58800,
                         best_time=58800,
                         lap=2,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -56,14 +58,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=5,
                         driver_id=7,
                         participant_code='team-2',
                         position=2,
-                        time=59700,
+                        last_time=59700,
                         best_time=59500,
                         lap=2,
+                        gap=1400,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=1400,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -75,14 +79,14 @@ class TestTimingRouter(DatabaseTest):
                         update_date=datetime.utcnow().timestamp(),
                     ),
                 ],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 2000000,  # competition_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 None,  # headers
@@ -131,14 +135,16 @@ class TestTimingRouter(DatabaseTest):
                 2,  # competition_id
                 5,  # driver_id
                 200,  # expected_status_code
-                GetLapTime(
+                GetTiming(
                     team_id=4,
                     driver_id=5,
                     participant_code='team-1',
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -149,7 +155,7 @@ class TestTimingRouter(DatabaseTest):
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -210,14 +216,16 @@ class TestTimingRouter(DatabaseTest):
                 5,  # driver_id
                 200,  # expected_status_code
                 [
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=0,
+                        last_time=0,
                         best_time=0,
                         lap=0,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -228,14 +236,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=59000,
+                        last_time=59000,
                         best_time=59000,
                         lap=1,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -246,14 +256,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=58800,
+                        last_time=58800,
                         best_time=58800,
                         lap=2,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -265,7 +277,7 @@ class TestTimingRouter(DatabaseTest):
                         update_date=datetime.utcnow().timestamp(),
                     ),
                 ],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -273,7 +285,7 @@ class TestTimingRouter(DatabaseTest):
                 5,  # driver_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -281,7 +293,7 @@ class TestTimingRouter(DatabaseTest):
                 2000000,  # driver_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 None,  # headers
@@ -336,14 +348,16 @@ class TestTimingRouter(DatabaseTest):
                 2,  # competition_id
                 4,  # team_id
                 200,  # expected_status_code
-                GetLapTime(
+                GetTiming(
                     team_id=4,
                     driver_id=5,
                     participant_code='team-1',
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -354,7 +368,7 @@ class TestTimingRouter(DatabaseTest):
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -413,12 +427,14 @@ class TestTimingRouter(DatabaseTest):
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 2,  # competition_id
                 4,  # team_id
-                UpdateLapTime(
+                UpdateTiming(
                     driver_id=5,
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -428,14 +444,16 @@ class TestTimingRouter(DatabaseTest):
                     number_pits=0,
                 ),
                 200,  # expected_status_code
-                GetLapTime(
+                GetTiming(
                     team_id=4,
                     driver_id=5,
                     participant_code='team-1',
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -446,18 +464,20 @@ class TestTimingRouter(DatabaseTest):
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 2000000,  # competition_id
                 4,  # team_id
-                UpdateLapTime(
+                UpdateTiming(
                     driver_id=5,
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -477,12 +497,14 @@ class TestTimingRouter(DatabaseTest):
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 2,  # competition_id
                 2000000,  # team_id
-                UpdateLapTime(
+                UpdateTiming(
                     driver_id=5,
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -502,12 +524,14 @@ class TestTimingRouter(DatabaseTest):
                 None,  # headers
                 2,  # competition_id
                 4,  # team_id
-                UpdateLapTime(
+                UpdateTiming(
                     driver_id=5,
                     position=1,
-                    time=58800,
+                    last_time=58800,
                     best_time=58800,
                     lap=2,
+                    gap=0,
+                    gap_unit=LengthUnit.MILLIS,
                     interval=0,
                     interval_unit=LengthUnit.MILLIS,
                     stage=CompetitionStage.RACE,
@@ -557,14 +581,16 @@ class TestTimingRouter(DatabaseTest):
                 4,  # team_id
                 200,  # expected_status_code
                 [
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=0,
+                        last_time=0,
                         best_time=0,
                         lap=0,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -575,14 +601,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=59000,
+                        last_time=59000,
                         best_time=59000,
                         lap=1,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -593,14 +621,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=58800,
+                        last_time=58800,
                         best_time=58800,
                         lap=2,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -612,7 +642,7 @@ class TestTimingRouter(DatabaseTest):
                         update_date=datetime.utcnow().timestamp(),
                     ),
                 ],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -620,7 +650,7 @@ class TestTimingRouter(DatabaseTest):
                 4,  # team_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
@@ -628,7 +658,7 @@ class TestTimingRouter(DatabaseTest):
                 2000000,  # team_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 None,  # headers
@@ -683,14 +713,16 @@ class TestTimingRouter(DatabaseTest):
                 2,  # competition_id
                 200,  # expected_status_code
                 [
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=0,
+                        last_time=0,
                         best_time=0,
                         lap=0,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -701,14 +733,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=5,
                         driver_id=7,
                         participant_code='team-2',
                         position=2,
-                        time=0,
+                        last_time=0,
                         best_time=0,
                         lap=0,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -719,14 +753,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=59000,
+                        last_time=59000,
                         best_time=59000,
                         lap=1,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -737,14 +773,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=5,
                         driver_id=7,
                         participant_code='team-2',
                         position=2,
-                        time=59500,
+                        last_time=59500,
                         best_time=59500,
                         lap=1,
+                        gap=500,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=500,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -755,14 +793,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=4,
                         driver_id=5,
                         participant_code='team-1',
                         position=1,
-                        time=58800,
+                        last_time=58800,
                         best_time=58800,
                         lap=2,
+                        gap=0,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=0,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -773,14 +813,16 @@ class TestTimingRouter(DatabaseTest):
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
-                    GetLapTime(
+                    GetTiming(
                         team_id=5,
                         driver_id=7,
                         participant_code='team-2',
                         position=2,
-                        time=59700,
+                        last_time=59700,
                         best_time=59500,
                         lap=2,
+                        gap=1400,
+                        gap_unit=LengthUnit.MILLIS,
                         interval=1400,
                         interval_unit=LengthUnit.MILLIS,
                         stage=CompetitionStage.RACE,
@@ -792,14 +834,14 @@ class TestTimingRouter(DatabaseTest):
                         update_date=datetime.utcnow().timestamp(),
                     ),
                 ],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 2000000,  # competition_id
                 200,  # expected_status_code
                 [],
-                GetLapTime,  # expected_type
+                GetTiming,  # expected_type
             ),
             (
                 None,  # headers

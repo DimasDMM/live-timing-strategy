@@ -10,11 +10,7 @@ from ltsapi.managers.utils.statements import (
     fetchmany_models,
     fetchone_model,
 )
-from ltsapi.models.enum import (
-    CompetitionStage,
-    KartStatus,
-    LengthUnit,
-)
+from ltsapi.models.enum import CompetitionStage, KartStatus
 from ltsapi.models.participants import (
     AddDriver,
     AddTeam,
@@ -25,7 +21,8 @@ from ltsapi.models.participants import (
     UpdatePartialTimeDriver,
     UpdateTotalTimeDriver,
 )
-from ltsapi.models.timing import AddLapTime
+from ltsapi.models.timing import AddTiming
+from ltsapi.managers.competitions import CIndexManager
 
 
 class DriversManager:
@@ -46,10 +43,15 @@ class DriversManager:
         FROM participants_drivers AS cd'''
     TABLE_NAME = 'participants_drivers'
 
-    def __init__(self, db: DBContext, logger: Logger) -> None:
+    def __init__(
+            self,
+            db: DBContext,
+            logger: Logger,
+            cindex_manager: Optional[CIndexManager] = None) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
+        self._cindex_manager = cindex_manager
 
     def get_all(self) -> List[GetDriver]:
         """Get all drivers in the database."""
@@ -346,17 +348,19 @@ class DriversManager:
             self._db, self._raw_to_driver, query, params=tuple(params))
         return len(models) > 0
 
-    def _initial_timing(self, driver_id: int) -> AddLapTime:
+    def _initial_timing(self, driver_id: int) -> AddTiming:
         """Create initial timing data."""
-        return AddLapTime(
+        return AddTiming(
             team_id=None,
             driver_id=driver_id,
             position=0,
-            time=0,
+            last_time=0,
             best_time=0,
             lap=0,
-            interval=0,
-            interval_unit=LengthUnit.LAPS,
+            gap=None,
+            gap_unit=None,
+            interval=None,
+            interval_unit=None,
             stage=CompetitionStage.FREE_PRACTICE,
             pits=0,
             kart_status=KartStatus.UNKNOWN,
@@ -395,10 +399,15 @@ class TeamsManager:
         FROM participants_teams AS ct'''
     TABLE_NAME = 'participants_teams'
 
-    def __init__(self, db: DBContext, logger: Logger) -> None:
+    def __init__(
+            self,
+            db: DBContext,
+            logger: Logger,
+            cindex_manager: Optional[CIndexManager] = None) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
+        self._cindex_manager = cindex_manager
 
     def get_all(self) -> List[GetTeam]:
         """Get all teams in the database."""
@@ -551,17 +560,19 @@ class TeamsManager:
             self._db, self._raw_to_team, query, params)
         return len(models) > 0
 
-    def _initial_timing(self, team_id: int) -> AddLapTime:
+    def _initial_timing(self, team_id: int) -> AddTiming:
         """Create initial timing data."""
-        return AddLapTime(
+        return AddTiming(
             team_id=team_id,
             driver_id=None,
             position=0,
-            time=0,
+            last_time=0,
             best_time=0,
             lap=0,
-            interval=0,
-            interval_unit=LengthUnit.LAPS,
+            gap=None,
+            gap_unit=None,
+            interval=None,
+            interval_unit=None,
             stage=CompetitionStage.FREE_PRACTICE,
             pits=0,
             kart_status=KartStatus.UNKNOWN,

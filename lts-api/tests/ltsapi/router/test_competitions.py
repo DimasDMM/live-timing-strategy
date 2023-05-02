@@ -343,12 +343,12 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
 
     @pytest.mark.parametrize(
-        ('headers, competition_id, update_model,'
+        ('url, headers, update_model,'
          'expected_status_code, expected_response, expected_type'),
         [
             (
+                '/v1/c/2/metadata',  # url
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2,  # competition_id
                 UpdateCompetitionMetadata(
                     status=CompetitionStatus.ONGOING,
                     stage=CompetitionStage.RACE,
@@ -367,8 +367,56 @@ class TestCompetitionsRouter(DatabaseTest):
                 GetCompetitionMetadata,  # expected_type
             ),
             (
+                '/v1/c/2/metadata/remaining_length',  # url
                 {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2000000,  # competition_id
+                UpdateRemainingLength(
+                    remaining_length=347,
+                    remaining_length_unit=LengthUnit.LAPS,
+                ),
+                200,  # expected_status_code
+                GetCompetitionMetadata(
+                    status=CompetitionStatus.ONGOING,
+                    stage=CompetitionStage.RACE,
+                    remaining_length=347,
+                    remaining_length_unit=LengthUnit.LAPS,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetCompetitionMetadata,  # expected_type
+            ),
+            (
+                '/v1/c/2/metadata/stage',  # url
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                UpdateStage(stage=CompetitionStage.QUALIFYING),  # update_model
+                200,  # expected_status_code
+                GetCompetitionMetadata(
+                    status=CompetitionStatus.ONGOING,
+                    stage=CompetitionStage.QUALIFYING,
+                    remaining_length=348,
+                    remaining_length_unit=LengthUnit.LAPS,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetCompetitionMetadata,  # expected_type
+            ),
+            (
+                '/v1/c/2/metadata/status',  # url
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                UpdateStatus(status=CompetitionStatus.FINISHED),  # update_model
+                200,  # expected_status_code
+                GetCompetitionMetadata(
+                    status=CompetitionStatus.FINISHED,
+                    stage=CompetitionStage.RACE,
+                    remaining_length=348,
+                    remaining_length_unit=LengthUnit.LAPS,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetCompetitionMetadata,  # expected_type
+            ),
+            (
+                '/v1/c/2000000/metadata',  # url
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
                 UpdateCompetitionMetadata(
                     status=CompetitionStatus.ONGOING,
                     stage=CompetitionStage.RACE,
@@ -384,8 +432,8 @@ class TestCompetitionsRouter(DatabaseTest):
                 ErrorResponse,  # expected_type
             ),
             (
+                '/v1/c/2/metadata',  # url
                 None,  # headers
-                2,  # competition_id
                 UpdateCompetitionMetadata(
                     status=CompetitionStatus.ONGOING,
                     stage=CompetitionStage.RACE,
@@ -402,217 +450,15 @@ class TestCompetitionsRouter(DatabaseTest):
         ])
     def test_update_competition_metadata(
             self,
+            url: str,
             headers: Optional[Dict[str, str]],
-            competition_id: int,
             update_model: BaseModel,
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
         """Test PUT /v1/c/<competition_id>/metadata."""
         response: Response = self.API.put(
-            f'/v1/c/{competition_id}/metadata',
-            json=update_model.dict(),
-            headers=headers)
-        assert response.status_code == expected_status_code, response
-
-        response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
-
-    @pytest.mark.parametrize(
-        ('headers, competition_id, update_model,'
-         'expected_status_code, expected_response, expected_type'),
-        [
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2,  # competition_id
-                UpdateRemainingLength(
-                    remaining_length=347,
-                    remaining_length_unit=LengthUnit.LAPS,
-                ),
-                200,  # expected_status_code
-                GetCompetitionMetadata(
-                    status=CompetitionStatus.ONGOING,
-                    stage=CompetitionStage.RACE,
-                    remaining_length=347,
-                    remaining_length_unit=LengthUnit.LAPS,
-                    insert_date=datetime.utcnow().timestamp(),
-                    update_date=datetime.utcnow().timestamp(),
-                ),
-                GetCompetitionMetadata,  # expected_type
-            ),
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2000000,  # competition_id
-                UpdateRemainingLength(
-                    status=CompetitionStatus.ONGOING,
-                    stage=CompetitionStage.RACE,
-                    remaining_length=347,
-                    remaining_length_unit=LengthUnit.LAPS,
-                ),
-                400,  # expected_status_code
-                ErrorResponse(
-                    status_code=400,
-                    message='The competition with ID=2000000 does not exist.',
-                    extra_data={},
-                ),
-                ErrorResponse,  # expected_type
-            ),
-            (
-                None,  # headers
-                2,  # competition_id
-                UpdateRemainingLength(
-                    status=CompetitionStatus.ONGOING,
-                    stage=CompetitionStage.RACE,
-                    remaining_length=347,
-                    remaining_length_unit=LengthUnit.LAPS,
-                ),
-                403,  # expected_status_code
-                ErrorResponse(
-                    message='Invalid authentication.',
-                    status_code=403,
-                ),
-                ErrorResponse,  # expected_type
-            ),
-        ])
-    def update_competition_metadata_remaining_length(
-            self,
-            headers: Optional[Dict[str, str]],
-            competition_id: int,
-            update_model: BaseModel,
-            expected_status_code: int,
-            expected_response: BaseModel,
-            expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/c/<competition_id>/metadata/remaining_length."""
-        response: Response = self.API.put(
-            f'/v1/c/{competition_id}/metadata/remaining_length',
-            json=update_model.dict(),
-            headers=headers)
-        assert response.status_code == expected_status_code, response
-
-        response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
-
-    @pytest.mark.parametrize(
-        ('headers, competition_id, update_model,'
-         'expected_status_code, expected_response, expected_type'),
-        [
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2,  # competition_id
-                UpdateStage(stage=CompetitionStage.QUALIFYING),  # update_model
-                200,  # expected_status_code
-                GetCompetitionMetadata(
-                    status=CompetitionStatus.ONGOING,
-                    stage=CompetitionStage.QUALIFYING,
-                    remaining_length=348,
-                    remaining_length_unit=LengthUnit.LAPS,
-                    insert_date=datetime.utcnow().timestamp(),
-                    update_date=datetime.utcnow().timestamp(),
-                ),
-                GetCompetitionMetadata,  # expected_type
-            ),
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2000000,  # competition_id
-                UpdateStage(stage=CompetitionStage.QUALIFYING),  # update_model
-                400,  # expected_status_code
-                ErrorResponse(
-                    status_code=400,
-                    message='The competition with ID=2000000 does not exist.',
-                    extra_data={},
-                ),
-                ErrorResponse,  # expected_type
-            ),
-            (
-                None,  # headers
-                2,  # competition_id
-                UpdateStage(stage=CompetitionStage.QUALIFYING),  # update_model
-                403,  # expected_status_code
-                ErrorResponse(
-                    message='Invalid authentication.',
-                    status_code=403,
-                ),
-                ErrorResponse,  # expected_type
-            ),
-        ])
-    def update_competition_metadata_stage(
-            self,
-            headers: Optional[Dict[str, str]],
-            competition_id: int,
-            update_model: BaseModel,
-            expected_status_code: int,
-            expected_response: BaseModel,
-            expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/c/<competition_id>/metadata/stage."""
-        response: Response = self.API.put(
-            f'/v1/c/{competition_id}/metadata/stage',
-            json=update_model.dict(),
-            headers=headers)
-        assert response.status_code == expected_status_code, response
-
-        response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
-
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
-
-    @pytest.mark.parametrize(
-        ('headers, competition_id, update_model,'
-         'expected_status_code, expected_response, expected_type'),
-        [
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2,  # competition_id
-                UpdateStatus(status=CompetitionStatus.FINISHED),  # update_model
-                200,  # expected_status_code
-                GetCompetitionMetadata(
-                    status=CompetitionStatus.FINISHED,
-                    stage=CompetitionStage.RACE,
-                    remaining_length=348,
-                    remaining_length_unit=LengthUnit.LAPS,
-                    insert_date=datetime.utcnow().timestamp(),
-                    update_date=datetime.utcnow().timestamp(),
-                ),
-                GetCompetitionMetadata,  # expected_type
-            ),
-            (
-                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
-                2000000,  # competition_id
-                UpdateStatus(status=CompetitionStatus.FINISHED),  # update_model
-                400,  # expected_status_code
-                ErrorResponse(
-                    status_code=400,
-                    message='The competition with ID=2000000 does not exist.',
-                    extra_data={},
-                ),
-                ErrorResponse,  # expected_type
-            ),
-            (
-                None,  # headers
-                2,  # competition_id
-                UpdateStatus(status=CompetitionStatus.FINISHED),  # update_model
-                403,  # expected_status_code
-                ErrorResponse(
-                    message='Invalid authentication.',
-                    status_code=403,
-                ),
-                ErrorResponse,  # expected_type
-            ),
-        ])
-    def update_competition_metadata_status(
-            self,
-            headers: Optional[Dict[str, str]],
-            competition_id: int,
-            update_model: BaseModel,
-            expected_status_code: int,
-            expected_response: BaseModel,
-            expected_type: Type[BaseModel]) -> None:
-        """Test PUT /v1/c/<competition_id>/metadata/status."""
-        response: Response = self.API.put(
-            f'/v1/c/{competition_id}/metadata/status',
+            url,
             json=update_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response

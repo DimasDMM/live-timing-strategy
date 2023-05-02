@@ -4,7 +4,8 @@ from typing import Annotated, List, Union
 from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
 from ltsapi.managers.competitions import (
-    CompetitionsIndexManager,
+    TypeUpdateMetadata,
+    CIndexManager,
     CMetadataManager,
     CSettingsManager,
 )
@@ -35,7 +36,7 @@ async def get_all_competitions() -> List[GetCompetition]:
     """Get all competitions in the database."""
     db = _build_db_connection(_logger)
     with db:
-        manager = CompetitionsIndexManager(db=db, logger=_logger)
+        manager = CIndexManager(db=db, logger=_logger)
         return manager.get_all()
 
 
@@ -47,7 +48,7 @@ async def add_competition(competition: AddCompetition) -> GetCompetition:
     db = _build_db_connection(_logger)
     with db:
         db.start_transaction()
-        manager = CompetitionsIndexManager(db=db, logger=_logger)
+        manager = CIndexManager(db=db, logger=_logger)
         try:
             item_id = manager.add_one(competition, commit=True)
         except ApiError as e:
@@ -69,7 +70,7 @@ async def get_competition_by_id(
     """Get a competition from the database by its ID."""
     db = _build_db_connection(_logger)
     with db:
-        manager = CompetitionsIndexManager(db=db, logger=_logger)
+        manager = CIndexManager(db=db, logger=_logger)
         item = manager.get_by_id(competition_id)
         return Empty() if item is None else item
 
@@ -96,15 +97,7 @@ async def update_competition_metadata(
     metadata: UpdateCompetitionMetadata,
 ) -> GetCompetitionMetadata:
     """Update the metadata of a competition."""
-    db = _build_db_connection(_logger)
-    with db:
-        db.start_transaction()
-        manager = CMetadataManager(db=db, logger=_logger)
-        manager.update_by_id(metadata, competition_id=competition_id)
-        item = manager.get_current_by_id(competition_id)
-        if item is None:
-            raise ApiError('No data was inserted or updated.')
-        return item
+    return _update_competition_metadata(competition_id, metadata)
 
 
 @router.put(
@@ -115,15 +108,7 @@ async def update_competition_metadata_remaining_length(
     metadata: UpdateRemainingLength,
 ) -> GetCompetitionMetadata:
     """Update the metadata (remaining length) of a competition."""
-    db = _build_db_connection(_logger)
-    with db:
-        db.start_transaction()
-        manager = CMetadataManager(db=db, logger=_logger)
-        manager.update_by_id(metadata, competition_id=competition_id)
-        item = manager.get_current_by_id(competition_id)
-        if item is None:
-            raise ApiError('No data was inserted or updated.')
-        return item
+    return _update_competition_metadata(competition_id, metadata)
 
 
 @router.put(
@@ -134,15 +119,7 @@ async def update_competition_metadata_stage(
     metadata: UpdateStage,
 ) -> GetCompetitionMetadata:
     """Update the metadata (stage) of a competition."""
-    db = _build_db_connection(_logger)
-    with db:
-        db.start_transaction()
-        manager = CMetadataManager(db=db, logger=_logger)
-        manager.update_by_id(metadata, competition_id=competition_id)
-        item = manager.get_current_by_id(competition_id)
-        if item is None:
-            raise ApiError('No data was inserted or updated.')
-        return item
+    return _update_competition_metadata(competition_id, metadata)
 
 
 @router.put(
@@ -153,6 +130,13 @@ async def update_competition_metadata_status(
     metadata: UpdateStatus,
 ) -> GetCompetitionMetadata:
     """Update the metadata (status) of a competition."""
+    return _update_competition_metadata(competition_id, metadata)
+
+
+def _update_competition_metadata(
+        competition_id: int,
+        metadata: TypeUpdateMetadata) -> GetCompetitionMetadata:
+    """Update the metadata (any field) of a competition."""
     db = _build_db_connection(_logger)
     with db:
         db.start_transaction()
@@ -220,6 +204,6 @@ async def get_competition_by_code(
     """Get a competition from the database by its code."""
     db = _build_db_connection(_logger)
     with db:
-        manager = CompetitionsIndexManager(db=db, logger=_logger)
+        manager = CIndexManager(db=db, logger=_logger)
         item = manager.get_by_code(competition_code)
         return Empty() if item is None else item
