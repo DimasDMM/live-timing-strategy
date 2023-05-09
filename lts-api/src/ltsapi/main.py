@@ -14,6 +14,7 @@ from ltsapi.router.auth import router as router_auth
 from ltsapi.router.competitions import router as router_competitions
 from ltsapi.router.misc import router as router_misc
 from ltsapi.router.participants import router as router_participants
+from ltsapi.router.pits import router as router_pits
 from ltsapi.router.timing import router as router_timing
 
 # Name of the header that contains the auth token
@@ -124,4 +125,5 @@ app.include_router(router_auth)
 app.include_router(router_competitions)
 app.include_router(router_misc)
 app.include_router(router_participants)
+app.include_router(router_pits)
 app.include_router(router_timing)

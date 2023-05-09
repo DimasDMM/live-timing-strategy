@@ -67,7 +67,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.post(
             '/v1/auth',
             json=add_model.dict())
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)

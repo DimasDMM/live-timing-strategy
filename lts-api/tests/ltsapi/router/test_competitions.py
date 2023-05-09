@@ -113,7 +113,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             '/v1/c',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -221,7 +221,7 @@ class TestCompetitionsRouter(DatabaseTest):
             '/v1/c',
             json=add_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -281,7 +281,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -335,7 +335,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/metadata',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -461,7 +461,7 @@ class TestCompetitionsRouter(DatabaseTest):
             url,
             json=update_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -533,7 +533,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/metadata/history',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -596,7 +596,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/settings',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -674,7 +674,7 @@ class TestCompetitionsRouter(DatabaseTest):
             f'/v1/c/{competition_id}/settings',
             json=update_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -743,7 +743,7 @@ class TestCompetitionsRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/filter/code/{competition_code}',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)

@@ -92,7 +92,6 @@ docker build --no-cache --tag lts-api .
 Run it:
 ```sh
 docker run \
-  --rm \
   --env-file .env.indocker \
   --name lts-api \
   --network lts-network \

@@ -239,9 +239,12 @@ class TimingManager:
         history table.
 
         Params:
-            timing (UpdateTiming | ...): New timing data of the
-                competition ('None' is ignored).
+            timing (UpdateTiming | ...): New timing data of the competition.
             competition_id (int): ID of the competition.
+            team_id (int | None): If given, the timing should exist in
+                the team.
+            driver_id (int | None): If given, the timing should exist in
+                the driver.
             commit (bool): Commit transaction.
         """
         previous_model = self.get_current_single_by_id(

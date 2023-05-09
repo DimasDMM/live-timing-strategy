@@ -93,7 +93,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/teams',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -180,7 +180,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/teams',
             json=add_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -241,7 +241,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/teams/{team_id}',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -340,7 +340,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/teams/{team_id}',
             json=add_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -409,7 +409,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/teams/filter/code/{participant_code}',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -495,7 +495,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/teams/{team_id}/drivers',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -606,7 +606,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/teams/{team_id}/drivers',
             json=add_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -692,7 +692,7 @@ class TestMiscRouter(DatabaseTest):
         url = (f'/v1/c/{competition_id}/teams/{team_id}'
                f'/drivers/filter/name/{driver_name}')
         response: Response = self.API.get(url, headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -790,7 +790,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/drivers',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
@@ -880,7 +880,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/drivers',
             json=add_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -952,7 +952,7 @@ class TestMiscRouter(DatabaseTest):
         response: Response = self.API.get(
             f'/v1/c/{competition_id}/drivers/{driver_id}',
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -1054,7 +1054,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/drivers/{driver_id}',
             json=update_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -1175,7 +1175,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/drivers/{driver_id}/partial_driving_time',
             json=update_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
@@ -1261,7 +1261,7 @@ class TestMiscRouter(DatabaseTest):
             f'/v1/c/{competition_id}/drivers/{driver_id}/total_driving_time',
             json=update_model.dict(),
             headers=headers)
-        assert response.status_code == expected_status_code, response
+        assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
         response_dict = response_model.dict(exclude=self.EXCLUDE)
