@@ -3,14 +3,24 @@ from typing import Annotated, List, Union
 
 from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
-from ltsapi.managers.pits import PitsInManager, TypeUpdatePitIn
+from ltsapi.managers.pits import (
+    PitsInManager,
+    PitsOutManager,
+    TypeUpdatePitIn,
+    TypeUpdatePitOut,
+)
 from ltsapi.models.pits import (
     AddPitIn,
+    AddPitOut,
     GetPitIn,
+    GetPitOut,
     UpdatePitIn,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
+    UpdatePitOut,
+    UpdatePitOutFixedKartStatus,
+    UpdatePitOutKartStatus,
 )
 from ltsapi.models.responses import Empty
 from ltsapi.router import _build_db_connection
@@ -52,7 +62,7 @@ async def get_pit_in_by_id(
 @router.put(
         path='/c/{competition_id}/pits/in/{pit_in_id}',  # noqa: FS003
         summary='Update a pit-in by its ID')
-async def update_pit_in_(
+async def update_pit_in(
     competition_id: Annotated[int, Path(description='ID of the competition')],
     pit_in_id: Annotated[int, Path(description='ID of the pit-in')],
     pit_in: UpdatePitIn,
@@ -149,4 +159,123 @@ async def get_pits_in_by_team(
     db = _build_db_connection(_logger)
     with db:
         manager = PitsInManager(db=db, logger=_logger)
+        return manager.get_by_team_id(competition_id, team_id)
+
+
+@router.get(
+        path='/c/{competition_id}/pits/out',  # noqa: FS003
+        summary='Get all the pits-in in a competition')
+async def get_pits_out_by_competition(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+) -> List[GetPitOut]:
+    """Get all the pits-in in a competition."""
+    db = _build_db_connection(_logger)
+    with db:
+        manager = PitsOutManager(db=db, logger=_logger)
+        return manager.get_by_competition_id(competition_id)
+
+
+@router.get(
+        path='/c/{competition_id}/pits/out/{pit_out_id}',  # noqa: FS003
+        summary='Get a pit-out by its ID')
+async def get_pit_out_by_id(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out_id: Annotated[int, Path(description='ID of the pit-out')],
+) -> Union[GetPitOut, Empty]:
+    """Get a pit-out by its ID."""
+    db = _build_db_connection(_logger)
+    with db:
+        manager = PitsOutManager(db=db, logger=_logger)
+        item = manager.get_by_id(pit_out_id, competition_id=competition_id)
+        return Empty() if item is None else item
+
+
+@router.put(
+        path='/c/{competition_id}/pits/out/{pit_out_id}',  # noqa: FS003
+        summary='Update a pit-out by its ID')
+async def update_pit_out(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out_id: Annotated[int, Path(description='ID of the pit-out')],
+    pit_out: UpdatePitOut,
+) -> GetPitOut:
+    """Update a pit-out by its ID."""
+    return _update_pit_out_by_id(competition_id, pit_out_id, pit_out)
+
+
+@router.put(
+        path='/c/{competition_id}/pits/out/{pit_out_id}/kart_status',  # noqa
+        summary='Update a pit-out (kart status) by its ID')
+async def update_pit_out_kart_status(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out_id: Annotated[int, Path(description='ID of the pit-out')],
+    pit_out: UpdatePitOutKartStatus,
+) -> GetPitOut:
+    """Update a pit-out (kart status) by its ID."""
+    return _update_pit_out_by_id(competition_id, pit_out_id, pit_out)
+
+
+@router.put(
+        path='/c/{competition_id}/pits/out/{pit_out_id}/fixed_kart_status',  # noqa
+        summary='Update a pit-out (fixed kart status) by its ID')
+async def update_pit_out_fixed_kart_status(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out_id: Annotated[int, Path(description='ID of the pit-out')],
+    pit_out: UpdatePitOutFixedKartStatus,
+) -> GetPitOut:
+    """Update a pit-out (fixed kart status) by its ID."""
+    return _update_pit_out_by_id(competition_id, pit_out_id, pit_out)
+
+
+def _update_pit_out_by_id(
+        competition_id: int,
+        pit_out_id: int,
+        pit_out: TypeUpdatePitOut) -> GetPitOut:
+    """Update a pit-out (any field) by its ID."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = PitsOutManager(db=db, logger=_logger)
+        manager.update_by_id(
+            pit_out, pit_out_id=pit_out_id, competition_id=competition_id)
+        item = manager.get_by_id(pit_out_id, competition_id=competition_id)
+        if item is None:
+            raise ApiError('No data was inserted or updated.')
+        return item
+
+
+@router.post(
+        path='/c/{competition_id}/pits/out',  # noqa: FS003
+        summary='Add a new pit-out')
+async def add_pit_out(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out: AddPitOut,
+) -> GetPitOut:
+    """Add a new pit-out."""
+    db = _build_db_connection(_logger)
+    with db:
+        db.start_transaction()
+        manager = PitsOutManager(db=db, logger=_logger)
+        try:
+            item_id = manager.add_one(pit_out, competition_id, commit=True)
+        except ApiError as e:
+            raise e
+        except Exception:
+            raise ApiError('No data was inserted or updated.')
+        item = manager.get_by_id(item_id, competition_id=competition_id)
+        if item is None:
+            raise ApiError('It was not possible to locate the new data.')
+        return item
+
+
+@router.get(
+        path='/c/{competition_id}/pits/out/filter/team/{team_id}',  # noqa
+        summary='Get the pits-in of a team')
+async def get_pits_out_by_team(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+) -> List[GetPitOut]:
+    """Get the pits-in of a team."""
+    db = _build_db_connection(_logger)
+    with db:
+        manager = PitsOutManager(db=db, logger=_logger)
         return manager.get_by_team_id(competition_id, team_id)

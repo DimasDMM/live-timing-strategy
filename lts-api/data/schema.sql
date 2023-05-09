@@ -1,6 +1,8 @@
--- Optionally, we may run these two commands to create the database:
--- > CREATE DATABASE	IF NOT EXISTS `live-timing`;
--- > USE `live-timing`;
+-- Optionally, we may run this command to re-build the database:
+-- DROP DATABASE IF EXISTS `live-timing`;
+
+CREATE DATABASE	IF NOT EXISTS `live-timing`;
+USE `live-timing`;
 
 SET GLOBAL time_zone = 'Europe/Madrid';
 
@@ -168,12 +170,12 @@ CREATE TABLE `timing_pits_in` (
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `timing_pits_in__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_pits_in__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
+  CONSTRAINT `timing_pits_in__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`),
+  CONSTRAINT `timing_pits_in__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `participants_drivers` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timing_pits_out` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `pit_in_id` INT UNSIGNED NOT NULL,
   `competition_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NULL,
   `driver_id` INT UNSIGNED NULL,
@@ -181,9 +183,21 @@ CREATE TABLE `timing_pits_out` (
   `fixed_kart_status` ENUM('good', 'medium', 'bad') NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `timing_pits_out__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`),
   CONSTRAINT `timing_pits_out__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `timing_pits_out__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`)
+  CONSTRAINT `timing_pits_out__team_id` FOREIGN KEY (`team_id`) REFERENCES `participants_teams` (`id`),
+  CONSTRAINT `timing_pits_out__driver_id` FOREIGN KEY (`driver_id`) REFERENCES `participants_drivers` (`id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `timing_pits_in_out` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `pit_in_id` INT UNSIGNED NOT NULL,
+  `pit_out_id` INT UNSIGNED NOT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT `timing_pits_in_out__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`),
+  CONSTRAINT `timing_pits_in_out__pit_out_id` FOREIGN KEY (`pit_out_id`) REFERENCES `timing_pits_out` (`id`),
+  UNIQUE KEY `pit_in_id`(`pit_in_id`),
+  UNIQUE KEY `pit_out_id`(`pit_out_id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `strategy_karts_probs` (

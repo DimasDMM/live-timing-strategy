@@ -11,19 +11,31 @@ from ltsapi.managers.utils.statements import (
 )
 from ltsapi.models.pits import (
     AddPitIn,
+    AddPitOut,
     GetPitIn,
+    GetPitOut,
     UpdatePitIn,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
+    UpdatePitOut,
+    UpdatePitOutFixedKartStatus,
+    UpdatePitOutKartStatus,
 )
 
-# Alias of all fields that we may update in timing
+# Alias of all fields that we may update in a pit-in
 TypeUpdatePitIn = Union[
     UpdatePitIn,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
+]
+
+# Alias of all fields that we may update in pit-out
+TypeUpdatePitOut = Union[
+    UpdatePitOut,
+    UpdatePitOutFixedKartStatus,
+    UpdatePitOutKartStatus,
 ]
 
 
@@ -183,4 +195,159 @@ class PitsInManager:
             fixed_kart_status=row['pin_fixed_kart_status'],
             insert_date=row['pin_insert_date'],
             update_date=row['pin_update_date'],
+        )
+
+
+class PitsOutManager:
+    """Manage the pits-out."""
+
+    BASE_QUERY = '''
+        SELECT
+            pout.id AS pout_id,
+            pout.competition_id AS pout_competition_id,
+            pout.team_id AS pout_team_id,
+            pout.driver_id AS pout_driver_id,
+            pout.kart_status AS pout_kart_status,
+            pout.fixed_kart_status AS pout_fixed_kart_status,
+            pout.insert_date AS pout_insert_date,
+            pout.update_date AS pout_update_date
+        FROM timing_pits_out AS pout'''
+    TABLE_NAME = 'timing_pits_out'
+
+    def __init__(self, db: DBContext, logger: Logger) -> None:
+        """Construct."""
+        self._db = db
+        self._logger = logger
+
+    def get_by_competition_id(self, competition_id: int) -> List[GetPitOut]:
+        """
+        Get all pit-out records in a competition.
+
+        Params:
+            competition_id (int): ID of the competition.
+
+        Returns:
+            List[GetPitOut]: List of pits-out in the competition.
+        """
+        query = f'{self.BASE_QUERY} WHERE pout.competition_id = %s'
+        models: List[GetPitOut] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_pit_out, query, params=(competition_id,))
+        return models
+
+    def get_by_id(
+            self,
+            pit_out_id: int,
+            competition_id: Optional[int] = None) -> Optional[GetPitOut]:
+        """
+        Retrieve a pit-out by its ID.
+
+        Params:
+            pit_out_id (int): ID of the pit-out.
+            competition_id (int | None): If given, the pit-out must exist in the
+                competition.
+
+        Returns:
+            GetPitOut | None: If the pit-out exists, returns
+                its instance.
+        """
+        query = f'{self.BASE_QUERY} WHERE pout.id = %s'
+        params = [pit_out_id]
+        if competition_id is not None:
+            query = f'{query} AND pout.competition_id = %s'
+            params.append(competition_id)
+
+        model: Optional[GetPitOut] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_pit_out, query, params=tuple(params))
+        return model
+
+    def get_by_team_id(
+            self,
+            competition_id: int,
+            team_id: int) -> List[GetPitOut]:
+        """
+        Retrieve a pit-out by its ID.
+
+        Params:
+            competition_id (int): ID of the competition.
+            team_id (int): ID of the team.
+            competition_id (int | None): If given, the pit-out must exist in the
+                competition.
+
+        Returns:
+            List[GetPitOut]: List of pits-out in the competition and team.
+        """
+        query = f'''
+            {self.BASE_QUERY}
+            WHERE pout.competition_id = %s AND pout.team_id = %s'''
+        params = [competition_id, team_id]
+        models: List[GetPitOut] = fetchmany_models(  # type: ignore
+            self._db, self._raw_to_pit_out, query, params=tuple(params))
+        return models
+
+    def add_one(
+            self,
+            pit_out: AddPitOut,
+            competition_id: int,
+            commit: bool = True) -> int:
+        """
+        Add a new pit-out.
+
+        Params:
+            pit_out (AddPitOut): Data of the pit-out.
+            competition_id (int): ID of the competition.
+            commit (bool): Commit transaction.
+
+        Returns:
+            int: ID of inserted model.
+        """
+        model_data = pit_out.dict()
+        model_data['competition_id'] = competition_id
+
+        item_id = insert_model(
+            self._db, self.TABLE_NAME, model_data, commit=commit)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
+        return item_id
+
+    def update_by_id(
+            self,
+            pit_out: TypeUpdatePitOut,
+            pit_out_id: int,
+            competition_id: Optional[int] = None,
+            commit: bool = True) -> None:
+        """
+        Update the data of a pit-out (it must already exist).
+
+        Params:
+            pit_out (UpdatePitOut | ...): New data of the pit-out.
+            pit_out_id (int): ID of the pit-out.
+            competition_id (int | None): If given, the pit-out must exist
+                in the competition.
+            commit (bool): Commit transaction.
+        """
+        previous_model = self.get_by_id(
+            pit_out_id=pit_out_id, competition_id=competition_id)
+        if previous_model is None:
+            raise ApiError(
+                message='The requested pit-out data does not exist.',
+                status_code=400)
+        update_model(
+            self._db,
+            self.TABLE_NAME,
+            pit_out.dict(),
+            key_name='id',
+            key_value=pit_out_id,
+            commit=commit)
+
+    def _raw_to_pit_out(self, row: dict) -> GetPitOut:
+        """Build an instance of GetPitOut."""
+        return GetPitOut(
+            id=row['pout_id'],
+            competition_id=row['pout_competition_id'],
+            team_id=row['pout_team_id'],
+            driver_id=row['pout_driver_id'],
+            kart_status=row['pout_kart_status'],
+            fixed_kart_status=row['pout_fixed_kart_status'],
+            insert_date=row['pout_insert_date'],
+            update_date=row['pout_update_date'],
         )
