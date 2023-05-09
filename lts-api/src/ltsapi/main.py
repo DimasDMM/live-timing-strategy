@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 import os
@@ -127,3 +128,11 @@ app.include_router(router_misc)
 app.include_router(router_participants)
 app.include_router(router_pits)
 app.include_router(router_timing)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
