@@ -24,3 +24,10 @@ class UpdateAuth(BaseModel):
     bearer: Optional[str]
     name: str
     role: AuthRole
+
+
+class ValidateAuth(BaseModel):
+    """Validate the auth data."""
+
+    name: str
+    role: AuthRole

@@ -10,9 +10,10 @@ from ltsapi.models.auth import (
     AuthRole,
     GetAuth,
     SendAuthKey,
+    ValidateAuth,
 )
 from ltsapi.models.responses import ErrorResponse
-from tests.fixtures import AUTH_KEY_BATCH
+from tests.fixtures import AUTH_BEARER, AUTH_KEY_BATCH
 from tests.helpers import DatabaseTest
 
 
@@ -79,3 +80,52 @@ class TestCompetitionsRouter(DatabaseTest):
         if isinstance(response_model, GetAuth):
             assert (response_model.bearer is not None
                     and response_model.bearer != '')
+
+    @pytest.mark.parametrize(
+        'bearer, expected_status_code, expected_response, expected_type',
+        [
+            (
+                AUTH_BEARER,  # bearer
+                200,  # expected_status_code
+                ValidateAuth(  # expected_response
+                    name='Test batch with bearer',
+                    role=AuthRole.BATCH,
+                ),
+                ValidateAuth,  # expected_type
+            ),
+            (
+                'invalid-bearer-here',  # bearer
+                403,  # expected_status_code
+                ErrorResponse(  # expected_response
+                    status_code=403,
+                    message='Invalid authentication.',
+                    extra_data={},
+                ),
+                ErrorResponse,  # expected_type
+            ),
+            (
+                '',  # bearer
+                403,  # expected_status_code
+                ErrorResponse(  # expected_response
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_validate_auth(
+            self,
+            bearer: str,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """Test POST /v1/auth/validate."""
+        response: Response = self.API.get(
+            '/v1/auth/validate',
+            headers={'Authorization': f'Bearer {bearer}'})
+        assert response.status_code == expected_status_code, response.content
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)

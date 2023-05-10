@@ -12,7 +12,7 @@ from ltsapi.managers.utils.statements import (
     fetchone_model,
 )
 from ltsapi.models.enum import AuthRole
-from ltsapi.models.auth import GetAuth, UpdateAuth
+from ltsapi.models.auth import GetAuth, UpdateAuth, ValidateAuth
 
 
 class AuthManager:
@@ -47,7 +47,7 @@ class AuthManager:
             self._db, self._raw_to_auth, query, params=(key,))
         return model
 
-    def get_by_bearer(self, bearer: str) -> Optional[GetAuth]:
+    def get_by_bearer(self, bearer: str) -> Optional[ValidateAuth]:
         """
         Retrieve the auth data.
 
@@ -55,7 +55,7 @@ class AuthManager:
             bearer (str): Bearer token.
 
         Returns:
-            GetAuth | None: Auth information.
+            ValidateAuth | None: Auth information.
         """
         if not re.match('^Bearer .+', bearer):
             return None
@@ -64,7 +64,7 @@ class AuthManager:
 
         query = f'{self.BASE_QUERY} WHERE api_auth.`bearer` = %s'
         model: Optional[GetAuth] = fetchone_model(  # type: ignore
-            self._db, self._raw_to_auth, query, params=(bearer,))
+            self._db, self._raw_to_validation, query, params=(bearer,))
         return model
 
     def refresh_bearer(
@@ -115,6 +115,13 @@ class AuthManager:
         """Build an instance of GetAuth."""
         return GetAuth(
             bearer=row['auth_bearer'],
+            name=row['auth_name'],
+            role=row['auth_role'],
+        )
+
+    def _raw_to_validation(self, row: dict) -> ValidateAuth:
+        """Build an instance of ValidateAuth."""
+        return ValidateAuth(
             name=row['auth_name'],
             role=row['auth_role'],
         )
