@@ -24,14 +24,19 @@ setup. For further details:
 Before running the scripts, we need to install a few things in our system:
 - Docker: https://docs.docker.com/desktop
 - Minikube: https://minikube.sigs.k8s.io/docs/images/start/
+- Kafka CLI: https://kafka.apache.org/downloads
 
 > After installing Docker and Minikube, it may require to restart the computer.
 
 ### Kubernetes
 
-Prepare the local kubernetes cluster with these commands:
+Start Minikube:
 ```sh
 minikube start
+```
+
+Prepare the kubernetes namespace with this command:
+```sh
 kubectl apply -f ./k8s/00-namespace.yaml
 ```
 
@@ -56,6 +61,23 @@ Optionally, we may run a Kafka UI with Kouncil (use `admin` as user and pass):
 ```sh
 kubectl apply -f ./k8s/kafka/02-kouncil.yaml
 kubectl port-forward -n live-timing service/kouncil-service 8080:8080
+```
+
+#### Setup topics
+
+Topic for notifications:
+```sh
+kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --topic notifications
+```
+
+Topic for raw data:
+```sh
+kafka-topics --create --bootstrap-server localhost:9092 --partitions 5 --topic raw-messages
+```
+
+Topic for notifications:
+```sh
+kafka-topics --create --bootstrap-server localhost:9092 --partitions 5 --topic standard
 ```
 
 ### MySQL
