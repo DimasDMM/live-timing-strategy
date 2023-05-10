@@ -9,7 +9,7 @@ set +o allexport
 
 # Fix $USER variable if needed (Git Bash Windows)
 if [[ "$OSTYPE" == "msys" ]]; then
-	export USER="$(whoami)"
+	export USER="$(whoami | tr '[:upper:]' '[:lower:]')"
 fi
 
 # Add project variable
