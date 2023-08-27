@@ -94,6 +94,9 @@ class UpdateDriverHandler(ApiHandler):
             )
             old_driver.name = current_driver.name
             old_driver.number = current_driver.number
+        else:
+            # The driver already exists, so do nothing
+            return None
 
         return self._create_notification(current_driver)
 
@@ -174,6 +177,9 @@ class UpdateTeamHandler(ApiHandler):
             )
             old_team.name = current_team.name
             old_team.number = current_team.number
+        else:
+            # The team already exists, so do nothing
+            return None
 
         return self._create_notification(current_team)
 

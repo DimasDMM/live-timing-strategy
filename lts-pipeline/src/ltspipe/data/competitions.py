@@ -188,6 +188,54 @@ class CompetitionInfo(BaseModel):
     timing: Dict[str, ParticipantTiming] = Field(default_factory=dict)
 
 
+class CompetitionMetadata(DictModel):
+    """Metadata of a competition."""
+
+    stage: CompetitionStage
+    status: CompetitionStatus
+    remaining_length: DiffLap
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        # Two ways of building the diff time: it is already a dict or we have to
+        # put the parts together
+        if ('remaining_length' in raw
+                and isinstance(raw['remaining_length'], dict)):
+            DictModel._validate_base_dict(cls, raw)  # type: ignore
+            remaining_length: dict = raw.get('remaining_length')  # type: ignore
+        else:
+            remaining_length_unit = raw.get('remaining_length_unit')
+            del raw['remaining_length_unit']
+            DictModel._validate_base_dict(cls, raw)  # type: ignore
+            remaining_length = {
+                'value': raw.get('remaining_length'),
+                'unit': remaining_length_unit,
+            }
+
+        return cls.construct(
+            stage=CompetitionStage(raw.get('stage')),
+            status=CompetitionStatus(raw.get('status')),
+            remaining_length=DiffLap.from_dict(remaining_length),
+        )
+
+
+class UpdateCompetitionMetadataStatus(DictModel):
+    """Status of a competition metadata."""
+
+    competition_code: str
+    status: CompetitionStatus
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            status=CompetitionStatus(raw.get('status')),
+        )
+
+
 class InitialData(DictModel):
     """Details about the initial data of a competition."""
 
@@ -223,7 +271,7 @@ class InitialData(DictModel):
 
 
 class UpdateDriver(DictModel):
-    """Info update of a driver."""
+    """Info to update of a driver data."""
 
     id: Optional[int]
     competition_code: str
@@ -247,7 +295,7 @@ class UpdateDriver(DictModel):
 
 
 class UpdateTeam(DictModel):
-    """Info update of a team."""
+    """Info to update of a team data."""
 
     id: Optional[int]
     competition_code: str

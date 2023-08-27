@@ -60,6 +60,7 @@ graph TD;
   D --> E[Create notification: 'init-ongoing']
   E --> L[Kafka producer: notifications]
   D --> G[Kafka producer: raw-messages]
+  C -- No --> G
 
   H[Kafka consumer: notifications] --> I[Is 'init-finished'?]
   I -- Yes --> J[Set wait_init as false]

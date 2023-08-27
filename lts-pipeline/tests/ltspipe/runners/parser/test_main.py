@@ -15,6 +15,7 @@ from ltspipe.data.competitions import (
     Participant,
     UpdateDriver,
     UpdateTeam,
+    UpdateCompetitionMetadataStatus,
 )
 from ltspipe.data.enum import (
     FlagName,
@@ -353,6 +354,66 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 participant_code='r5625',
                                 name='CKM 1',
                                 number=41,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with the competition status.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'status_finished.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {},  # in_competitions
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'status_finished.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
+                            data=UpdateCompetitionMetadataStatus(
+                                competition_code=TEST_COMPETITION_CODE,
+                                status=CompetitionStatus.FINISHED,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,

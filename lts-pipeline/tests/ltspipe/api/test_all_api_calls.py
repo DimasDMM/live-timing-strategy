@@ -1,7 +1,11 @@
 from typing import List
 
 from ltspipe.api.auth import refresh_bearer
-from ltspipe.api.competitions_base import build_competition_info
+from ltspipe.api.competitions_base import (
+    build_competition_info,
+    get_competition_metadata,
+    update_competition_metadata_status,
+)
 from ltspipe.api.participants import (
     add_driver,
     add_team,
@@ -17,6 +21,8 @@ from ltspipe.api.participants import (
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import (
     CompetitionInfo,
+    UpdateCompetitionMetadataStatus,
+    CompetitionStatus,
     DiffLap,
     Driver,
     Participant,
@@ -121,6 +127,17 @@ class TestAllApiCalls(DatabaseTest):
         self._test_update_teams_and_drivers(
             info, auth_data, retrieved_drivers, retrieved_teams)
 
+        # Modify competition metadata
+        self._test_update_competition_metadata_status(
+            REAL_API_LTS,
+            auth_data=auth_data,
+            competition_id=competition_id,
+            metadata=UpdateCompetitionMetadataStatus(
+                competition_code=TEST_COMPETITION_CODE,
+                status=CompetitionStatus.ONGOING,
+            ),
+        )
+
     def _test_add_teams_and_drivers(
             self,
             info: CompetitionInfo,
@@ -182,6 +199,28 @@ class TestAllApiCalls(DatabaseTest):
             participant_code=expected_team.participant_code,
         )
         assert found_team == expected_team
+
+    def _test_update_competition_metadata_status(
+            self,
+            api_lts: str,
+            auth_data: AuthData,
+            competition_id: int,
+            metadata: UpdateCompetitionMetadataStatus) -> None:
+        """
+        Update competition metadata and validate that the data was modified.
+        """
+        update_competition_metadata_status(
+            api_url=REAL_API_LTS,
+            bearer=auth_data.bearer,
+            competition_id=competition_id,
+            status=metadata.status,
+        )
+        competition_metadata = get_competition_metadata(
+            api_url=api_lts,
+            bearer=auth_data.bearer,
+            competition_id=competition_id)
+        assert competition_metadata is not None
+        assert competition_metadata.status == metadata.status
 
     def _update_single_driver(
             self,
