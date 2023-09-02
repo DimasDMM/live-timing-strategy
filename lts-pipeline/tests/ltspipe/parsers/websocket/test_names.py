@@ -71,6 +71,38 @@ class TestDriverNameParser:
                         id=1,
                         competition_code=TEST_COMPETITION_CODE,
                         parser_settings=PARSERS_SETTINGS,
+                        drivers=[],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='CKM 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                load_raw_message('display_driver_name_with_driving_time.txt'),
+                [  # expected_actions
+                    Action(
+                        type=ActionType.UPDATE_DRIVER,
+                        data=UpdateDriver(
+                            id=None,
+                            competition_code=TEST_COMPETITION_CODE,
+                            participant_code='r5625',
+                            name='DIMAS MUNOZ',
+                            number=41,
+                            team_id=1,
+                        ),
+                    ),
+                ],
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
                         drivers=[
                             Driver(
                                 id=3,
@@ -93,6 +125,48 @@ class TestDriverNameParser:
                     ),
                 },
                 load_raw_message('display_driver_name.txt'),  # in_data
+                [  # expected_actions
+                    Action(
+                        type=ActionType.UPDATE_DRIVER,
+                        data=UpdateDriver(
+                            id=3,
+                            competition_code=TEST_COMPETITION_CODE,
+                            participant_code='r5625',
+                            name='DIMAS MUNOZ',
+                            number=41,
+                            team_id=1,
+                        ),
+                    ),
+                ],
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
+                        drivers=[
+                            Driver(
+                                id=3,
+                                participant_code='r5625',
+                                name='DIMAS MUNOZ',
+                                number=41,
+                                team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
+                            ),
+                        ],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='CKM 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                load_raw_message('display_driver_name_with_driving_time.txt'),
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_DRIVER,

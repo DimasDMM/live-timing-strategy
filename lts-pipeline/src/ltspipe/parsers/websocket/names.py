@@ -56,7 +56,16 @@ def _validate_column_name(
 
 
 class DriverNameParser(Parser):
-    """Parse the name of a driver."""
+    """
+    Parse the name of a driver and, optionally, total driving time.
+
+    Sample messages:
+    > r5625c5|drteam|NOMBRE
+    > r5625c5|drteam|NOMBRE [1:08]
+
+    Note: If the total driving time is provided within the name, it is ignored
+    by this parser.
+    """
 
     def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
         """Construct."""
@@ -94,7 +103,8 @@ class DriverNameParser(Parser):
             data: str) -> Optional[UpdateDriver]:
         """Parse driver name."""
         data = data.strip()
-        matches = re.match(r'^(.+?)(c\d+)\|drteam\|(.+)$', data)
+        matches = re.match(
+            r'^(.+?)(c\d+)\|drteam\|(.+?)( \[\d+:\d+\])?$', data)
         if matches is None:
             return None
 
