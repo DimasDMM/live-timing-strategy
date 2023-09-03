@@ -52,6 +52,7 @@ class TestPitsInRouter(DatabaseTest):
                         pit_time=150500,
                         kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
+                        has_pit_out=False,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -64,6 +65,7 @@ class TestPitsInRouter(DatabaseTest):
                         pit_time=151000,
                         kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
+                        has_pit_out=False,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -76,6 +78,7 @@ class TestPitsInRouter(DatabaseTest):
                         pit_time=150900,
                         kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
+                        has_pit_out=False,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -152,6 +155,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=152000,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -214,6 +218,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=150500,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -291,6 +296,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=150800,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -312,6 +318,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=150800,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -333,6 +340,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=150500,
                     kart_status=KartStatus.GOOD,
                     fixed_kart_status=None,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -354,6 +362,7 @@ class TestPitsInRouter(DatabaseTest):
                     pit_time=150500,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=KartStatus.GOOD,
+                    has_pit_out=False,
                     insert_date=datetime.utcnow().timestamp(),
                     update_date=datetime.utcnow().timestamp(),
                 ),
@@ -449,6 +458,7 @@ class TestPitsInRouter(DatabaseTest):
                         pit_time=150500,
                         kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
+                        has_pit_out=False,
                         insert_date=datetime.utcnow().timestamp(),
                         update_date=datetime.utcnow().timestamp(),
                     ),
@@ -510,6 +520,79 @@ class TestPitsInRouter(DatabaseTest):
             response_dict = response_model.dict(exclude=self.EXCLUDE)
             expected_dict = expected_response.dict(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
+
+    @pytest.mark.parametrize(
+        ('headers, competition_id, team_id, expected_status_code,'
+         'expected_response, expected_type'),
+        [
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                5,  # team_id
+                200,  # expected_status_code
+                GetPitIn(
+                    id=3,
+                    competition_id=2,
+                    team_id=5,
+                    driver_id=7,
+                    lap=3,
+                    pit_time=150900,
+                    kart_status=KartStatus.UNKNOWN,
+                    fixed_kart_status=None,
+                    has_pit_out=False,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetPitIn,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2000000,  # competition_id
+                5,  # team_id
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                2,  # competition_id
+                2000000,  # team_id
+                200,  # expected_status_code
+                Empty(),
+                Empty,  # expected_type
+            ),
+            (
+                None,  # headers
+                2,  # competition_id
+                5,  # team_id
+                403,  # expected_status_code
+                ErrorResponse(
+                    message='Invalid authentication.',
+                    status_code=403,
+                ),
+                ErrorResponse,  # expected_type
+            ),
+        ])
+    def test_get_last_pit_in_by_team(
+            self,
+            headers: Optional[Dict[str, str]],
+            competition_id: int,
+            team_id: int,
+            expected_status_code: int,
+            expected_response: BaseModel,
+            expected_type: Type[BaseModel]) -> None:
+        """
+        Test GET /v1/c/<competition_id>/pits/in/filter/team/<team_id>/last.
+        """
+        response: Response = self.API.get(
+            f'/v1/c/{competition_id}/pits/in/filter/team/{team_id}/last',
+            headers=headers)
+        assert response.status_code == expected_status_code, response.content
+
+        response_model = expected_type(**response.json())
+        response_dict = response_model.dict(exclude=self.EXCLUDE)
+
+        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
 
 
 class TestPitsOutRouter(DatabaseTest):

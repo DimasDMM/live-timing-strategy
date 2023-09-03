@@ -48,6 +48,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 150500,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
+                        'has_pit_out': False,
                     },
                     {
                         'id': 2,
@@ -58,6 +59,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 151000,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
+                        'has_pit_out': False,
                     },
                     {
                         'id': 3,
@@ -68,6 +70,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 150900,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
+                        'has_pit_out': False,
                     },
                 ],
             ),
@@ -99,6 +102,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 150500,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
             (
@@ -113,6 +117,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 150500,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
         ])
@@ -149,6 +154,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 150500,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
+                        'has_pit_out': False,
                     },
                 ],
             ),
@@ -165,6 +171,40 @@ class TestPitsInManager(DatabaseTest):
         db_items = manager.get_by_team_id(competition_id, team_id)
         dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
+
+    @pytest.mark.parametrize(
+        'competition_id, team_id, expected_item',
+        [
+            (
+                2,  # competition_id
+                5,  # team_id
+                {  # expected_item
+                    'id': 3,
+                    'competition_id': 2,
+                    'team_id': 5,
+                    'driver_id': 7,
+                    'lap': 3,
+                    'pit_time': 150900,
+                    'kart_status': KartStatus.UNKNOWN.value,
+                    'fixed_kart_status': None,
+                    'has_pit_out': False,
+                },
+            ),
+        ])
+    def test_get_last_by_team_id(
+            self,
+            competition_id: int,
+            team_id: int,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method get_by_team_id."""
+        manager = PitsInManager(db=db_context, logger=fake_logger)
+        db_item = manager.get_last_by_team_id(competition_id, team_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        assert dict_item == expected_item
 
     @pytest.mark.parametrize(
         'competition_id, model, expected_item',
@@ -188,6 +228,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': None,
                     'kart_status': KartStatus.GOOD.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
         ])
@@ -230,6 +271,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
             (
@@ -250,6 +292,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
             (
@@ -267,6 +310,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
             (
@@ -284,6 +328,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 151000,
                     'kart_status': KartStatus.GOOD.value,
                     'fixed_kart_status': None,
+                    'has_pit_out': False,
                 },
             ),
             (
@@ -301,6 +346,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 151000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': KartStatus.GOOD.value,
+                    'has_pit_out': False,
                 },
             ),
         ])

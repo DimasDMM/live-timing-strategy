@@ -65,7 +65,7 @@ class AuthManager:
         query = f'{self.BASE_QUERY} WHERE api_auth.`bearer` = %s'
         model: Optional[GetAuth] = fetchone_model(  # type: ignore
             self._db, self._raw_to_validation, query, params=(bearer,))
-        return model
+        return self._get_auth_to_validate_auth(model)
 
     def refresh_bearer(
             self, key: str, commit: bool = True) -> GetAuth:
@@ -105,6 +105,17 @@ class AuthManager:
 
         model.bearer = new_model.bearer
         return model
+
+    def _get_auth_to_validate_auth(
+            self,
+            model: Optional[GetAuth]) -> Optional[ValidateAuth]:
+        """Transform into a ValidateAuth instance."""
+        if model is None:
+            return None
+        return ValidateAuth(
+            name=model.name,
+            role=model.role,
+        )
 
     def _generate_bearer(self, key: str) -> str:
         """Generate bearer token from an API key."""

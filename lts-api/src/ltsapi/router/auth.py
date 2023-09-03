@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Header
-import re
-from typing import Annotated, Optional, Union
+from typing import Annotated
 
 from ltsapi import API_VERSION, _build_logger
 from ltsapi.exceptions import ApiError
@@ -48,7 +47,7 @@ async def do_auth(auth_key: SendAuthKey) -> GetAuth:
         path='/auth/validate',  # noqa: FS003
         summary='Validate Bearer token')
 async def validate_auth(
-    authorization: Annotated[Optional[str], Header(alias='Authorization')],
+    authorization: Annotated[str, Header(alias='Authorization')],
 ) -> ValidateAuth:
     """Do authentication in the API REST."""
     db = _build_db_connection(_logger)

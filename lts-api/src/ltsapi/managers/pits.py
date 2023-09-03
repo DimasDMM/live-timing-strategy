@@ -52,9 +52,11 @@ class PitsInManager:
             pin.pit_time AS pin_pit_time,
             pin.kart_status AS pin_kart_status,
             pin.fixed_kart_status AS pin_fixed_kart_status,
+            pinout.pit_out_id IS NOT NULL AS has_pit_out,
             pin.insert_date AS pin_insert_date,
             pin.update_date AS pin_update_date
-        FROM timing_pits_in AS pin'''
+        FROM timing_pits_in AS pin
+        LEFT JOIN timing_pits_in_out AS pinout ON pinout.pit_in_id = pin.id'''
     TABLE_NAME = 'timing_pits_in'
 
     def __init__(self, db: DBContext, logger: Logger) -> None:
@@ -108,13 +110,11 @@ class PitsInManager:
             competition_id: int,
             team_id: int) -> List[GetPitIn]:
         """
-        Retrieve a pit-in by its ID.
+        Retrieve the pits-in of a team.
 
         Params:
             competition_id (int): ID of the competition.
             team_id (int): ID of the team.
-            competition_id (int | None): If given, the pit-in must exist in the
-                competition.
 
         Returns:
             List[GetPitIn]: List of pits-in in the competition and team.
@@ -126,6 +126,30 @@ class PitsInManager:
         models: List[GetPitIn] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_pit_in, query, params=tuple(params))
         return models
+
+    def get_last_by_team_id(
+            self,
+            competition_id: int,
+            team_id: int) -> Optional[GetPitIn]:
+        """
+        Retrieve the last pit-in of a team.
+
+        Params:
+            competition_id (int): ID of the competition.
+            team_id (int): ID of the team.
+
+        Returns:
+            GetPitIn | None: Last pit-in in the competition of a team.
+        """
+        query = f'''
+            {self.BASE_QUERY}
+            WHERE pin.competition_id = %s AND pin.team_id = %s
+            ORDER BY pin.id DESC
+            LIMIT 1'''
+        params = [competition_id, team_id]
+        model: Optional[GetPitIn] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_pit_in, query, params=tuple(params))
+        return model
 
     def add_one(
             self,
@@ -193,6 +217,7 @@ class PitsInManager:
             pit_time=row['pin_pit_time'],
             kart_status=row['pin_kart_status'],
             fixed_kart_status=row['pin_fixed_kart_status'],
+            has_pit_out=row['has_pit_out'],
             insert_date=row['pin_insert_date'],
             update_date=row['pin_update_date'],
         )
@@ -265,13 +290,11 @@ class PitsOutManager:
             competition_id: int,
             team_id: int) -> List[GetPitOut]:
         """
-        Retrieve a pit-out by its ID.
+        Retrieve the pits-out of a team.
 
         Params:
             competition_id (int): ID of the competition.
             team_id (int): ID of the team.
-            competition_id (int | None): If given, the pit-out must exist in the
-                competition.
 
         Returns:
             List[GetPitOut]: List of pits-out in the competition and team.

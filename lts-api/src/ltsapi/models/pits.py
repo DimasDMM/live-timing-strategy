@@ -36,6 +36,7 @@ class GetPitIn(BaseModel):
     pit_time: Optional[int]
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
+    has_pit_out: bool
     insert_date: datetime
     update_date: datetime
 

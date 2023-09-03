@@ -163,6 +163,21 @@ async def get_pits_in_by_team(
 
 
 @router.get(
+        path='/c/{competition_id}/pits/in/filter/team/{team_id}/last',  # noqa
+        summary='Get the last pit-in of a team')
+async def get_last_pit_in_by_team(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+) -> Union[GetPitIn, Empty]:
+    """Get the last pit-in of a team."""
+    db = _build_db_connection(_logger)
+    with db:
+        manager = PitsInManager(db=db, logger=_logger)
+        item = manager.get_last_by_team_id(competition_id, team_id)
+        return Empty() if item is None else item
+
+
+@router.get(
         path='/c/{competition_id}/pits/out',  # noqa: FS003
         summary='Get all the pits-in in a competition')
 async def get_pits_out_by_competition(
