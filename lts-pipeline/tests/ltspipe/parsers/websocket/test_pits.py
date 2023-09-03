@@ -44,7 +44,7 @@ class TestPitInParser:
                         ],
                     ),
                 },
-                load_raw_message('pit_in.txt'),  # in_data
+                load_raw_message('endurance_pit_in.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.ADD_PIT_IN,
@@ -104,7 +104,7 @@ class TestPitInParser:
         [
             (
                 {},  # in_competitions
-                load_raw_message('pit_in.txt'),  # in_data
+                load_raw_message('endurance_pit_in.txt'),  # in_data
                 f'Unknown competition with code={TEST_COMPETITION_CODE}',
             ),
             (
@@ -117,7 +117,7 @@ class TestPitInParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('pit_in.txt'),  # in_data
+                load_raw_message('endurance_pit_in.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
         ],
@@ -158,7 +158,7 @@ class TestPitOutParser:
                         ],
                     ),
                 },
-                load_raw_message('pit_out.txt'),  # in_data
+                load_raw_message('endurance_pit_out.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.ADD_PIT_OUT,
@@ -216,7 +216,7 @@ class TestPitOutParser:
         [
             (
                 {},  # in_competitions
-                load_raw_message('pit_out.txt'),  # in_data
+                load_raw_message('endurance_pit_out.txt'),  # in_data
                 f'Unknown competition with code={TEST_COMPETITION_CODE}',
             ),
             (
@@ -229,7 +229,7 @@ class TestPitOutParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('pit_out.txt'),  # in_data
+                load_raw_message('endurance_pit_out.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
         ],

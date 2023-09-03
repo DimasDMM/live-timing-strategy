@@ -44,7 +44,7 @@ RACE_PARSERS_SETTINGS = {
 
 
 def _build_non_init() -> Tuple[Message, Optional[List[Action]]]:
-    in_data = load_raw_message('display_driver_name.txt')
+    in_data = load_raw_message('endurance_display_driver_name.txt')
     return (in_data, [])
 
 
@@ -179,7 +179,7 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
 
 
 def _build_init_race() -> Tuple[Message, List[Action]]:
-    in_data = load_raw_message('init_race.txt')
+    in_data = load_raw_message('init_endurance.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
         data=InitialData(

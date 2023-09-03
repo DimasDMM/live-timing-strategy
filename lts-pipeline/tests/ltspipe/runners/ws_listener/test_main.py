@@ -46,7 +46,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
             },
             [  # in_websocket
                 load_raw_message('init_qualy_with_times.txt'),
-                load_raw_message('display_driver_name.txt'),
+                load_raw_message('endurance_display_driver_name.txt'),
             ],
             {},  # in_queue
             {  # expected_kafka
@@ -80,7 +80,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -114,7 +114,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -138,7 +138,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),

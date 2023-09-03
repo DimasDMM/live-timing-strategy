@@ -34,7 +34,7 @@ class TestCompetitionMetadataStatusParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('status_paused.txt'),  # in_data
+                load_raw_message('endurance_status_paused.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
@@ -55,7 +55,7 @@ class TestCompetitionMetadataStatusParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('status_started.txt'),  # in_data
+                load_raw_message('endurance_status_started.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
@@ -76,7 +76,7 @@ class TestCompetitionMetadataStatusParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('status_finished.txt'),  # in_data
+                load_raw_message('endurance_status_finished.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
@@ -131,7 +131,7 @@ class TestCompetitionMetadataStatusParser:
         [
             (
                 {},  # in_competitions
-                load_raw_message('status_started.txt'),  # in_data
+                load_raw_message('endurance_status_started.txt'),  # in_data
                 f'Unknown competition with code={TEST_COMPETITION_CODE}',
             ),
             (
@@ -144,7 +144,7 @@ class TestCompetitionMetadataStatusParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('status_unknown.txt'),  # in_data
+                load_raw_message('endurance_status_unknown.txt'),  # in_data
                 'Unknown competition metadata status: unknown_status',
             ),
         ],

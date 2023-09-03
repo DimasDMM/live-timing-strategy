@@ -50,7 +50,8 @@ class TestDriverNameParser:
                         ],
                     ),
                 },
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_DRIVER,
@@ -82,7 +83,8 @@ class TestDriverNameParser:
                         ],
                     ),
                 },
-                load_raw_message('display_driver_name_with_driving_time.txt'),
+                load_raw_message(
+                    'endurance_display_driver_name_with_driving_time.txt'),
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_DRIVER,
@@ -124,7 +126,8 @@ class TestDriverNameParser:
                         ],
                     ),
                 },
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_DRIVER,
@@ -166,7 +169,8 @@ class TestDriverNameParser:
                         ],
                     ),
                 },
-                load_raw_message('display_driver_name_with_driving_time.txt'),
+                load_raw_message(
+                    'endurance_display_driver_name_with_driving_time.txt'),
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_DRIVER,
@@ -225,7 +229,8 @@ class TestDriverNameParser:
         [
             (
                 {},  # in_competitions
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 f'Unknown competition with code={TEST_COMPETITION_CODE}',
             ),
             (
@@ -238,7 +243,8 @@ class TestDriverNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
             (
@@ -251,7 +257,8 @@ class TestDriverNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 'Column for name not found',  # expected_exception
             ),
             (
@@ -266,7 +273,8 @@ class TestDriverNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_driver_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_driver_name.txt'),  # in_data
                 ('The expected column for the name is "c1", '
                  'but it was given in "c5"'),
             ),
@@ -308,7 +316,8 @@ class TestTeamNameParser:
                         ],
                     ),
                 },
-                load_raw_message('display_team_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_team_name.txt'),  # in_data
                 [  # expected_actions
                     Action(
                         type=ActionType.UPDATE_TEAM,
@@ -366,7 +375,8 @@ class TestTeamNameParser:
         [
             (
                 {},  # in_competitions
-                load_raw_message('display_team_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_team_name.txt'),  # in_data
                 f'Unknown competition with code={TEST_COMPETITION_CODE}',
             ),
             (
@@ -379,7 +389,8 @@ class TestTeamNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_team_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_team_name.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
             (
@@ -392,7 +403,8 @@ class TestTeamNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_team_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_team_name.txt'),  # in_data
                 'Column for name not found',  # expected_exception
             ),
             (
@@ -407,7 +419,8 @@ class TestTeamNameParser:
                         teams=[],
                     ),
                 },
-                load_raw_message('display_team_name.txt'),  # in_data
+                load_raw_message(
+                    'endurance_display_team_name.txt'),  # in_data
                 ('The expected column for the name is "c1", '
                  'but it was given in "c5"'),
             ),

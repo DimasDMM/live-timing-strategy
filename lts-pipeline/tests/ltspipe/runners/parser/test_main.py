@@ -199,7 +199,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -218,7 +218,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -233,7 +233,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -255,7 +255,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -274,7 +274,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_driver_name.txt').strip(),
+                            'endurance_display_driver_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -319,7 +319,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_team_name.txt').strip(),
+                            'endurance_display_team_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -338,7 +338,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'display_team_name.txt').strip(),
+                            'endurance_display_team_name.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -382,7 +382,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'status_finished.txt').strip(),
+                            'endurance_status_finished.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -401,7 +401,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=load_raw_message(
-                            'status_finished.txt').strip(),
+                            'endurance_status_finished.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -441,7 +441,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
-                        data=load_raw_message('pit_in.txt').strip(),
+                        data=load_raw_message('endurance_pit_in.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -459,7 +459,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
-                        data=load_raw_message('pit_in.txt').strip(),
+                        data=load_raw_message('endurance_pit_in.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -504,7 +504,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
-                        data=load_raw_message('pit_out.txt').strip(),
+                        data=load_raw_message('endurance_pit_out.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
@@ -522,7 +522,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 DEFAULT_RAW_MESSAGES_TOPIC: [
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
-                        data=load_raw_message('pit_out.txt').strip(),
+                        data=load_raw_message('endurance_pit_out.txt').strip(),
                         source=MessageSource.SOURCE_WS_LISTENER,
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
