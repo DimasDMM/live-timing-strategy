@@ -52,13 +52,17 @@ class DictModel(BaseModel, ABC):
         raise NotImplementedError
 
     @staticmethod
-    def _validate_base_dict(cls: BaseModel, raw: dict) -> None:  # noqa: ANN102
+    def _validate_base_dict(
+            cls: BaseModel,
+            raw: dict,
+            ignore_unknowns: bool = False) -> None:  # noqa: ANN102
         """Do a basic validation on the raw data."""
         for field_name, field_props in cls.__fields__.items():
             if field_props.required and field_name not in raw:
                 raise Exception(f'Missing required field: {field_name}')
 
-        fields = set(cls.__fields__.keys())
-        raw_fields = set(raw)
-        if raw_fields.intersection(fields) != raw_fields:
-            raise Exception(f'There are unknown fields: {raw_fields}')
+        if not ignore_unknowns:
+            fields = set(cls.__fields__.keys())
+            raw_fields = set(raw)
+            if raw_fields.intersection(fields) != raw_fields:
+                raise Exception(f'There are unknown fields: {raw_fields}')

@@ -49,7 +49,7 @@ EXCLUDED_KEYS = {
 }
 PARSERS_SETTINGS = {
     ParserSettings.TIMING_NAME: 'timing-name-value',
-    ParserSettings.TIMING_RANKING: 'timing-ranking-value',
+    ParserSettings.TIMING_POSITION: 'timing-position-value',
 }
 
 
@@ -94,7 +94,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5625',
                                         pit_time=None,
-                                        ranking=1,
+                                        position=1,
                                         team_name='CKM 1',
                                     ),
                                     'r5626': Participant(
@@ -110,7 +110,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5626',
                                         pit_time=None,
-                                        ranking=2,
+                                        position=2,
                                         team_name='CKM 2',
                                     ),
                                     'r5627': Participant(
@@ -126,7 +126,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5627',
                                         pit_time=None,
-                                        ranking=3,
+                                        position=3,
                                         team_name='CKM 3',
                                     ),
                                 },
@@ -181,7 +181,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5625',
                                         pit_time=None,
-                                        ranking=1,
+                                        position=1,
                                         team_name='CKM 1',
                                     ),
                                     'r5626': Participant(
@@ -197,7 +197,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5626',
                                         pit_time=None,
-                                        ranking=2,
+                                        position=2,
                                         team_name='CKM 2',
                                     ),
                                     'r5627': Participant(
@@ -213,7 +213,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5627',
                                         pit_time=None,
-                                        ranking=3,
+                                        position=3,
                                         team_name='CKM 3',
                                     ),
                                 },
@@ -416,8 +416,8 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
                 'update_date': '2023-04-15T21:43:26',
             },
             {
-                'name': ParserSettings.TIMING_RANKING,
-                'value': 'timing-ranking-value',
+                'name': ParserSettings.TIMING_POSITION,
+                'value': 'timing-position-value',
                 'insert_date': '2023-04-15T21:43:26',
                 'update_date': '2023-04-15T21:43:26',
             },
@@ -534,8 +534,8 @@ def _mock_response_post_parsers_settings(api_url: str) -> List[MapRequestItem]:
                 ),
                 MockResponse(
                     content={
-                        'name': 'timing-ranking',
-                        'value': 'timing-ranking-value',
+                        'name': 'timing-position',
+                        'value': 'timing-position-value',
                     },
                 ),
             ],
@@ -591,7 +591,7 @@ def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_update_competition_metadata(
+def _mock_response_put_competition_metadata(
         api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     responses = [
@@ -614,7 +614,7 @@ def _mock_response_update_competition_metadata(
     return [item]
 
 
-def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
+def _mock_response_put_timing(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
@@ -623,19 +623,23 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
             responses=[
                 MockResponse(
                     content={
-                        'team_id': 1,
-                        'driver_id': 1,
-                        'position': 1,
-                        'time': 58800,
                         'best_time': 58800,
-                        'lap': 5,
+                        'driver_id': 1,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
                         'interval': 0,
                         'interval_unit': 'millis',
-                        'stage': 'race',
-                        'pits': 0,
                         'kart_status': 'good',
-                        'fixed_kart_status': None,
+                        'lap': 5,
+                        'last_time': 58800,
                         'number_pits': 0,
+                        'participant_code': 'team-1',
+                        'pit_time': 0,
+                        'position': 1,
+                        'stage': 'race',
+                        'team_id': 1,
+                        'time': 58800,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T22:27:33',
                     },
@@ -648,19 +652,23 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
             responses=[
                 MockResponse(
                     content={
-                        'team_id': 2,
-                        'driver_id': 2,
-                        'position': 2,
-                        'time': 58800,
                         'best_time': 58800,
-                        'lap': 5,
+                        'driver_id': 2,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
                         'interval': 0,
                         'interval_unit': 'millis',
-                        'stage': 'race',
-                        'pits': 0,
                         'kart_status': 'good',
-                        'fixed_kart_status': None,
+                        'lap': 5,
+                        'last_time': 58800,
                         'number_pits': 0,
+                        'participant_code': 'team-2',
+                        'pit_time': 0,
+                        'position': 2,
+                        'stage': 'race',
+                        'team_id': 2,
+                        'time': 58800,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T22:27:33',
                     },
@@ -673,19 +681,23 @@ def _mock_response_update_timing(api_url: str) -> List[MapRequestItem]:
             responses=[
                 MockResponse(
                     content={
-                        'team_id': 3,
-                        'driver_id': 3,
-                        'position': 3,
-                        'time': 58800,
                         'best_time': 58800,
-                        'lap': 5,
+                        'driver_id': 3,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
                         'interval': 0,
                         'interval_unit': 'millis',
-                        'stage': 'race',
-                        'pits': 0,
                         'kart_status': 'good',
-                        'fixed_kart_status': None,
+                        'lap': 5,
+                        'last_time': 58800,
                         'number_pits': 0,
+                        'participant_code': 'team-3',
+                        'pit_time': 0,
+                        'position': 3,
+                        'stage': 'race',
+                        'team_id': 3,
+                        'time': 58800,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T22:27:33',
                     },
@@ -709,6 +721,6 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
         + _mock_response_post_drivers(api_url)
         + _mock_response_post_parsers_settings(api_url)
         + _mock_response_post_teams(api_url)
-        + _mock_response_update_competition_metadata(api_url)
-        + _mock_response_update_timing(api_url))
+        + _mock_response_put_competition_metadata(api_url)
+        + _mock_response_put_timing(api_url))
     mock_requests(mocker, requests_map=requests_map)

@@ -32,7 +32,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                     status=CompetitionStatus.ONGOING,
                 ),
                 Notification(  # expected_notification
-                    type=NotificationType.UPDATE_COMPETITION_METADATA_STATUS,
+                    type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,
                     data=UpdateCompetitionMetadataStatus(
                         competition_code='south-endurance-2023-03-26',
                         status=CompetitionStatus.ONGOING,

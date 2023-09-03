@@ -92,7 +92,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.ADD_PIT_OUT,  # noqa: E501, LN001
+                            type=NotificationType.ADDED_PIT_OUT,  # noqa: E501, LN001
                             data=PitOut(
                                 id=1,
                                 driver_id=None,

@@ -1,20 +1,19 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.api.competitions_base import (
-    update_competition_metadata_status,
-)
+from ltspipe.api.timing import update_timing_position_by_team
 from ltspipe.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (
     CompetitionInfo,
-    UpdateCompetitionMetadataStatus,
+    ParticipantTiming,
+    UpdateTimingPosition,
 )
 
 
-class UpdateCompetitionMetadataStatusHandler(ApiHandler):
-    """Handle CompetitionMetadataStatus instances."""
+class UpdateTimingPositionHandler(ApiHandler):
+    """Handle UpdateTimingPosition instances."""
 
     def __init__(
             self,
@@ -27,28 +26,28 @@ class UpdateCompetitionMetadataStatusHandler(ApiHandler):
         self._competitions = competitions
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
-        """Update the data of a driver."""
-        if not isinstance(model, UpdateCompetitionMetadataStatus):
+        """Update the timing position of a participant."""
+        if not isinstance(model, UpdateTimingPosition):
             raise Exception(
-                'The model must be an instance of CompetitionMetadataStatus.')
+                'The model must be an instance of UpdateTimingPosition.')
 
         competition_code = model.competition_code
         info = self._competitions[competition_code]
 
-        update_competition_metadata_status(
+        participant_timing = update_timing_position_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=info.id,  # type: ignore
-            status=model.status,
+            team_id=model.team_id,
+            position=model.position,
+            auto_other_positions=model.auto_other_positions,
         )
 
-        return self._create_notification(model)
+        return self._create_notification(participant_timing)
 
-    def _create_notification(
-            self,
-            metadata_status: UpdateCompetitionMetadataStatus) -> Notification:
+    def _create_notification(self, data: ParticipantTiming) -> Notification:
         """Create notification of handler."""
         return Notification(
-            type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,
-            data=metadata_status,
+            type=NotificationType.UPDATED_TIMING_POSITION,
+            data=data,
         )

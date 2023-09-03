@@ -12,10 +12,14 @@ from ltspipe.configs import (
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
-    AddPitIn,
     CompetitionInfo,
+    CompetitionStage,
+    DiffLap,
     KartStatus,
-    PitIn,
+    LengthUnit,
+    Team,
+    ParticipantTiming,
+    UpdateTimingPosition,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.data.notifications import Notification, NotificationType
@@ -40,9 +44,9 @@ EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
 }
-
-# Not useful for these unit tests, so it is empty
-PARSERS_SETTINGS: Dict[ParserSettings, str] = {}
+PARSERS_SETTINGS = {
+    ParserSettings.TIMING_POSITION: 'timing-position-value',
+}
 
 
 def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
@@ -53,7 +57,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 
 @pytest.mark.parametrize(
-    ('kafka_topics, in_competitions, expected_kafka'),
+    'kafka_topics, in_competitions, expected_kafka',
     [
         (
             {  # kafka_topics
@@ -62,14 +66,12 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.ADD_PIT_IN,
-                            data=AddPitIn(
+                            type=ActionType.UPDATE_TIMING_POSITION,
+                            data=UpdateTimingPosition(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                lap=0,
-                                pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
+                                position=6,
+                                auto_other_positions=True,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -85,25 +87,40 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='CKM 1',
+                            number=41,
+                        ),
+                    ],
                     timing=[],
                 ),
-            },  # in_competitions
+            },
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.ADDED_PIT_IN,  # noqa: E501, LN001
-                            data=PitIn(
-                                id=1,
-                                driver_id=None,
-                                team_id=1,
-                                lap=0,
-                                pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
+                            type=NotificationType.UPDATED_TIMING_POSITION,
+                            data=ParticipantTiming(
+                                best_time=58800,
+                                driver_id=1,
                                 fixed_kart_status=None,
-                                has_pit_out=False,
+                                gap=None,
+                                interval=DiffLap(
+                                    value=0, unit=LengthUnit.MILLIS),
+                                kart_status=KartStatus.GOOD,
+                                lap=5,
+                                last_time=58800,
+                                number_pits=0,
+                                participant_code='team-1',
+                                pit_time=0,
+                                position=1,
+                                stage=CompetitionStage.RACE,
+                                team_id=1,
+                                time=58800,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -116,14 +133,12 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.ADD_PIT_IN,
-                            data=AddPitIn(
+                            type=ActionType.UPDATE_TIMING_POSITION,
+                            data=UpdateTimingPosition(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                lap=0,
-                                pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
+                                position=6,
+                                auto_other_positions=True,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -144,8 +159,8 @@ def test_main(
     """
     Test main method.
 
-    Test case: it receives an action to update the competition status. After it
-    sends the data to the API, it should generate a notification.
+    Test case: it receives an action to update the timing. After it sends the
+    data to the API, it should generate a notification.
     """
     with tempfile.TemporaryDirectory() as tmp_path:
         config = ApiSenderConfig(
@@ -192,29 +207,39 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_add_pit_in(api_url: str) -> List[MapRequestItem]:
+def _mock_response_put_timing_position(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
-    response = MockResponse(
-        content={
-            'id': 1,
-            'competition_id': 1,
-            'team_id': 1,
-            'driver_id': None,
-            'lap': 0,
-            'pit_time': 0,
-            'kart_status': KartStatus.UNKNOWN,
-            'fixed_kart_status': None,
-            'has_pit_out': False,
-            'insert_date': '2023-04-20T20:42:51',
-            'update_date': '2023-04-20T20:42:51',
-        },
-    )
-    item = MapRequestItem(
-        url=f'{api_url}/v1/c/1/pits/in',
-        method=MapRequestMethod.POST,
-        responses=[response],
-    )
-    return [item]
+    return [
+        MapRequestItem(
+            url=f'{api_url}/v1/c/1/timing/teams/1/position',
+            method=MapRequestMethod.PUT,
+            responses=[
+                MockResponse(
+                    content={
+                        'best_time': 58800,
+                        'driver_id': 1,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
+                        'interval': 0,
+                        'interval_unit': 'millis',
+                        'kart_status': 'good',
+                        'lap': 5,
+                        'last_time': 58800,
+                        'number_pits': 0,
+                        'participant_code': 'team-1',
+                        'pit_time': 0,
+                        'position': 1,
+                        'stage': 'race',
+                        'team_id': 1,
+                        'time': 58800,
+                        'insert_date': '2023-04-20T20:42:51',
+                        'update_date': '2023-04-20T22:27:33',
+                    },
+                ),
+            ],
+        ),
+    ]
 
 
 def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
@@ -222,5 +247,5 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_add_pit_in(api_url))
+        + _mock_response_put_timing_position(api_url))
     mock_requests(mocker, requests_map=requests_map)

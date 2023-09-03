@@ -9,11 +9,12 @@ class NotificationType(str, EnumBase):
 
     INIT_ONGOING = 'init-ongoing'
     INIT_FINISHED = 'init-finished'
-    ADD_PIT_IN = 'add-pit-in'
-    ADD_PIT_OUT = 'add-pit-out'
+    ADDED_PIT_IN = 'added-pit-in'
+    ADDED_PIT_OUT = 'added-pit-out'
+    UPDATED_COMPETITION_METADATA_STATUS = 'updated-competition-metadata-status'
     UPDATED_DRIVER = 'updated-driver'
     UPDATED_TEAM = 'updated-team'
-    UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'
+    UPDATED_TIMING_POSITION = 'updated-timing-position'
 
 
 class Notification(DictModel):

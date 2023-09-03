@@ -62,7 +62,7 @@ class TestAllApiCalls(DatabaseTest):
             number_pits=0,
             participant_code='r5625',
             pit_time=None,
-            ranking=1,
+            position=1,
             team_name='CKM 1',
         ),
         Participant(
@@ -76,7 +76,7 @@ class TestAllApiCalls(DatabaseTest):
             number_pits=1,
             participant_code='r5625',
             pit_time=None,
-            ranking=1,
+            position=1,
             team_name='CKM 1',
         ),
         Participant(
@@ -96,7 +96,7 @@ class TestAllApiCalls(DatabaseTest):
             number_pits=2,
             participant_code='r5626',
             pit_time=54000,  # 54.
-            ranking=2,
+            position=2,
             team_name='CKM 2',
         ),
     ]

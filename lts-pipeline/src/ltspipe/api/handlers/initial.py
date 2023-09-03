@@ -206,7 +206,7 @@ class InitialDataHandler(ApiHandler):
                 lap=participant.laps,
                 number_pits=participant.number_pits,
                 pit_time=participant.pit_time,
-                position=participant.ranking,
+                position=participant.position,
                 stage=CompetitionStage.FREE_PRACTICE,  # TODO
                 last_time=participant.last_lap_time,
             )

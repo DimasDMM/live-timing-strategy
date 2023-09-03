@@ -99,7 +99,7 @@ class Participant(DictModel):
     last_lap_time: int
     number_pits: int
     participant_code: str
-    ranking: int
+    position: int
     driver_name: Optional[str] = Field(default=None)
     team_name: Optional[str] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
@@ -128,7 +128,7 @@ class Participant(DictModel):
             number_pits=raw.get('number_pits'),
             participant_code=raw.get('participant_code'),
             pit_time=raw.get('pit_time'),
-            ranking=raw.get('ranking'),
+            position=raw.get('position'),
             team_name=raw.get('team_name'),
         )
 
@@ -137,44 +137,75 @@ class ParticipantTiming(DictModel):
     """Timing details of a participant."""
 
     best_time: int
-    gap: DiffLap
-    interval: DiffLap
-    kart_number: int
-    laps: int
-    last_lap_time: int
+    gap: Optional[DiffLap]
+    fixed_kart_status: Optional[KartStatus]
+    interval: Optional[DiffLap]
+    kart_status: KartStatus
+    lap: int
+    last_time: int
     number_pits: int
     participant_code: str
-    ranking: int
+    position: int
+    stage: CompetitionStage
     driver_id: Optional[int] = Field(default=None)
-    team_id: Optional[int] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
+    team_id: Optional[int] = Field(default=None)
 
     @root_validator
     def name_is_set(cls, values: dict) -> dict:  # noqa: N805, U100
         """Validate that at least one name is set."""
-        driver_name = values.get('driver_name')
-        team_name = values.get('team_name')
-        if driver_name is None and team_name is None:
-            raise ValueError('Both driver and team name cannot be null.')
+        driver_id = values.get('driver_id')
+        team_id = values.get('team_id')
+        if driver_id is None and team_id is None:
+            raise ValueError('Both driver and team ID cannot be null.')
         return values
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
-        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        DictModel._validate_base_dict(
+            cls, raw, ignore_unknowns=True)  # type: ignore
+
+        # Patch gap and interval if necessary
+        if raw.get('gap') is None:
+            gap = None
+        elif 'gap_unit' in raw:
+            raw_gap = {
+                'value': raw.get('gap'),
+                'unit': raw.get('gap_unit'),
+            }
+            gap = DiffLap.from_dict(raw_gap)
+        else:
+            gap = DiffLap.from_dict(raw['gap'])
+
+        if raw.get('interval') is None:
+            interval = None
+        elif 'interval_unit' in raw:
+            raw_interval = {
+                'value': raw.get('interval'),
+                'unit': raw.get('interval_unit'),
+            }
+            interval = DiffLap.from_dict(raw_interval)
+        else:
+            interval = DiffLap.from_dict(raw['interval'])
+
+        fixed_kart_status = raw.get('fixed_kart_status')
         return cls.construct(
             best_time=raw.get('best_time'),
-            driver_name=raw.get('driver_id'),
-            gap=DiffLap.from_dict(raw.get('gap')),  # type: ignore
-            interval=DiffLap.from_dict(raw.get('interval')),  # type: ignore
-            kart_number=raw.get('kart_number'),
-            laps=raw.get('laps'),
-            last_lap_time=raw.get('last_lap_time'),
+            driver_id=raw.get('driver_id'),
+            fixed_kart_status=(None if fixed_kart_status is None
+                               else KartStatus(fixed_kart_status)),
+            kart_status=KartStatus(raw.get('kart_status')),
+            gap=gap,  # type: ignore
+            interval=interval,  # type: ignore
+            lap=raw.get('lap'),
+            last_time=raw.get('last_time'),
             number_pits=raw.get('number_pits'),
             participant_code=raw.get('participant_code'),
             pit_time=raw.get('pit_time'),
-            ranking=raw.get('ranking'),
-            team_name=raw.get('team_id'),
+            position=raw.get('position'),
+            stage=CompetitionStage(raw.get('stage')),
+            team_id=raw.get('team_id'),
         )
 
 
@@ -412,4 +443,24 @@ class UpdateTeam(DictModel):
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
+        )
+
+
+class UpdateTimingPosition(DictModel):
+    """Info to update the timing position of a team."""
+
+    competition_code: str
+    team_id: int
+    position: int
+    auto_other_positions: bool
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            position=raw.get('position'),
+            auto_other_positions=raw.get('auto_other_positions'),
         )

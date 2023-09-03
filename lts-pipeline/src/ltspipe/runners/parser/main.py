@@ -17,6 +17,7 @@ from ltspipe.parsers.websocket.competitions_metadata import (
 from ltspipe.parsers.websocket.initial import InitialDataParser
 from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
 from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
+from ltspipe.parsers.websocket.timing import TimingPositionParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
@@ -251,11 +252,12 @@ def _build_parsers_pipe(
     """Build pipe with data parsers."""
     initial_parser = InitialDataParser()
     parsers: List[Parser] = [
+        CompetitionMetadataStatusParser(competitions),  # type: ignore
         DriverNameParser(competitions),  # type: ignore
-        TeamNameParser(competitions),  # type: ignore
         PitInParser(competitions),  # type: ignore
         PitOutParser(competitions),  # type: ignore
-        CompetitionMetadataStatusParser(competitions),  # type: ignore
+        TeamNameParser(competitions),  # type: ignore
+        TimingPositionParser(competitions),  # type: ignore
     ]
 
     kafka_producer = KafkaProducerStep(

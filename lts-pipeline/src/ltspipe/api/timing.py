@@ -68,7 +68,7 @@ def update_timing_by_team(
         number_pits: int,
         pit_time: Optional[int],
         position: int,
-        stage: CompetitionStage) -> None:
+        stage: CompetitionStage) -> ParticipantTiming:
     """Update timing data of a team."""
     data = {
         'best_time': best_time,
@@ -90,3 +90,34 @@ def update_timing_by_team(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
+
+    response = r.json()
+    if not response:
+        raise Exception(f'Unknown API response ({uri}): {response}')
+
+    return ParticipantTiming.from_dict(response)  # type: ignore
+
+
+def update_timing_position_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int,
+        position: int,
+        auto_other_positions: bool) -> ParticipantTiming:
+    """Update timing position of a team."""
+    data = {
+        'position': position,
+        'auto_other_positions': auto_other_positions,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/position'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response = r.json()
+    if not response:
+        raise Exception(f'Unknown API response ({uri}): {response}')
+
+    return ParticipantTiming.from_dict(response)  # type: ignore

@@ -55,7 +55,7 @@ class AddPitInHandler(ApiHandler):
     def _create_notification(self, pit_in: PitIn) -> Notification:
         """Create notification of handler."""
         return Notification(
-            type=NotificationType.ADD_PIT_IN,
+            type=NotificationType.ADDED_PIT_IN,
             data=pit_in,
         )
 
@@ -96,6 +96,6 @@ class AddPitOutHandler(ApiHandler):
     def _create_notification(self, pit_out: PitOut) -> Notification:
         """Create notification of handler."""
         return Notification(
-            type=NotificationType.ADD_PIT_OUT,
+            type=NotificationType.ADDED_PIT_OUT,
             data=pit_out,
         )

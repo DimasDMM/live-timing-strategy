@@ -52,7 +52,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 
 @pytest.mark.parametrize(
-    ('kafka_topics, in_competitions, expected_kafka'),
+    'kafka_topics, in_competitions, expected_kafka',
     [
         (
             {  # kafka_topics
@@ -89,7 +89,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.UPDATE_COMPETITION_METADATA_STATUS,  # noqa: E501, LN001
+                            type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,  # noqa: E501, LN001
                             data=UpdateCompetitionMetadataStatus(
                                 competition_code=TEST_COMPETITION_CODE,
                                 status=CompetitionStatus.FINISHED,
@@ -177,7 +177,7 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_update_competition_metadata_status(
+def _mock_response_put_competition_metadata_status(
         api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(content={})
@@ -194,5 +194,5 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_update_competition_metadata_status(api_url))
+        + _mock_response_put_competition_metadata_status(api_url))
     mock_requests(mocker, requests_map=requests_map)

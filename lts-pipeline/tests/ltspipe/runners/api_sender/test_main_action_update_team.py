@@ -42,7 +42,7 @@ EXCLUDED_KEYS = {
 }
 PARSERS_SETTINGS = {
     ParserSettings.TIMING_NAME: 'timing-name-value',
-    ParserSettings.TIMING_RANKING: 'timing-ranking-value',
+    ParserSettings.TIMING_POSITION: 'timing-position-value',
 }
 
 
@@ -54,7 +54,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 
 @pytest.mark.parametrize(
-    ('kafka_topics, in_competitions, expected_kafka, expected_competitions'),
+    'kafka_topics, in_competitions, expected_kafka, expected_competitions',
     [
         (
             {  # kafka_topics
@@ -96,7 +96,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     ],
                     timing=[],
                 ),
-            },  # in_competitions
+            },
             {  # expected_kafka
                 DEFAULT_NOTIFICATIONS_TOPIC: [
                     Message(

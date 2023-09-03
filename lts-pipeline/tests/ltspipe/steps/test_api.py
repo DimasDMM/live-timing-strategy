@@ -74,7 +74,7 @@ class TestApiActionStep:
                                     number_pits=0,
                                     participant_code='r5625',
                                     pit_time=None,
-                                    ranking=1,
+                                    position=1,
                                     team_name='CKM 1',
                                 ),
                             },
@@ -187,7 +187,7 @@ class TestParserSettingsGetterStep:
             ],
             parser_settings={
                 ParserSettings.TIMING_NAME: 'sample-name',
-                ParserSettings.TIMING_RANKING: 'sample-ranking',
+                ParserSettings.TIMING_POSITION: 'sample-position',
             },
         ),
     }
@@ -278,8 +278,8 @@ class TestParserSettingsGetterStep:
                     'update_date': '2023-04-15T21:43:26',
                 },
                 {
-                    'name': ParserSettings.TIMING_RANKING.value,
-                    'value': 'sample-ranking',
+                    'name': ParserSettings.TIMING_POSITION.value,
+                    'value': 'sample-position',
                     'insert_date': '2023-04-15T21:43:26',
                     'update_date': '2023-04-15T21:43:26',
                 },

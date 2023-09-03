@@ -21,7 +21,7 @@ class InitialDataParser(InitialParser):
 
     FILTER_HEADERS = {
         'by_id': {
-            'rk': ParserSettings.TIMING_RANKING,
+            'rk': ParserSettings.TIMING_POSITION,
             'no': ParserSettings.TIMING_KART_NUMBER,
             'dr': ParserSettings.TIMING_NAME,
             'llp': ParserSettings.TIMING_LAST_LAP_TIME,
@@ -193,11 +193,11 @@ class InitialDataParser(InitialParser):
             participant_code = match[1]
 
             match = re.search(r'<tr[^>]*data-pos="([^"]+)"', row, flags=re.S)
-            ranking = None if match is None else str(match[1])
+            position = None if match is None else str(match[1])
 
             participants[participant_code] = self._create_participant(
                 participant_code=participant_code,
-                ranking=ranking,
+                position=position,
                 fields=fields,
             )
 
@@ -264,7 +264,7 @@ class InitialDataParser(InitialParser):
     def _create_participant(
             self,
             participant_code: str,
-            ranking: Optional[str],
+            position: Optional[str],
             fields: Dict[ParserSettings, str]) -> Participant:
         """Create instance of participant."""
         return Participant(
@@ -291,7 +291,7 @@ class InitialDataParser(InitialParser):
                 fields.get(ParserSettings.TIMING_NUMBER_PITS, None),
                 default=0),
             participant_code=participant_code,
-            ranking=self._cast_number(ranking, default=0),
+            position=self._cast_number(position, default=0),
             team_name=fields.get(ParserSettings.TIMING_NAME, None),
             pit_time=self._time_to_millis(
                 fields.get(ParserSettings.TIMING_PIT_TIME, None),

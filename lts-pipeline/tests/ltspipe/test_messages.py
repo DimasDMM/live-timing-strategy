@@ -114,7 +114,7 @@ class TestMessage:
                                 last_lap_time=65142,  # 1:05.142
                                 number_pits=2,
                                 participant_code='r5625',
-                                ranking=1,
+                                position=1,
                                 team_name='CKM 1',
                             ),
                         },

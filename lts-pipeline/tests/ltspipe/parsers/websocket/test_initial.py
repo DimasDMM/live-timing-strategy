@@ -19,7 +19,7 @@ from tests.fixtures import TEST_COMPETITION_CODE
 from tests.helpers import load_raw_message
 
 QUALY_PARSERS_SETTINGS = {
-    ParserSettings.TIMING_RANKING: 'c3',
+    ParserSettings.TIMING_POSITION: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
     ParserSettings.TIMING_NAME: 'c5',
     ParserSettings.TIMING_LAST_LAP_TIME: 'c6',
@@ -30,7 +30,7 @@ QUALY_PARSERS_SETTINGS = {
     ParserSettings.TIMING_NUMBER_PITS: 'c11',
 }
 RACE_PARSERS_SETTINGS = {
-    ParserSettings.TIMING_RANKING: 'c3',
+    ParserSettings.TIMING_POSITION: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
     ParserSettings.TIMING_NAME: 'c5',
     ParserSettings.TIMING_LAPS: 'c6',
@@ -73,7 +73,7 @@ def _build_init_qualy() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5625',
                     pit_time=None,
-                    ranking=1,
+                    position=1,
                     team_name='CKM 1',
                 ),
                 'r5626': Participant(
@@ -87,7 +87,7 @@ def _build_init_qualy() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5626',
                     pit_time=None,
-                    ranking=2,
+                    position=2,
                     team_name='CKM 2',
                 ),
                 'r5627': Participant(
@@ -101,7 +101,7 @@ def _build_init_qualy() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5627',
                     pit_time=None,
-                    ranking=3,
+                    position=3,
                     team_name='CKM 3',
                 ),
             },
@@ -135,7 +135,7 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5625',
                     pit_time=None,
-                    ranking=1,
+                    position=1,
                     team_name='CKM 1',
                 ),
                 'r5626': Participant(
@@ -149,7 +149,7 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
                     number_pits=1,
                     participant_code='r5626',
                     pit_time=None,
-                    ranking=2,
+                    position=2,
                     team_name='CKM 2',
                 ),
                 'r5627': Participant(
@@ -169,7 +169,7 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
                     number_pits=2,
                     participant_code='r5627',
                     pit_time=54000,  # 54.
-                    ranking=3,
+                    position=3,
                     team_name='CKM 3',
                 ),
             },
@@ -203,7 +203,7 @@ def _build_init_race() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5625',
                     pit_time=0,
-                    ranking=1,
+                    position=1,
                     team_name='CKM 1',
                 ),
                 'r5626': Participant(
@@ -217,7 +217,7 @@ def _build_init_race() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5626',
                     pit_time=0,
-                    ranking=2,
+                    position=2,
                     team_name='CKM 2',
                 ),
                 'r5627': Participant(
@@ -231,7 +231,7 @@ def _build_init_race() -> Tuple[Message, List[Action]]:
                     number_pits=0,
                     participant_code='r5627',
                     pit_time=0,
-                    ranking=3,
+                    position=3,
                     team_name='CKM 3',
                 ),
             },

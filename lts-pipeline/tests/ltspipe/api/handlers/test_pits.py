@@ -41,7 +41,7 @@ class TestAddPitInHandler(DatabaseTest):
                     kart_status=KartStatus.GOOD,
                 ),
                 Notification(  # expected_notification
-                    type=NotificationType.ADD_PIT_IN,
+                    type=NotificationType.ADDED_PIT_IN,
                     data=PitIn(
                         id=0,
                         driver_id=3,
@@ -103,7 +103,7 @@ class TestAddPitOutHandler(DatabaseTest):
                     kart_status=KartStatus.GOOD,
                 ),
                 Notification(  # expected_notification
-                    type=NotificationType.ADD_PIT_OUT,
+                    type=NotificationType.ADDED_PIT_OUT,
                     data=PitOut(
                         id=0,
                         driver_id=3,
