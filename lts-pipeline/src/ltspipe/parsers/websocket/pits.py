@@ -1,0 +1,128 @@
+import re
+from typing import Any, Dict, List
+
+from ltspipe.data.actions import Action, ActionType
+from ltspipe.data.competitions import (
+    AddPitIn,
+    AddPitOut,
+    CompetitionInfo,
+    KartStatus,
+)
+from ltspipe.parsers.base import Parser
+from ltspipe.parsers.websocket import _find_team_by_code
+
+
+class PitInParser(Parser):
+    """
+    Parse that a participant has entered the pit.
+
+    Sample messages:
+    > r5625|*in|0
+    """
+
+    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._competitions = competitions
+
+    def parse(self, competition_code: str, data: Any) -> List[Action]:
+        """
+        Analyse and/or parse a given data.
+
+        Params:
+            competition_code (str): Code of the competition.
+            data (Any): Data to parse.
+
+        Returns:
+            List[Action]: list of actions and their respective parsed data.
+        """
+        if competition_code not in self._competitions:
+            raise Exception(f'Unknown competition with code={competition_code}')
+        elif not isinstance(data, str):
+            return []
+
+        data = data.strip()
+        matches = re.match(
+            r'^(.+?)\|\*in\|.*$', data)
+        if matches is None:
+            return []
+
+        participant_code = matches[1]
+
+        team = _find_team_by_code(
+            self._competitions,
+            competition_code,
+            team_code=participant_code)
+
+        if team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
+
+        action = Action(
+            type=ActionType.ADD_PIT_IN,
+            data=AddPitIn(
+                competition_code=competition_code,
+                team_id=team.id,
+                # TODO: If the last pit-in was not updated, then it cannot set
+                # the driver ID
+                driver_id=None,
+                lap=0,  # TODO: Use the last known lap of the team
+                pit_time=0,
+                kart_status=KartStatus.UNKNOWN,
+            ),
+        )
+        return [action]
+
+
+class PitOutParser(Parser):
+    """
+    Parse that a participant has left the pit.
+
+    Sample messages:
+    > r5625|*out|0
+    """
+
+    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._competitions = competitions
+
+    def parse(self, competition_code: str, data: Any) -> List[Action]:
+        """
+        Analyse and/or parse a given data.
+
+        Params:
+            competition_code (str): Code of the competition.
+            data (Any): Data to parse.
+
+        Returns:
+            List[Action]: list of actions and their respective parsed data.
+        """
+        if competition_code not in self._competitions:
+            raise Exception(f'Unknown competition with code={competition_code}')
+        elif not isinstance(data, str):
+            return []
+
+        data = data.strip()
+        matches = re.match(
+            r'^(.+?)\|\*out\|.*$', data)
+        if matches is None:
+            return []
+
+        participant_code = matches[1]
+
+        team = _find_team_by_code(
+            self._competitions,
+            competition_code,
+            team_code=participant_code)
+
+        if team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
+
+        action = Action(
+            type=ActionType.ADD_PIT_OUT,
+            data=AddPitOut(
+                competition_code=competition_code,
+                team_id=team.id,
+                driver_id=None,  # Not available, it must be updated later
+                kart_status=KartStatus.UNKNOWN,
+            ),
+        )
+        return [action]

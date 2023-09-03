@@ -1,5 +1,9 @@
 from typing import Dict, Optional
 
+from ltspipe.api.handlers import (
+    _find_driver_by_name,
+    _find_team_by_code,
+)
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.participants import (
     add_driver,
@@ -19,27 +23,6 @@ from ltspipe.data.competitions import (
     UpdateDriver,
     UpdateTeam,
 )
-
-
-def _find_driver(
-        info: CompetitionInfo,
-        participant_code: str,
-        driver_name: str) -> Optional[Driver]:
-    """Find a driver in the competition info."""
-    for d in info.drivers:
-        if d.name == driver_name and d.participant_code == participant_code:
-            return d
-    return None
-
-
-def _find_team(
-        info: CompetitionInfo,
-        participant_code: str) -> Optional[Team]:
-    """Find a team in the competition info."""
-    for t in info.teams:
-        if t.participant_code == participant_code:
-            return t
-    return None
 
 
 class UpdateDriverHandler(ApiHandler):
@@ -62,7 +45,8 @@ class UpdateDriverHandler(ApiHandler):
 
         competition_code = model.competition_code
         info = self._competitions[competition_code]
-        old_driver = _find_driver(info, model.participant_code, model.name)
+        old_driver = _find_driver_by_name(
+            info, model.participant_code, model.name)
 
         if old_driver is None:
             # Check if the driver exists in the API
@@ -146,7 +130,8 @@ class UpdateTeamHandler(ApiHandler):
 
         competition_code = model.competition_code
         info = self._competitions[competition_code]
-        old_team = _find_team(info, participant_code=model.participant_code)
+        old_team = _find_team_by_code(
+            info, participant_code=model.participant_code)
 
         if old_team is None:
             # Check if the team exists in the API

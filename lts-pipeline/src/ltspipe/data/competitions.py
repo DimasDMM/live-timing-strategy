@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 from ltspipe.base import BaseModel, EnumBase
 from ltspipe.data.enum import (
+    KartStatus,
     LengthUnit,
     ParserSettings,
 )
@@ -267,6 +268,102 @@ class InitialData(DictModel):
             participants=participants,
             parsers_settings={ParserSettings(k): v
                               for k, v in parsers_settings.items()},
+        )
+
+
+class PitIn(DictModel):
+    """Info about a pit-in."""
+
+    id: int
+    team_id: Optional[int]
+    driver_id: Optional[int]
+    lap: int
+    pit_time: int
+    kart_status: KartStatus
+    fixed_kart_status: Optional[KartStatus]
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        fixed_kart_status = raw.get('fixed_kart_status')
+        return cls.construct(
+            id=raw.get('id'),
+            team_id=raw.get('team_id'),
+            driver_id=raw.get('driver_id'),
+            lap=raw.get('lap'),
+            pit_time=raw.get('pit_time'),
+            kart_status=KartStatus(raw.get('kart_status')),
+            fixed_kart_status=(None if fixed_kart_status is None
+                               else KartStatus(fixed_kart_status)),
+        )
+
+
+class PitOut(DictModel):
+    """Info about a pit-out."""
+
+    id: int
+    team_id: Optional[int]
+    driver_id: Optional[int]
+    kart_status: KartStatus
+    fixed_kart_status: Optional[KartStatus]
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        fixed_kart_status = raw.get('fixed_kart_status')
+        return cls.construct(
+            id=raw.get('id'),
+            team_id=raw.get('team_id'),
+            driver_id=raw.get('driver_id'),
+            kart_status=KartStatus(raw.get('kart_status')),
+            fixed_kart_status=(None if fixed_kart_status is None
+                               else KartStatus(fixed_kart_status)),
+        )
+
+
+class AddPitIn(DictModel):
+    """Info to add a pit-in."""
+
+    competition_code: str
+    team_id: Optional[int]
+    driver_id: Optional[int]
+    lap: int
+    pit_time: int
+    kart_status: KartStatus
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            driver_id=raw.get('driver_id'),
+            lap=raw.get('lap'),
+            pit_time=raw.get('pit_time'),
+            kart_status=KartStatus(raw.get('kart_status')),
+        )
+
+
+class AddPitOut(DictModel):
+    """Info to add a pit-out."""
+
+    competition_code: str
+    team_id: Optional[int]
+    driver_id: Optional[int]
+    kart_status: KartStatus
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            driver_id=raw.get('driver_id'),
+            kart_status=KartStatus(raw.get('kart_status')),
         )
 
 

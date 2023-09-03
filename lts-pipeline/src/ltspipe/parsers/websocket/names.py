@@ -4,37 +4,15 @@ from typing import Any, Dict, List, Optional
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
     CompetitionInfo,
-    Driver,
-    Team,
     UpdateDriver,
     UpdateTeam,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.parsers.base import Parser
-
-
-def _find_driver(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
-        driver_name: str) -> Optional[Driver]:
-    """Find a driver in the competition info."""
-    info = competitions[competition_code]
-    for d in info.drivers:
-        if d.name == driver_name:
-            return d
-    return None
-
-
-def _find_team(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
-        team_code: str) -> Team:
-    """Find a team in the competition info."""
-    info = competitions[competition_code]
-    for t in info.teams:
-        if t.participant_code == team_code:
-            return t
-    raise Exception(f'Unknown team with code={team_code}')
+from ltspipe.parsers.websocket import (
+    _find_driver_by_name,
+    _find_team_by_code,
+)
 
 
 def _validate_column_name(
@@ -111,22 +89,24 @@ class DriverNameParser(Parser):
         column_id = matches[2]
         _validate_column_name(self._competitions, competition_code, column_id)
 
-        driver_code = matches[1]
+        participant_code = matches[1]
         driver_name = matches[3]
 
-        old_driver = _find_driver(
+        old_driver = _find_driver_by_name(
             self._competitions,
             competition_code,
             driver_name)
-        team = _find_team(
+        team = _find_team_by_code(
             self._competitions,
             competition_code,
-            team_code=driver_code)
+            team_code=participant_code)
+        if team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
 
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),
             competition_code=competition_code,
-            participant_code=driver_code,
+            participant_code=participant_code,
             name=driver_name,
             number=team.number,
             team_id=team.id,
@@ -180,13 +160,17 @@ class TeamNameParser(Parser):
         column_id = matches[2]
         _validate_column_name(self._competitions, competition_code, column_id)
 
-        team_code = matches[1]
-        old_team = _find_team(self._competitions, competition_code, team_code)
+        participant_code = matches[1]
+        old_team = _find_team_by_code(
+            self._competitions, competition_code, participant_code)
+
+        if old_team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
 
         updated_team = UpdateTeam(
             id=old_team.id,
             competition_code=competition_code,
-            participant_code=team_code,
+            participant_code=participant_code,
             name=matches[3],
             number=old_team.number,
         )

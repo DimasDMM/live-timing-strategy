@@ -9,6 +9,8 @@ class NotificationType(str, EnumBase):
 
     INIT_ONGOING = 'init-ongoing'
     INIT_FINISHED = 'init-finished'
+    ADD_PIT_IN = 'add-pit-in'
+    ADD_PIT_OUT = 'add-pit-out'
     UPDATED_DRIVER = 'updated-driver'
     UPDATED_TEAM = 'updated-team'
     UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'

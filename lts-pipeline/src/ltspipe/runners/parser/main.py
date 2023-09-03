@@ -11,11 +11,12 @@ from ltspipe.data.auth import AuthData
 from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket.initial import InitialDataParser
-from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
 from ltspipe.parsers.websocket.competitions_metadata import (
     CompetitionMetadataStatusParser,
 )
+from ltspipe.parsers.websocket.initial import InitialDataParser
+from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
+from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
 from ltspipe.steps.api import CompetitionInfoInitStep
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
@@ -252,6 +253,8 @@ def _build_parsers_pipe(
     parsers: List[Parser] = [
         DriverNameParser(competitions),  # type: ignore
         TeamNameParser(competitions),  # type: ignore
+        PitInParser(competitions),  # type: ignore
+        PitOutParser(competitions),  # type: ignore
         CompetitionMetadataStatusParser(competitions),  # type: ignore
     ]
 
