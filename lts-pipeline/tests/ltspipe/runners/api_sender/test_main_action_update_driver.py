@@ -229,17 +229,6 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_delete_parser_settings(api_url: str) -> List[MapRequestItem]:
-    """Get mocked response."""
-    response = MockResponse(content={})
-    item = MapRequestItem(
-        url=f'{api_url}/v1/c/1/parsers/settings',
-        method=MapRequestMethod.DELETE,
-        responses=[response],
-    )
-    return [item]
-
-
 def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
@@ -309,7 +298,6 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_delete_parser_settings(api_url)
         + _mock_response_get_drivers(api_url)
         + _mock_response_get_team_driver_by_name(api_url)
         + _mock_response_post_drivers(api_url))
