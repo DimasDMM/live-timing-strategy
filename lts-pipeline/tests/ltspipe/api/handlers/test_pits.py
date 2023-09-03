@@ -50,6 +50,7 @@ class TestAddPitInHandler(DatabaseTest):
                         pit_time=0,
                         kart_status=KartStatus.GOOD,
                         fixed_kart_status=None,
+                        has_pit_out=False,
                     ),
                 ),
             ),

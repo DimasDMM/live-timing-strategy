@@ -281,6 +281,7 @@ class PitIn(DictModel):
     pit_time: int
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
+    has_pit_out: bool
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -296,6 +297,7 @@ class PitIn(DictModel):
             kart_status=KartStatus(raw.get('kart_status')),
             fixed_kart_status=(None if fixed_kart_status is None
                                else KartStatus(fixed_kart_status)),
+            has_pit_out=raw.get('has_pit_out'),
         )
 
 
