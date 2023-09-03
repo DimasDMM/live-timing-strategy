@@ -48,7 +48,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 150500,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
-                        'has_pit_out': False,
+                        'has_pit_out': True,
                     },
                     {
                         'id': 2,
@@ -59,7 +59,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 151000,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
-                        'has_pit_out': False,
+                        'has_pit_out': True,
                     },
                     {
                         'id': 3,
@@ -102,7 +102,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 150500,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
             (
@@ -117,7 +117,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 150500,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
         ])
@@ -154,7 +154,7 @@ class TestPitsInManager(DatabaseTest):
                         'pit_time': 150500,
                         'kart_status': KartStatus.UNKNOWN.value,
                         'fixed_kart_status': None,
-                        'has_pit_out': False,
+                        'has_pit_out': True,
                     },
                 ],
             ),
@@ -271,7 +271,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
             (
@@ -292,7 +292,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
             (
@@ -310,7 +310,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 180000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
             (
@@ -328,7 +328,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 151000,
                     'kart_status': KartStatus.GOOD.value,
                     'fixed_kart_status': None,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
             (
@@ -346,7 +346,7 @@ class TestPitsInManager(DatabaseTest):
                     'pit_time': 151000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': KartStatus.GOOD.value,
-                    'has_pit_out': False,
+                    'has_pit_out': True,
                 },
             ),
         ])
@@ -506,6 +506,23 @@ class TestPitsOutManager(DatabaseTest):
             (
                 2,  # competition_id
                 AddPitOut(
+                    team_id=4,
+                    driver_id=5,
+                    kart_status=KartStatus.BAD,
+                    fixed_kart_status=None,
+                ),
+                {
+                    'id': None,
+                    'competition_id': 2,
+                    'team_id': 4,
+                    'driver_id': 5,
+                    'kart_status': KartStatus.BAD.value,
+                    'fixed_kart_status': None,
+                },
+            ),
+            (
+                2,  # competition_id
+                AddPitOut(
                     team_id=5,
                     driver_id=7,
                     kart_status=KartStatus.GOOD,
@@ -529,7 +546,10 @@ class TestPitsOutManager(DatabaseTest):
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method add_one."""
-        manager = PitsOutManager(db=db_context, logger=fake_logger)
+        manager = PitsOutManager(
+            db=db_context,
+            logger=fake_logger,
+            pin_manager=PitsInManager(db=db_context, logger=fake_logger))
         item_id = manager.add_one(model, competition_id, commit=True)
 
         expected_item['id'] = item_id
@@ -616,3 +636,101 @@ class TestPitsOutManager(DatabaseTest):
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
         assert before_item.update_date < after_item.update_date
+
+
+class TestPitsInOutManager(DatabaseTest):
+    """
+    Test class ltsapi.managers.pits.PitsInManager/PitsOutManager.
+    """
+
+    EXCLUDE = {
+        'insert_date': True,
+        'update_date': True,
+    }
+
+    @pytest.mark.parametrize(
+        ('competition_id, team_id, model_pin, expected_pin,'
+         'model_pout, expected_pout'),
+        [
+            (
+                2,  # competition_id
+                4,  # team_id
+                AddPitIn(
+                    team_id=4,
+                    driver_id=5,
+                    lap=10,
+                    pit_time=None,
+                    kart_status=KartStatus.GOOD,
+                    fixed_kart_status=None,
+                ),
+                {
+                    'id': None,
+                    'competition_id': 2,
+                    'team_id': 4,
+                    'driver_id': 5,
+                    'lap': 10,
+                    'pit_time': None,
+                    'kart_status': KartStatus.GOOD.value,
+                    'fixed_kart_status': None,
+                    'has_pit_out': False,
+                },
+                AddPitOut(
+                    team_id=4,
+                    driver_id=5,
+                    kart_status=KartStatus.UNKNOWN,
+                    fixed_kart_status=None,
+                ),
+                {
+                    'id': None,
+                    'competition_id': 2,
+                    'team_id': 4,
+                    'driver_id': 5,
+                    'kart_status': KartStatus.UNKNOWN.value,
+                    'fixed_kart_status': None,
+                },
+            ),
+        ])
+    def test_add_one(
+            self,
+            competition_id: Optional[int],
+            team_id: int,
+            model_pin: AddPitIn,
+            expected_pin: dict,
+            model_pout: AddPitOut,
+            expected_pout: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method add_one."""
+        pin_manager = PitsInManager(db=db_context, logger=fake_logger)
+        pout_manager = PitsOutManager(
+            db=db_context, logger=fake_logger, pin_manager=pin_manager)
+
+        # Insert pit-in
+        item_id = pin_manager.add_one(model_pin, competition_id, commit=True)
+
+        # Validate that the pit-in was inserted correctly
+        expected_pin['id'] = item_id
+        db_item = pin_manager.get_by_id(item_id, competition_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        assert dict_item == expected_pin
+
+        # Insert pit-out
+        item_id = pout_manager.add_one(model_pout, competition_id, commit=True)
+
+        # Validate that the pit-out was inserted correctly
+        expected_pout['id'] = item_id
+        db_item = pout_manager.get_by_id(item_id, competition_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        assert dict_item == expected_pout
+
+        # Validate that the pit-in has the flag 'has_pit_out' to true
+        db_item = pin_manager.get_last_by_team_id(competition_id, team_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        expected_pin['has_pit_out'] = True
+        assert dict_item == expected_pin

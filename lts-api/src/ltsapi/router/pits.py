@@ -269,7 +269,10 @@ async def add_pit_out(
     db = _build_db_connection(_logger)
     with db:
         db.start_transaction()
-        manager = PitsOutManager(db=db, logger=_logger)
+        manager = PitsOutManager(
+            db=db,
+            logger=_logger,
+            pin_manager=PitsInManager(db=db, logger=_logger))
         try:
             item_id = manager.add_one(pit_out, competition_id, commit=True)
         except ApiError as e:

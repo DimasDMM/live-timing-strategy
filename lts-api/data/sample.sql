@@ -79,6 +79,10 @@ INSERT INTO `timing_pits_out`(`competition_id`, `team_id`, `driver_id`, `kart_st
   (2, 4, 5, 'unknown', NULL),
   (2, 5, 7, 'unknown', NULL);
 
+INSERT INTO `timing_pits_in_out`(`pit_in_id`, `pit_out_id`) VALUES
+  (1, 1),
+  (2, 2);
+
 INSERT INTO `parsers_settings`(`competition_id`, `name`, `value`) VALUES
   (1, 'timing-best-time', 'timing-best-time-value'),
   (1, 'timing-gap', 'timing-gap-value'),

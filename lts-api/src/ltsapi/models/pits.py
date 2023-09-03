@@ -25,6 +25,13 @@ class AddPitOut(BaseModel):
     fixed_kart_status: Optional[KartStatus]
 
 
+class AddPitInOut(BaseModel):
+    """Data to add a new relation pit-in and pit-out."""
+
+    pit_in_id: int
+    pit_out_id: int
+
+
 class GetPitIn(BaseModel):
     """Pit-in data."""
 

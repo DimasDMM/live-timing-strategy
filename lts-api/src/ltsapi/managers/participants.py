@@ -22,7 +22,6 @@ from ltsapi.models.participants import (
     UpdateTotalTimeDriver,
 )
 from ltsapi.models.timing import AddTiming
-from ltsapi.managers.competitions import CIndexManager
 
 
 class DriversManager:
@@ -46,12 +45,10 @@ class DriversManager:
     def __init__(
             self,
             db: DBContext,
-            logger: Logger,
-            cindex_manager: Optional[CIndexManager] = None) -> None:
+            logger: Logger) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
-        self._cindex_manager = cindex_manager
 
     def get_all(self) -> List[GetDriver]:
         """Get all drivers in the database."""
@@ -402,12 +399,10 @@ class TeamsManager:
     def __init__(
             self,
             db: DBContext,
-            logger: Logger,
-            cindex_manager: Optional[CIndexManager] = None) -> None:
+            logger: Logger) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
-        self._cindex_manager = cindex_manager
 
     def get_all(self) -> List[GetTeam]:
         """Get all teams in the database."""

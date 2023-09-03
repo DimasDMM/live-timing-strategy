@@ -12,6 +12,7 @@ from ltsapi.managers.utils.statements import (
 from ltsapi.models.pits import (
     AddPitIn,
     AddPitOut,
+    AddPitInOut,
     GetPitIn,
     GetPitOut,
     UpdatePitIn,
@@ -237,12 +238,18 @@ class PitsOutManager:
             pout.insert_date AS pout_insert_date,
             pout.update_date AS pout_update_date
         FROM timing_pits_out AS pout'''
-    TABLE_NAME = 'timing_pits_out'
+    PITS_OUT_TABLE = 'timing_pits_out'
+    PITS_IN_OUT_TABLE = 'timing_pits_in_out'
 
-    def __init__(self, db: DBContext, logger: Logger) -> None:
+    def __init__(
+            self,
+            db: DBContext,
+            logger: Logger,
+            pin_manager: Optional[PitsInManager] = None) -> None:
         """Construct."""
         self._db = db
         self._logger = logger
+        self._pin_manager = pin_manager
 
     def get_by_competition_id(self, competition_id: int) -> List[GetPitOut]:
         """
@@ -315,6 +322,9 @@ class PitsOutManager:
         """
         Add a new pit-out.
 
+        If the last pit-in is not linked to any pit-out, it will be linked to
+        this one.
+
         Params:
             pit_out (AddPitOut): Data of the pit-out.
             competition_id (int): ID of the competition.
@@ -323,13 +333,34 @@ class PitsOutManager:
         Returns:
             int: ID of inserted model.
         """
+        if self._pin_manager is None:
+            raise ApiError('An instance of PitInManager must be provided.')
+        elif pit_out.team_id is None:
+            raise ApiError('A team ID must be provided.')
+
         model_data = pit_out.dict()
         model_data['competition_id'] = competition_id
 
         item_id = insert_model(
-            self._db, self.TABLE_NAME, model_data, commit=commit)
+            self._db, self.PITS_OUT_TABLE, model_data, commit=False)
         if item_id is None:
             raise ApiError('No data was inserted or updated.')
+
+        # Add a relation between this pit-out and the last pit-in
+        last_pit_in = self._pin_manager.get_last_by_team_id(
+            competition_id=competition_id, team_id=pit_out.team_id)
+        if last_pit_in is not None and not last_pit_in.has_pit_out:
+            self._add_pit_in_out(
+                pit_in_id=last_pit_in.id, pit_out_id=item_id, commit=commit)
+        elif commit:
+            # If there is nothing to add, do commit (if the flag is enabled)
+            try:
+                if commit:
+                    self._db.commit()
+            except Exception as e:
+                self._db.rollback()
+                raise e
+
         return item_id
 
     def update_by_id(
@@ -356,11 +387,24 @@ class PitsOutManager:
                 status_code=400)
         update_model(
             self._db,
-            self.TABLE_NAME,
+            self.PITS_OUT_TABLE,
             pit_out.dict(),
             key_name='id',
             key_value=pit_out_id,
             commit=commit)
+
+    def _add_pit_in_out(
+            self,
+            pit_in_id: int,
+            pit_out_id: int,
+            commit: bool) -> None:
+        """Add relation between a pit-in and pit-out."""
+        model = AddPitInOut(pit_in_id=pit_in_id, pit_out_id=pit_out_id)
+        model_data = model.dict()
+        item_id = insert_model(
+            self._db, self.PITS_IN_OUT_TABLE, model_data, commit=commit)
+        if item_id is None:
+            raise ApiError('No data was inserted or updated.')
 
     def _raw_to_pit_out(self, row: dict) -> GetPitOut:
         """Build an instance of GetPitOut."""
