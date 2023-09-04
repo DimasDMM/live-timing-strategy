@@ -128,7 +128,7 @@ class InitialDataParser(InitialParser):
             )
         elif type == 'text':
             return DiffLap(
-                value=self._time_to_millis(raw),
+                value=self._time_to_millis(raw, default=0),
                 unit=LengthUnit.MILLIS,
             )
         elif type == 'countdown':

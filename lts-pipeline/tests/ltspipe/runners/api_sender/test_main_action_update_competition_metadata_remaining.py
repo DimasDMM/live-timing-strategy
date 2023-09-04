@@ -18,7 +18,7 @@ from ltspipe.data.competitions import (
     CompetitionStatus,
     DiffLap,
     LengthUnit,
-    UpdateCompetitionMetadataStatus,
+    UpdateCompetitionMetadataRemaining,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.data.notifications import Notification, NotificationType
@@ -65,10 +65,13 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
-                            data=UpdateCompetitionMetadataStatus(
+                            type=ActionType.UPDATE_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
+                            data=UpdateCompetitionMetadataRemaining(
                                 competition_code=TEST_COMPETITION_CODE,
-                                status=CompetitionStatus.ONGOING,
+                                remaining_length=DiffLap(
+                                    value=1200000,
+                                    unit=LengthUnit.MILLIS,
+                                ),
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -93,10 +96,10 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,  # noqa: E501, LN001
+                            type=NotificationType.UPDATED_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
                             data=CompetitionMetadata(
                                 stage=CompetitionStage.FREE_PRACTICE,
-                                status=CompetitionStatus.ONGOING,
+                                status=CompetitionStatus.PAUSED,
                                 remaining_length=DiffLap(
                                     value=1200000,
                                     unit=LengthUnit.MILLIS,
@@ -113,10 +116,13 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
-                            data=UpdateCompetitionMetadataStatus(
+                            type=ActionType.UPDATE_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
+                            data=UpdateCompetitionMetadataRemaining(
                                 competition_code=TEST_COMPETITION_CODE,
-                                status=CompetitionStatus.ONGOING,
+                                remaining_length=DiffLap(
+                                    value=1200000,
+                                    unit=LengthUnit.MILLIS,
+                                ),
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -185,11 +191,11 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_put_competition_metadata_status(
+def _mock_response_put_competition_metadata_remaining(
         api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(content={
-        'status': 'ongoing',
+        'status': 'paused',
         'stage': 'free-practice',
         'remaining_length': 1200000,
         'remaining_length_unit': 'millis',
@@ -197,7 +203,7 @@ def _mock_response_put_competition_metadata_status(
         'update_date': '2023-04-20T20:42:51',
     })
     item = MapRequestItem(
-        url=f'{api_url}/v1/c/1/metadata/status',
+        url=f'{api_url}/v1/c/1/metadata/remaining_length',
         method=MapRequestMethod.PUT,
         responses=[response],
     )
@@ -209,5 +215,5 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_put_competition_metadata_status(api_url))
+        + _mock_response_put_competition_metadata_remaining(api_url))
     mock_requests(mocker, requests_map=requests_map)

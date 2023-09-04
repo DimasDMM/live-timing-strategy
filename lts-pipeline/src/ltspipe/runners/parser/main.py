@@ -12,6 +12,7 @@ from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.competitions_metadata import (
+    CompetitionMetadataRemainingParser,
     CompetitionMetadataStatusParser,
 )
 from ltspipe.parsers.websocket.initial import InitialDataParser
@@ -255,6 +256,7 @@ def _build_parsers_pipe(
     """Build pipe with data parsers."""
     initial_parser = InitialDataParser()
     parsers: List[Parser] = [
+        CompetitionMetadataRemainingParser(competitions),  # type: ignore
         CompetitionMetadataStatusParser(competitions),  # type: ignore
         DriverNameParser(competitions),  # type: ignore
         PitInParser(competitions),  # type: ignore

@@ -5,6 +5,7 @@ from ltspipe.data.competitions import (
     AddPitIn,
     AddPitOut,
     InitialData,
+    UpdateCompetitionMetadataRemaining,
     UpdateCompetitionMetadataStatus,
     UpdateDriver,
     UpdateTeam,
@@ -18,6 +19,7 @@ class ActionType(str, EnumBase):
     INITIALIZE = 'initialize'
     ADD_PIT_IN = 'add-pit-in'
     ADD_PIT_OUT = 'add-pit-out'
+    UPDATE_COMPETITION_METADATA_REMAINING = 'update-competition-metadata-remaining'  # noqa: E501, LN001
     UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'
     UPDATE_DRIVER = 'update-driver'
     UPDATE_TEAM = 'update-team'
@@ -28,6 +30,7 @@ _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.INITIALIZE: InitialData,
     ActionType.ADD_PIT_IN: AddPitIn,
     ActionType.ADD_PIT_OUT: AddPitOut,
+    ActionType.UPDATE_COMPETITION_METADATA_REMAINING: UpdateCompetitionMetadataRemaining,  # noqa: E501, LN001
     ActionType.UPDATE_COMPETITION_METADATA_STATUS: UpdateCompetitionMetadataStatus,  # noqa: E501, LN001
     ActionType.UPDATE_DRIVER: UpdateDriver,
     ActionType.UPDATE_TEAM: UpdateTeam,

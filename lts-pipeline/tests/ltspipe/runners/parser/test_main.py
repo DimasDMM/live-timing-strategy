@@ -17,6 +17,7 @@ from ltspipe.data.competitions import (
     KartStatus,
     Participant,
     Team,
+    UpdateCompetitionMetadataRemaining,
     UpdateCompetitionMetadataStatus,
     UpdateDriver,
     UpdateTeam,
@@ -621,6 +622,78 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 team_id=1,
                                 position=6,
                                 auto_other_positions=True,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with a timing position.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_stage_remaining_time_text.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {  # in_competitions
+                TEST_COMPETITION_CODE: CompetitionInfo(
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                    timing=[],
+                ),
+            },
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_stage_remaining_time_text.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
+                            data=UpdateCompetitionMetadataRemaining(
+                                competition_code=TEST_COMPETITION_CODE,
+                                remaining_length={
+                                    'value': 1200000,
+                                    'unit': LengthUnit.MILLIS,
+                                },
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,

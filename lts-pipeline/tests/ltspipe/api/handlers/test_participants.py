@@ -3,7 +3,7 @@ from typing import List
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.competitions_base import build_competition_info
-from ltspipe.api.handlers.names import (
+from ltspipe.api.handlers.participants import (
     UpdateDriverHandler,
     UpdateTeamHandler,
 )

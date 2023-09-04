@@ -98,12 +98,35 @@ def update_competition_metadata(
         raise Exception(f'API error: {r.text}')
 
 
+def update_competition_metadata_remaining(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        remaining_length: DiffLap) -> CompetitionMetadata:
+    """Update the remaining length of a competition metadata."""
+    data = {
+        'remaining_length': remaining_length.value,
+        'remaining_length_unit': remaining_length.unit,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/metadata/remaining_length'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response = r.json()
+    if not isinstance(response, dict):
+        raise Exception(f'Unknown API response ({uri}): {response}')
+
+    return _build_competition_metadata(response)
+
+
 def update_competition_metadata_status(
         api_url: str,
         bearer: str,
         competition_id: int,
-        status: CompetitionStatus) -> None:
-    """Update the metadata of a competition."""
+        status: CompetitionStatus) -> CompetitionMetadata:
+    """Update the status of a competition metadata."""
     data = {
         'status': status.value,
     }
@@ -112,6 +135,12 @@ def update_competition_metadata_status(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
         raise Exception(f'API error: {r.text}')
+
+    response = r.json()
+    if not isinstance(response, dict):
+        raise Exception(f'Unknown API response ({uri}): {response}')
+
+    return _build_competition_metadata(response)
 
 
 def add_parsers_settings(

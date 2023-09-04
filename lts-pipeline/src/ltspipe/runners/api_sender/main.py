@@ -8,10 +8,14 @@ from typing import Any, Callable, Dict, Iterable
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.handlers.competitions_metadata import (
+    UpdateCompetitionMetadataRemainingHandler,
     UpdateCompetitionMetadataStatusHandler,
 )
 from ltspipe.api.handlers.initial import InitialDataHandler
-from ltspipe.api.handlers.names import UpdateDriverHandler, UpdateTeamHandler
+from ltspipe.api.handlers.participants import (
+    UpdateDriverHandler,
+    UpdateTeamHandler,
+)
 from ltspipe.api.handlers.pits import AddPitInHandler, AddPitOutHandler
 from ltspipe.api.handlers.timing import UpdateTimingPositionHandler
 from ltspipe.configs import ApiSenderConfig
@@ -223,6 +227,11 @@ def _build_action_handlers(
             competitions=competitions,  # type: ignore
         ),
         ActionType.UPDATE_DRIVER: UpdateDriverHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            competitions=competitions,  # type: ignore
+        ),
+        ActionType.UPDATE_COMPETITION_METADATA_REMAINING: UpdateCompetitionMetadataRemainingHandler(  # noqa: E501, LN001
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
             competitions=competitions,  # type: ignore

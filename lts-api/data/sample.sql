@@ -13,7 +13,7 @@ INSERT INTO `competitions_index`(`track_id`, `competition_code`, `name`, `descri
 INSERT INTO `competitions_metadata_current`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
   (1, NULL, NULL, 'finished', 'race', 0, 'laps'),
   (2, NULL, NULL, 'ongoing', 'race', 348, 'laps'),
-  (3, NULL, NULL, 'paused', 'free-practice', 0, 'laps');
+  (3, NULL, NULL, 'paused', 'free-practice', 1200000, 'millis');
 
 INSERT INTO `competitions_metadata_history`(`competition_id`, `reference_time`, `reference_current_offset`, `status`, `stage`, `remaining_length`, `remaining_length_unit`) VALUES
   (1, NULL, NULL, 'paused', 'free-practice', 0, 'laps'),
@@ -22,7 +22,7 @@ INSERT INTO `competitions_metadata_history`(`competition_id`, `reference_time`, 
   (2, NULL, NULL, 'paused', 'free-practice', 0, 'laps'),
   (2, NULL, NULL, 'ongoing', 'race', 350, 'laps'),
   (2, NULL, NULL, 'ongoing', 'race', 348, 'laps'),
-  (3, NULL, NULL, 'paused', 'free-practice', 0, 'laps');
+  (3, NULL, NULL, 'paused', 'free-practice', 1200000, 'millis');
 
 INSERT INTO `competitions_settings`(`competition_id`, `length`, `length_unit`, `pit_time`, `min_number_pits`) VALUES
   (1, 350, 'laps', 120000, 5),
