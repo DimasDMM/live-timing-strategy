@@ -15,7 +15,10 @@ from ltspipe.parsers.websocket.competitions_metadata import (
     CompetitionMetadataStatusParser,
 )
 from ltspipe.parsers.websocket.initial import InitialDataParser
-from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
+from ltspipe.parsers.websocket.participants import (
+    DriverNameParser,
+    TeamNameParser,
+)
 from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
 from ltspipe.parsers.websocket.timing import TimingPositionParser
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth

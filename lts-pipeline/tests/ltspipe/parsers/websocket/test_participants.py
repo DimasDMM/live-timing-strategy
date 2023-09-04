@@ -10,7 +10,10 @@ from ltspipe.data.competitions import (
     UpdateTeam,
 )
 from ltspipe.data.enum import ParserSettings
-from ltspipe.parsers.websocket.names import DriverNameParser, TeamNameParser
+from ltspipe.parsers.websocket.participants import (
+    DriverNameParser,
+    TeamNameParser,
+)
 from tests.fixtures import TEST_COMPETITION_CODE
 from tests.helpers import load_raw_message
 
