@@ -118,7 +118,7 @@ class PitsInManager:
             team_id (int): ID of the team.
 
         Returns:
-            List[GetPitIn]: List of pits-in in the competition and team.
+            List[GetPitIn]: List of pits-in of a team in the competition.
         """
         query = f'''
             {self.BASE_QUERY}
@@ -304,7 +304,7 @@ class PitsOutManager:
             team_id (int): ID of the team.
 
         Returns:
-            List[GetPitOut]: List of pits-out in the competition and team.
+            List[GetPitOut]: List of pits-out of a team in the competition.
         """
         query = f'''
             {self.BASE_QUERY}
@@ -313,6 +313,30 @@ class PitsOutManager:
         models: List[GetPitOut] = fetchmany_models(  # type: ignore
             self._db, self._raw_to_pit_out, query, params=tuple(params))
         return models
+
+    def get_last_by_team_id(
+            self,
+            competition_id: int,
+            team_id: int) -> Optional[GetPitOut]:
+        """
+        Retrieve the last pit-out of a team.
+
+        Params:
+            competition_id (int): ID of the competition.
+            team_id (int): ID of the team.
+
+        Returns:
+            GetPitOut | None: Last pit-out of a team in the competition.
+        """
+        query = f'''
+            {self.BASE_QUERY}
+            WHERE pout.competition_id = %s AND pout.team_id = %s
+            ORDER BY pout.id DESC
+            LIMIT 1'''
+        params = [competition_id, team_id]
+        model: Optional[GetPitOut] = fetchone_model(  # type: ignore
+            self._db, self._raw_to_pit_out, query, params=tuple(params))
+        return model
 
     def add_one(
             self,

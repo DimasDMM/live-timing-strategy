@@ -501,6 +501,37 @@ class TestPitsOutManager(DatabaseTest):
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
+        'competition_id, team_id, expected_item',
+        [
+            (
+                2,  # competition_id
+                5,  # team_id
+                {  # expected_item
+                    'id': 2,
+                    'competition_id': 2,
+                    'team_id': 5,
+                    'driver_id': 7,
+                    'kart_status': KartStatus.UNKNOWN.value,
+                    'fixed_kart_status': None,
+                },
+            ),
+        ])
+    def test_get_last_by_team_id(
+            self,
+            competition_id: int,
+            team_id: int,
+            expected_item: dict,
+            db_context: DBContext,
+            fake_logger: FakeLogger) -> None:
+        """Test method get_by_team_id."""
+        manager = PitsOutManager(db=db_context, logger=fake_logger)
+        db_item = manager.get_last_by_team_id(competition_id, team_id)
+        assert db_item is not None
+
+        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        assert dict_item == expected_item
+
+    @pytest.mark.parametrize(
         'competition_id, model, expected_item',
         [
             (

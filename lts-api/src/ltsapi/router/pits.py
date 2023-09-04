@@ -297,3 +297,18 @@ async def get_pits_out_by_team(
     with db:
         manager = PitsOutManager(db=db, logger=_logger)
         return manager.get_by_team_id(competition_id, team_id)
+
+
+@router.get(
+        path='/c/{competition_id}/pits/out/filter/team/{team_id}/last',  # noqa
+        summary='Get the last pit-out of a team')
+async def get_last_pit_out_by_team(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    team_id: Annotated[int, Path(description='ID of the team')],
+) -> Union[GetPitOut, Empty]:
+    """Get the last pit-out of a team."""
+    db = _build_db_connection(_logger)
+    with db:
+        manager = PitsOutManager(db=db, logger=_logger)
+        item = manager.get_last_by_team_id(competition_id, team_id)
+        return Empty() if item is None else item
