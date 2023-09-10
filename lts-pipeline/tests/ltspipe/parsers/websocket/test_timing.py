@@ -136,7 +136,7 @@ class TestTimingPositionParser:
                 },
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
-                'Column for timing position not found',  # expected_exception
+                'Column for timing-position not found',  # expected_exception
             ),
             (
                 {  # in_competitions
@@ -152,7 +152,7 @@ class TestTimingPositionParser:
                 },
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
-                ('The expected column for the timing position is "c1", '
+                ('The expected column for the timing-position is "c1", '
                  'but it was given in "c3"'),
             ),
         ],

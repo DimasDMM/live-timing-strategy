@@ -14,19 +14,20 @@ from ltspipe.parsers.websocket import _find_team_by_code
 def _validate_column_position(
         competitions: Dict[str, CompetitionInfo],
         competition_code: str,
-        column_id: str) -> None:
-    """Validate that the column correspond to the timing position."""
+        column_id: str,
+        parser_setting: ParserSettings) -> None:
+    """Validate that the column correspond to the expected data."""
     info = competitions[competition_code]
     if ParserSettings.TIMING_POSITION in info.parser_settings:
-        name_id = info.parser_settings[ParserSettings.TIMING_POSITION]
+        name_id = info.parser_settings[parser_setting]
         if name_id != column_id:
             raise Exception(
-                f'The expected column for the timing position is "{name_id}", '
+                f'The expected column for the {parser_setting} is "{name_id}", '
                 f'but it was given in "{column_id}"')
         else:
             return
 
-    raise Exception('Column for timing position not found')
+    raise Exception(f'Column for {parser_setting} not found')
 
 
 class TimingPositionParser(Parser):
@@ -80,7 +81,10 @@ class TimingPositionParser(Parser):
 
         column_id = matches[2]
         _validate_column_position(
-            self._competitions, competition_code, column_id)
+            self._competitions,
+            competition_code,
+            column_id,
+            ParserSettings.TIMING_POSITION)
 
         participant_code = matches[1]
         timing_position = int(matches[3])
