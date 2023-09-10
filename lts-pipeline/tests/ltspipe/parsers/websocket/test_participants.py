@@ -21,7 +21,7 @@ PARSERS_SETTINGS = {
     ParserSettings.TIMING_POSITION: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
     ParserSettings.TIMING_NAME: 'c5',
-    ParserSettings.TIMING_LAST_LAP_TIME: 'c6',
+    ParserSettings.TIMING_LAST_TIME: 'c6',
     ParserSettings.TIMING_BEST_TIME: 'c7',
     ParserSettings.TIMING_GAP: 'c8',
     ParserSettings.TIMING_INTERVAL: 'c9',

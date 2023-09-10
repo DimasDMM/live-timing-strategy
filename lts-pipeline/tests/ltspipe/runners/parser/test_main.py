@@ -21,6 +21,8 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
     UpdateDriver,
     UpdateTeam,
+    UpdateTimingLap,
+    UpdateTimingLastTime,
     UpdateTimingPosition,
 )
 from ltspipe.data.enum import (
@@ -56,11 +58,23 @@ EXCLUDED_KEYS = {
     'created_at': True,
     'updated_at': True,
 }
-PARSERS_SETTINGS = {
+PARSERS_SETTINGS_ENDURANCE = {
     ParserSettings.TIMING_POSITION: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
     ParserSettings.TIMING_NAME: 'c5',
-    ParserSettings.TIMING_LAST_LAP_TIME: 'c6',
+    ParserSettings.TIMING_LAP: 'c6',
+    ParserSettings.TIMING_LAST_TIME: 'c7',
+    ParserSettings.TIMING_BEST_TIME: 'c8',
+    ParserSettings.TIMING_GAP: 'c9',
+    ParserSettings.TIMING_INTERVAL: 'c10',
+    ParserSettings.TIMING_PIT_TIME: 'c11',
+    ParserSettings.TIMING_NUMBER_PITS: 'c12',
+}
+PARSERS_SETTINGS_QUALY = {
+    ParserSettings.TIMING_POSITION: 'c3',
+    ParserSettings.TIMING_KART_NUMBER: 'c4',
+    ParserSettings.TIMING_NAME: 'c5',
+    ParserSettings.TIMING_LAST_TIME: 'c6',
     ParserSettings.TIMING_BEST_TIME: 'c7',
     ParserSettings.TIMING_GAP: 'c8',
     ParserSettings.TIMING_INTERVAL: 'c9',
@@ -129,7 +143,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                     value=1200000,
                                     unit=LengthUnit.MILLIS,
                                 ),
-                                parsers_settings=PARSERS_SETTINGS,
+                                parsers_settings=PARSERS_SETTINGS_QUALY,
                                 participants={
                                     'r5625': Participant(
                                         best_time=64882,  # 1:04.882
@@ -139,7 +153,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                             value=0, unit=LengthUnit.MILLIS),
                                         kart_number=1,
                                         laps=0,
-                                        last_lap_time=65142,  # 1:05.142
+                                        last_time=65142,  # 1:05.142
                                         number_pits=0,
                                         participant_code='r5625',
                                         position=1,
@@ -153,7 +167,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                             value=0, unit=LengthUnit.MILLIS),
                                         kart_number=2,
                                         laps=0,
-                                        last_lap_time=65460,  # 1:05.460
+                                        last_time=65460,  # 1:05.460
                                         number_pits=1,
                                         participant_code='r5626',
                                         position=2,
@@ -171,7 +185,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         ),
                                         kart_number=3,
                                         laps=0,
-                                        last_lap_time=65411,  # 1:05.411
+                                        last_time=65411,  # 1:05.411
                                         number_pits=2,
                                         participant_code='r5627',
                                         pit_time=54000,  # 54.
@@ -561,6 +575,161 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
             },
         ),
         # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with a timing lap.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_lap.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {  # in_competitions
+                TEST_COMPETITION_CODE: CompetitionInfo(
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS_ENDURANCE,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='CKM 1',
+                            number=41,
+                        ),
+                    ],
+                    timing=[],
+                ),
+            },
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_lap.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_TIMING_LAP,
+                            data=UpdateTimingLap(
+                                competition_code=TEST_COMPETITION_CODE,
+                                team_id=1,
+                                lap=143,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with a timing last time.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_last_time.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {  # in_competitions
+                TEST_COMPETITION_CODE: CompetitionInfo(
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS_ENDURANCE,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='CKM 1',
+                            number=41,
+                        ),
+                    ],
+                    timing=[],
+                ),
+            },
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_last_time.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_TIMING_LAST_TIME,
+                            data=UpdateTimingLastTime(
+                                competition_code=TEST_COMPETITION_CODE,
+                                team_id=1,
+                                last_time=65739,
+                                auto_best_time=True,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
         # new message with a timing position.
         (
             {  # kafka_topics
@@ -583,7 +752,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 TEST_COMPETITION_CODE: CompetitionInfo(
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
-                    parser_settings=PARSERS_SETTINGS,
+                    parser_settings=PARSERS_SETTINGS_ENDURANCE,
                     drivers=[],
                     teams=[
                         Team(
@@ -639,7 +808,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
             },
         ),
         # Test case: When the flag 'wait-init' is disabled and it receives a
-        # new message with a timing position.
+        # new message with the remaining time of the competition stage.
         (
             {  # kafka_topics
                 DEFAULT_NOTIFICATIONS_TOPIC: [],
@@ -661,7 +830,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                 TEST_COMPETITION_CODE: CompetitionInfo(
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
-                    parser_settings=PARSERS_SETTINGS,
+                    parser_settings=PARSERS_SETTINGS_ENDURANCE,
                     drivers=[],
                     teams=[],
                     timing=[],
@@ -813,14 +982,62 @@ def _mock_response_get_parser_settings(api_url: str) -> List[MapRequestItem]:
     response = MockResponse(
         content=[
             {
+                'name': ParserSettings.TIMING_POSITION.value,
+                'value': 'c3',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_KART_NUMBER.value,
+                'value': 'c4',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
                 'name': ParserSettings.TIMING_NAME.value,
                 'value': 'c5',
                 'insert_date': '2023-04-15T21:43:26',
                 'update_date': '2023-04-15T21:43:26',
             },
             {
-                'name': ParserSettings.TIMING_POSITION.value,
-                'value': 'c3',
+                'name': ParserSettings.TIMING_LAP.value,
+                'value': 'c6',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_LAST_TIME.value,
+                'value': 'c7',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_BEST_TIME.value,
+                'value': 'c8',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_GAP.value,
+                'value': 'c9',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_INTERVAL.value,
+                'value': 'c10',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_PIT_TIME.value,
+                'value': 'c11',
+                'insert_date': '2023-04-15T21:43:26',
+                'update_date': '2023-04-15T21:43:26',
+            },
+            {
+                'name': ParserSettings.TIMING_NUMBER_PITS.value,
+                'value': 'c12',
                 'insert_date': '2023-04-15T21:43:26',
                 'update_date': '2023-04-15T21:43:26',
             },

@@ -96,7 +96,7 @@ class Participant(DictModel):
     interval: DiffLap
     kart_number: int
     laps: int
-    last_lap_time: int
+    last_time: int
     number_pits: int
     participant_code: str
     position: int
@@ -124,7 +124,7 @@ class Participant(DictModel):
             interval=DiffLap.from_dict(raw.get('interval')),  # type: ignore
             kart_number=raw.get('kart_number'),
             laps=raw.get('laps'),
-            last_lap_time=raw.get('last_lap_time'),
+            last_time=raw.get('last_time'),
             number_pits=raw.get('number_pits'),
             participant_code=raw.get('participant_code'),
             pit_time=raw.get('pit_time'),
@@ -473,6 +473,44 @@ class UpdateTeam(DictModel):
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
+        )
+
+
+class UpdateTimingLap(DictModel):
+    """Info to update the timing lap of a team."""
+
+    competition_code: str
+    team_id: int
+    lap: int
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            lap=raw.get('lap'),
+        )
+
+
+class UpdateTimingLastTime(DictModel):
+    """Info to update the timing last time of a team."""
+
+    competition_code: str
+    team_id: int
+    last_time: int
+    auto_best_time: bool
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            last_time=raw.get('last_time'),
+            auto_best_time=raw.get('auto_best_time'),
         )
 
 

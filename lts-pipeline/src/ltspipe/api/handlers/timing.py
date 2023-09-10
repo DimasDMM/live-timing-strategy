@@ -1,15 +1,102 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.api.timing import update_timing_position_by_team
+from ltspipe.api.timing import (
+    update_timing_lap_by_team,
+    update_timing_last_time_by_team,
+    update_timing_position_by_team,
+)
 from ltspipe.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (
     CompetitionInfo,
     ParticipantTiming,
+    UpdateTimingLap,
+    UpdateTimingLastTime,
     UpdateTimingPosition,
 )
+
+
+class UpdateTimingLapHandler(ApiHandler):
+    """Handle UpdateTimingLap instances."""
+
+    def __init__(
+            self,
+            api_url: str,
+            auth_data: AuthData,
+            competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._api_url = api_url
+        self._auth_data = auth_data
+        self._competitions = competitions
+
+    def handle(self, model: BaseModel) -> Optional[Notification]:
+        """Update the timing position of a participant."""
+        if not isinstance(model, UpdateTimingLap):
+            raise Exception(
+                'The model must be an instance of UpdateTimingLap.')
+
+        competition_code = model.competition_code
+        info = self._competitions[competition_code]
+
+        participant_timing = update_timing_lap_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            lap=model.lap,
+        )
+
+        return self._create_notification(participant_timing)
+
+    def _create_notification(self, data: ParticipantTiming) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.UPDATED_TIMING_LAP,
+            data=data,
+        )
+
+
+class UpdateTimingLastTimeHandler(ApiHandler):
+    """Handle UpdateTimingLastTime instances."""
+
+    def __init__(
+            self,
+            api_url: str,
+            auth_data: AuthData,
+            competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._api_url = api_url
+        self._auth_data = auth_data
+        self._competitions = competitions
+
+    def handle(self, model: BaseModel) -> Optional[Notification]:
+        """Update the timing position of a participant."""
+        if not isinstance(model, UpdateTimingLastTime):
+            raise Exception(
+                'The model must be an instance of UpdateTimingLastTime.')
+
+        competition_code = model.competition_code
+        info = self._competitions[competition_code]
+
+        participant_timing = update_timing_last_time_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            last_time=model.last_time,
+            auto_best_time=model.auto_best_time,
+        )
+
+        return self._create_notification(participant_timing)
+
+    def _create_notification(self, data: ParticipantTiming) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.UPDATED_TIMING_LAST_TIME,
+            data=data,
+        )
 
 
 class UpdateTimingPositionHandler(ApiHandler):

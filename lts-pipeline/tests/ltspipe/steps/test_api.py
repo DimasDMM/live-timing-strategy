@@ -70,7 +70,7 @@ class TestApiActionStep:
                                     ),
                                     kart_number=1,
                                     laps=5,
-                                    last_lap_time=65142,  # 1:05.142
+                                    last_time=65142,  # 1:05.142
                                     number_pits=0,
                                     participant_code='r5625',
                                     pit_time=None,

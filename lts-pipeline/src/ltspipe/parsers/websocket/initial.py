@@ -24,7 +24,7 @@ class InitialDataParser(InitialParser):
             'rk': ParserSettings.TIMING_POSITION,
             'no': ParserSettings.TIMING_KART_NUMBER,
             'dr': ParserSettings.TIMING_NAME,
-            'llp': ParserSettings.TIMING_LAST_LAP_TIME,
+            'llp': ParserSettings.TIMING_LAST_TIME,
             'blp': ParserSettings.TIMING_BEST_TIME,
             'gap': ParserSettings.TIMING_GAP,
             'int': ParserSettings.TIMING_INTERVAL,
@@ -33,12 +33,12 @@ class InitialDataParser(InitialParser):
         'by_name': {
             'equipo': ParserSettings.TIMING_NAME,
             'kart': ParserSettings.TIMING_KART_NUMBER,
-            '\\u00daltima vuelta': ParserSettings.TIMING_LAST_LAP_TIME,
+            '\\u00daltima vuelta': ParserSettings.TIMING_LAST_TIME,
             'mejor vuelta': ParserSettings.TIMING_BEST_TIME,
             'gap': ParserSettings.TIMING_GAP,
             'interv.': ParserSettings.TIMING_INTERVAL,
             'intervalo': ParserSettings.TIMING_INTERVAL,
-            'vueltas': ParserSettings.TIMING_LAPS,
+            'vueltas': ParserSettings.TIMING_LAP,
             'tiempo en pit': ParserSettings.TIMING_PIT_TIME,
             'pits': ParserSettings.TIMING_NUMBER_PITS,
         },
@@ -282,10 +282,10 @@ class InitialDataParser(InitialParser):
                 fields.get(ParserSettings.TIMING_KART_NUMBER, None),
                 default=0),
             laps=self._cast_number(
-                fields.get(ParserSettings.TIMING_LAPS, None),
+                fields.get(ParserSettings.TIMING_LAP, None),
                 default=0),
-            last_lap_time=self._time_to_millis(
-                fields.get(ParserSettings.TIMING_LAST_LAP_TIME, None),
+            last_time=self._time_to_millis(
+                fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
             number_pits=self._cast_number(
                 fields.get(ParserSettings.TIMING_NUMBER_PITS, None),

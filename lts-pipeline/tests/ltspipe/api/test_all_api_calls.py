@@ -58,7 +58,7 @@ class TestAllApiCalls(DatabaseTest):
             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
             kart_number=41,
             laps=5,
-            last_lap_time=65142,  # 1:05.142
+            last_time=65142,  # 1:05.142
             number_pits=0,
             participant_code='r5625',
             pit_time=None,
@@ -72,7 +72,7 @@ class TestAllApiCalls(DatabaseTest):
             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
             kart_number=41,
             laps=5,
-            last_lap_time=65460,  # 1:05.460
+            last_time=65460,  # 1:05.460
             number_pits=1,
             participant_code='r5625',
             pit_time=None,
@@ -92,7 +92,7 @@ class TestAllApiCalls(DatabaseTest):
             ),
             kart_number=42,
             laps=5,
-            last_lap_time=65411,  # 1:05.411
+            last_time=65411,  # 1:05.411
             number_pits=2,
             participant_code='r5626',
             pit_time=54000,  # 54.

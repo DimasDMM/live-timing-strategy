@@ -111,7 +111,7 @@ class TestMessage:
                                     value=0, unit=LengthUnit.MILLIS),
                                 kart_number=1,
                                 laps=5,
-                                last_lap_time=65142,  # 1:05.142
+                                last_time=65142,  # 1:05.142
                                 number_pits=2,
                                 participant_code='r5625',
                                 position=1,

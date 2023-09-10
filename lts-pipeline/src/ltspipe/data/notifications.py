@@ -15,6 +15,8 @@ class NotificationType(str, EnumBase):
     UPDATED_COMPETITION_METADATA_STATUS = 'updated-competition-metadata-status'
     UPDATED_DRIVER = 'updated-driver'
     UPDATED_TEAM = 'updated-team'
+    UPDATED_TIMING_LAP = 'updated-timing-lap'
+    UPDATED_TIMING_LAST_TIME = 'updated-timing-last-time'
     UPDATED_TIMING_POSITION = 'updated-timing-position'
 
 
