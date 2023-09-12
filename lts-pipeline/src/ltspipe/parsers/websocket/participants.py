@@ -9,28 +9,11 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket import (
+from ltspipe.parsers.websocket.base import (
     _find_driver_by_name,
     _find_team_by_code,
+    _is_column_parser_setting,
 )
-
-
-def _validate_column_name(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
-        column_id: str) -> None:
-    """Validate that the column correspond to the participant name."""
-    info = competitions[competition_code]
-    if ParserSettings.TIMING_NAME in info.parser_settings:
-        name_id = info.parser_settings[ParserSettings.TIMING_NAME]
-        if name_id != column_id:
-            raise Exception(
-                f'The expected column for the name is "{name_id}", '
-                f'but it was given in "{column_id}"')
-        else:
-            return
-
-    raise Exception('Column for name not found')
 
 
 class DriverNameParser(Parser):
@@ -87,7 +70,12 @@ class DriverNameParser(Parser):
             return None
 
         column_id = matches[2]
-        _validate_column_name(self._competitions, competition_code, column_id)
+        if not _is_column_parser_setting(
+                self._competitions,
+                competition_code,
+                column_id,
+                ParserSettings.TIMING_NAME):
+            return None
 
         participant_code = matches[1]
         driver_name = matches[3]
@@ -158,7 +146,12 @@ class TeamNameParser(Parser):
             return None
 
         column_id = matches[2]
-        _validate_column_name(self._competitions, competition_code, column_id)
+        if not _is_column_parser_setting(
+                self._competitions,
+                competition_code,
+                column_id,
+                ParserSettings.TIMING_NAME):
+            return None
 
         participant_code = matches[1]
         old_team = _find_team_by_code(

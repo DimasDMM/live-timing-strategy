@@ -8,7 +8,7 @@ from ltspipe.data.competitions import (
     CompetitionInfo,
 )
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket import _find_team_by_code
+from ltspipe.parsers.websocket.base import _find_team_by_code
 
 
 class PitInParser(Parser):

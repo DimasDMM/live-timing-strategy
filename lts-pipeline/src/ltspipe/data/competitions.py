@@ -502,6 +502,24 @@ class UpdateTimingLastTime(DictModel):
         )
 
 
+class UpdateTimingNumberPits(DictModel):
+    """Info to update the timing number of pits of a team."""
+
+    competition_code: str
+    team_id: int
+    number_pits: int
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            number_pits=raw.get('number_pits'),
+        )
+
+
 class UpdateTimingPosition(DictModel):
     """Info to update the timing position of a team."""
 

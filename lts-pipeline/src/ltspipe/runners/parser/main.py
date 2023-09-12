@@ -24,6 +24,7 @@ from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
 from ltspipe.parsers.websocket.timing import (
     TimingLapParser,
     TimingLastTimeParser,
+    TimingNumberPitsParser,
     TimingPositionParser,
 )
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
@@ -268,6 +269,7 @@ def _build_parsers_pipe(
         TeamNameParser(competitions),  # type: ignore
         TimingLapParser(competitions),  # type: ignore
         TimingLastTimeParser(competitions),  # type: ignore
+        TimingNumberPitsParser(competitions),  # type: ignore
         TimingPositionParser(competitions),  # type: ignore
     ]
 

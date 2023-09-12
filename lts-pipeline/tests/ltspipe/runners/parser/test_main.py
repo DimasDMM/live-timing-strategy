@@ -23,6 +23,7 @@ from ltspipe.data.competitions import (
     UpdateTeam,
     UpdateTimingLap,
     UpdateTimingLastTime,
+    UpdateTimingNumberPits,
     UpdateTimingPosition,
 )
 from ltspipe.data.enum import (
@@ -713,6 +714,83 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 team_id=1,
                                 last_time=65739,
                                 auto_best_time=True,
+                            ),
+                        ),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        decoder=MessageDecoder.ACTION,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+            },
+            {},  # expected_queue
+            {  # expected_flags
+                TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False},
+            },
+        ),
+        # Test case: When the flag 'wait-init' is disabled and it receives a
+        # new message with the timing number of pits of a team.
+        (
+            {  # kafka_topics
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_number_pits.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [],
+            },
+            {  # in_competitions
+                TEST_COMPETITION_CODE: CompetitionInfo(
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS_ENDURANCE,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='CKM 1',
+                            number=41,
+                        ),
+                    ],
+                    timing=[],
+                ),
+            },
+            {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
+            {},  # in_queue
+            {  # expected_kafka
+                DEFAULT_NOTIFICATIONS_TOPIC: [],
+                DEFAULT_RAW_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=load_raw_message(
+                            'endurance_timing_number_pits.txt').strip(),
+                        source=MessageSource.SOURCE_WS_LISTENER,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=None,
+                        error_traceback=None,
+                    ).encode(),
+                ],
+                DEFAULT_STD_MESSAGES_TOPIC: [
+                    Message(
+                        competition_code=TEST_COMPETITION_CODE,
+                        data=Action(
+                            type=ActionType.UPDATE_TIMING_NUMBER_PITS,  # noqa: E501, LN001
+                            data=UpdateTimingNumberPits(
+                                competition_code=TEST_COMPETITION_CODE,
+                                team_id=1,
+                                number_pits=2,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,

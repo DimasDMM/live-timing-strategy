@@ -7,12 +7,14 @@ from ltspipe.data.competitions import (
     Team,
     UpdateTimingLap,
     UpdateTimingLastTime,
+    UpdateTimingNumberPits,
     UpdateTimingPosition,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.parsers.websocket.timing import (
     TimingLapParser,
     TimingLastTimeParser,
+    TimingNumberPitsParser,
     TimingPositionParser,
 )
 from tests.fixtures import TEST_COMPETITION_CODE
@@ -144,23 +146,6 @@ class TestTimingLapParser:
                     'endurance_timing_lap.txt'),  # in_data
                 'Column for timing-lap not found',  # expected_exception
             ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={
-                            ParserSettings.TIMING_LAP: 'c1',
-                        },
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_lap.txt'),  # in_data
-                ('The expected column for the timing-lap is "c1", '
-                 'but it was given in "c6"'),
-            ),
         ],
     )
     def test_parse_raises_exception(
@@ -289,23 +274,6 @@ class TestTimingLastTimeParser:
                     'endurance_timing_last_time.txt'),  # in_data
                 'Column for timing-last-time not found',  # expected_exception
             ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={
-                            ParserSettings.TIMING_LAST_TIME: 'c1',
-                        },
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_last_time.txt'),  # in_data
-                ('The expected column for the timing-last-time is "c1", '
-                 'but it was given in "c7"'),
-            ),
         ],
     )
     def test_parse_raises_exception(
@@ -315,6 +283,133 @@ class TestTimingLastTimeParser:
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
         parser = TimingLastTimeParser(competitions=in_competitions)
+        with pytest.raises(Exception) as e_info:
+            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+        e: Exception = e_info.value
+        assert str(e) == expected_exception
+
+
+class TestTimingNumberPitsParser:
+    """Test ltspipe.parsers.websocket.TimingNumberPitsParser."""
+
+    @pytest.mark.parametrize(
+        'in_competitions, in_data, expected_actions',
+        [
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
+                        drivers=[],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='CKM 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                load_raw_message(
+                    'endurance_timing_number_pits.txt'),  # in_data
+                [  # expected_actions
+                    Action(
+                        type=ActionType.UPDATE_TIMING_NUMBER_PITS,
+                        data=UpdateTimingNumberPits(
+                            competition_code=TEST_COMPETITION_CODE,
+                            team_id=1,
+                            number_pits=2,
+                        ),
+                    ),
+                ],
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
+                'unknown data input',  # in_data
+                [],  # expected_actions
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
+                ['unknown data format'],  # in_data
+                [],  # expected_actions
+            ),
+        ],
+    )
+    def test_parse(
+            self,
+            in_competitions: Dict[str, CompetitionInfo],
+            in_data: Any,
+            expected_actions: List[Action]) -> None:
+        """Test method parse with correct messages."""
+        parser = TimingNumberPitsParser(competitions=in_competitions)
+        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        assert ([x.dict() for x in out_actions]
+                == [x.dict() for x in expected_actions])
+
+    @pytest.mark.parametrize(
+        'in_competitions, in_data, expected_exception',
+        [
+            (
+                {},  # in_competitions
+                load_raw_message(
+                    'endurance_timing_number_pits.txt'),  # in_data
+                f'Unknown competition with code={TEST_COMPETITION_CODE}',
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings=PARSERS_SETTINGS,
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
+                load_raw_message(
+                    'endurance_timing_number_pits.txt'),  # in_data
+                'Unknown team with code=r5625',  # expected_exception
+            ),
+            (
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
+                load_raw_message(
+                    'endurance_timing_number_pits.txt'),  # in_data
+                'Column for timing-number-pits not found',  # expected_exception
+            ),
+        ],
+    )
+    def test_parse_raises_exception(
+            self,
+            in_competitions: Dict[str, CompetitionInfo],
+            in_data: Any,
+            expected_exception: str) -> None:
+        """Test method parse with unexpected messages."""
+        parser = TimingNumberPitsParser(competitions=in_competitions)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(TEST_COMPETITION_CODE, in_data)
         e: Exception = e_info.value
@@ -433,23 +528,6 @@ class TestTimingPositionParser:
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
                 'Column for timing-position not found',  # expected_exception
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={
-                            ParserSettings.TIMING_POSITION: 'c1',
-                        },
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_position.txt'),  # in_data
-                ('The expected column for the timing-position is "c1", '
-                 'but it was given in "c3"'),
             ),
         ],
     )

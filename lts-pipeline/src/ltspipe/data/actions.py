@@ -11,6 +11,7 @@ from ltspipe.data.competitions import (
     UpdateTeam,
     UpdateTimingLap,
     UpdateTimingLastTime,
+    UpdateTimingNumberPits,
     UpdateTimingPosition,
 )
 
@@ -27,6 +28,7 @@ class ActionType(str, EnumBase):
     UPDATE_TEAM = 'update-team'
     UPDATE_TIMING_LAP = 'update-timing-lap'
     UPDATE_TIMING_LAST_TIME = 'update-timing-last-time'
+    UPDATE_TIMING_NUMBER_PITS = 'update-timing-number-pits'
     UPDATE_TIMING_POSITION = 'update-timing-position'
 
 
@@ -40,6 +42,7 @@ _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.UPDATE_TEAM: UpdateTeam,
     ActionType.UPDATE_TIMING_LAP: UpdateTimingLap,
     ActionType.UPDATE_TIMING_LAST_TIME: UpdateTimingLastTime,
+    ActionType.UPDATE_TIMING_NUMBER_PITS: UpdateTimingNumberPits,
     ActionType.UPDATE_TIMING_POSITION: UpdateTimingPosition,
 }
 

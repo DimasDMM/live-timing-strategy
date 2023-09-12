@@ -262,24 +262,7 @@ class TestDriverNameParser:
                 },
                 load_raw_message(
                     'endurance_display_driver_name.txt'),  # in_data
-                'Column for name not found',  # expected_exception
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={
-                            ParserSettings.TIMING_NAME: 'c1',
-                        },
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_display_driver_name.txt'),  # in_data
-                ('The expected column for the name is "c1", '
-                 'but it was given in "c5"'),
+                'Column for timing-name not found',  # expected_exception
             ),
         ],
     )
@@ -408,24 +391,7 @@ class TestTeamNameParser:
                 },
                 load_raw_message(
                     'endurance_display_team_name.txt'),  # in_data
-                'Column for name not found',  # expected_exception
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={
-                            ParserSettings.TIMING_NAME: 'c1',
-                        },
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_display_team_name.txt'),  # in_data
-                ('The expected column for the name is "c1", '
-                 'but it was given in "c5"'),
+                'Column for timing-name not found',  # expected_exception
             ),
         ],
     )

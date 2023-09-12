@@ -17,6 +17,7 @@ class NotificationType(str, EnumBase):
     UPDATED_TEAM = 'updated-team'
     UPDATED_TIMING_LAP = 'updated-timing-lap'
     UPDATED_TIMING_LAST_TIME = 'updated-timing-last-time'
+    UPDATED_TIMING_NUMBER_PITS = 'updated-timing-number-pits'
     UPDATED_TIMING_POSITION = 'updated-timing-position'
 
 

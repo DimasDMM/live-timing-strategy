@@ -20,6 +20,7 @@ from ltspipe.api.handlers.pits import AddPitInHandler, AddPitOutHandler
 from ltspipe.api.handlers.timing import (
     UpdateTimingLapHandler,
     UpdateTimingLastTimeHandler,
+    UpdateTimingNumberPitsHandler,
     UpdateTimingPositionHandler,
 )
 from ltspipe.configs import ApiSenderConfig
@@ -256,6 +257,11 @@ def _build_action_handlers(
             competitions=competitions,  # type: ignore
         ),
         ActionType.UPDATE_TIMING_LAST_TIME: UpdateTimingLastTimeHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            competitions=competitions,  # type: ignore
+        ),
+        ActionType.UPDATE_TIMING_NUMBER_PITS: UpdateTimingNumberPitsHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
             competitions=competitions,  # type: ignore
