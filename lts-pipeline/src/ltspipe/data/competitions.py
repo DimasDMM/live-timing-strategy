@@ -390,11 +390,7 @@ class AddPitIn(DictModel):
     """Info to add a pit-in."""
 
     competition_code: str
-    team_id: Optional[int]
-    driver_id: Optional[int]
-    lap: int
-    pit_time: int
-    kart_status: KartStatus
+    team_id: int
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -403,10 +399,6 @@ class AddPitIn(DictModel):
         return cls.construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
-            driver_id=raw.get('driver_id'),
-            lap=raw.get('lap'),
-            pit_time=raw.get('pit_time'),
-            kart_status=KartStatus(raw.get('kart_status')),
         )
 
 
@@ -414,9 +406,7 @@ class AddPitOut(DictModel):
     """Info to add a pit-out."""
 
     competition_code: str
-    team_id: Optional[int]
-    driver_id: Optional[int]
-    kart_status: KartStatus
+    team_id: int
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -425,8 +415,6 @@ class AddPitOut(DictModel):
         return cls.construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
-            driver_id=raw.get('driver_id'),
-            kart_status=KartStatus(raw.get('kart_status')),
         )
 
 

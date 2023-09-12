@@ -65,9 +65,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.ADD_PIT_OUT,
                             data=AddPitOut(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                kart_status=KartStatus.UNKNOWN,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -114,9 +112,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.ADD_PIT_OUT,
                             data=AddPitOut(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                kart_status=KartStatus.UNKNOWN,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,

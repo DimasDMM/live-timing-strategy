@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
+from ltspipe.api.timing import get_timing_by_team
 from ltspipe.api.pits import (
     add_pit_in,
     add_pit_out,
@@ -10,6 +11,7 @@ from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (
     CompetitionInfo,
+    KartStatus,
     AddPitIn,
     AddPitOut,
     PitIn,
@@ -38,15 +40,34 @@ class AddPitInHandler(ApiHandler):
         competition_code = model.competition_code
         info = self._competitions[competition_code]
 
+        # Get latest information about the timing of the team
+        last_timing = get_timing_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+        )
+        if last_timing is None:
+            lap = 0
+            driver_id = None
+            kart_status = KartStatus.UNKNOWN
+            pit_time = 0
+        else:
+            lap = last_timing.lap
+            driver_id = last_timing.driver_id
+            kart_status = last_timing.kart_status
+            pit_time = (last_timing.pit_time
+                        if last_timing.pit_time is not None else 0)
+
         # Add pit-in
         new_pit_in = add_pit_in(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=info.id,  # type: ignore
-            kart_status=model.kart_status,
-            pit_time=model.pit_time,
-            lap=model.lap,
-            driver_id=model.driver_id,
+            kart_status=kart_status,
+            pit_time=pit_time,
+            lap=lap,
+            driver_id=driver_id,
             team_id=model.team_id,
         )
 
@@ -86,8 +107,8 @@ class AddPitOutHandler(ApiHandler):
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=info.id,  # type: ignore
-            kart_status=model.kart_status,
-            driver_id=model.driver_id,
+            kart_status=KartStatus.UNKNOWN,
+            driver_id=None,
             team_id=model.team_id,
         )
 

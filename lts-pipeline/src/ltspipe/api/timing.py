@@ -39,7 +39,7 @@ def get_timing_by_team(
         api_url: str,
         bearer: str,
         competition_id: int,
-        team_id: int) -> ParticipantTiming:
+        team_id: int) -> Optional[ParticipantTiming]:
     """Get timing information of a specific teams."""
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
@@ -48,7 +48,8 @@ def get_timing_by_team(
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        # Empty response
+        return None
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 

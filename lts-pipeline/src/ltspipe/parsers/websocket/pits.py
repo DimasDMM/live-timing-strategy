@@ -6,7 +6,6 @@ from ltspipe.data.competitions import (
     AddPitIn,
     AddPitOut,
     CompetitionInfo,
-    KartStatus,
 )
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket import _find_team_by_code
@@ -61,12 +60,6 @@ class PitInParser(Parser):
             data=AddPitIn(
                 competition_code=competition_code,
                 team_id=team.id,
-                # TODO: If the last pit-in was not updated, then it cannot set
-                # the driver ID
-                driver_id=None,
-                lap=0,  # TODO: Use the last known lap of the team
-                pit_time=0,
-                kart_status=KartStatus.UNKNOWN,
             ),
         )
         return [action]
@@ -121,8 +114,6 @@ class PitOutParser(Parser):
             data=AddPitOut(
                 competition_code=competition_code,
                 team_id=team.id,
-                driver_id=None,  # Not available, it must be updated later
-                kart_status=KartStatus.UNKNOWN,
             ),
         )
         return [action]

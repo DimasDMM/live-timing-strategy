@@ -14,6 +14,7 @@ from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
     AddPitIn,
     CompetitionInfo,
+    CompetitionStage,
     KartStatus,
     PitIn,
 )
@@ -65,11 +66,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.ADD_PIT_IN,
                             data=AddPitIn(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                lap=0,
-                                pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -99,9 +96,9 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 id=1,
                                 driver_id=None,
                                 team_id=1,
-                                lap=0,
+                                lap=6,
                                 pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
+                                kart_status=KartStatus.GOOD,
                                 fixed_kart_status=None,
                                 has_pit_out=False,
                             ),
@@ -119,11 +116,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             type=ActionType.ADD_PIT_IN,
                             data=AddPitIn(
                                 competition_code=TEST_COMPETITION_CODE,
-                                driver_id=None,
                                 team_id=1,
-                                lap=0,
-                                pit_time=0,
-                                kart_status=KartStatus.UNKNOWN,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -192,6 +185,38 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
+def _mock_response_get_timing_by_team(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    response = MockResponse(
+        content={
+            'team_id': 1,
+            'driver_id': 2,
+            'participant_code': 'string',
+            'position': 5,
+            'last_time': 59000,
+            'best_time': 58000,
+            'lap': 6,
+            'gap': 1200,
+            'gap_unit': 'millis',
+            'interval': 1150,
+            'interval_unit': 'millis',
+            'stage': CompetitionStage.FREE_PRACTICE.value,
+            'pit_time': None,
+            'kart_status': KartStatus.GOOD.value,
+            'fixed_kart_status': None,
+            'number_pits': 1,
+            'insert_date': '2023-04-20T20:42:51',
+            'update_date': '2023-04-20T20:42:51',
+        },
+    )
+    item = MapRequestItem(
+        url=f'{api_url}/v1/c/1/timing/teams/1',
+        method=MapRequestMethod.GET,
+        responses=[response],
+    )
+    return [item]
+
+
 def _mock_response_add_pit_in(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     response = MockResponse(
@@ -200,9 +225,9 @@ def _mock_response_add_pit_in(api_url: str) -> List[MapRequestItem]:
             'competition_id': 1,
             'team_id': 1,
             'driver_id': None,
-            'lap': 0,
+            'lap': 6,
             'pit_time': 0,
-            'kart_status': KartStatus.UNKNOWN,
+            'kart_status': KartStatus.GOOD.value,
             'fixed_kart_status': None,
             'has_pit_out': False,
             'insert_date': '2023-04-20T20:42:51',
@@ -222,5 +247,6 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
+        + _mock_response_get_timing_by_team(api_url)
         + _mock_response_add_pit_in(api_url))
     mock_requests(mocker, requests_map=requests_map)

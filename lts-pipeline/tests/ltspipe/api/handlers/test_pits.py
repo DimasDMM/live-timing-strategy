@@ -32,23 +32,38 @@ class TestAddPitInHandler(DatabaseTest):
             (
                 'south-endurance-2023-03-26',  # competition_code
                 AddPitIn(  # add_data
-                    id=None,
                     competition_code='south-endurance-2023-03-26',
-                    driver_id=3,
                     team_id=2,
-                    lap=0,
-                    pit_time=0,
-                    kart_status=KartStatus.GOOD,
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.ADDED_PIT_IN,
                     data=PitIn(
                         id=0,
-                        driver_id=3,
+                        driver_id=None,
                         team_id=2,
                         lap=0,
                         pit_time=0,
-                        kart_status=KartStatus.GOOD,
+                        kart_status=KartStatus.UNKNOWN,
+                        fixed_kart_status=None,
+                        has_pit_out=False,
+                    ),
+                ),
+            ),
+            (
+                'south-endurance-2023-03-26',  # competition_code
+                AddPitIn(  # add_data
+                    competition_code='south-endurance-2023-03-26',
+                    team_id=6,
+                ),
+                Notification(  # expected_notification
+                    type=NotificationType.ADDED_PIT_IN,
+                    data=PitIn(
+                        id=0,
+                        driver_id=9,
+                        team_id=6,
+                        lap=1,
+                        pit_time=0,
+                        kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
                         has_pit_out=False,
                     ),
@@ -94,21 +109,16 @@ class TestAddPitOutHandler(DatabaseTest):
             (
                 'south-endurance-2023-03-26',  # competition_code
                 AddPitOut(  # add_data
-                    id=None,
                     competition_code='south-endurance-2023-03-26',
-                    driver_id=3,
                     team_id=2,
-                    lap=0,
-                    pit_time=0,
-                    kart_status=KartStatus.GOOD,
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.ADDED_PIT_OUT,
                     data=PitOut(
                         id=0,
-                        driver_id=3,
+                        driver_id=None,
                         team_id=2,
-                        kart_status=KartStatus.GOOD,
+                        kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
                     ),
                 ),

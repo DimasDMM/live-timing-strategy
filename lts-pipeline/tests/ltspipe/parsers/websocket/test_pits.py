@@ -6,7 +6,6 @@ from ltspipe.data.competitions import (
     AddPitIn,
     AddPitOut,
     CompetitionInfo,
-    KartStatus,
     Team,
 )
 from ltspipe.data.enum import ParserSettings
@@ -49,13 +48,8 @@ class TestPitInParser:
                     Action(
                         type=ActionType.ADD_PIT_IN,
                         data=AddPitIn(
-                            id=1,
                             competition_code=TEST_COMPETITION_CODE,
-                            driver_id=None,
                             team_id=1,
-                            lap=0,
-                            pit_time=0,
-                            kart_status=KartStatus.UNKNOWN,
                         ),
                     ),
                 ],
@@ -163,11 +157,8 @@ class TestPitOutParser:
                     Action(
                         type=ActionType.ADD_PIT_OUT,
                         data=AddPitOut(
-                            id=1,
                             competition_code=TEST_COMPETITION_CODE,
-                            driver_id=None,
                             team_id=1,
-                            kart_status=KartStatus.UNKNOWN,
                         ),
                     ),
                 ],
