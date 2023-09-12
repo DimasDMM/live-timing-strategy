@@ -1,10 +1,15 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
+from ltspipe.api.pits import (
+    get_last_pit_in_by_team,
+    update_pit_in_time_by_team,
+)
 from ltspipe.api.timing import (
     update_timing_lap_by_team,
     update_timing_last_time_by_team,
     update_timing_number_pits_by_team,
+    update_timing_pit_time_by_team,
     update_timing_position_by_team,
 )
 from ltspipe.base import BaseModel
@@ -16,6 +21,7 @@ from ltspipe.data.competitions import (
     UpdateTimingLap,
     UpdateTimingLastTime,
     UpdateTimingNumberPits,
+    UpdateTimingPitTime,
     UpdateTimingPosition,
 )
 
@@ -137,6 +143,63 @@ class UpdateTimingNumberPitsHandler(ApiHandler):
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_NUMBER_PITS,
+            data=data,
+        )
+
+
+class UpdateTimingPitTimeHandler(ApiHandler):
+    """Handle UpdateTimingPitTime instances."""
+
+    def __init__(
+            self,
+            api_url: str,
+            auth_data: AuthData,
+            competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._api_url = api_url
+        self._auth_data = auth_data
+        self._competitions = competitions
+
+    def handle(self, model: BaseModel) -> Optional[Notification]:
+        """Update the timing position of a participant."""
+        if not isinstance(model, UpdateTimingPitTime):
+            raise Exception(
+                'The model must be an instance of UpdateTimingPitTime.')
+
+        competition_code = model.competition_code
+        info = self._competitions[competition_code]
+
+        # Update time in the last pit-in
+        last_pit_in = get_last_pit_in_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+        )
+        if last_pit_in is not None:
+            _ = update_pit_in_time_by_team(
+                api_url=self._api_url,
+                bearer=self._auth_data.bearer,
+                competition_id=info.id,  # type: ignore
+                pit_in_id=last_pit_in.id,
+                pit_time=model.pit_time,
+            )
+
+        # Update time in the timing
+        participant_timing = update_timing_pit_time_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            pit_time=model.pit_time,
+        )
+
+        return self._create_notification(participant_timing)
+
+    def _create_notification(self, data: ParticipantTiming) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.UPDATED_TIMING_PIT_TIME,
             data=data,
         )
 

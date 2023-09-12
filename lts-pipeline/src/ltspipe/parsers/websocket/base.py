@@ -1,3 +1,4 @@
+import re
 from typing import Dict, Optional
 
 from ltspipe.data.competitions import (
@@ -6,6 +7,13 @@ from ltspipe.data.competitions import (
     Team,
 )
 from ltspipe.data.enum import ParserSettings
+
+
+# The following regex matches the following samples:
+# > '2:12.283'
+# > '00:20:00'
+# > '54.'
+REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
 
 
 def _find_driver_by_name(
@@ -30,6 +38,24 @@ def _find_team_by_code(
         if t.participant_code == team_code:
             return t
     return None
+
+
+def _time_to_millis(
+        lap_time: Optional[str],
+        default: Optional[int] = None) -> Optional[int]:
+    """Transform a lap time into milliseconds."""
+    if lap_time is None:
+        return default
+    lap_time = lap_time.strip()
+    match = re.search(REGEX_TIME, lap_time)
+    if match is None:
+        return default
+    else:
+        parts = [int(p) if p else 0 for p in match.groups()]
+        return (parts[0] * 3600000
+            + parts[1] * 60000
+            + parts[2] * 1000
+            + parts[3])
 
 
 def _is_column_parser_setting(

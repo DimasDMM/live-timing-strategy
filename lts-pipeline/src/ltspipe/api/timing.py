@@ -6,9 +6,7 @@ from ltspipe.data.competitions import (
     DiffLap,
     ParticipantTiming,
 )
-from ltspipe.data.enum import (
-    KartStatus,
-)
+from ltspipe.data.enum import KartStatus
 
 
 def get_all_timing(
@@ -158,6 +156,29 @@ def update_timing_number_pits_by_team(
         'number_pits': number_pits,
     }
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/number_pits'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response = r.json()
+    if not response:
+        raise Exception(f'Unknown API response ({uri}): {response}')
+
+    return ParticipantTiming.from_dict(response)  # type: ignore
+
+
+def update_timing_pit_time_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int,
+        pit_time: int) -> ParticipantTiming:
+    """Update timing pit time of a team."""
+    data = {
+        'pit_time': pit_time,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/pit_time'
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:

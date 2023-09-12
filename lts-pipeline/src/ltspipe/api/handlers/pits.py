@@ -53,7 +53,7 @@ class AddPitInHandler(ApiHandler):
             kart_status = KartStatus.UNKNOWN
             pit_time = 0
         else:
-            lap = last_timing.lap
+            lap = 0 if last_timing.lap is None else last_timing.lap
             driver_id = last_timing.driver_id
             kart_status = last_timing.kart_status
             pit_time = (last_timing.pit_time

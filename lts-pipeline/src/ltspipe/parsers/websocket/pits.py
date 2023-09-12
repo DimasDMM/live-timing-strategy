@@ -40,8 +40,7 @@ class PitInParser(Parser):
             return []
 
         data = data.strip()
-        matches = re.match(
-            r'^(.+?)\|\*in\|.*$', data)
+        matches = re.match(r'^(.+?)\|\*in\|.*$', data)
         if matches is None:
             return []
 
@@ -94,8 +93,7 @@ class PitOutParser(Parser):
             return []
 
         data = data.strip()
-        matches = re.match(
-            r'^(.+?)\|\*out\|.*$', data)
+        matches = re.match(r'^(.+?)\|\*out\|.*$', data)
         if matches is None:
             return []
 

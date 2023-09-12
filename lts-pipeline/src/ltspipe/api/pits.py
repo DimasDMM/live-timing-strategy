@@ -110,3 +110,44 @@ def add_pit_out(
         raise Exception(f'API unknown response: {response}')
 
     return _build_pit_out(response)
+
+
+def get_last_pit_in_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int) -> Optional[PitIn]:
+    """Get last pit-in of a team."""
+    uri = f'{api_url}/v1/c/{competition_id}/pits/in/filter/team/{team_id}/last'
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: dict = r.json()  # type: ignore
+    if not response:
+        return None
+
+    return _build_pit_in(response)
+
+
+def update_pit_in_time_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        pit_in_id: int,
+        pit_time: int) -> PitIn:
+    """Update pit-in time of a team."""
+    data = {
+        'pit_time': pit_time,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/pits/in/{pit_in_id}/pit_time'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: dict = r.json()  # type: ignore
+    if 'id' not in response:
+        raise Exception(f'API unknown response: {response}')
+
+    return _build_pit_in(response)

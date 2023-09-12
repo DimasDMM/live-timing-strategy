@@ -73,7 +73,8 @@ INSERT INTO `timing_history`(`competition_id`, `team_id`, `driver_id`, `position
 INSERT INTO `timing_pits_in`(`competition_id`, `team_id`, `driver_id`, `lap`, `pit_time`, `kart_status`, `fixed_kart_status`) VALUES
   (2, 4, 5, 1, 150500, 'unknown', NULL),
   (2, 5, 7, 1, 151000, 'unknown', NULL),
-  (2, 5, 7, 3, 150900, 'unknown', NULL);
+  (2, 5, 7, 3, 150900, 'unknown', NULL),
+  (3, 6, 9, 5, 10000, 'unknown', NULL);
 
 INSERT INTO `timing_pits_out`(`competition_id`, `team_id`, `driver_id`, `kart_status`, `fixed_kart_status`) VALUES
   (2, 4, 5, 'unknown', NULL),

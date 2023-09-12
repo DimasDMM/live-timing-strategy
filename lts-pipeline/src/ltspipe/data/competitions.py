@@ -141,11 +141,11 @@ class ParticipantTiming(DictModel):
     fixed_kart_status: Optional[KartStatus]
     interval: Optional[DiffLap]
     kart_status: KartStatus
-    lap: int
+    lap: Optional[int]
     last_time: int
-    number_pits: int
+    number_pits: Optional[int]
     participant_code: str
-    position: int
+    position: Optional[int]
     stage: CompetitionStage
     driver_id: Optional[int] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
@@ -517,6 +517,24 @@ class UpdateTimingNumberPits(DictModel):
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             number_pits=raw.get('number_pits'),
+        )
+
+
+class UpdateTimingPitTime(DictModel):
+    """Info to update the timing pit time of a team."""
+
+    competition_code: str
+    team_id: int
+    pit_time: int
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            pit_time=raw.get('pit_time'),
         )
 
 
