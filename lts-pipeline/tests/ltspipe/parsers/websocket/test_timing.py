@@ -40,7 +40,7 @@ class TestTimingLapParser:
     """Test ltspipe.parsers.websocket.TimingLapParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -71,6 +71,7 @@ class TestTimingLapParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -84,6 +85,7 @@ class TestTimingLapParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -97,6 +99,7 @@ class TestTimingLapParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -104,12 +107,14 @@ class TestTimingLapParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TimingLapParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -167,7 +172,7 @@ class TestTimingLastTimeParser:
     """Test ltspipe.parsers.websocket.TimingLastTimeParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -199,6 +204,7 @@ class TestTimingLastTimeParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -212,6 +218,7 @@ class TestTimingLastTimeParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -225,6 +232,7 @@ class TestTimingLastTimeParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -232,12 +240,14 @@ class TestTimingLastTimeParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TimingLastTimeParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -295,7 +305,7 @@ class TestTimingNumberPitsParser:
     """Test ltspipe.parsers.websocket.TimingNumberPitsParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -326,6 +336,7 @@ class TestTimingNumberPitsParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -339,6 +350,7 @@ class TestTimingNumberPitsParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -352,6 +364,7 @@ class TestTimingNumberPitsParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -359,12 +372,14 @@ class TestTimingNumberPitsParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TimingNumberPitsParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -422,7 +437,7 @@ class TestPitTimeParser:
     """Test ltspipe.parsers.websocket.pits.PitTime."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -453,6 +468,7 @@ class TestPitTimeParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -483,6 +499,7 @@ class TestPitTimeParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -496,6 +513,7 @@ class TestPitTimeParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -509,6 +527,7 @@ class TestPitTimeParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -516,12 +535,14 @@ class TestPitTimeParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TimingPitTimeParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -565,7 +586,7 @@ class TestTimingPositionParser:
     """Test ltspipe.parsers.websocket.TimingPositionParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -597,6 +618,7 @@ class TestTimingPositionParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -610,6 +632,7 @@ class TestTimingPositionParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -623,6 +646,7 @@ class TestTimingPositionParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -630,12 +654,14 @@ class TestTimingPositionParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TimingPositionParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',

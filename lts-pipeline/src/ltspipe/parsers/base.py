@@ -1,5 +1,5 @@
 import abc
-from typing import Any, List
+from typing import Any, List, Tuple
 
 from ltspipe.data.actions import Action
 
@@ -8,7 +8,10 @@ class Parser(abc.ABC):
     """Unit of data parsing."""
 
     @abc.abstractmethod
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -18,10 +21,14 @@ class Parser(abc.ABC):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         raise NotImplementedError
 
-    def __call__(self, competition_code: str, data: Any) -> List[Action]:
+    def __call__(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """Forward to method Parser.parse()."""
         return self.parse(competition_code, data)
 

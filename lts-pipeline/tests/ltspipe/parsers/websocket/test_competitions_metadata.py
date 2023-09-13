@@ -25,7 +25,7 @@ class TestCompetitionMetadataRemainingParser:
     """Test ltspipe.parsers.websocket.CompetitionMetadataRemainingParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {},  # in_competitions
@@ -43,6 +43,7 @@ class TestCompetitionMetadataRemainingParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
@@ -60,6 +61,7 @@ class TestCompetitionMetadataRemainingParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
@@ -77,16 +79,19 @@ class TestCompetitionMetadataRemainingParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -94,13 +99,15 @@ class TestCompetitionMetadataRemainingParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = CompetitionMetadataRemainingParser(
             competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -131,7 +138,7 @@ class TestCompetitionMetadataStatusParser:
     """Test ltspipe.parsers.websocket.CompetitionMetadataStatusParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {},  # in_competitions
@@ -145,6 +152,7 @@ class TestCompetitionMetadataStatusParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
@@ -158,6 +166,7 @@ class TestCompetitionMetadataStatusParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
@@ -171,16 +180,19 @@ class TestCompetitionMetadataStatusParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {},  # in_competitions
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -188,12 +200,14 @@ class TestCompetitionMetadataStatusParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = CompetitionMetadataStatusParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',

@@ -34,7 +34,7 @@ class TestDriverNameParser:
     """Test ltspipe.parsers.websocket.DriverNameParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -68,6 +68,7 @@ class TestDriverNameParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -101,6 +102,7 @@ class TestDriverNameParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -144,6 +146,7 @@ class TestDriverNameParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -187,6 +190,7 @@ class TestDriverNameParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -200,6 +204,7 @@ class TestDriverNameParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -213,6 +218,7 @@ class TestDriverNameParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -220,12 +226,14 @@ class TestDriverNameParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = DriverNameParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',
@@ -283,7 +291,7 @@ class TestTeamNameParser:
     """Test ltspipe.parsers.websocket.TeamNameParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions',
+        'in_competitions, in_data, expected_actions, expected_is_parsed',
         [
             (
                 {  # in_competitions
@@ -316,6 +324,7 @@ class TestTeamNameParser:
                         ),
                     ),
                 ],
+                True,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -329,6 +338,7 @@ class TestTeamNameParser:
                 },
                 'unknown data input',  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
             (
                 {  # in_competitions
@@ -342,6 +352,7 @@ class TestTeamNameParser:
                 },
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
+                False,  # expected_is_parsed
             ),
         ],
     )
@@ -349,12 +360,14 @@ class TestTeamNameParser:
             self,
             in_competitions: Dict[str, CompetitionInfo],
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = TeamNameParser(competitions=in_competitions)
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
         'in_competitions, in_data, expected_exception',

@@ -1,5 +1,5 @@
 import pytest
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -43,12 +43,12 @@ RACE_PARSERS_SETTINGS = {
 }
 
 
-def _build_non_init() -> Tuple[Message, Optional[List[Action]]]:
+def _build_non_init() -> Tuple[Message, List[Action], bool]:
     in_data = load_raw_message('endurance_display_driver_name.txt')
-    return (in_data, [])
+    return (in_data, [], False)
 
 
-def _build_init_qualy() -> Tuple[Message, List[Action]]:
+def _build_init_qualy() -> Tuple[Message, List[Action], bool]:
     in_data = load_raw_message('init_qualy.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
@@ -107,10 +107,10 @@ def _build_init_qualy() -> Tuple[Message, List[Action]]:
             },
         ),
     )
-    return (in_data, [out_action])
+    return (in_data, [out_action], True)
 
 
-def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
+def _build_init_qualy_with_times() -> Tuple[Message, List[Action], bool]:
     in_data = load_raw_message('init_qualy_with_times.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
@@ -175,10 +175,10 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action]]:
             },
         ),
     )
-    return (in_data, [out_action])
+    return (in_data, [out_action], True)
 
 
-def _build_init_race() -> Tuple[Message, List[Action]]:
+def _build_init_race() -> Tuple[Message, List[Action], bool]:
     in_data = load_raw_message('init_endurance.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
@@ -237,14 +237,14 @@ def _build_init_race() -> Tuple[Message, List[Action]]:
             },
         ),
     )
-    return (in_data, [out_action])
+    return (in_data, [out_action], True)
 
 
 class TestInitialDataParser:
     """Test ltspipe.parsers.websocket.InitialDataParser."""
 
     @pytest.mark.parametrize(
-        'in_data, expected_actions',
+        'in_data, expected_actions, expected_is_parsed',
         [
             _build_non_init(),
             _build_init_qualy(),
@@ -255,12 +255,14 @@ class TestInitialDataParser:
     def test_parse(
             self,
             in_data: Any,
-            expected_actions: List[Action]) -> None:
+            expected_actions: List[Action],
+            expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = InitialDataParser()
-        out_actions = parser.parse(TEST_COMPETITION_CODE, in_data)
+        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
         assert ([x.dict() for x in out_actions]
                 == [x.dict() for x in expected_actions])
+        assert is_parsed == expected_is_parsed
 
     def test_parse_wrong_headers(self) -> None:
         """Test method parse with unexpected messages."""

@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -31,7 +31,10 @@ class TimingLapParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -41,21 +44,22 @@ class TimingLapParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_timing_lap(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TIMING_LAP,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_timing_lap(
             self,
@@ -107,7 +111,10 @@ class TimingLastTimeParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -117,21 +124,22 @@ class TimingLastTimeParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_timing_last_time(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TIMING_LAST_TIME,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_timing_last_time(
             self,
@@ -186,7 +194,10 @@ class TimingPitTimeParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -196,21 +207,22 @@ class TimingPitTimeParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_timing_pit_time(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TIMING_PIT_TIME,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_timing_pit_time(
             self,
@@ -263,7 +275,10 @@ class TimingPositionParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -273,21 +288,22 @@ class TimingPositionParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_timing_position(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TIMING_POSITION,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_timing_position(
             self,
@@ -339,7 +355,10 @@ class TimingNumberPitsParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -349,21 +368,22 @@ class TimingNumberPitsParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_timing_number_pits(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TIMING_NUMBER_PITS,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_timing_number_pits(
             self,

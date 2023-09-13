@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -23,7 +23,10 @@ class PitInParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -33,16 +36,17 @@ class PitInParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         data = data.strip()
         matches = re.match(r'^(.+?)\|\*in\|.*$', data)
         if matches is None:
-            return []
+            return [], False
 
         participant_code = matches[1]
 
@@ -61,7 +65,7 @@ class PitInParser(Parser):
                 team_id=team.id,
             ),
         )
-        return [action]
+        return [action], True
 
 
 class PitOutParser(Parser):
@@ -76,7 +80,10 @@ class PitOutParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -86,16 +93,17 @@ class PitOutParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         data = data.strip()
         matches = re.match(r'^(.+?)\|\*out\|.*$', data)
         if matches is None:
-            return []
+            return [], False
 
         participant_code = matches[1]
 
@@ -114,4 +122,4 @@ class PitOutParser(Parser):
                 team_id=team.id,
             ),
         )
-        return [action]
+        return [action], True

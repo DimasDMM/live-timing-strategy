@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -10,6 +10,7 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
 )
 from ltspipe.parsers.base import Parser
+from ltspipe.parsers.websocket.base import _time_to_millis
 
 
 class CompetitionMetadataRemainingParser(Parser):
@@ -21,17 +22,14 @@ class CompetitionMetadataRemainingParser(Parser):
     > dyn1|countdown|10761515
     """
 
-    # The following regex matches the following samples:
-    # > '2:12.283'
-    # > '00:20:00'
-    # > '54.'
-    REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
-
     def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -41,19 +39,20 @@ class CompetitionMetadataRemainingParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_metadata_remaining(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_COMPETITION_METADATA_REMAINING,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_metadata_remaining(
             self,
@@ -81,29 +80,13 @@ class CompetitionMetadataRemainingParser(Parser):
             return UpdateCompetitionMetadataRemaining(
                 competition_code=competition_code,
                 remaining_length={
-                    'value': self._time_to_millis(remaining_length_value),
+                    'value': _time_to_millis(remaining_length_value, default=0),
                     'unit': LengthUnit.MILLIS,
                 },
             )
         else:
             raise Exception(
                 f'Unknown competition metadata remaining length: {data}')
-
-    def _time_to_millis(
-            self,
-            lap_time: str,
-            default: int = 0) -> Optional[int]:
-        """Transform a lap time into milliseconds."""
-        lap_time = lap_time.strip()
-        match = re.search(self.REGEX_TIME, lap_time)
-        if match is None:
-            return default
-        else:
-            parts = [int(p) if p else 0 for p in match.groups()]
-            return (parts[0] * 3600000
-                + parts[1] * 60000
-                + parts[2] * 1000
-                + parts[3])
 
 
 class CompetitionMetadataStatusParser(Parser):
@@ -113,7 +96,10 @@ class CompetitionMetadataStatusParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -123,19 +109,20 @@ class CompetitionMetadataStatusParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_metadata_status(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_COMPETITION_METADATA_STATUS,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_metadata_status(
             self,

@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -32,7 +32,10 @@ class DriverNameParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -42,21 +45,22 @@ class DriverNameParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_driver_name(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_DRIVER,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_driver_name(
             self,
@@ -109,7 +113,10 @@ class TeamNameParser(Parser):
         """Construct."""
         self._competitions = competitions
 
-    def parse(self, competition_code: str, data: Any) -> List[Action]:
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
@@ -119,21 +126,22 @@ class TeamNameParser(Parser):
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
         """
         if competition_code not in self._competitions:
             raise Exception(f'Unknown competition with code={competition_code}')
         elif not isinstance(data, str):
-            return []
+            return [], False
 
         parsed_data = self._parse_team_name(competition_code, data)
         if parsed_data is None:
-            return []
+            return [], False
 
         action = Action(
             type=ActionType.UPDATE_TEAM,
             data=parsed_data,
         )
-        return [action]
+        return [action], True
 
     def _parse_team_name(
             self,
