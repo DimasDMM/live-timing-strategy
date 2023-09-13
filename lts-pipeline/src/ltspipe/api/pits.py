@@ -29,6 +29,7 @@ def add_pit_in(
         bearer: str,
         competition_id: int,
         kart_status: KartStatus,
+        fixed_kart_status: Optional[KartStatus],
         pit_time: int,
         lap: int,
         driver_id: Optional[int] = None,
@@ -41,6 +42,7 @@ def add_pit_in(
         bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         kart_status (KartStatus): Status of the kart.
+        fixed_kart_status (KartStatus | None): Fixed status of the kart.
         pit_time (int): Time in pit.
         lap (int): Lap when the pit-in occurs.
         driver_id (int | None): ID of the driver if there is any.
@@ -55,7 +57,8 @@ def add_pit_in(
         'lap': lap,
         'pit_time': pit_time,
         'kart_status': kart_status.value,
-        'fixed_kart_status': None,
+        'fixed_kart_status': (None if fixed_kart_status is None
+                              else fixed_kart_status.value),
     }
 
     uri = f'{api_url}/v1/c/{competition_id}/pits/in'

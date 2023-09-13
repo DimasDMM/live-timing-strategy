@@ -51,11 +51,13 @@ class AddPitInHandler(ApiHandler):
             lap = 0
             driver_id = None
             kart_status = KartStatus.UNKNOWN
+            fixed_kart_status = None
             pit_time = 0
         else:
             lap = 0 if last_timing.lap is None else last_timing.lap
             driver_id = last_timing.driver_id
             kart_status = last_timing.kart_status
+            fixed_kart_status = last_timing.fixed_kart_status
             pit_time = (last_timing.pit_time
                         if last_timing.pit_time is not None else 0)
 
@@ -65,6 +67,7 @@ class AddPitInHandler(ApiHandler):
             bearer=self._auth_data.bearer,
             competition_id=info.id,  # type: ignore
             kart_status=kart_status,
+            fixed_kart_status=fixed_kart_status,
             pit_time=pit_time,
             lap=lap,
             driver_id=driver_id,
