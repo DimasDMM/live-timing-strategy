@@ -70,6 +70,12 @@ class UpdatePitIn(BaseModel):
     fixed_kart_status: Optional[KartStatus]
 
 
+class UpdatePitInDriver(BaseModel):
+    """Data to update the driver of a pit-in."""
+
+    driver_id: Optional[int]
+
+
 class UpdatePitInPitTime(BaseModel):
     """Data to update the pit time of a pit-in."""
 
@@ -93,6 +99,12 @@ class UpdatePitOut(BaseModel):
 
     kart_status: KartStatus
     fixed_kart_status: Optional[KartStatus]
+
+
+class UpdatePitOutDriver(BaseModel):
+    """Data to update the driver of a pit-out."""
+
+    driver_id: Optional[int]
 
 
 class UpdatePitOutKartStatus(BaseModel):

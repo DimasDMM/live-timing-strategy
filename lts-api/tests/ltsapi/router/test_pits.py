@@ -13,10 +13,12 @@ from ltsapi.models.pits import (
     GetPitIn,
     GetPitOut,
     UpdatePitIn,
+    UpdatePitInDriver,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
     UpdatePitOut,
+    UpdatePitOutDriver,
     UpdatePitOutFixedKartStatus,
     UpdatePitOutKartStatus,
 )
@@ -294,6 +296,28 @@ class TestPitsInRouter(DatabaseTest):
                     driver_id=5,
                     lap=1,
                     pit_time=150800,
+                    kart_status=KartStatus.UNKNOWN,
+                    fixed_kart_status=None,
+                    has_pit_out=True,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetPitIn,  # expected_type
+            ),
+            (
+                '/v1/c/2/pits/in/1/driver',  # url
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                UpdatePitInDriver(  # update_data
+                    driver_id=6,
+                ),
+                200,  # expected_status_code
+                GetPitIn(  # update_model
+                    id=1,
+                    competition_id=2,
+                    team_id=4,
+                    driver_id=6,
+                    lap=1,
+                    pit_time=150500,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
                     has_pit_out=True,
@@ -831,6 +855,25 @@ class TestPitsOutRouter(DatabaseTest):
                     competition_id=2,
                     team_id=4,
                     driver_id=5,
+                    kart_status=KartStatus.UNKNOWN,
+                    fixed_kart_status=None,
+                    insert_date=datetime.utcnow().timestamp(),
+                    update_date=datetime.utcnow().timestamp(),
+                ),
+                GetPitOut,  # expected_type
+            ),
+            (
+                '/v1/c/2/pits/out/1/driver',  # url
+                {'Authorization': f'Bearer {AUTH_BEARER}'},  # headers
+                UpdatePitOutDriver(  # update_data
+                    driver_id=6,
+                ),
+                200,  # expected_status_code
+                GetPitOut(  # update_model
+                    id=1,
+                    competition_id=2,
+                    team_id=4,
+                    driver_id=6,
                     kart_status=KartStatus.UNKNOWN,
                     fixed_kart_status=None,
                     insert_date=datetime.utcnow().timestamp(),

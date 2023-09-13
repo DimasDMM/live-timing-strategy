@@ -16,10 +16,12 @@ from ltsapi.models.pits import (
     GetPitIn,
     GetPitOut,
     UpdatePitIn,
+    UpdatePitInDriver,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
     UpdatePitOut,
+    UpdatePitOutDriver,
     UpdatePitOutFixedKartStatus,
     UpdatePitOutKartStatus,
 )
@@ -27,6 +29,7 @@ from ltsapi.models.pits import (
 # Alias of all fields that we may update in a pit-in
 TypeUpdatePitIn = Union[
     UpdatePitIn,
+    UpdatePitInDriver,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
@@ -35,6 +38,7 @@ TypeUpdatePitIn = Union[
 # Alias of all fields that we may update in pit-out
 TypeUpdatePitOut = Union[
     UpdatePitOut,
+    UpdatePitOutDriver,
     UpdatePitOutFixedKartStatus,
     UpdatePitOutKartStatus,
 ]

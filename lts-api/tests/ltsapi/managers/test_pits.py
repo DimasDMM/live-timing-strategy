@@ -14,10 +14,12 @@ from ltsapi.models.pits import (
     AddPitIn,
     AddPitOut,
     UpdatePitIn,
+    UpdatePitInDriver,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
     UpdatePitOut,
+    UpdatePitOutDriver,
     UpdatePitOutFixedKartStatus,
     UpdatePitOutKartStatus,
 )
@@ -290,6 +292,24 @@ class TestPitsInManager(DatabaseTest):
                     'driver_id': 7,
                     'lap': 1,
                     'pit_time': 180000,
+                    'kart_status': KartStatus.UNKNOWN.value,
+                    'fixed_kart_status': None,
+                    'has_pit_out': True,
+                },
+            ),
+            (
+                2,  # pit_in_id
+                None,  # competition_id
+                UpdatePitInDriver(  # update_data
+                    driver_id=1,
+                ),
+                {  # expected_item
+                    'id': 2,
+                    'competition_id': 2,
+                    'team_id': 5,
+                    'driver_id': 1,
+                    'lap': 1,
+                    'pit_time': 151000,
                     'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
                     'has_pit_out': True,
@@ -606,6 +626,21 @@ class TestPitsOutManager(DatabaseTest):
                     'team_id': 5,
                     'driver_id': 7,
                     'kart_status': KartStatus.GOOD.value,
+                    'fixed_kart_status': None,
+                },
+            ),
+            (
+                2,  # pit_out_id
+                None,  # competition_id
+                UpdatePitOutDriver(  # update_data
+                    driver_id=1,
+                ),
+                {  # expected_item
+                    'id': 2,
+                    'competition_id': 2,
+                    'team_id': 5,
+                    'driver_id': 1,
+                    'kart_status': KartStatus.UNKNOWN.value,
                     'fixed_kart_status': None,
                 },
             ),

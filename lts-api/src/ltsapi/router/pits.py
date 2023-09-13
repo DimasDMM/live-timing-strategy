@@ -15,10 +15,12 @@ from ltsapi.models.pits import (
     GetPitIn,
     GetPitOut,
     UpdatePitIn,
+    UpdatePitInDriver,
     UpdatePitInFixedKartStatus,
     UpdatePitInKartStatus,
     UpdatePitInPitTime,
     UpdatePitOut,
+    UpdatePitOutDriver,
     UpdatePitOutFixedKartStatus,
     UpdatePitOutKartStatus,
 )
@@ -68,6 +70,18 @@ async def update_pit_in(
     pit_in: UpdatePitIn,
 ) -> GetPitIn:
     """Update a pit-in by its ID."""
+    return _update_pit_in_by_id(competition_id, pit_in_id, pit_in)
+
+
+@router.put(
+        path='/c/{competition_id}/pits/in/{pit_in_id}/driver',  # noqa: FS003
+        summary='Update a pit-in (driver) by its ID')
+async def update_pit_in_driver(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_in_id: Annotated[int, Path(description='ID of the pit-in')],
+    pit_in: UpdatePitInDriver,
+) -> GetPitIn:
+    """Update a pit-in (driver) by its ID."""
     return _update_pit_in_by_id(competition_id, pit_in_id, pit_in)
 
 
@@ -214,6 +228,18 @@ async def update_pit_out(
     pit_out: UpdatePitOut,
 ) -> GetPitOut:
     """Update a pit-out by its ID."""
+    return _update_pit_out_by_id(competition_id, pit_out_id, pit_out)
+
+
+@router.put(
+        path='/c/{competition_id}/pits/out/{pit_out_id}/driver',  # noqa
+        summary='Update a pit-out (driver) by its ID')
+async def update_pit_out_driver(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
+    pit_out_id: Annotated[int, Path(description='ID of the pit-out')],
+    pit_out: UpdatePitOutDriver,
+) -> GetPitOut:
+    """Update a pit-out (driver) by its ID."""
     return _update_pit_out_by_id(competition_id, pit_out_id, pit_out)
 
 
