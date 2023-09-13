@@ -13,9 +13,8 @@ from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
     CompetitionInfo,
-    Driver,
     Team,
-    UpdateDriver,
+    UpdateTeam,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.data.notifications import Notification, NotificationType
@@ -63,14 +62,13 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_DRIVER,
-                            data=UpdateDriver(
+                            type=ActionType.UPDATE_TEAM,
+                            data=UpdateTeam(
                                 id=1,
                                 competition_code=TEST_COMPETITION_CODE,
                                 participant_code='r5625',
-                                name='CKM 1 Driver 1',
+                                name='CKM 1',
                                 number=51,
-                                team_id=1,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -86,14 +84,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
-                            id=1,
-                            participant_code='r5625',
-                            name='CKM 1',
-                            number=41,
-                        ),
-                    ],
+                    teams=[],
                     timing=[],
                 ),
             },
@@ -102,15 +93,12 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.UPDATED_DRIVER,
-                            data=Driver(
+                            type=NotificationType.UPDATED_TEAM,
+                            data=Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1 Driver 1',
-                                team_id=1,
+                                name='CKM 1',
                                 number=51,
-                                partial_driving_time=0,
-                                total_driving_time=0,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -123,14 +111,13 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_DRIVER,
-                            data=UpdateDriver(
+                            type=ActionType.UPDATE_TEAM,
+                            data=UpdateTeam(
                                 id=1,
                                 competition_code=TEST_COMPETITION_CODE,
                                 participant_code='r5625',
-                                name='CKM 1 Driver 1',
+                                name='CKM 1',
                                 number=51,
-                                team_id=1,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -145,23 +132,13 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
-                    drivers=[
-                        Driver(
-                            id=1,
-                            participant_code='r5625',
-                            name='CKM 1 Driver 1',
-                            team_id=1,
-                            number=51,
-                            partial_driving_time=0,
-                            total_driving_time=0,
-                        ),
-                    ],
+                    drivers=[],
                     teams=[
                         Team(
                             id=1,
                             participant_code='r5625',
                             name='CKM 1',
-                            number=41,
+                            number=51,
                         ),
                     ],
                 ),
@@ -178,7 +155,7 @@ def test_main(
     """
     Test main method.
 
-    Test case: it receives an action to update a driver. After it sends the
+    Test case: it receives an action to update a team. After it sends the
     data to the API, it should generate a notification.
     """
     with tempfile.TemporaryDirectory() as tmp_path:
@@ -229,61 +206,36 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
-    """Get mocked response."""
-    return [
-        MapRequestItem(
-            url=f'{api_url}/v1/c/1/drivers/1',
-            method=MapRequestMethod.GET,
-            responses=[
-                MockResponse(content={
-                    'id': 1,
-                    'competition_id': 1,
-                    'team_id': 1,
-                    'participant_code': 'r5625',
-                    'name': 'CKM 1 Driver 1',
-                    'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'insert_date': '2023-04-20T20:42:51',
-                    'update_date': '2023-04-20T20:42:51',
-                }),
-            ],
-        ),
-    ]
-
-
-def _mock_response_get_team_driver_by_name(
+def _mock_response_get_team_by_code(
         api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/c/1/teams/1/drivers/filter/name/CKM 1 Driver 1',
+            url=f'{api_url}/v1/c/1/teams/filter/code/r5625',
             method=MapRequestMethod.GET,
             responses=[
-                MockResponse(content={}),
+                MockResponse(
+                    content={},  # empty response
+                ),
             ],
         ),
     ]
 
 
-def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
+def _mock_response_post_teams(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/c/1/teams/1/drivers',
+            url=f'{api_url}/v1/c/1/teams',
             method=MapRequestMethod.POST,
             responses=[
                 MockResponse(
                     content={
                         'id': 1,
                         'competition_id': 1,
-                        'team_id': 1,
                         'participant_code': 'r5625',
-                        'name': 'CKM 1 Driver 1',
+                        'name': 'CKM 1',
                         'number': 51,
-                        'total_driving_time': 0,
-                        'partial_driving_time': 0,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T20:42:51',
                     },
@@ -298,7 +250,6 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_get_drivers(api_url)
-        + _mock_response_get_team_driver_by_name(api_url)
-        + _mock_response_post_drivers(api_url))
+        + _mock_response_get_team_by_code(api_url)
+        + _mock_response_post_teams(api_url))
     mock_requests(mocker, requests_map=requests_map)

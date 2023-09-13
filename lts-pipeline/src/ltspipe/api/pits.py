@@ -133,7 +133,25 @@ def get_last_pit_in_by_team(
     return _build_pit_in(response)
 
 
-def update_pit_in_time_by_team(
+def get_last_pit_out_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int) -> Optional[PitOut]:
+    """Get last pit-out of a team."""
+    uri = f'{api_url}/v1/c/{competition_id}/pits/out/filter/team/{team_id}/last'
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: dict = r.json()  # type: ignore
+    if not response:
+        return None
+
+    return _build_pit_out(response)
+
+
+def update_pit_in_time_by_id(
         api_url: str,
         bearer: str,
         competition_id: int,
@@ -144,6 +162,29 @@ def update_pit_in_time_by_team(
         'pit_time': pit_time,
     }
     uri = f'{api_url}/v1/c/{competition_id}/pits/in/{pit_in_id}/pit_time'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: dict = r.json()  # type: ignore
+    if 'id' not in response:
+        raise Exception(f'API unknown response: {response}')
+
+    return _build_pit_in(response)
+
+
+def update_pit_out_driver_by_id(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        pit_out_id: int,
+        driver_id: int) -> PitIn:
+    """Update pit-out driver of a team."""
+    data = {
+        'driver_id': driver_id,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/pits/out/{pit_out_id}/driver'
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:

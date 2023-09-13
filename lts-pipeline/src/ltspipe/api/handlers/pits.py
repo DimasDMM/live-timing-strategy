@@ -1,7 +1,11 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.api.timing import get_timing_by_team
+from ltspipe.api.timing import (
+    get_timing_by_team,
+    update_timing_driver_by_team,
+    update_timing_pit_time_by_team,
+)
 from ltspipe.api.pits import (
     add_pit_in,
     add_pit_out,
@@ -113,6 +117,22 @@ class AddPitOutHandler(ApiHandler):
             kart_status=KartStatus.UNKNOWN,
             driver_id=None,
             team_id=model.team_id,
+        )
+
+        # Clean pit-time and driver in the timing information
+        _ = update_timing_driver_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            driver_id=None,
+        )
+        _ = update_timing_pit_time_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            pit_time=None,
         )
 
         return self._create_notification(new_pit_out)

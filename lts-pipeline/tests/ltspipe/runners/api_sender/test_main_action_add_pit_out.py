@@ -203,10 +203,82 @@ def _mock_response_add_pit_out(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
+def _mock_response_put_timing_driver(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    return [
+        MapRequestItem(
+            url=f'{api_url}/v1/c/1/timing/teams/1/driver',
+            method=MapRequestMethod.PUT,
+            responses=[
+                MockResponse(
+                    content={
+                        'best_time': 58800,
+                        'driver_id': None,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
+                        'interval': 0,
+                        'interval_unit': 'millis',
+                        'kart_status': 'good',
+                        'lap': 5,
+                        'last_time': 58800,
+                        'number_pits': 0,
+                        'participant_code': 'team-1',
+                        'pit_time': None,
+                        'position': 1,
+                        'stage': 'race',
+                        'team_id': 1,
+                        'time': 58800,
+                        'insert_date': '2023-04-20T20:42:51',
+                        'update_date': '2023-04-20T22:27:33',
+                    },
+                ),
+            ],
+        ),
+    ]
+
+
+def _mock_response_put_timing_pit_time(api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    return [
+        MapRequestItem(
+            url=f'{api_url}/v1/c/1/timing/teams/1/pit_time',
+            method=MapRequestMethod.PUT,
+            responses=[
+                MockResponse(
+                    content={
+                        'best_time': 58800,
+                        'driver_id': None,
+                        'fixed_kart_status': None,
+                        'gap': None,
+                        'gap_unit': 'millis',
+                        'interval': 0,
+                        'interval_unit': 'millis',
+                        'kart_status': 'good',
+                        'lap': 5,
+                        'last_time': 58800,
+                        'number_pits': 0,
+                        'participant_code': 'team-1',
+                        'pit_time': None,
+                        'position': 1,
+                        'stage': 'race',
+                        'team_id': 1,
+                        'time': 58800,
+                        'insert_date': '2023-04-20T20:42:51',
+                        'update_date': '2023-04-20T22:27:33',
+                    },
+                ),
+            ],
+        ),
+    ]
+
+
 def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     """Apply mock to API."""
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_add_pit_out(api_url))
+        + _mock_response_add_pit_out(api_url)
+        + _mock_response_put_timing_driver(api_url)
+        + _mock_response_put_timing_pit_time(api_url))
     mock_requests(mocker, requests_map=requests_map)

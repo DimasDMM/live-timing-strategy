@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.pits import (
     get_last_pit_in_by_team,
-    update_pit_in_time_by_team,
+    update_pit_in_time_by_id,
 )
 from ltspipe.api.timing import (
     update_timing_lap_by_team,
@@ -177,7 +177,7 @@ class UpdateTimingPitTimeHandler(ApiHandler):
             team_id=model.team_id,
         )
         if last_pit_in is not None:
-            _ = update_pit_in_time_by_team(
+            _ = update_pit_in_time_by_id(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
                 competition_id=info.id,  # type: ignore

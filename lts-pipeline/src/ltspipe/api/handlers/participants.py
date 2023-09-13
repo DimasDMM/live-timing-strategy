@@ -13,6 +13,11 @@ from ltspipe.api.participants import (
     update_driver,
     update_team,
 )
+from ltspipe.api.pits import (
+    get_last_pit_out_by_team,
+    update_pit_out_driver_by_id,
+)
+from ltspipe.api.timing import update_timing_driver_by_team
 from ltspipe.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
@@ -78,9 +83,18 @@ class UpdateDriverHandler(ApiHandler):
             )
             old_driver.name = current_driver.name
             old_driver.number = current_driver.number
-        else:
-            # The driver already exists, so do nothing
-            return None
+
+        # Update driver ID in the timing and in the last pit-out
+        self._update_timing_with_driver_id(
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            driver_id=current_driver.id,
+        )
+        self._update_pit_out_with_driver_id(
+            competition_id=info.id,  # type: ignore
+            team_id=model.team_id,
+            driver_id=current_driver.id,
+        )
 
         return self._create_notification(current_driver)
 
@@ -90,6 +104,41 @@ class UpdateDriverHandler(ApiHandler):
             type=NotificationType.UPDATED_DRIVER,
             data=driver,
         )
+
+    def _update_timing_with_driver_id(
+            self,
+            competition_id: int,
+            team_id: int,
+            driver_id: int) -> None:
+        """Update the timing of the team with the Driver ID."""
+        _ = update_timing_driver_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=competition_id,
+            team_id=team_id,
+            driver_id=driver_id,
+        )
+
+    def _update_pit_out_with_driver_id(
+            self,
+            competition_id: int,
+            team_id: int,
+            driver_id: int) -> None:
+        """Update the last pit-out of the team with the Driver ID."""
+        last_pit_out = get_last_pit_out_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=competition_id,
+            team_id=team_id,
+        )
+        if last_pit_out is not None:
+            _ = update_pit_out_driver_by_id(
+                api_url=self._api_url,
+                bearer=self._auth_data.bearer,
+                competition_id=competition_id,
+                pit_out_id=last_pit_out.id,
+                driver_id=driver_id,
+            )
 
     def _update_driver_in_info(
             self,

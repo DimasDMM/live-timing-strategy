@@ -30,19 +30,19 @@ class TestAddPitInHandler(DatabaseTest):
         ('competition_code', 'add_data', 'expected_notification'),
         [
             (
-                'south-endurance-2023-03-26',  # competition_code
+                'north-endurance-2023-02-26',  # competition_code
                 AddPitIn(  # add_data
-                    competition_code='south-endurance-2023-03-26',
+                    competition_code='north-endurance-2023-02-26',
                     team_id=2,
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.ADDED_PIT_IN,
                     data=PitIn(
                         id=0,
-                        driver_id=None,
+                        driver_id=3,
                         team_id=2,
-                        lap=0,
-                        pit_time=0,
+                        lap=1,
+                        pit_time=35000,
                         kart_status=KartStatus.UNKNOWN,
                         fixed_kart_status=None,
                         has_pit_out=False,
@@ -107,9 +107,9 @@ class TestAddPitOutHandler(DatabaseTest):
         ('competition_code', 'add_data', 'expected_notification'),
         [
             (
-                'south-endurance-2023-03-26',  # competition_code
+                'north-endurance-2023-02-26',  # competition_code
                 AddPitOut(  # add_data
-                    competition_code='south-endurance-2023-03-26',
+                    competition_code='north-endurance-2023-02-26',
                     team_id=2,
                 ),
                 Notification(  # expected_notification

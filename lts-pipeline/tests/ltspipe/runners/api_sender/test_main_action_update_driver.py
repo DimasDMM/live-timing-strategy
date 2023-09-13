@@ -13,7 +13,10 @@ from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthRole
 from ltspipe.data.competitions import (
     CompetitionInfo,
+    CompetitionStage,
     Driver,
+    KartStatus,
+    LengthUnit,
     Team,
     UpdateDriver,
 )
@@ -229,30 +232,6 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_get_drivers(api_url: str) -> List[MapRequestItem]:
-    """Get mocked response."""
-    return [
-        MapRequestItem(
-            url=f'{api_url}/v1/c/1/drivers/1',
-            method=MapRequestMethod.GET,
-            responses=[
-                MockResponse(content={
-                    'id': 1,
-                    'competition_id': 1,
-                    'team_id': 1,
-                    'participant_code': 'r5625',
-                    'name': 'CKM 1 Driver 1',
-                    'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'insert_date': '2023-04-20T20:42:51',
-                    'update_date': '2023-04-20T20:42:51',
-                }),
-            ],
-        ),
-    ]
-
-
 def _mock_response_get_team_driver_by_name(
         api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
@@ -261,7 +240,9 @@ def _mock_response_get_team_driver_by_name(
             url=f'{api_url}/v1/c/1/teams/1/drivers/filter/name/CKM 1 Driver 1',
             method=MapRequestMethod.GET,
             responses=[
-                MockResponse(content={}),
+                MockResponse(
+                    content={},  # empty response
+                ),
             ],
         ),
     ]
@@ -293,12 +274,64 @@ def _mock_response_post_drivers(api_url: str) -> List[MapRequestItem]:
     ]
 
 
+def _mock_response_update_timing_driver_by_team(
+        api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    return [
+        MapRequestItem(
+            url=f'{api_url}/v1/c/1/timing/teams/1/driver',
+            method=MapRequestMethod.PUT,
+            responses=[
+                MockResponse(
+                    content={
+                        'team_id': 1,
+                        'driver_id': 1,
+                        'participant_code': 'r5625',
+                        'position': 1,
+                        'last_time': 58000,
+                        'best_time': 58000,
+                        'lap': 1,
+                        'gap': None,
+                        'gap_unit': LengthUnit.MILLIS.value,
+                        'interval': None,
+                        'interval_unit': LengthUnit.MILLIS.value,
+                        'stage': CompetitionStage.FREE_PRACTICE.value,
+                        'pit_time': None,
+                        'kart_status': KartStatus.GOOD.value,
+                        'fixed_kart_status': KartStatus.GOOD.value,
+                        'number_pits': 1,
+                        'insert_date': '2023-09-13T17:35:24.322Z',
+                        'update_date': '2023-09-13T17:35:24.322Z',
+                    },
+                ),
+            ],
+        ),
+    ]
+
+
+def _mock_response_get_last_pit_out_by_team(
+        api_url: str) -> List[MapRequestItem]:
+    """Get mocked response."""
+    return [
+        MapRequestItem(
+            url=f'{api_url}/v1/c/1/pits/out/filter/team/1/last',
+            method=MapRequestMethod.GET,
+            responses=[
+                MockResponse(
+                    content={},  # empty response
+                ),
+            ],
+        ),
+    ]
+
+
 def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     """Apply mock to API."""
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_get_drivers(api_url)
         + _mock_response_get_team_driver_by_name(api_url)
-        + _mock_response_post_drivers(api_url))
+        + _mock_response_post_drivers(api_url)
+        + _mock_response_get_last_pit_out_by_team(api_url)
+        + _mock_response_update_timing_driver_by_team(api_url))
     mock_requests(mocker, requests_map=requests_map)
