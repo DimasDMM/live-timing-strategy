@@ -147,7 +147,7 @@ class TestPitsInRouter(DatabaseTest):
                 ),
                 200,  # expected_status_code
                 GetPitIn(  # expected_response
-                    id=4,
+                    id=5,
                     competition_id=2,
                     team_id=4,
                     driver_id=5,
