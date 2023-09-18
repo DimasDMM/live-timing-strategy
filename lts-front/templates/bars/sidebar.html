@@ -1,0 +1,62 @@
+<!-- SIDEBAR -->
+<aside id="aside-main" class="aside-start bg-gradient-dark aside-hide-xs d-flex align-items-stretch justify-content-lg-between align-items-start flex-column">
+    <!-- LOGO visibility : desktop only -->
+    <div class="align-self-baseline w-100">
+        <div class="clearfix d-flex justify-content-between">
+            <a class="w-100 align-self-center navbar-brand px-3" href="index.html">
+                <img src="{{ base_route }}/assets/images/logo.png" width="100%" alt="Logo" class="no-max">
+            </a>
+        </div>
+    </div>
+    <!-- /LOGO -->
+
+    <div class="aside-wrapper scrollable-vertical scrollable-styled-light align-self-baseline h-100 w-100">
+        <!--
+            All parent open navs are closed on click!
+            To ignore this feature, add .js-ignore to .nav-deep
+
+            Links height (paddings):
+                .nav-deep-xs
+                .nav-deep-sm
+                .nav-deep-md    (default, ununsed class)
+
+            .nav-deep-hover     hover background slightly different
+            .nav-deep-bordered  bordered links
+        -->
+        <nav class="nav-deep nav-deep-dark nav-deep-hover">
+            <ul class="nav flex-column">
+                <li class="nav-item {% if uri['path'] == routes['_EVENT_OVERVIEW'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_EVENT_OVERVIEW'] %}font-weight-bold{% endif %}" href="{{ routes['EVENT_OVERVIEW'] }}">
+                        <i class="fi fi-menu-dots"></i>
+                        Inicio
+                    </a>
+                </li>
+
+                <li class="nav-item {% if uri['path'] == routes['_SE_KARTS_IN_BOX'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_SE_KARTS_IN_BOX'] %}font-weight-bold{% endif %}" href="{{ routes['SE_KARTS_IN_BOX'] }}">
+                        <i class="fi fi-code"></i>
+                        <span class="badge badge-danger float-end fs--11 mt-1">IN</span>
+                        Karts en boxes
+                    </a>
+                </li>
+
+                <li class="nav-title mt-5">
+                    <h6 class="fs--15 mb-1 text-white font-weight-normal">Sistema</h6>
+                </li>
+                <li class="nav-item {% if uri['path'] == routes['_CONFIGURATION'] %}active{% endif %}">
+                    <a class="nav-link {% if uri['path'] == routes['_CONFIGURATION'] %}font-weight-bold{% endif %}" href="{{ routes['CONFIGURATION'] }}">
+                        <i class="nav-icon fi fi-shape-star"></i>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="d-flex align-self-baseline justify-content-center w-100 p-1">
+        <button class="btn btn-sm btn-danger bg-nogradient w-100 mt-2" id="btn-logout">
+            <i class="fi fi-power"></i> Salir
+        </button>
+    </div>
+</aside>
+<!-- /SIDEBAR -->

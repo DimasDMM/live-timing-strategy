@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <title>CKM Timing | {{ block('title') }}</title>
+
+        <meta name="viewport" content="width=device-width, maximum-scale=5, initial-scale=1, user-scalable=0">
+        <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+
+        <!-- up to 10% speed up for external res -->
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com/">
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com/">
+        <link rel="preconnect" href="https://fonts.googleapis.com/">
+        <link rel="preconnect" href="https://fonts.gstatic.com/">
+        <!-- preloading icon font is helping to speed up a little bit -->
+        <link rel="preload" href="{{ base_route }}/assets/fonts/flaticon/Flaticon.woff2" as="font" type="font/woff2" crossorigin>
+
+        <!-- non block rendering : page speed : js = polyfill for old browsers missing `preload` -->
+        <link rel="stylesheet" href="{{ base_route }}/assets/css/core.css">
+        <link rel="stylesheet" href="{{ base_route }}/assets/css/custom.css">
+        <link rel="stylesheet" href="{{ base_route }}/assets/css/vendor_bundle.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap">
+
+        <!-- favicon -->
+        <link rel="shortcut icon" href="{{ base_route }}/assets/images/favicon.ico">
+        <link rel="apple-touch-icon" href="{{ base_route }}/assets/images/favicon.ico">
+
+        <link rel="manifest" href="{{ base_route }}/assets/images/manifest/manifest.json">
+        <meta name="theme-color" content="#313131">
+    </head>
+
+    <body class="layout-admin aside-sticky layout-padded">
+        <div id="wrapper" class="d-flex align-items-stretch flex-column">
+            {% include 'bars/header.html' %}
+
+            <div id="wrapper_content" class="d-flex flex-fill">
+                {% block sidebar %}
+                    {% include 'bars/sidebar.html' %}
+                {% endblock %}
+
+                <!-- MIDDLE -->
+                <div id="middle" class="flex-fill">
+                    <div class="page-title bg-transparent b-0">
+                        {% block content_title %}{% endblock %}
+                    </div>
+
+                    {% block content %}
+                        <!-- WIDGETS -->
+                        <div class="row gutters-sm">
+                            <!-- WIDGET -->
+                            <div class="col-12 col-xl-6 col-lg-12 mb-3">
+                                <div class="portlet">
+                                    <div class="portlet-header">
+                                        <span class="d-block text-muted text-truncate font-weight-medium">
+                                            Test box title
+                                        </span>
+                                    </div>
+                                    <div class="portlet-body max-h-500 scrollable-vertical scrollable-styled-dark">
+                                        <p>Test box content<p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /WIDGETS -->
+                    {% endblock %}
+                </div>
+                <!-- /MIDDLE -->
+            </div>
+
+            {% include 'bars/footer.html' %}
+        </div><!-- /#wrapper -->
+
+        <script src="{{ base_route }}/assets/js/jquery-3.5.1.min.js"></script>
+        <script src="{{ base_route }}/assets/js/core.min.js"></script>
+        <script src="{{ base_route }}/assets/js/vendor_bundle.min.js"></script>
+        {% block javascript%}{% endblock %}
+
+        <!--
+            [SOW Ajax Navigation Plugin] [AJAX ONLY, IF USED]
+            If you have specific page js files, wrap them inside #page_js_files 
+            Ajax Navigation will use them for this page! 
+            This way you can load this page in a normal way and/or via ajax.
+            (you can change/add more containers in sow.config.js)
+
+            +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            NOTE: This is mostly for frontend, full ajax navigation!
+            Admin Panels use a backend, so the content should be served without
+            menu, header, etc! Else, the ajax has no reason to be used because will
+            not minimize server load!
+
+            /documentation/plugins-sow-ajax-navigation.html
+            +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        -->
+        <div id="page_js_files"><!-- specific page javascript files here --></div>
+    </body>
+</html>
