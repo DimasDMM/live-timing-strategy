@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require realpath('./../vendor/autoload.php');
+require_once realpath('./../vendor/autoload.php');
 
 use LTS\Utils\BasicContainer as Container;
 use Slim\Views\Twig;

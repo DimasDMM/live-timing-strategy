@@ -4,28 +4,54 @@
 
 App frontend to display timing information.
 
-## Setup
+## Setup for development
 
 For development, we also need to install these tools:
 - PHP 8.2
 - Composer: https://getcomposer.org/
 
-## Commands
+### Network of containers
 
-> Note: These commands have been tested only in MacOS, but they should work
-  in Git Bash (Windows) too.
-
-To run the containers:
+The containers need to be on the same network to connect to each other.
+Otherwise, the API REST won't be able to see the database.
 ```sh
-sh ./misc/bin/run.sh
+docker network create lts-network
 ```
 
-And to stop them:
+### Website
+
+Build the container:
 ```sh
-sh ./misc/bin/down.sh
+docker build --no-cache --tag lts-website ./dockerfiles/php
 ```
 
-Have fun! ᕙ (° ~ ° ~)
+Run it:
+```sh
+docker run \
+  --name lts-website \
+  --network lts-network \
+  -p 9000:9000 \
+  --env-file .env \
+  lts-website
+```
+
+### Nginx (website)
+
+> Note: The container `lts-nginx-website` must be running before running this.
+
+Build the container:
+```sh
+docker build --no-cache --tag lts-website-nginx ./dockerfiles/nginx
+```
+
+Run it:
+```sh
+docker run \
+  --name lts-website-nginx \
+  --network lts-network \
+  -p 8091:80 \
+  lts-website-nginx
+```
 
 ## Application
 

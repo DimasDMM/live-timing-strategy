@@ -129,3 +129,7 @@ labelled as:
 When a driver is doing a stint, it might do slow laps due to external reasons.
 The app excludes those laps (outliers) from the average computation. Moreover,
 it only takes into account the last `5` laps (by default) in the computation.
+
+---
+
+Have fun! ᕙ (° ~ ° ~)

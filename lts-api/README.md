@@ -55,7 +55,7 @@ Get-Content .env.local | foreach {
 
 ### Network of containers
 
-The containers need to be on the same network to connecto to each other.
+The containers need to be on the same network to connect to each other.
 Otherwise, the API REST won't be able to see the database.
 ```sh
 docker network create lts-network
