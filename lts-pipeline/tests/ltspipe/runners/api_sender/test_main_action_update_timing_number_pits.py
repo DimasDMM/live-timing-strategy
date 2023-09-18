@@ -94,7 +94,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {  # expected_kafka

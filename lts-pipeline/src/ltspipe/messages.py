@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from pydantic import Field
+from pydantic import Field, SerializeAsAny
 from typing import Any, Optional, Union
 
 from ltspipe.base import EnumBase, BaseModel
@@ -41,7 +41,7 @@ class Message(BaseModel):
     """
 
     competition_code: str
-    data: Any
+    data: SerializeAsAny[Any]
     source: MessageSource
     created_at: float
     updated_at: float
@@ -60,7 +60,7 @@ class Message(BaseModel):
 
     def encode(self) -> str:
         """Encode the message as a string."""
-        data = self.dict()
+        data = self.model_dump()
         return json.dumps(data)
 
     def __str__(self) -> str:
@@ -96,17 +96,19 @@ class Message(BaseModel):
         )
 
     @staticmethod
-    def __decode_data(decoder: Optional[MessageDecoder], raw_data: Any) -> Any:
+    def __decode_data(
+            decoder: Optional[MessageDecoder],
+            raw_data: Any) -> Any:
         """Decode data and transform it into a model if possible."""
-        if decoder is not None:
-            if not isinstance(raw_data, dict):
-                raise Exception(f'Unknown data format: {raw_data}')
+        if decoder is None:
+            return raw_data
+        elif isinstance(raw_data, dict):
             if decoder == MessageDecoder.ACTION:
                 return Action.from_dict(raw_data)
-            elif decoder is not None and decoder == MessageDecoder.NOTIFICATION:
+            elif decoder == MessageDecoder.NOTIFICATION:
                 return Notification.from_dict(raw_data)
-        else:
-            return raw_data
+
+        raise Exception(f'Unknown data format: {raw_data}')
 
     @staticmethod
     def __get_by_key(data: dict, key: str, required: bool = True) -> Any:

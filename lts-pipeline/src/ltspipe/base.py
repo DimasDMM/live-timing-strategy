@@ -31,11 +31,11 @@ class EnumBase(Enum):
 class BaseModel(_BaseModel):
     """Base class for data models."""
 
-    def dict(self,  # type: ignore
-             *args: Tuple[Any, ...],
-             **kwargs: Dict[Any, Any]) -> Dict[Any, Any]:
+    def model_dump(self,  # type: ignore
+            *args: Tuple[Any, ...],
+            **kwargs: Dict[Any, Any]) -> Dict[Any, Any]:
         """Transform model into a dictionary."""
-        data = super().dict(*args, **kwargs)  # type: ignore
+        data = super().model_dump(*args, **kwargs)  # type: ignore
         for field_name, field_value in data.items():
             if field_value is not None and isinstance(field_value, Enum):
                 data[field_name] = field_value.value
@@ -57,12 +57,12 @@ class DictModel(BaseModel, ABC):
             raw: dict,
             ignore_unknowns: bool = False) -> None:  # noqa: ANN102
         """Do a basic validation on the raw data."""
-        for field_name, field_props in cls.__fields__.items():
-            if field_props.required and field_name not in raw:
+        for field_name, field_props in cls.model_fields.items():
+            if field_props.is_required() and field_name not in raw:
                 raise Exception(f'Missing required field: {field_name}')
 
         if not ignore_unknowns:
-            fields = set(cls.__fields__.keys())
+            fields = set(cls.model_fields.keys())
             raw_fields = set(raw)
             if raw_fields.intersection(fields) != raw_fields:
                 raise Exception(f'There are unknown fields: {raw_fields}')

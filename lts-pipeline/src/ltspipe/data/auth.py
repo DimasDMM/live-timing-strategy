@@ -20,7 +20,7 @@ class AuthData(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             bearer=raw.get('bearer'),
             name=raw.get('data'),
             role=AuthRole(raw.get('role')),

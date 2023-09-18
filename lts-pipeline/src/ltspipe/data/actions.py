@@ -1,3 +1,4 @@
+from pydantic import SerializeAsAny
 from typing import Any, Dict, Type
 
 from ltspipe.base import BaseModel, DictModel, EnumBase
@@ -54,7 +55,7 @@ class Action(DictModel):
     """Apply an action to the data."""
 
     type: ActionType
-    data: DictModel
+    data: SerializeAsAny[DictModel]
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -64,7 +65,7 @@ class Action(DictModel):
         type = ActionType.value_of(raw.get('type'))
         raw_data = raw.get('data')
         data = Action.__from_dict_data(type, raw_data)
-        return cls.construct(
+        return cls.model_construct(
             type=type,
             data=data,
         )

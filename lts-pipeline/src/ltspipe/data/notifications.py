@@ -7,6 +7,7 @@ from ltspipe.base import BaseModel, DictModel, EnumBase
 class NotificationType(str, EnumBase):
     """Types of notifications."""
 
+    DUMMY = 'dummy'  # for testing purposes
     INIT_ONGOING = 'init-ongoing'
     INIT_FINISHED = 'init-finished'
     ADDED_PIT_IN = 'added-pit-in'
@@ -32,7 +33,7 @@ class Notification(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             type=raw.get('type'),
             data=raw.get('data', None),
         )

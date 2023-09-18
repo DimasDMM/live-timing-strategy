@@ -609,7 +609,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
@@ -686,7 +686,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
@@ -764,7 +764,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
@@ -841,7 +841,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
@@ -918,7 +918,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                             number=41,
                         ),
                     ],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags
@@ -989,7 +989,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     parser_settings=PARSERS_SETTINGS_ENDURANCE,
                     drivers=[],
                     teams=[],
-                    timing=[],
+                    timing={},
                 ),
             },
             {TEST_COMPETITION_CODE: {FlagName.WAIT_INIT: False}},  # in_flags

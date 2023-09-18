@@ -1,5 +1,5 @@
-from pydantic import Field, root_validator
-from typing import Dict, List, Optional
+from pydantic import Field, model_validator
+from typing import Any, Dict, List, Optional
 
 from ltspipe.base import BaseModel, EnumBase
 from ltspipe.data.enum import (
@@ -41,7 +41,7 @@ class Driver(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
@@ -64,7 +64,7 @@ class Team(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
@@ -82,7 +82,7 @@ class DiffLap(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             value=raw.get('value'),
             unit=LengthUnit(raw.get('unit')),
         )
@@ -104,8 +104,8 @@ class Participant(DictModel):
     team_name: Optional[str] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
 
-    @root_validator
-    def name_is_set(cls, values: dict) -> dict:  # noqa: N805, U100
+    @model_validator(mode='before')
+    def name_is_set(cls, values: Dict[str, Any]) -> dict:  # noqa: N805, U100
         """Validate that at least one name is set."""
         driver_name = values.get('driver_name')
         team_name = values.get('team_name')
@@ -117,7 +117,7 @@ class Participant(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             best_time=raw.get('best_time'),
             driver_name=raw.get('driver_name'),
             gap=DiffLap.from_dict(raw.get('gap')),  # type: ignore
@@ -151,8 +151,8 @@ class ParticipantTiming(DictModel):
     pit_time: Optional[int] = Field(default=None)
     team_id: Optional[int] = Field(default=None)
 
-    @root_validator
-    def name_is_set(cls, values: dict) -> dict:  # noqa: N805, U100
+    @model_validator(mode='before')
+    def name_is_set(cls, values: Dict[str, Any]) -> dict:  # noqa: N805, U100
         """Validate that at least one name is set."""
         driver_id = values.get('driver_id')
         team_id = values.get('team_id')
@@ -190,7 +190,7 @@ class ParticipantTiming(DictModel):
             interval = DiffLap.from_dict(raw['interval'])
 
         fixed_kart_status = raw.get('fixed_kart_status')
-        return cls.construct(
+        return cls.model_construct(
             best_time=raw.get('best_time'),
             driver_id=raw.get('driver_id'),
             fixed_kart_status=(None if fixed_kart_status is None
@@ -245,7 +245,7 @@ class CompetitionMetadata(DictModel):
                 'unit': remaining_length_unit,
             }
 
-        return cls.construct(
+        return cls.model_construct(
             stage=CompetitionStage(raw.get('stage')),
             status=CompetitionStatus(raw.get('status')),
             remaining_length=DiffLap.from_dict(remaining_length),
@@ -276,7 +276,7 @@ class UpdateCompetitionMetadataRemaining(DictModel):
                 'unit': remaining_length_unit,
             }
 
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             remaining_length=DiffLap.from_dict(remaining_length),
         )
@@ -292,7 +292,7 @@ class UpdateCompetitionMetadataStatus(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             status=CompetitionStatus(raw.get('status')),
         )
@@ -321,7 +321,7 @@ class InitialData(DictModel):
 
         parsers_settings: Dict[str, str] = raw.get('parsers_settings', {})
         remaining_length: dict = raw.get('remaining_length')  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             stage=CompetitionStage(raw.get('stage')),
             status=CompetitionStatus(raw.get('status')),
@@ -349,7 +349,7 @@ class PitIn(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         fixed_kart_status = raw.get('fixed_kart_status')
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             team_id=raw.get('team_id'),
             driver_id=raw.get('driver_id'),
@@ -376,7 +376,7 @@ class PitOut(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         fixed_kart_status = raw.get('fixed_kart_status')
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             team_id=raw.get('team_id'),
             driver_id=raw.get('driver_id'),
@@ -396,7 +396,7 @@ class AddPitIn(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
         )
@@ -412,7 +412,7 @@ class AddPitOut(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
         )
@@ -432,7 +432,7 @@ class UpdateDriver(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
@@ -455,7 +455,7 @@ class UpdateTeam(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             id=raw.get('id'),
             competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
@@ -475,7 +475,7 @@ class UpdateTimingLap(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             lap=raw.get('lap'),
@@ -494,7 +494,7 @@ class UpdateTimingLastTime(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             last_time=raw.get('last_time'),
@@ -513,7 +513,7 @@ class UpdateTimingNumberPits(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             number_pits=raw.get('number_pits'),
@@ -531,7 +531,7 @@ class UpdateTimingPitTime(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             pit_time=raw.get('pit_time'),
@@ -550,7 +550,7 @@ class UpdateTimingPosition(DictModel):
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
-        return cls.construct(
+        return cls.model_construct(
             competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             position=raw.get('position'),

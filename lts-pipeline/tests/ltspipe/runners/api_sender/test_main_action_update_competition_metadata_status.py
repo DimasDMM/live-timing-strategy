@@ -85,7 +85,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
                     teams=[],
-                    timing=[],
+                    timing={},
                 ),
             },  # in_competitions
             {  # expected_kafka
