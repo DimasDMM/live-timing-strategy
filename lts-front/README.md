@@ -1,8 +1,14 @@
-# Live Timing Strategy - Frontend
+# Live Timing Strategy - App Frontend
 
 ## Introduction
 
 App frontend to display timing information.
+
+## Setup
+
+For development, we also need to install these tools:
+- PHP 8.2
+- Composer: https://getcomposer.org/
 
 ## Commands
 

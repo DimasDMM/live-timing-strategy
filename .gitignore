@@ -13,6 +13,9 @@ Thumbs.db
 ehthumbs.db
 $RECYCLE.BIN/
 
+# PHP
+vendor/
+
 # Python
 .coverage*
 !.coveragerc

@@ -12,8 +12,9 @@ To do
 
 This project is composed by several parts, and each of them require a different
 setup. For further details:
-- [Data Pipelines](./lts-pipeline/README.md)
 - [API REST](./lts-api/README.md)
+- [App Frontend](./lts-front/README.md)
+- [Data Pipelines](./lts-pipeline/README.md)
 
 ## Deployment
 
