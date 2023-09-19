@@ -1,18 +1,18 @@
 class Page {
-    constructor(apiUrl, tokenValidation = false) {
-        this.apiUrl = 'http://' + apiUrl;
+    constructor(apiUrl, bearerValidation = false) {
+        this.apiUrl = apiUrl;
         // Validate token and redirect if not valid
-        this.tokenValidation = tokenValidation;
+        this.bearerValidation = bearerValidation;
         // Timeout for callbacks
         this.timeout = 3000;
 
         this.loadCookiesData();
         this.initDefaultEvents();
-        this.initDefaultTokenValidation();
+        this.initDefaultBearerValidation();
     }
 
     loadCookiesData() {
-        this.token = Cookies.get('user_token');
+        this.bearer = Cookies.get('bearer');
         this.userName = Cookies.get('user_name');
         this.userRole = Cookies.get('user_role');
     }
@@ -24,26 +24,27 @@ class Page {
         }
     }
 
-    initDefaultTokenValidation() {
-        if (!this.tokenValidation) {
+    initDefaultBearerValidation() {
+        if (!this.bearerValidation) {
             return;
         }
 
-        if (this.getToken()) {
+        if (this.getBearer()) {
             let that = this;
             this.sendGetRequest(
-                '/token/validate',
-                function (data, textStatus, jqXHR) { that.successCallbackDefaultToken(data, textStatus, jqXHR, that); },
-                function (jqXHR, textStatus, errorThrown) { that.errorCallbackDefaultToken(jqXHR, textStatus, errorThrown, that); }
+                '/auth/validate',
+                this.getBearer(),
+                function (data, textStatus, jqXHR) { that.successCallbackDefaultAuth(data, textStatus, jqXHR, that); },
+                function (jqXHR, textStatus, errorThrown) { that.errorCallbackDefaultAuth(jqXHR, textStatus, errorThrown, that); }
             );
         }
     }
 
-    successCallbackDefaultToken(data, textStatus, jqXHR, that) {
-        that.setCookiesData(data['data']);
+    successCallbackDefaultAuth(data, textStatus, jqXHR, that) {
+        that.setCookiesData(data['bearer'], data['name'], data['role']);
     }
 
-    errorCallbackDefaultToken(jqXHR, textStatus, errorThrown, that) {
+    errorCallbackDefaultAuth(jqXHR, textStatus, errorThrown, that) {
         if (errorThrown == 'Unauthorized') {
             that.setToken(null);
             that.unsetCookiesData();
@@ -52,7 +53,12 @@ class Page {
         }
     }
 
-    sendGetRequest(path, successCallback, errorCallback) {
+    sendGetRequest(path, authorization, successCallback, errorCallback) {
+        let headers = {}
+        if (authorization) {
+            headers['Authorization'] = 'Bearer ' + authorization
+        }
+
         $.ajax({
             url: this.apiUrl + path,
             contentType: 'application/json; charset=utf-8',
@@ -60,15 +66,18 @@ class Page {
             crossDomain: true,
             type: 'GET',
             dataType: 'json',
-            headers: {
-                'X-Request-Id': this.getToken()
-            }
+            headers: headers,
         })
         .done(successCallback)
         .fail(errorCallback);
     }
 
-    sendPutRequest(path, data, successCallback, errorCallback) {
+    sendPutRequest(path, authorization, data, successCallback, errorCallback) {
+        let headers = {}
+        if (authorization) {
+            headers['Authorization'] = 'Bearer ' + authorization
+        }
+
         $.ajax({
             url: this.apiUrl + path,
             contentType: 'application/json; charset=utf-8',
@@ -77,15 +86,18 @@ class Page {
             type: 'PUT',
             dataType: 'json',
             data: JSON.stringify(data),
-            headers: {
-                'X-Request-Id': this.getToken()
-            }
+            headers: headers,
         })
         .done(successCallback)
         .fail(errorCallback);
     }
 
-    sendPostRequest(path, data, successCallback, errorCallback) {
+    sendPostRequest(path, authorization, data, successCallback, errorCallback) {
+        let headers = {}
+        if (authorization) {
+            headers['Authorization'] = 'Bearer ' + authorization
+        }
+
         $.ajax({
             url: this.apiUrl + path,
             contentType: 'application/json; charset=utf-8',
@@ -94,31 +106,31 @@ class Page {
             type: 'POST',
             dataType: 'json',
             data: JSON.stringify(data),
-            headers: {
-                'X-Request-Id': this.getToken()
-            }
+            headers: headers,
         })
         .done(successCallback)
         .fail(errorCallback);
     }
 
-    setToken(token) {
-        this.token = token;
+    setBearer(bearer) {
+        this.bearer = bearer;
     }
 
-    getToken() {
-        return this.token;
+    getBearer() {
+        return this.bearer;
     }
 
-    setCookiesData(data) {
-        Cookies.set('user_name', data['name']);
-        Cookies.set('user_token', data['token']);
-        Cookies.set('user_role', data['role']);
+    setCookiesData(bearer, userName, userRole) {
+        if (bearer) {
+            Cookies.set('bearer', bearer);
+        }
+        Cookies.set('user_name', userName);
+        Cookies.set('user_role', userRole);
     }
 
     unsetCookiesData() {
+        Cookies.set('bearer', null);
         Cookies.set('user_name', null);
-        Cookies.set('user_token', null);
         Cookies.set('user_role', null);
     }
 

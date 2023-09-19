@@ -9,22 +9,24 @@ use Psr\Container\ContainerInterface;
 
 class BasicContainer implements ContainerInterface
 {
+    protected $vars;
+
     /**
      * @inheritDoc
      */
-    public function set($name, $value)
+    public function set($id, $value)
     {
-        $this->vars[$name] = $value;
+        $this->vars[$id] = $value;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function get($name)
+    public function get(string $id)
     {
-        if ($this->has($name)) {
-            return $this->vars[$name] instanceof \Closure ? $this->vars[$name]($this) : $this->vars[$name];
+        if ($this->has($id)) {
+            return $this->vars[$id] instanceof \Closure ? $this->vars[$id]($this) : $this->vars[$id];
         } else {
             return null;
         }
@@ -33,8 +35,8 @@ class BasicContainer implements ContainerInterface
     /**
      * @inheritDoc
      */
-    public function has($name)
+    public function has(string $id): bool
     {
-        return isset($this->vars[$name]);
+        return isset($this->vars[$id]);
     }
 }

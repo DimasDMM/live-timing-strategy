@@ -30,6 +30,7 @@ Run it:
 docker run \
   --name lts-website \
   --network lts-network \
+  --mount type=bind,source="$(pwd)",target=/var/www/html \
   -p 9000:9000 \
   --env-file .env \
   lts-website
@@ -49,7 +50,9 @@ Run it:
 docker run \
   --name lts-website-nginx \
   --network lts-network \
+  --mount type=bind,source="$(pwd)",target=/var/www/html \
   -p 8091:80 \
+  --env-file .env \
   lts-website-nginx
 ```
 

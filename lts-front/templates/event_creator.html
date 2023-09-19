@@ -146,7 +146,7 @@
         <script src="{{ base_route }}/assets/js/pages/event_creator.js?{{ date().timestamp }}"></script>
         <script type="text/javascript">
         window.onload = function() {
-            let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+            let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}/{{ env['API_VERSION'] }}';
             let page = new EventCreatorPage(apiUrl);
         };
         </script>

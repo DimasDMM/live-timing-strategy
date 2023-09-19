@@ -1,34 +1,58 @@
-class OverviewPage extends Page {
-    constructor(apiUrl, eventName) {
+class CompetitionsOverviewPage extends Page {
+    constructor(apiUrl, competitionCode) {
         super(apiUrl, true);
 
         // Name of the event
-        this.eventName = eventName;
+        this.competitionName = null
+        this.competitionDescription = null
+        this.competitionCode = competitionCode;
+
         // Timestamp of last loaded data
         this.lastTime = 0;
+
         // Time for callbacks
         this.timeoutRequests = 5000;
-        this.timeoutUpdateMsg = 50;
+        this.timeoutRegreshMsg = 50;
+
         // Counter to know how many process are updating data
         this.counterLoadingData = 0;
         this.queueLoadingData = 0;
 
         this.initEvents();
-        this.initData();
+        this.initData(competitionCode);
     }
 
     initEvents() {
         // Nothing
     }
 
-    initData() {
-        this.updateData(true);
+    initData(competitionCode) {
+        let that = this;
+        this.sendGetRequest(
+            '/c/filter/code/' + competitionCode,
+            this.getBearer(),
+            function (data, textStatus, jqXHR) { that.successCallbackCompetitionInitData(data, textStatus, jqXHR, that); },
+            function (jqXHR, textStatus, errorThrown) { that.errorCallbackCompetitionInitData(jqXHR, textStatus, errorThrown, that); }
+        );
     }
 
-    updateData(firstTime = false) {
+    successCallbackCompetitionInitData(data, textStatus, jqXHR, that) {
+        this.competitionName = data['name']
+        this.competitionDescription = data['description']
+
+        $('#title-competition-name').html(this.competitionName);
+
+        this.refreshData(true)
+    }
+
+    errorCallbackCompetitionInitData(jqXHR, textStatus, errorThrown, that) {
+        window.location.href = '/competitions-index';
+    }
+
+    refreshData(firstTime = false) {
         let that = this;
         let timeoutRequests = firstTime ? 0 : this.timeoutRequests;
-        let timeoutUpdateMsg = firstTime ? 0 : this.timeoutUpdateMsg;
+        let timeoutRegreshMsg = firstTime ? 0 : this.timeoutRegreshMsg;
         setTimeout(
             function() {
                 if (that.counterLoadingData > 0) {
@@ -46,16 +70,16 @@ class OverviewPage extends Page {
                         );
                     }
                 }
-                that.updateData();
+                that.refreshData();
             },
-            timeoutUpdateMsg
+            timeoutRegreshMsg
         );
     }
 
     updateTimingData(that) {
         that.counterLoadingData++;
         that.sendGetRequest(
-            '/v1/events/' + encodeURIComponent(that.eventName) + '/timing/all/onlap',
+            '/c/' + that.competitionCode + '/timing/all/onlap',
             function (data, textStatus, jqXHR) { that.successCallbackTiming(data, textStatus, jqXHR, that); },
             function (jqXHR, textStatus, errorThrown) { that.errorCallbackTiming(jqXHR, textStatus, errorThrown, that); }
         );
@@ -64,7 +88,7 @@ class OverviewPage extends Page {
     updateStatsData(that) {
         that.counterLoadingData++;
         that.sendGetRequest(
-            '/v1/events/' + encodeURIComponent(that.eventName) + '/stats',
+            '/c/' + that.competitionCode + '/stats',
             function (data, textStatus, jqXHR) { that.successCallbackStats(data, textStatus, jqXHR, that); },
             function (jqXHR, textStatus, errorThrown) { that.errorCallbackStats(jqXHR, textStatus, errorThrown, that); }
         );

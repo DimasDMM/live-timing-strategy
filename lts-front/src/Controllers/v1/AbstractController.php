@@ -62,6 +62,7 @@ abstract class AbstractController
             'env' => [
                 'API_HOST' => getenv('API_HOST'),
                 'API_PORT' => getenv('API_PORT'),
+                'API_VERSION' => getenv('API_VERSION'),
             ],
         ];
         return $params;

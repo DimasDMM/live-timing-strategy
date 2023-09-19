@@ -87,7 +87,7 @@
 <script src="{{ base_route }}/assets/js/pages/karts_in_box.js?{{ date().timestamp }}"></script>
 <script type="text/javascript">
 window.onload = function() {
-    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
+    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}/{{ env['API_VERSION'] }}';
     let eventName = '{{ event_name }}';
     let page = new KartsInBoxPage(apiUrl, eventName);
 };

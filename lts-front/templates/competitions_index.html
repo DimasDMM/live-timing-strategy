@@ -41,7 +41,7 @@
 
                     <div class="page-title bg-transparent b-0">
                         <h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-                            Índice de eventos
+                            Índice de competiciones
                         </h1>
                     </div>
 
@@ -55,17 +55,17 @@
                             <div class="portlet">
                                 <div class="portlet-body">
                                     <div class="container py-6">
-                                        <div class="row" id="event-index">
+                                        <div class="row" id="competitions-index">
                                             <div class="col-12 col-lg-12 alert alert-primary bg-transparent bw--2" role="alert">
-                                                Cargando eventos...
+                                                Cargando competiciones...
                                             </div>
                                         </div>
                                     </div>
 
-                                    <a href="{{ routes['EVENT_CREATOR'] }}" class="btn btn-dark rounded-xl transition-hover-top hide" id="btn-event-creator">
+                                    <a href="{{ routes['COMPETITIONS_CREATOR'] }}" class="btn btn-dark rounded-xl transition-hover-top hide" id="btn-competitions-creator">
                                         <i class="fi fi-plus"></i>
                                         <span class="float-start text-align-start px-2">
-                                            <span class="d-block line-height-1 fs--20 pt-1">Añadir evento</span>
+                                            <span class="d-block line-height-1 fs--20 pt-1">Añadir competición</span>
                                         </span>
                                     </a>
                                 </div>
@@ -82,11 +82,11 @@
         <script src="{{ base_route }}/assets/js/core.min.js"></script>
         <script src="{{ base_route }}/assets/js/vendor_bundle.min.js"></script>
         <script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
-        <script src="{{ base_route }}/assets/js/pages/event_index.js?{{ date().timestamp }}"></script>
+        <script src="{{ base_route }}/assets/js/pages/competitions_index.js?{{ date().timestamp }}"></script>
         <script type="text/javascript">
         window.onload = function() {
-            let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-            let page = new EventIndexPage(apiUrl);
+            let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}/{{ env['API_VERSION'] }}';
+            let page = new CompetitionsIndexPage(apiUrl);
         };
         </script>
 

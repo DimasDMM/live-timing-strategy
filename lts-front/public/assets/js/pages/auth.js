@@ -1,4 +1,4 @@
-class TokenValidationPage extends Page {
+class AuthPage extends Page {
     constructor(apiUrl) {
         super(apiUrl)
         this.initEvents()
@@ -6,7 +6,9 @@ class TokenValidationPage extends Page {
 
     initEvents() {
         let that = this;
-        $('#btn-validate-token').click(function (e) { that.eventValidateToken(e, that) });
+        $('#btn-validate-token').click(function (e) {
+            that.eventValidateToken(e, that)
+        });
     }
 
     eventValidateToken(e, that) {
@@ -16,31 +18,34 @@ class TokenValidationPage extends Page {
             that.displayError('Token no válido.');
         }
 
-        super.setToken(token)
         $('#btn-validate-token').attr('disabled', 'disabled').html('Validando...');
         that.hideError();
-        super.sendGetRequest(
-            '/token/validate',
-            function (data, textStatus, jqXHR) { that.successCallbackToken(data, textStatus, jqXHR, that); },
-            function (jqXHR, textStatus, errorThrown) { that.errorCallbackToken(jqXHR, textStatus, errorThrown, that); }
+        super.sendPostRequest(
+            '/auth',
+            null,
+            {'key': token},
+            function (data, textStatus, jqXHR) {
+                that.successCallbackAuth(token, data, textStatus, jqXHR, that);
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                that.errorCallbackAuth(jqXHR, textStatus, errorThrown, that);
+            }
         );
     }
 
-    successCallbackToken(data, textStatus, jqXHR, that) {
-        super.setCookiesData(data['data']);
+    successCallbackAuth(token, data, textStatus, jqXHR, that) {
+        super.setCookiesData(data['bearer'], data['name'], data['role']);
         $('#btn-validate-token').html('Redirigiendo...');
-        window.location.href = '/event-index';
+        window.location.href = '/competitions-index';
     }
 
-    errorCallbackToken(jqXHR, textStatus, errorThrown, that) {
+    errorCallbackAuth(jqXHR, textStatus, errorThrown, that) {
         if (errorThrown == 'Unauthorized') {
             that.displayError('Token no válido ¯\\_(ツ)_/¯');
         } else {
             that.displayError('Algo salió mal ¯\\_(ツ)_/¯');
         }
-
-        that.setToken(null);
-        $('#btn-validate-token').removeAttr('disabled').html('Validar token');
+        $('#btn-validate-token').removeAttr('disabled').html('Entrar');
     }
 
     displayError(message) {

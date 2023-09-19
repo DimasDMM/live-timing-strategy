@@ -5,16 +5,16 @@ final class Routes
 {
     // Initial routes
     const INDEX = '/';
-    const TOKEN = '/token-validation';
+    const AUTH = '/auth';
 
     // Common event pages
-    const EVENT_INDEX = '/event-index';
-    const EVENT_CREATOR = '/event-creator';
-    const EVENT_OVERVIEW = '/event/{event-name}';
+    const COMPETITIONS_INDEX = '/competitions-index';
+    const COMPETITIONS_CREATOR = '/competitions-creator';
+    const COMPETITIONS_OVERVIEW = '/competitions/{competition-code}';
     
     // SE pages
-    const SE_KARTS_IN_BOX = '/event/{event-name}/karts-in-box';
-    const SE_CONFIGURATION = '/event/{event-name}/configuration';
+    const SE_KARTS_IN_BOX = '/competitions/{competition-code}/karts-in-box';
+    const SE_CONFIGURATION = '/competitions/{competition-code}/configuration';
 
     public static function getConstants() : array
     {

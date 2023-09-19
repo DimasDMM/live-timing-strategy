@@ -4,7 +4,7 @@
 
 {% block content_title %}
 <h1 class="h4 mt-4 mb-0 px-3 font-weight-normal">
-    Inicio
+    Inicio: <span id="title-competition-name"></span>
 </h1>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb breadcrumb-sublime fs--13 pb-2 px-3">
@@ -66,12 +66,12 @@
 
 {% block javascript %}
 <script src="{{ base_route }}/assets/js/pages/page.js?{{ date().timestamp }}"></script>
-<script src="{{ base_route }}/assets/js/pages/overview.js?{{ date().timestamp }}"></script>
+<script src="{{ base_route }}/assets/js/pages/competitions_overview.js?{{ date().timestamp }}"></script>
 <script type="text/javascript">
 window.onload = function() {
-    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}';
-    let eventName = '{{ event_name }}';
-    let page = new OverviewPage(apiUrl, eventName);
+    let apiUrl = '{{ env['API_HOST'] }}:{{ env['API_PORT'] }}/{{ env['API_VERSION'] }}';
+    let competitionCode = '{{ competition_code }}';
+    let page = new CompetitionsOverviewPage(apiUrl, competitionCode);
 };
 </script>
 {% endblock %}
