@@ -67,6 +67,7 @@ class Page {
             type: 'GET',
             dataType: 'json',
             headers: headers,
+            timeout: 20000,
         })
         .done(successCallback)
         .fail(errorCallback);
@@ -87,6 +88,7 @@ class Page {
             dataType: 'json',
             data: JSON.stringify(data),
             headers: headers,
+            timeout: 20000,
         })
         .done(successCallback)
         .fail(errorCallback);
@@ -107,6 +109,7 @@ class Page {
             dataType: 'json',
             data: JSON.stringify(data),
             headers: headers,
+            timeout: 20000,
         })
         .done(successCallback)
         .fail(errorCallback);
@@ -166,5 +169,9 @@ class Page {
         formatted += milli >= 100 ? milli : (milli >= 10 ? '0' + milli : '00' + milli);
 
         return formatted;
+    }
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }

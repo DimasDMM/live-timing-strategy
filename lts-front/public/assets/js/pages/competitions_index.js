@@ -21,8 +21,12 @@ class CompetitionsIndexPage extends Page {
         this.sendGetRequest(
             '/c',
             this.getBearer(),
-            function (data, textStatus, jqXHR) { that.successCallbackCompetitionsIndex(data, textStatus, jqXHR, that); },
-            function (jqXHR, textStatus, errorThrown) { that.errorCallbackCompetitionsIndex(jqXHR, textStatus, errorThrown, that); }
+            function (data, textStatus, jqXHR) {
+                that.successCallbackCompetitionsIndex(data, textStatus, jqXHR, that);
+            },
+            function (jqXHR, textStatus, errorThrown) {
+                that.errorCallbackCompetitionsIndex(jqXHR, textStatus, errorThrown, that);
+            }
         );
     }
 
