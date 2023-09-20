@@ -84,6 +84,9 @@ INSERT INTO `timing_pits_in_out`(`pit_in_id`, `pit_out_id`) VALUES
   (1, 1),
   (2, 2);
 
+INSERT INTO `strategy_pits_stats`(`pit_in_id`, `best_time`, `avg_time`) VALUES
+  (3, 59500, 59800);
+
 INSERT INTO `parsers_settings`(`competition_id`, `name`, `value`) VALUES
   (1, 'timing-best-time', 'timing-best-time-value'),
   (1, 'timing-gap', 'timing-gap-value'),

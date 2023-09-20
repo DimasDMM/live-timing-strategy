@@ -200,16 +200,28 @@ CREATE TABLE `timing_pits_in_out` (
   UNIQUE KEY `pit_out_id`(`pit_out_id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `strategy_karts_probs` (
+CREATE TABLE `strategy_pits_stats` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `pit_in_id` INT UNSIGNED NOT NULL,
+  `best_time` INT UNSIGNED NOT NULL,
+  `avg_time` INT UNSIGNED NOT NULL,
+  `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT `strategy_pits_stats__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `strategy_pit_karts` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
+  `pit_in_id` INT UNSIGNED NOT NULL,
   `step` INT UNSIGNED NOT NULL,
   `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
   `probability` FLOAT NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `strategy_karts_probs__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  UNIQUE KEY (`competition_id`, `step`)
+  CONSTRAINT `strategy_pit_karts__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  CONSTRAINT `strategy_pit_karts__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`),
+  UNIQUE KEY (`competition_id`, `step`, `kart_status`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `stats_health` (

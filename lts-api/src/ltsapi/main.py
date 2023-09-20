@@ -16,6 +16,7 @@ from ltsapi.router.competitions import router as router_competitions
 from ltsapi.router.misc import router as router_misc
 from ltsapi.router.participants import router as router_participants
 from ltsapi.router.pits import router as router_pits
+from ltsapi.router.strategy import router as router_strategy
 from ltsapi.router.timing import router as router_timing
 from ltsapi.router.tracks import router as router_tracks
 
@@ -128,6 +129,7 @@ app.include_router(router_competitions)
 app.include_router(router_misc)
 app.include_router(router_participants)
 app.include_router(router_pits)
+app.include_router(router_strategy)
 app.include_router(router_timing)
 app.include_router(router_tracks)
 
