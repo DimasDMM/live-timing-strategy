@@ -87,6 +87,34 @@ INSERT INTO `timing_pits_in_out`(`pit_in_id`, `pit_out_id`) VALUES
 INSERT INTO `strategy_pits_stats`(`pit_in_id`, `best_time`, `avg_time`) VALUES
   (3, 59500, 59800);
 
+INSERT INTO `strategy_pits_karts`(`competition_id`, `pit_in_id`, `step`, `kart_status`, `probability`) VALUES
+  (2, 3, 1, 'good', 65.0),
+  (2, 3, 1, 'medium', 20.0),
+  (2, 3, 1, 'bad', 15.0),
+  (2, 3, 1, 'unknown', 0.0),
+  (2, 3, 2, 'good', 60.0),
+  (2, 3, 2, 'medium', 5.0),
+  (2, 3, 2, 'bad', 20.0),
+  (2, 3, 2, 'unknown', 5.0),
+  (2, 3, 3, 'good', 50.0),
+  (2, 3, 3, 'medium', 20.0),
+  (2, 3, 3, 'bad', 10.0),
+  (2, 3, 3, 'unknown', 20.0),
+  -- Note that the pit-in ID is repeated: this data represents that we have
+  -- re-calculated the strategy
+  (2, 3, 1, 'good', 75.0),
+  (2, 3, 1, 'medium', 5.0),
+  (2, 3, 1, 'bad', 20.0),
+  (2, 3, 1, 'unknown', 0.0),
+  (2, 3, 2, 'good', 65.0),
+  (2, 3, 2, 'medium', 3.0),
+  (2, 3, 2, 'bad', 12.0),
+  (2, 3, 2, 'unknown', 20.0),
+  (2, 3, 3, 'good', 63.0),
+  (2, 3, 3, 'medium', 2.0),
+  (2, 3, 3, 'bad', 10.0),
+  (2, 3, 3, 'unknown', 30.0);
+
 INSERT INTO `parsers_settings`(`competition_id`, `name`, `value`) VALUES
   (1, 'timing-best-time', 'timing-best-time-value'),
   (1, 'timing-gap', 'timing-gap-value'),

@@ -6,7 +6,7 @@ from ltsapi.models.enum import KartStatus
 
 
 class AddStrategyPitsStats(BaseModel):
-    """Data to add strategy pit stats."""
+    """Data to add strategy pits stats."""
 
     pit_in_id: int
     best_time: int
@@ -14,7 +14,7 @@ class AddStrategyPitsStats(BaseModel):
 
 
 class GetStrategyPitsStats(BaseModel):
-    """Strategy pit stats."""
+    """Strategy pits stats."""
 
     id: int
     pit_in_id: int
@@ -24,8 +24,8 @@ class GetStrategyPitsStats(BaseModel):
     update_date: datetime
 
 
-class AddStrategyPitKartsItem(BaseModel):
-    """Data to add strategy pit karts (item)."""
+class AddStrategyPitsKarts(BaseModel):
+    """Data to add strategy pits karts."""
 
     competition_id: int
     pit_in_id: int
@@ -34,14 +34,8 @@ class AddStrategyPitKartsItem(BaseModel):
     probability: float
 
 
-class AddStrategyPitKarts(BaseModel):
-    """Data to add strategy pit karts."""
-
-    pit_karts: List[AddStrategyPitKartsItem]
-
-
-class GetStrategyPitKartsItem(BaseModel):
-    """Strategy pit karts (item)."""
+class GetStrategyPitsKarts(BaseModel):
+    """Strategy pits karts."""
 
     id: int
     competition_id: int
@@ -51,9 +45,3 @@ class GetStrategyPitKartsItem(BaseModel):
     probability: float
     insert_date: datetime
     update_date: datetime
-
-
-class GetStrategyPitKarts(BaseModel):
-    """Strategy pit karts."""
-
-    pit_karts: List[GetStrategyPitKartsItem]

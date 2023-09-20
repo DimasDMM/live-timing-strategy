@@ -46,6 +46,7 @@ class KartStatus(str, EnumBase):
     """Status of a kart."""
 
     GOOD = 'good'
+    MEDIUM = 'medium'
     BAD = 'bad'
     UNKNOWN = 'unknown'
 

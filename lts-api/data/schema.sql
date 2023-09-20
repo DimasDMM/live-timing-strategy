@@ -6,6 +6,11 @@ USE `live-timing`;
 
 SET GLOBAL time_zone = 'Europe/Madrid';
 
+-- Note: this should be stored in the config file of MySQL
+SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+-- --
+
+
 CREATE TABLE `api_auth` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `key` VARCHAR(255) NOT NULL,
@@ -122,8 +127,8 @@ CREATE TABLE `timing_current` (
   `interval_unit` ENUM('millis', 'laps') NULL,
   `stage` ENUM('free-practice', 'qualifying', 'race') NOT NULL,
   `pit_time` INT UNSIGNED NULL,
-  `kart_status` ENUM('unknown', 'good', 'bad') NOT NULL DEFAULT 'unknown',
-  `fixed_kart_status` ENUM('unknown', 'good', 'bad') NULL,
+  `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
+  `fixed_kart_status` ENUM('unknown', 'good', 'medium', 'bad') NULL,
   `number_pits` INT UNSIGNED NOT NULL DEFAULT 0,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -148,8 +153,8 @@ CREATE TABLE `timing_history` (
   `interval_unit` ENUM('millis', 'laps') NULL,
   `stage` ENUM('free-practice', 'qualifying', 'race') NOT NULL,
   `pit_time` INT UNSIGNED NULL,
-  `kart_status` ENUM('unknown', 'good', 'bad') NOT NULL DEFAULT 'unknown',
-  `fixed_kart_status` ENUM('unknown', 'good', 'bad') NULL,
+  `kart_status` ENUM('unknown', 'good', 'medium', 'bad') NOT NULL DEFAULT 'unknown',
+  `fixed_kart_status` ENUM('unknown', 'good', 'medium', 'bad') NULL,
   `number_pits` INT UNSIGNED NOT NULL DEFAULT 0,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -210,7 +215,7 @@ CREATE TABLE `strategy_pits_stats` (
   CONSTRAINT `strategy_pits_stats__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `strategy_pit_karts` (
+CREATE TABLE `strategy_pits_karts` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `competition_id` INT UNSIGNED NOT NULL,
   `pit_in_id` INT UNSIGNED NOT NULL,
@@ -219,9 +224,8 @@ CREATE TABLE `strategy_pit_karts` (
   `probability` FLOAT NOT NULL,
   `insert_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `strategy_pit_karts__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
-  CONSTRAINT `strategy_pit_karts__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`),
-  UNIQUE KEY (`competition_id`, `step`, `kart_status`)
+  CONSTRAINT `strategy_pits_karts__competition_id` FOREIGN KEY (`competition_id`) REFERENCES `competitions_index` (`id`),
+  CONSTRAINT `strategy_pits_karts__pit_in_id` FOREIGN KEY (`pit_in_id`) REFERENCES `timing_pits_in` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `stats_health` (
