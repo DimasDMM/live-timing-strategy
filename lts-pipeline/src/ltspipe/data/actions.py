@@ -16,6 +16,9 @@ from ltspipe.data.competitions import (
     UpdateTimingNumberPits,
     UpdateTimingPosition,
 )
+from ltspipe.data.strategy import (
+    AddStrategyPitsStats,
+)
 
 
 class ActionType(str, EnumBase):
@@ -24,6 +27,7 @@ class ActionType(str, EnumBase):
     INITIALIZE = 'initialize'
     ADD_PIT_IN = 'add-pit-in'
     ADD_PIT_OUT = 'add-pit-out'
+    ADD_STRATEGY_PITS_STATS = 'add-timing-pits-stats'
     UPDATE_COMPETITION_METADATA_REMAINING = 'update-competition-metadata-remaining'  # noqa: E501, LN001
     UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'
     UPDATE_DRIVER = 'update-driver'
@@ -48,6 +52,7 @@ _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.UPDATE_TIMING_NUMBER_PITS: UpdateTimingNumberPits,
     ActionType.UPDATE_TIMING_PIT_TIME: UpdateTimingPitTime,
     ActionType.UPDATE_TIMING_POSITION: UpdateTimingPosition,
+    ActionType.ADD_STRATEGY_PITS_STATS: AddStrategyPitsStats,
 }
 
 

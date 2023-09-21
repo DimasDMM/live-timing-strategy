@@ -8,6 +8,8 @@ from ltspipe.messages import MessageSource
 DEFAULT_API_SENDER_GROUP = 'api-sender'
 DEFAULT_API_SENDER_ERRORS_PATH = 'artifacts/api/errors/'
 DEFAULT_NOTIFICATIONS_TOPIC = 'notifications'
+DEFAULT_NOTIFICATIONS_LISTENER_GROUP = 'notifications-listener'
+DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH = 'artifacts/notifications-listener/errors/'  # noqa
 DEFAULT_PARSER_ERRORS_PATH = 'artifacts/parser/errors/'
 DEFAULT_PARSER_GROUP = 'messages-parser'
 DEFAULT_PARSER_UNKNOWNS_PATH = 'artifacts/parser/unknowns/'
@@ -62,6 +64,18 @@ class ManualListenerConfig:
     kafka_servers: List[str]
     kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
     kafka_produce: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)
+    verbosity: int = field(default=DEFAULT_VERBOSITY)
+
+
+@dataclass(frozen=True)
+class NotificationsListenerConfig:
+    """Class to store the settings of the CLI script."""
+
+    api_lts: str
+    kafka_servers: List[str]
+    errors_path: str = field(default=DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH)
+    kafka_group: str = field(default=DEFAULT_NOTIFICATIONS_LISTENER_GROUP)
+    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
     verbosity: int = field(default=DEFAULT_VERBOSITY)
 
 

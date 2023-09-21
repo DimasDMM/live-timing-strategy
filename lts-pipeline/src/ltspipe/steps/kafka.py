@@ -146,7 +146,7 @@ class KafkaProducerStep(MidStep):
         return children
 
     def run_step(self, msg: Message) -> None:
-        """Send messages to Kafka."""
+        """Run step."""
         future: FutureRecordMetadata = self._producer.send(
             topic=self._topic, value=str(msg))
         try:

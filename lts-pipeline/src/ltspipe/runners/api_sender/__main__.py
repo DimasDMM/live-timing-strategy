@@ -8,7 +8,7 @@ from ltspipe.configs import ApiSenderConfig
 from ltspipe.configs import (
     DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_API_SENDER_GROUP,
-    DEFAULT_PARSER_ERRORS_PATH,
+    DEFAULT_API_SENDER_ERRORS_PATH,
     DEFAULT_STD_MESSAGES_TOPIC,
     DEFAULT_VERBOSITY,
 )
@@ -16,7 +16,7 @@ from ltspipe.configs import (
 
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
-    description='Arguments of the raw storage script.')
+    description='Arguments of the API sender script.')
 parser.add_argument(
     '--api_lts',
     type=str,
@@ -26,7 +26,7 @@ parser.add_argument(
     '--errors_path',
     type=str,
     help='Path to store errors on running time.',
-    default=DEFAULT_PARSER_ERRORS_PATH)
+    default=DEFAULT_API_SENDER_ERRORS_PATH)
 parser.add_argument(
     '--kafka_consume',
     type=str,

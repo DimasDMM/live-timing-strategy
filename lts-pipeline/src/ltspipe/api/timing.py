@@ -1,5 +1,5 @@
 import requests
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from ltspipe.data.competitions import (
     CompetitionStage,
@@ -38,7 +38,7 @@ def get_timing_by_team(
         bearer: str,
         competition_id: int,
         team_id: int) -> Optional[ParticipantTiming]:
-    """Get timing information of a specific teams."""
+    """Get timing information of a specific team."""
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
@@ -50,6 +50,27 @@ def get_timing_by_team(
         return None
 
     return ParticipantTiming.from_dict(response)  # type: ignore
+
+
+def get_timing_history_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int) -> List[ParticipantTiming]:
+    """Get history timing information of a specific team."""
+    uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/history'
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: List[dict] = r.json()  # type: ignore
+    timing: List[ParticipantTiming] = []
+    for item in response:
+        model: ParticipantTiming = ParticipantTiming.from_dict(  # type: ignore
+                                                               item)
+        timing.append(model)
+
+    return timing
 
 
 def update_timing_by_team(

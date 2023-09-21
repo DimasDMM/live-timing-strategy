@@ -203,6 +203,43 @@ Arguments:
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
 
+### Pipeline: Notification Listener
+
+This script has a single process that listens in the topic of Kafka where the
+notifications are written. Then, depending on the notification, it might
+trigger some computation of strategies.
+
+Note that this script does not have any flag (locker) like the previous scripts.
+
+```mermaid
+graph TD;
+  A[Kafka consumer: standard]
+  A -- Message contains notification: X --> D[Handle notification: 'X']
+  D --> E[Kafka producer: notifications]
+```
+
+Local Python command:
+```sh
+python -m ltspipe.runners.notifications_listener \
+  --api_lts http://localhost:8090 \
+  --kafka_servers localhost:9092 \
+  --verbosity 1
+```
+
+Arguments:
+- `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--errors_path`: (optional) Path to store errors in running time. By default,
+  it is `artifacts/notifications-listener/errors/`.
+- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
+  By default, it is `notifications-listener`.
+- `--kafka_notifications`: (optional) Topic of Kafka to read and write
+  notifications. By default, it is `notifications`.
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.
+
 ### Pipeline: Raw storage
 
 Local Python command:

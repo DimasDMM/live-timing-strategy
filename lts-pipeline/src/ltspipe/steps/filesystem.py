@@ -36,7 +36,7 @@ class MessageStorageStep(MidStep):
             return [self._next_step] + self._next_step.get_children()
 
     def run_step(self, msg: Message) -> None:
-        """Save a message in the file system."""
+        """Run step."""
         file_name = f'{time.time()}.msg.txt'
         file_path = os.path.join(self._output_path, file_name)
         self._logger.debug(f'Save message into "{file_path}"...')
@@ -77,7 +77,7 @@ class RawStorageStep(MidStep):
             return [self._next_step] + self._next_step.get_children()
 
     def run_step(self, msg: Message) -> None:
-        """Save a message in the file system."""
+        """Run step."""
         file_name = f'{time.time()}.raw.txt'
         file_path = os.path.join(self._output_path, file_name)
         self._logger.debug(f'Save message into "{file_path}"...')

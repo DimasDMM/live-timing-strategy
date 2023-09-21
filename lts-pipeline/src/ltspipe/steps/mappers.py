@@ -42,12 +42,14 @@ class NotificationMapperStep(MidStep):
         return children
 
     def run_step(self, msg: Message) -> None:
-        """Add message to queue or continue to the next step."""
-        type = self._get_notification_type(msg)
-        if type is not None and type in self._map_notification:
-            self._logger.debug(f'Notification: {type}.')
+        """Run step."""
+        ntype = self._get_notification_type(msg)
+        if ntype is None:
+            return
+        elif ntype in self._map_notification:
+            self._logger.debug(f'Notification: {ntype}.')
             msg.updated()
-            self._map_notification[type].run_step(msg)
+            self._map_notification[ntype].run_step(msg)
         elif self._on_other is not None:
             msg.updated()
             self._on_other.run_step(msg)
@@ -98,7 +100,7 @@ class WsParsersStep(MidStep):
         return children
 
     def run_step(self, msg: Message) -> None:
-        """Display a message."""
+        """Run step."""
         if self._initial_parser.is_initializer_data(msg.data):
             self._logger.debug('Apply parser for initializer data')
             self._apply_parsers(

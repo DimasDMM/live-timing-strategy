@@ -64,7 +64,7 @@ class NullStep(MidStep):
             return [self._next_step] + self._next_step.get_children()
 
     def run_step(self, msg: Message) -> None:
-        """Do nothing."""
+        """Run step."""
         if self._next_step is not None:
             msg.updated()
             self._next_step.run_step(msg)

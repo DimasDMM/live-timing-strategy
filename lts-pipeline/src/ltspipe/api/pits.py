@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import List, Optional
 
 from ltspipe.data.competitions import (
     KartStatus,
@@ -113,6 +113,26 @@ def add_pit_out(
         raise Exception(f'API unknown response: {response}')
 
     return _build_pit_out(response)
+
+
+def get_pits_in_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int) -> List[PitIn]:
+    """Get all pits-in of a team."""
+    uri = f'{api_url}/v1/c/{competition_id}/pits/in/filter/team/{team_id}'
+    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise Exception(f'API error: {r.text}')
+
+    response: List[dict] = r.json()  # type: ignore
+    pits_in: List[PitIn] = []
+    for item in response:
+        model = _build_pit_in(item)  # type: ignore
+        pits_in.append(model)
+
+    return pits_in
 
 
 def get_last_pit_in_by_team(

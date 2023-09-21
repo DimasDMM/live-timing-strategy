@@ -55,7 +55,7 @@ class ApiActionStep(MidStep):
         return children
 
     def run_step(self, msg: Message) -> None:
-        """Do an action with the API REST."""
+        """Run step."""
         if isinstance(msg.data, Action):
             if msg.competition_code not in self._competitions:
                 raise Exception(
@@ -132,7 +132,7 @@ class CompetitionInfoInitStep(MidStep):
             return [self._next_step] + self._next_step.get_children()
 
     def run_step(self, msg: Message) -> None:
-        """Update parsers settings of the competition."""
+        """Run step."""
         self._init_competition_info(msg.competition_code)
         if self._next_step is not None:
             self._next_step.run_step(msg)

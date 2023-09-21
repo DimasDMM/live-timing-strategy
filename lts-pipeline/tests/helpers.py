@@ -3,13 +3,41 @@ from mysql.connector.cursor import MySQLCursor
 import os
 import pathlib
 import requests
-from typing import Any, Tuple
+from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
 
+from ltspipe.base import BaseModel, DictModel
+from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.enum import LengthUnit
+from ltspipe.parsers.base import Parser
 from tests.fixtures import TEST_COMPETITION_CODE
 
 BASE_PATH = 'tests/data/messages'
+
+
+class DummyParser(Parser):
+    """Dummy parser."""
+
+    def parse(
+        self,
+        competition_code: str,  # noqa: U100
+        data: Any,  # noqa: U100
+    ) -> Tuple[List[Action], bool]:
+        """Parse dummy."""
+        return [], True
+
+
+class DummyModel(DictModel):
+    """dummy data."""
+
+    text: Optional[str]
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        return cls.model_construct(
+            text=raw.get('text', None),
+        )
 
 
 def build_magic_step() -> MagicMock:
@@ -17,6 +45,15 @@ def build_magic_step() -> MagicMock:
     step = MagicMock()
     step.get_children.return_value = []
     return step
+
+
+def build_magic_parser() -> Tuple[DummyParser, MagicMock]:
+    """Create mock of a parser."""
+    mocked = MagicMock(return_value=(
+        [Action(type=ActionType.INITIALIZE, data=DummyModel(text=None))], True))
+    parser = DummyParser()
+    parser.parse = mocked  # type: ignore
+    return parser, mocked
 
 
 def load_raw_message(filename: str) -> str:

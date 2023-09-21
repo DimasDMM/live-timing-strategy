@@ -14,7 +14,7 @@ from ltspipe.configs import (
 
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
-    description='Arguments of the raw storage script.')
+    description='Arguments of the manual listener script.')
 parser.add_argument(
     '--competition_code',
     type=str,

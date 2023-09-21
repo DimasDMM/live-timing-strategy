@@ -12,6 +12,7 @@ class NotificationType(str, EnumBase):
     INIT_FINISHED = 'init-finished'
     ADDED_PIT_IN = 'added-pit-in'
     ADDED_PIT_OUT = 'added-pit-out'
+    ADDED_STRATEGY_PITS_STATS = 'added-strategy-pits-stats'
     UPDATED_COMPETITION_METADATA_REMAINING = 'updated-competition-metadata-remaining'  # noqa: E501, LN001
     UPDATED_COMPETITION_METADATA_STATUS = 'updated-competition-metadata-status'
     UPDATED_DRIVER = 'updated-driver'

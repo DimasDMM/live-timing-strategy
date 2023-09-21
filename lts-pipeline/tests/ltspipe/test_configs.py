@@ -2,12 +2,15 @@ from ltspipe.configs import (
     ApiSenderConfig,
     KafkaCheckConfig,
     KafkaMode,
+    NotificationsListenerConfig,
     ParserConfig,
     RawStorageConfig,
     WsListenerConfig,
     DEFAULT_API_SENDER_GROUP,
     DEFAULT_API_SENDER_ERRORS_PATH,
     DEFAULT_NOTIFICATIONS_TOPIC,
+    DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH,
+    DEFAULT_NOTIFICATIONS_LISTENER_GROUP,
     DEFAULT_PARSER_ERRORS_PATH,
     DEFAULT_PARSER_GROUP,
     DEFAULT_PARSER_UNKNOWNS_PATH,
@@ -57,6 +60,21 @@ def test_kafka_check_config() -> None:
     assert kafka_check_config.kafka_topic == DEFAULT_TEST_TOPIC
     assert kafka_check_config.kafka_group == DEFAULT_TEST_GROUP
     assert kafka_check_config.verbosity == DEFAULT_VERBOSITY
+
+
+def test_notifications_listener_config() -> None:
+    """Test ltspipe.configs.ApiSenderConfig."""
+    config = NotificationsListenerConfig(
+        api_lts=MOCK_API_LTS,
+        kafka_servers=MOCK_KAFKA,
+    )
+
+    assert config.api_lts == MOCK_API_LTS
+    assert config.errors_path == DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH
+    assert config.kafka_group == DEFAULT_NOTIFICATIONS_LISTENER_GROUP
+    assert config.kafka_notifications == DEFAULT_NOTIFICATIONS_TOPIC
+    assert config.kafka_servers == MOCK_KAFKA
+    assert config.verbosity == DEFAULT_VERBOSITY
 
 
 def test_parser_config() -> None:

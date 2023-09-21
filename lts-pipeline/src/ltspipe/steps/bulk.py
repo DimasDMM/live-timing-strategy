@@ -34,7 +34,7 @@ class QueueDistributorStep(MidStep):
         return [self._next_step] + self._next_step.get_children()
 
     def run_step(self, msg: Message) -> None:
-        """Add message to queue or continue to the next step."""
+        """Run step."""
         code = msg.competition_code
         wait_status: bool = False
         if code in self._flags:
@@ -85,6 +85,8 @@ class QueueForwardStep(MidStep):
 
     def run_step(self, msg: Message) -> None:
         """
+        Run step.
+
         Forward all messages in queue.
 
         Note that the 'msg' is forwarded to 'next_step' and it has nothing to do

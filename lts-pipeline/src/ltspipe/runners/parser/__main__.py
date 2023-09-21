@@ -18,7 +18,7 @@ from ltspipe.configs import (
 
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
-    description='Arguments of the raw storage script.')
+    description='Arguments of the parser script.')
 parser.add_argument(
     '--api_lts',
     type=str,
