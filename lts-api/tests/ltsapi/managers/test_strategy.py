@@ -24,9 +24,10 @@ class TestStrategyPitsKartsManager(DatabaseTest):
     }
 
     @pytest.mark.parametrize(
-        'pit_in_id, expected_items',
+        'competition_id, pit_in_id, expected_items',
         [
             (
+                2,  # competition_id
                 3,  # pit_in_id
                 [
                     {
@@ -130,20 +131,22 @@ class TestStrategyPitsKartsManager(DatabaseTest):
         ])
     def test_get_strategy_by_pit_in(
             self,
+            competition_id: int,
             pit_in_id: int,
             expected_items: list,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
         """Test method get_strategy_by_pit_in."""
         manager = StrategyPitsKartsManager(db=db_context, logger=fake_logger)
-        db_items = manager.get_strategy_by_pit_in(pit_in_id)
+        db_items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
         dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
-        'pit_in_id, models, expected_items',
+        'competition_id, pit_in_id, models, expected_items',
         [
             (
+                3,  # competition_id
                 4,  # pit_in_id
                 [
                     AddStrategyPitsKarts(
@@ -213,6 +216,7 @@ class TestStrategyPitsKartsManager(DatabaseTest):
         ])
     def test_add_many(
             self,
+            competition_id: int,
             pit_in_id: int,
             models: List[AddStrategyPitsStats],
             expected_items: list,
@@ -225,7 +229,7 @@ class TestStrategyPitsKartsManager(DatabaseTest):
         for item_id, expected_item in zip(item_ids, expected_items):
             expected_item['id'] = item_id
 
-        db_items = manager.get_last_by_pit_in(pit_in_id)
+        db_items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
         dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
@@ -270,12 +274,12 @@ class TestStrategyPitsStatsManager(DatabaseTest):
         'model, expected_item',
         [
             (
-                AddStrategyPitsStats(
+                AddStrategyPitsStats(  # model
                     pit_in_id=3,
                     best_time=59500,
                     avg_time=59800,
                 ),
-                {
+                {  # expected_item
                     'id': None,
                     'pit_in_id': 3,
                     'best_time': 59500,

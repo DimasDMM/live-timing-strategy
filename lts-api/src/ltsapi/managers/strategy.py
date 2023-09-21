@@ -28,6 +28,7 @@ class StrategyPitsKartsManager:
 
     def get_strategy_by_pit_in(
             self,
+            competition_id: int,
             pit_in_id: int) -> List[GetStrategyPitsKarts]:
         """
         Retrieve a strategy pits karts by its ID.
@@ -56,15 +57,18 @@ class StrategyPitsKartsManager:
                 spk.`insert_date` AS spk_insert_date,
                 spk.`update_date` AS spk_update_date
             FROM {self.TABLE_NAME} AS spk
-            WHERE spk.`pit_in_id` = %s
+            WHERE
+                spk.`competition_id` = %s AND
+                spk.`pit_in_id` = %s
         )
         SELECT *
         FROM spk
         WHERE rn = 1
         ORDER BY spk_id ASC
         '''
+        params = (competition_id, pit_in_id)
         models: List[GetStrategyPitsKarts] = fetchmany_models(  # type: ignore
-            self._db, self._raw_to_item, query, params=(pit_in_id,))
+            self._db, self._raw_to_item, query, params=params)
         return models
 
     def add_many(

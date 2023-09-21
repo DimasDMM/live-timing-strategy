@@ -173,9 +173,9 @@ class TestStrategyRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: Union[List[BaseModel], BaseModel],
             expected_type: Type[BaseModel]) -> None:
-        """Test POST /v1/strategy/pits/karts."""
+        """Test POST /v1/c/<competition_id>/strategy/pits/karts."""
         response: Response = self.API.post(
-            '/v1/strategy/pits/karts',
+            '/v1/c/3/strategy/pits/karts',
             json=[x.dict() for x in add_models],
             headers=headers)
         assert response.status_code == expected_status_code, response.content
@@ -351,9 +351,9 @@ class TestStrategyRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test POST /v1/strategy/pits/karts/<pit_in_id>."""
+        """Test POST /v1/c/<competition_id>/strategy/pits/karts/<pit_in_id>."""
         response: Response = self.API.get(
-            f'/v1/strategy/pits/karts/{pit_in_id}',
+            f'/v1/c/2/strategy/pits/karts/{pit_in_id}',
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
@@ -430,9 +430,9 @@ class TestStrategyRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test POST /v1/strategy/pits/stats."""
+        """Test POST /v1/c/<competition_id>/strategy/pits/stats."""
         response: Response = self.API.post(
-            '/v1/strategy/pits/stats',
+            '/v1/c/2/strategy/pits/stats',
             json=add_model.dict(),
             headers=headers)
         assert response.status_code == expected_status_code, response.content
@@ -485,9 +485,9 @@ class TestStrategyRouter(DatabaseTest):
             expected_status_code: int,
             expected_response: BaseModel,
             expected_type: Type[BaseModel]) -> None:
-        """Test POST /v1/strategy/pits/stats/<pit_in_id>."""
+        """Test POST /v1/c/<competition_id>/strategy/pits/stats/<pit_in_id>."""
         response: Response = self.API.get(
-            f'/v1/strategy/pits/stats/{pit_in_id}',
+            f'/v1/c/2/strategy/pits/stats/{pit_in_id}',
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 

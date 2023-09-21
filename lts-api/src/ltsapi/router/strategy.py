@@ -18,7 +18,8 @@ from ltsapi.router import _build_db_connection
 
 
 router = APIRouter(
-    prefix=f'/{API_VERSION}', tags=['Strategy'])
+    prefix='/' + API_VERSION + '/c/{competition_id}',  # noqa
+    tags=['Strategy'])
 _logger = _build_logger(__package__)
 
 
@@ -26,6 +27,7 @@ _logger = _build_logger(__package__)
         path='/strategy/pits/karts',
         summary='Add a strategy pit karts')
 async def add_strategy_pits_karts(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
     strategy: List[AddStrategyPitsKarts],
 ) -> List[GetStrategyPitsKarts]:
     """Add a strategy pit karts."""
@@ -44,7 +46,7 @@ async def add_strategy_pits_karts(
             raise ApiError('It was not possible to locate the new data.')
 
         pit_in_id = strategy[0].pit_in_id  # type: ignore
-        items = manager.get_last_by_pit_in(pit_in_id)
+        items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
         return items
 
 
@@ -52,6 +54,7 @@ async def add_strategy_pits_karts(
         path='/strategy/pits/karts/{pit_in_id}',  # noqa: FS003
         summary='Get a strategy pit karts')
 async def get_strategy_pits_karts_by_pit_in(
+    competition_id: Annotated[int, Path(description='ID of the competition')],
     pit_in_id: Annotated[int, Path(description='ID of the pit-in')],
 ) -> List[GetStrategyPitsKarts]:
     """Get the data of a strategy pit karts."""
@@ -59,7 +62,7 @@ async def get_strategy_pits_karts_by_pit_in(
     with db:
         db.start_transaction()
         manager = StrategyPitsKartsManager(db=db, logger=_logger)
-        items = manager.get_strategy_by_pit_in(pit_in_id)
+        items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
         return items
 
 
@@ -67,6 +70,7 @@ async def get_strategy_pits_karts_by_pit_in(
         path='/strategy/pits/stats',
         summary='Add a strategy pit stats')
 async def add_strategy_pits_stats(
+    competition_id: Annotated[int, Path(description='ID of the competition')],  # noqa: U100, E501
     strategy: AddStrategyPitsStats,
 ) -> GetStrategyPitsStats:
     """Add a strategy pit stats."""
@@ -90,6 +94,7 @@ async def add_strategy_pits_stats(
         path='/strategy/pits/stats/{pit_in_id}',  # noqa: FS003
         summary='Get a strategy pit stats')
 async def get_strategy_pits_stats_by_pit_in(
+    competition_id: Annotated[int, Path(description='ID of the competition')],  # noqa: U100, E501
     pit_in_id: Annotated[int, Path(description='ID of the pit-in')],
 ) -> Union[GetStrategyPitsStats, Empty]:
     """Get the data of a strategy pit stats."""
