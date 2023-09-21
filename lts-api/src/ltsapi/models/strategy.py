@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from ltsapi.models import BaseModel
 from ltsapi.models.enum import KartStatus

@@ -26,9 +26,9 @@ class StrategyPitsKartsManager:
         self._db = db
         self._logger = logger
 
-    def get_last_by_pit_in(
+    def get_strategy_by_pit_in(
             self,
-            pit_in_id: int) -> Optional[GetStrategyPitsKarts]:
+            pit_in_id: int) -> List[GetStrategyPitsKarts]:
         """
         Retrieve a strategy pits karts by its ID.
 
@@ -44,7 +44,9 @@ class StrategyPitsKartsManager:
         query = f'''
         WITH spk AS (
             SELECT
-                ROW_NUMBER() OVER (PARTITION BY pit_in_id, step, kart_status ORDER BY id DESC) AS rn,
+                ROW_NUMBER() OVER (
+                    PARTITION BY pit_in_id, step, kart_status ORDER BY id DESC
+                ) AS rn,
                 spk.`id` AS spk_id,
                 spk.`competition_id` AS spk_competition_id,
                 spk.`pit_in_id` AS spk_pit_in_id,

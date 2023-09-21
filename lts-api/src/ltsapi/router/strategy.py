@@ -39,7 +39,7 @@ async def add_strategy_pits_karts(
             raise e
         except Exception:
             raise ApiError('No data was inserted or updated.')
-        
+
         if len(strategy) == 0:
             raise ApiError('It was not possible to locate the new data.')
 
@@ -59,7 +59,7 @@ async def get_strategy_pits_karts_by_pit_in(
     with db:
         db.start_transaction()
         manager = StrategyPitsKartsManager(db=db, logger=_logger)
-        items = manager.get_last_by_pit_in(pit_in_id)
+        items = manager.get_strategy_by_pit_in(pit_in_id)
         return items
 
 

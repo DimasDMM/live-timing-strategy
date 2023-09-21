@@ -125,18 +125,18 @@ class TestStrategyPitsKartsManager(DatabaseTest):
                         'kart_status': KartStatus.UNKNOWN,
                         'probability': 30.,
                     },
-                ]
+                ],
             ),
         ])
-    def test_get_last_by_pit_in(
+    def test_get_strategy_by_pit_in(
             self,
             pit_in_id: int,
             expected_items: list,
             db_context: DBContext,
             fake_logger: FakeLogger) -> None:
-        """Test method get_last_by_pit_in."""
+        """Test method get_strategy_by_pit_in."""
         manager = StrategyPitsKartsManager(db=db_context, logger=fake_logger)
-        db_items = manager.get_last_by_pit_in(pit_in_id)
+        db_items = manager.get_strategy_by_pit_in(pit_in_id)
         dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
@@ -228,7 +228,6 @@ class TestStrategyPitsKartsManager(DatabaseTest):
         db_items = manager.get_last_by_pit_in(pit_in_id)
         dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
-
 
 
 class TestStrategyPitsStatsManager(DatabaseTest):
