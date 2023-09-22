@@ -82,9 +82,7 @@ class FileListenerStep(StartStep):
         """Run step with a path of files."""
         files_paths = [os.path.join(path, f) for f in os.listdir(path)
                        if os.path.isfile(os.path.join(path, f))]
-        for i, file_path in enumerate(files_paths):
-            input(
-                f'(Press Enter) File {i + 1} / {len(files_paths)}: {file_path}')
+        for file_path in files_paths:
             self._step_single_file(file_path)
 
     def _step_single_file(self, file_path: str) -> None:
