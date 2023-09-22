@@ -28,11 +28,6 @@ parser.add_argument(
     help='Path to store errors on running time.',
     default=DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH)
 parser.add_argument(
-    '--kafka_consume',
-    type=str,
-    help='Kafka topic to consume.',
-    default=DEFAULT_STD_MESSAGES_TOPIC)
-parser.add_argument(
     '--kafka_group',
     type=str,
     help='Suscribe to the topic with a specific group name.',
