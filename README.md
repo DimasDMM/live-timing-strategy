@@ -36,11 +36,6 @@ Start Minikube:
 minikube start
 ```
 
-Prepare the kubernetes namespace with this command:
-```sh
-kubectl apply -f ./k8s/00-namespace.yaml
-```
-
 Optionally, we may run the Minikube dashboard with `minikube dashboard`.
 
 ### Kafka
@@ -55,13 +50,13 @@ Optionally, if we want to access Kafka from outside the cluster, we need to
 forward the port. This command is required if we want to run the scripts
 locally instead of using Kubernetes.
 ```sh
-kubectl port-forward -n live-timing service/kafka-service 9092
+kubectl port-forward -n default service/kafka-service 9092
 ```
 
 Optionally, we may run a Kafka UI with Kouncil (use `admin` as user and pass):
 ```sh
 kubectl apply -f ./k8s/kafka/02-kouncil.yaml
-kubectl port-forward -n live-timing service/kouncil-service 8080:8080
+kubectl port-forward -n default service/kouncil-service 8080:8080
 ```
 
 #### Setup topics

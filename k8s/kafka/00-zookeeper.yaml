@@ -4,7 +4,7 @@ metadata:
   name: zookeeper-deployment
   labels:
     app: kafka
-  namespace: live-timing
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -33,7 +33,7 @@ metadata:
   name: zookeeper-service
   labels:
     app: kafka
-  namespace: live-timing
+  namespace: default
 spec:
   selector:
     app: zookeeper
