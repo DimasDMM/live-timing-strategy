@@ -3,6 +3,14 @@ import requests
 from ltspipe.data.strategy import StrategyPitsStats
 
 
+def _build_strategy_pit_stats(raw: dict) -> StrategyPitsStats:
+    """Build a pit-in instance from a dictionary."""
+    ignore_keys = {'id', 'insert_date', 'update_date'}
+    raw = {k: v for k, v in raw.items() if k not in ignore_keys}
+    model: StrategyPitsStats = StrategyPitsStats.from_dict(raw)  # type: ignore
+    return model
+
+
 def add_strategy_pit_stats(
         api_url: str,
         bearer: str,
@@ -40,4 +48,4 @@ def add_strategy_pit_stats(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return StrategyPitsStats.from_dict(response)  # type: ignore
+    return _build_strategy_pit_stats(response)  # type: ignore

@@ -26,6 +26,7 @@ class NotificationType(str, EnumBase):
     UPDATED_COMPETITION_METADATA_STATUS = 'updated-competition-metadata-status'
     UPDATED_DRIVER = 'updated-driver'
     UPDATED_TEAM = 'updated-team'
+    UPDATED_TIMING_BEST_TIME = 'updated-timing-best-time'
     UPDATED_TIMING_LAP = 'updated-timing-lap'
     UPDATED_TIMING_LAST_TIME = 'updated-timing-last-time'
     UPDATED_TIMING_NUMBER_PITS = 'updated-timing-number-pits'
@@ -44,6 +45,7 @@ _factory: Dict[NotificationType, Optional[Type[DictModel]]] = {
     NotificationType.UPDATED_COMPETITION_METADATA_STATUS: CompetitionMetadata,
     NotificationType.UPDATED_DRIVER: Driver,
     NotificationType.UPDATED_TEAM: Team,
+    NotificationType.UPDATED_TIMING_BEST_TIME: ParticipantTiming,
     NotificationType.UPDATED_TIMING_LAP: ParticipantTiming,
     NotificationType.UPDATED_TIMING_LAST_TIME: ParticipantTiming,
     NotificationType.UPDATED_TIMING_NUMBER_PITS: ParticipantTiming,

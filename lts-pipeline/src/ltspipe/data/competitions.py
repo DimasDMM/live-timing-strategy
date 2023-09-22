@@ -464,6 +464,24 @@ class UpdateTeam(DictModel):
         )
 
 
+class UpdateTimingBestTime(DictModel):
+    """Info to update the timing best time of a team."""
+
+    competition_code: str
+    team_id: int
+    best_time: int
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.model_construct(
+            competition_code=raw.get('competition_code'),
+            team_id=raw.get('team_id'),
+            best_time=raw.get('best_time'),
+        )
+
+
 class UpdateTimingLap(DictModel):
     """Info to update the timing lap of a team."""
 

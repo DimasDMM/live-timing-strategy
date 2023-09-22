@@ -19,7 +19,7 @@ from ltspipe.data.competitions import (
     LengthUnit,
     Team,
     ParticipantTiming,
-    UpdateTimingLastTime,
+    UpdateTimingBestTime,
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.data.notifications import Notification, NotificationType
@@ -45,7 +45,7 @@ EXCLUDED_KEYS = {
     'updated_at': True,
 }
 PARSERS_SETTINGS = {
-    ParserSettings.TIMING_LAST_TIME: 'timing-last-time-value',
+    ParserSettings.TIMING_BEST_TIME: 'timing-best-time-value',
 }
 
 
@@ -66,12 +66,11 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_TIMING_LAST_TIME,
-                            data=UpdateTimingLastTime(
+                            type=ActionType.UPDATE_TIMING_BEST_TIME,
+                            data=UpdateTimingBestTime(
                                 competition_code=TEST_COMPETITION_CODE,
                                 team_id=1,
-                                last_time=65000,
-                                auto_best_time=True,
+                                best_time=52000,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -103,9 +102,9 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Notification(
-                            type=NotificationType.UPDATED_TIMING_LAST_TIME,
+                            type=NotificationType.UPDATED_TIMING_BEST_TIME,
                             data=ParticipantTiming(
-                                best_time=58800,
+                                best_time=52000,
                                 driver_id=1,
                                 fixed_kart_status=None,
                                 gap=None,
@@ -132,12 +131,11 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                     Message(
                         competition_code=TEST_COMPETITION_CODE,
                         data=Action(
-                            type=ActionType.UPDATE_TIMING_LAST_TIME,
-                            data=UpdateTimingLastTime(
+                            type=ActionType.UPDATE_TIMING_BEST_TIME,
+                            data=UpdateTimingBestTime(
                                 competition_code=TEST_COMPETITION_CODE,
                                 team_id=1,
-                                last_time=65000,
-                                auto_best_time=True,
+                                best_time=52000,
                             ),
                         ),
                         source=MessageSource.SOURCE_WS_LISTENER,
@@ -206,16 +204,16 @@ def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:
     return [item]
 
 
-def _mock_response_put_timing_last_time(api_url: str) -> List[MapRequestItem]:
+def _mock_response_put_timing_best_time(api_url: str) -> List[MapRequestItem]:
     """Get mocked response."""
     return [
         MapRequestItem(
-            url=f'{api_url}/v1/c/1/timing/teams/1/last_time',
+            url=f'{api_url}/v1/c/1/timing/teams/1/best_time',
             method=MapRequestMethod.PUT,
             responses=[
                 MockResponse(
                     content={
-                        'best_time': 58800,
+                        'best_time': 52000,
                         'driver_id': 1,
                         'fixed_kart_status': None,
                         'gap': None,
@@ -231,7 +229,6 @@ def _mock_response_put_timing_last_time(api_url: str) -> List[MapRequestItem]:
                         'position': 1,
                         'stage': 'race',
                         'team_id': 1,
-                        'pit_time': 0,
                         'insert_date': '2023-04-20T20:42:51',
                         'update_date': '2023-04-20T22:27:33',
                     },
@@ -246,5 +243,5 @@ def _apply_mock_api(mocker: MockerFixture, api_url: str) -> None:
     api_url = api_url.strip('/')
     requests_map = (
         _mock_response_auth_key(api_url)
-        + _mock_response_put_timing_last_time(api_url))
+        + _mock_response_put_timing_best_time(api_url))
     mock_requests(mocker, requests_map=requests_map)

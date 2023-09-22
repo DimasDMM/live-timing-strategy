@@ -22,6 +22,7 @@ from ltspipe.parsers.websocket.participants import (
 )
 from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
 from ltspipe.parsers.websocket.timing import (
+    TimingBestTimeParser,
     TimingLapParser,
     TimingLastTimeParser,
     TimingNumberPitsParser,
@@ -268,6 +269,7 @@ def _build_parsers_pipe(
         PitInParser(competitions),  # type: ignore
         PitOutParser(competitions),  # type: ignore
         TeamNameParser(competitions),  # type: ignore
+        TimingBestTimeParser(competitions),  # type: ignore
         TimingLapParser(competitions),  # type: ignore
         TimingLastTimeParser(competitions),  # type: ignore
         TimingNumberPitsParser(competitions),  # type: ignore

@@ -3,6 +3,7 @@ import pytest
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.handlers.timing import (
+    UpdateTimingBestTimeHandler,
     UpdateTimingLapHandler,
     UpdateTimingLastTimeHandler,
     UpdateTimingNumberPitsHandler,
@@ -13,6 +14,7 @@ from ltspipe.data.competitions import (
     CompetitionStage,
     KartStatus,
     ParticipantTiming,
+    UpdateTimingBestTime,
     UpdateTimingLap,
     UpdateTimingLastTime,
     UpdateTimingNumberPits,
@@ -22,6 +24,70 @@ from ltspipe.data.competitions import (
 from ltspipe.data.notifications import Notification, NotificationType
 from tests.fixtures import AUTH_KEY, REAL_API_LTS
 from tests.helpers import DatabaseTest
+
+
+class TestUpdateTimingBestTimeHandler(DatabaseTest):
+    """
+    Functional test of ltspipe.api.handlers.UpdateTimingBestTimeHandler.
+
+    Important: Since these tests are functional, they require that there are
+    a database and an API REST running.
+    """
+
+    @pytest.mark.parametrize(
+        'competition_code, update_data, expected_notification',
+        [
+            (
+                'south-endurance-2023-03-26',  # competition_code
+                UpdateTimingBestTime(  # update_data
+                    competition_code='south-endurance-2023-03-26',
+                    team_id=6,
+                    best_time=58000,
+                ),
+                Notification(  # expected_notification
+                    type=NotificationType.UPDATED_TIMING_BEST_TIME,
+                    data=ParticipantTiming(
+                        best_time=58000,
+                        driver_id=9,
+                        gap=None,
+                        fixed_kart_status=None,
+                        interval=None,
+                        kart_status=KartStatus.UNKNOWN,
+                        lap=1,
+                        last_time=60000,
+                        number_pits=0,
+                        participant_code='team-1',
+                        pit_time=None,
+                        position=1,
+                        stage=CompetitionStage.FREE_PRACTICE,
+                        team_id=6,
+                    ),
+                ),
+            ),
+        ],
+    )
+    def test_handle(
+            self,
+            competition_code: str,
+            update_data: UpdateTimingBestTime,
+            expected_notification: Notification) -> None:
+        """Test handle method."""
+        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        info = build_competition_info(
+            REAL_API_LTS,
+            bearer=auth_data.bearer,
+            competition_code=competition_code)
+        competitions = {competition_code: info}
+
+        # First call to handle method
+        handler = UpdateTimingBestTimeHandler(
+            api_url=REAL_API_LTS,
+            auth_data=auth_data,
+            competitions=competitions)
+        notification = handler.handle(update_data)
+        assert notification is not None
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestUpdateTimingLapHandler(DatabaseTest):

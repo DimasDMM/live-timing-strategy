@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
     CompetitionInfo,
+    UpdateTimingBestTime,
     UpdateTimingLap,
     UpdateTimingLastTime,
     UpdateTimingNumberPits,
@@ -17,6 +18,90 @@ from ltspipe.parsers.websocket.base import (
     _is_column_parser_setting,
     _time_to_millis,
 )
+
+
+class TimingBestTimeParser(Parser):
+    """
+    Parse the best time in the timing of a team.
+
+    Sample messages:
+    > r5625c8|tb|1:05.739
+    > r5625c8|tn|1:05.739
+    > r5625c8|ib|1:05.739
+    > r5625c8|in|1:05.739
+    """
+
+    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._competitions = competitions
+
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
+        """
+        Analyse and/or parse a given data.
+
+        Params:
+            competition_code (str): Code of the competition.
+            data (Any): Data to parse.
+
+        Returns:
+            List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
+        """
+        if competition_code not in self._competitions:
+            raise Exception(f'Unknown competition with code={competition_code}')
+        elif not isinstance(data, str):
+            return [], False
+
+        parsed_data = self._parse_timing_best_time(competition_code, data)
+        if parsed_data is None:
+            return [], False
+
+        action = Action(
+            type=ActionType.UPDATE_TIMING_BEST_TIME,
+            data=parsed_data,
+        )
+        return [action], True
+
+    def _parse_timing_best_time(
+            self,
+            competition_code: str,
+            data: str) -> Optional[UpdateTimingBestTime]:
+        """Parse driver name."""
+        data = data.strip()
+        matches = re.match(
+            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in)\|(.+)$', data)
+        if matches is None:
+            return None
+
+        column_id = matches[2]
+        if not _is_column_parser_setting(
+                self._competitions,
+                competition_code,
+                column_id,
+                ParserSettings.TIMING_BEST_TIME):
+            return None
+
+        participant_code = matches[1]
+        raw_timing_best_time = matches[3]
+
+        # The team must be already initialized
+        team = _find_team_by_code(
+            self._competitions,
+            competition_code,
+            team_code=participant_code)
+        if team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
+
+        timing_best_time = _time_to_millis(raw_timing_best_time, default=0)
+        updated_timing = UpdateTimingBestTime(
+            competition_code=competition_code,
+            team_id=team.id,
+            best_time=timing_best_time,
+        )
+        return updated_timing
 
 
 class TimingLapParser(Parser):
@@ -105,7 +190,10 @@ class TimingLastTimeParser(Parser):
     Parse the last time in the timing of a team.
 
     Sample messages:
-    > r5625c7|tn|1:05.739
+    > r5625c7|tb|1:05.739
+    > r5625c8|tn|1:05.739
+    > r5625c8|ib|1:05.739
+    > r5625c8|in|1:05.739
     """
 
     def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
@@ -149,7 +237,7 @@ class TimingLastTimeParser(Parser):
         """Parse driver name."""
         data = data.strip()
         matches = re.match(
-            r'^(.+?)(c\d+)\|tn\|(.+)$', data)
+            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in)\|(.+)$', data)
         if matches is None:
             return None
 

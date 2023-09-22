@@ -10,10 +10,11 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
     UpdateDriver,
     UpdateTeam,
-    UpdateTimingPitTime,
+    UpdateTimingBestTime,
     UpdateTimingLap,
     UpdateTimingLastTime,
     UpdateTimingNumberPits,
+    UpdateTimingPitTime,
     UpdateTimingPosition,
 )
 from ltspipe.data.strategy import (
@@ -32,6 +33,7 @@ class ActionType(str, EnumBase):
     UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'
     UPDATE_DRIVER = 'update-driver'
     UPDATE_TEAM = 'update-team'
+    UPDATE_TIMING_BEST_TIME = 'update-timing-best-time'
     UPDATE_TIMING_LAP = 'update-timing-lap'
     UPDATE_TIMING_LAST_TIME = 'update-timing-last-time'
     UPDATE_TIMING_NUMBER_PITS = 'update-timing-number-pits'
@@ -47,6 +49,7 @@ _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.UPDATE_COMPETITION_METADATA_STATUS: UpdateCompetitionMetadataStatus,  # noqa: E501, LN001
     ActionType.UPDATE_DRIVER: UpdateDriver,
     ActionType.UPDATE_TEAM: UpdateTeam,
+    ActionType.UPDATE_TIMING_BEST_TIME: UpdateTimingBestTime,
     ActionType.UPDATE_TIMING_LAP: UpdateTimingLap,
     ActionType.UPDATE_TIMING_LAST_TIME: UpdateTimingLastTime,
     ActionType.UPDATE_TIMING_NUMBER_PITS: UpdateTimingNumberPits,
