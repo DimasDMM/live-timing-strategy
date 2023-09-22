@@ -6,6 +6,7 @@ from kafka import (  # type: ignore
 )
 from kafka.errors import KafkaError  # type: ignore
 from kafka.producer.future import FutureRecordMetadata  # type: ignore
+import traceback
 from typing import Any, Callable, List, Optional
 
 from ltspipe.messages import Message
@@ -78,7 +79,7 @@ class KafkaConsumerStep(StartStep):
                         created_at=datetime.utcnow().timestamp(),
                         updated_at=datetime.utcnow().timestamp(),
                         error_description=str(e),
-                        error_traceback=str(e.__traceback__),
+                        error_traceback=traceback.format_exc(),
                     )
                     msg.updated()
                     self._on_error.run_step(msg)

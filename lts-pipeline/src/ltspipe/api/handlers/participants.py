@@ -83,6 +83,9 @@ class UpdateDriverHandler(ApiHandler):
             )
             old_driver.name = current_driver.name
             old_driver.number = current_driver.number
+        else:
+            # Ignore driver
+            return None
 
         # Update driver ID in the timing and in the last pit-out
         self._update_timing_with_driver_id(

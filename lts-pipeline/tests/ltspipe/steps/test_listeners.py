@@ -33,6 +33,7 @@ class TestFileListenerStep:
                 single_file=True,
                 infinite_loop=False,
                 message_source=MessageSource.SOURCE_DUMMY,
+                is_json=False,
                 next_step=next_step,
                 on_error=on_error,
             )
@@ -66,6 +67,7 @@ class TestFileListenerStep:
             single_file=True,
             infinite_loop=False,
             message_source=MessageSource.SOURCE_DUMMY,
+            is_json=False,
             next_step=next_step,
         )
 

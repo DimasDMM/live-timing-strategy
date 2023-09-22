@@ -74,7 +74,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert notification.dict() == expected_notification.dict()
+        assert notification.model_dump() == expected_notification.model_dump()
 
 
 class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
@@ -146,4 +146,4 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert notification.dict() == expected_notification.dict()
+        assert notification.model_dump() == expected_notification.model_dump()

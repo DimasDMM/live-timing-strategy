@@ -91,8 +91,8 @@ class TestAddPitInHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(add_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestAddPitOutHandler(DatabaseTest):
@@ -145,5 +145,5 @@ class TestAddPitOutHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(add_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001

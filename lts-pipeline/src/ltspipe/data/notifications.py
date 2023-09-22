@@ -1,7 +1,16 @@
-from pydantic import Field
-from typing import Any, Optional
+from pydantic import Field, SerializeAsAny
+from typing import Any, Dict, Optional, Type
 
 from ltspipe.base import BaseModel, DictModel, EnumBase
+from ltspipe.data.competitions import (
+    CompetitionMetadata,
+    Driver,
+    ParticipantTiming,
+    PitIn,
+    PitOut,
+    Team,
+)
+from ltspipe.data.strategy import StrategyPitsStats
 
 
 class NotificationType(str, EnumBase):
@@ -24,17 +33,54 @@ class NotificationType(str, EnumBase):
     UPDATED_TIMING_POSITION = 'updated-timing-position'
 
 
+_factory: Dict[NotificationType, Optional[Type[DictModel]]] = {
+    NotificationType.DUMMY: None,
+    NotificationType.INIT_ONGOING: None,
+    NotificationType.INIT_FINISHED: None,
+    NotificationType.ADDED_PIT_IN: PitIn,
+    NotificationType.ADDED_PIT_OUT: PitOut,
+    NotificationType.ADDED_STRATEGY_PITS_STATS: StrategyPitsStats,
+    NotificationType.UPDATED_COMPETITION_METADATA_REMAINING: CompetitionMetadata,  # noqa: E501, LN001
+    NotificationType.UPDATED_COMPETITION_METADATA_STATUS: CompetitionMetadata,
+    NotificationType.UPDATED_DRIVER: Driver,
+    NotificationType.UPDATED_TEAM: Team,
+    NotificationType.UPDATED_TIMING_LAP: ParticipantTiming,
+    NotificationType.UPDATED_TIMING_LAST_TIME: ParticipantTiming,
+    NotificationType.UPDATED_TIMING_NUMBER_PITS: ParticipantTiming,
+    NotificationType.UPDATED_TIMING_PIT_TIME: ParticipantTiming,
+    NotificationType.UPDATED_TIMING_POSITION: ParticipantTiming,
+}
+
+
 class Notification(DictModel):
     """Notification data."""
 
     type: NotificationType
-    data: Optional[Any] = Field(default=None)
+    data: Optional[SerializeAsAny[DictModel]] = Field(default=None)
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
+        ntype = NotificationType.value_of(raw.get('type'))
+        raw_data = raw.get('data')
+        data = Notification.__from_dict_data(ntype, raw_data)
         return cls.model_construct(
-            type=raw.get('type'),
-            data=raw.get('data', None),
+            type=ntype,
+            data=data,
         )
+
+    @staticmethod
+    def __from_dict_data(
+            type: NotificationType,
+            raw_data: Any) -> Any:
+        """Transform the raw data into a model."""
+        if type not in _factory:
+            raise Exception(f'Unknown action type: {type}')
+        elif _factory[type] is None:
+            return raw_data
+
+        if not isinstance(raw_data, dict):
+            raise Exception(f'Unknown data format: {raw_data}')
+        else:
+            return _factory[type].from_dict(raw_data)  # type: ignore

@@ -197,6 +197,7 @@ def _build_file_listener_process(
         single_file=True,
         infinite_loop=True,
         message_source=config.message_source,
+        is_json=config.is_json,
         next_step=queue_distributor,
     )
 

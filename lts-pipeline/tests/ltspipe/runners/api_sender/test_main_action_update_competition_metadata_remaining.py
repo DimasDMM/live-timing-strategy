@@ -171,7 +171,7 @@ def test_main(
 
 def _raw_to_dict(raw: List[str]) -> List[dict]:
     """Transform messages into dictionaries."""
-    return [Message.decode(x).dict(exclude=EXCLUDED_KEYS) for x in raw]
+    return [Message.decode(x).model_dump(exclude=EXCLUDED_KEYS) for x in raw]
 
 
 def _mock_response_auth_key(api_url: str) -> List[MapRequestItem]:

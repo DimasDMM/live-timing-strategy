@@ -198,4 +198,4 @@ def _raw_to_dict(raw: List[str]) -> List[dict]:
 
 def _msg_to_dict(raw: List[Message]) -> List[dict]:
     """Transform messages into dictionaries."""
-    return [x.dict(exclude=EXCLUDED_KEYS) for x in raw]
+    return [x.model_dump(exclude=EXCLUDED_KEYS) for x in raw]

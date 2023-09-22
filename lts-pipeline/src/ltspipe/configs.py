@@ -61,6 +61,7 @@ class ManualListenerConfig:
 
     competition_code: str
     message_source: MessageSource
+    is_json: bool
     kafka_servers: List[str]
     kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
     kafka_produce: str = field(default=DEFAULT_RAW_MESSAGES_TOPIC)

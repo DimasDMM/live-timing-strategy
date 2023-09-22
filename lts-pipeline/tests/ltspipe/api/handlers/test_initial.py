@@ -281,10 +281,10 @@ class TestInitialDataHandler(DatabaseTest):
         notification = handler.handle(initial_data_1)
         info = competitions[TEST_COMPETITION_CODE]
         self._add_team_id_to_drivers(info, expected_drivers_1)
-        assert ([t.dict(exclude={'id': True}) for t in info.teams]
-                == [t.dict(exclude={'id': True}) for t in expected_teams_1])
-        assert ([d.dict(exclude={'id': True}) for d in info.drivers]
-                == [d.dict(exclude={'id': True}) for d in expected_drivers_1])
+        assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
+                == [t.model_dump(exclude={'id': True}) for t in expected_teams_1])  # noqa: E501, LN001
+        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
+                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_1])  # noqa: E501, LN001
         assert info.parser_settings == expected_settings_1
         assert notification is not None
         assert notification == expected_notification_1
@@ -296,10 +296,10 @@ class TestInitialDataHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(initial_data_2)
         self._add_team_id_to_drivers(info, expected_drivers_2)
-        assert ([t.dict(exclude={'id': True}) for t in info.teams]
-                == [t.dict(exclude={'id': True}) for t in expected_teams_2])
-        assert ([d.dict(exclude={'id': True}) for d in info.drivers]
-                == [d.dict(exclude={'id': True}) for d in expected_drivers_2])
+        assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
+                == [t.model_dump(exclude={'id': True}) for t in expected_teams_2])  # noqa: E501, LN001
+        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
+                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_2])  # noqa: E501, LN001
         assert info.parser_settings == expected_settings_2
         assert notification is not None
         assert notification == expected_notification_2

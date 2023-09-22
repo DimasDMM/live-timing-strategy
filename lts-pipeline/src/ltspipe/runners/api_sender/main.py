@@ -171,6 +171,7 @@ def _build_std_process(
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_consume],
         value_deserializer=msgpack.loads,
+        group_id=config.kafka_group,
         next_step=competition_info_init,
         on_error=errors_storage,
     )

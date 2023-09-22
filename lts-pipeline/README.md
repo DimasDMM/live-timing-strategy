@@ -361,7 +361,10 @@ Arguments:
   it is `raw-messages`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--message_source`: (**mandatory**) Source of the messages to mock.
+- `--message_source`: (optional) Source of the messages to mock.
+- `--is_json`: (optional, flag) If this flag is given, the format of the
+  messages must be JSON and it should be same like the Raw Storage works.
+  **Note**: The value message source is ignored with this option.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.

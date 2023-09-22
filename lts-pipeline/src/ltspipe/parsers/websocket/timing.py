@@ -77,7 +77,8 @@ class TimingLapParser(Parser):
                 self._competitions,
                 competition_code,
                 column_id,
-                ParserSettings.TIMING_LAP):
+                ParserSettings.TIMING_LAP,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]

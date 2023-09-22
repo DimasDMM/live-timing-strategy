@@ -67,11 +67,11 @@ class Action(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
 
-        type = ActionType.value_of(raw.get('type'))
+        atype = ActionType.value_of(raw.get('type'))
         raw_data = raw.get('data')
-        data = Action.__from_dict_data(type, raw_data)
+        data = Action.__from_dict_data(atype, raw_data)
         return cls.model_construct(
-            type=type,
+            type=atype,
             data=data,
         )
 

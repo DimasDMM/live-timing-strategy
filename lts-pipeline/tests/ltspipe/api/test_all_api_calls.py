@@ -300,8 +300,8 @@ class TestAllApiCalls(DatabaseTest):
             expected_drivers.append(d)
             participant_codes.add(p.participant_code)
 
-        assert ([t.dict(exclude={'id': True}) for t in given_drivers]
-                == [t.dict(exclude={'id': True}) for t in expected_drivers])
+        assert ([t.model_dump(exclude={'id': True}) for t in given_drivers]
+                == [t.model_dump(exclude={'id': True}) for t in expected_drivers])  # noqa: E501, LN001
 
     def _compare_teams(
             self,
@@ -326,8 +326,8 @@ class TestAllApiCalls(DatabaseTest):
             expected_teams.append(t)
             participant_codes.add(p.participant_code)
 
-        assert ([t.dict(exclude={'id': True}) for t in given_teams]
-                == [t.dict(exclude={'id': True}) for t in expected_teams])
+        assert ([t.model_dump(exclude={'id': True}) for t in given_teams]
+                == [t.model_dump(exclude={'id': True}) for t in expected_teams])
 
     def _add_drivers(
             self,

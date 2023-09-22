@@ -84,8 +84,8 @@ class TestUpdateTimingLapHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestUpdateTimingLastTimeHandler(DatabaseTest):
@@ -177,8 +177,8 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestUpdateTimingNumberPitsHandler(DatabaseTest):
@@ -241,8 +241,8 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestUpdateTimingPitTimeHandler(DatabaseTest):
@@ -305,8 +305,8 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
 
 class TestUpdateTimingPositionHandler(DatabaseTest):
@@ -370,5 +370,5 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
             competitions=competitions)
         notification = handler.handle(update_data)
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001

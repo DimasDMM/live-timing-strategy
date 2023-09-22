@@ -112,8 +112,8 @@ class TestTimingLapParser:
         """Test method parse with correct messages."""
         parser = TimingLapParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
@@ -138,20 +138,6 @@ class TestTimingLapParser:
                 load_raw_message(
                     'endurance_timing_lap.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_lap.txt'),  # in_data
-                'Column for timing-lap not found',  # expected_exception
             ),
         ],
     )
@@ -245,8 +231,8 @@ class TestTimingLastTimeParser:
         """Test method parse with correct messages."""
         parser = TimingLastTimeParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
@@ -377,8 +363,8 @@ class TestTimingNumberPitsParser:
         """Test method parse with correct messages."""
         parser = TimingNumberPitsParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
@@ -540,8 +526,8 @@ class TestPitTimeParser:
         """Test method parse with correct messages."""
         parser = TimingPitTimeParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
@@ -659,8 +645,8 @@ class TestTimingPositionParser:
         """Test method parse with correct messages."""
         parser = TimingPositionParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(

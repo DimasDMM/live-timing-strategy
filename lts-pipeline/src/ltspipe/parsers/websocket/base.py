@@ -62,11 +62,15 @@ def _is_column_parser_setting(
         competitions: Dict[str, CompetitionInfo],
         competition_code: str,
         column_id: str,
-        parser_setting: ParserSettings) -> bool:
+        parser_setting: ParserSettings,
+        raise_exception: bool = True) -> bool:
     """Validate that the column correspond to the expected data."""
     info = competitions[competition_code]
     if parser_setting in info.parser_settings:
         name_id = info.parser_settings[parser_setting]
         return name_id == column_id
 
-    raise Exception(f'Column for {parser_setting} not found')
+    if raise_exception:
+        raise Exception(f'Column for {parser_setting} not found')
+
+    return False

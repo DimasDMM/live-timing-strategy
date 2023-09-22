@@ -105,8 +105,8 @@ class TestCompetitionMetadataRemainingParser:
         parser = CompetitionMetadataRemainingParser(
             competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
@@ -205,8 +205,8 @@ class TestCompetitionMetadataStatusParser:
         """Test method parse with correct messages."""
         parser = CompetitionMetadataStatusParser(competitions=in_competitions)
         out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
-        assert ([x.dict() for x in out_actions]
-                == [x.dict() for x in expected_actions])
+        assert ([x.model_dump() for x in out_actions]
+                == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(

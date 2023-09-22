@@ -1,8 +1,10 @@
 from datetime import datetime
+import json
 import logging
 import os
 import time
-from typing import Any, Callable, List, Optional
+import traceback
+from typing import Any, Callable, List, Optional, Tuple
 import websocket  # type: ignore
 
 from ltspipe.messages import Message, MessageSource
@@ -21,6 +23,7 @@ class FileListenerStep(StartStep):
             single_file: bool,
             infinite_loop: bool,
             message_source: MessageSource,
+            is_json: bool,
             next_step: MidStep,
             on_error: Optional[MidStep] = None) -> None:
         """
@@ -34,6 +37,9 @@ class FileListenerStep(StartStep):
             infinite_loop (bool): If true, it will keep asking for directory or
                 file paths until the process is killed.
             message_source (MessageSource): Message source to mock.
+            is_json (bool): If this flag is given, the format of the messages
+                must be JSON and it should be same like the Raw Storage works.
+                Note: The value message source is ignored with this option.
             next_step (MidStep): The next step to apply to the message.
             on_error (MidStep | None): Optionally, apply another step to the
                 message if there is any error on running time.
@@ -43,6 +49,7 @@ class FileListenerStep(StartStep):
         self._single_file = single_file
         self._infinite_loop = infinite_loop
         self._message_source = message_source
+        self._is_json = is_json
         self._next_step = next_step
         self._on_error = on_error
 
@@ -60,42 +67,73 @@ class FileListenerStep(StartStep):
         first_iteration = True
         while self._infinite_loop or first_iteration:
             file_path = input(prompt_txt)
-            for data in self._get_path_content(file_path):
-                try:
-                    msg = Message(
-                        competition_code=self._competition_code,
-                        data=data,
-                        source=self._message_source,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                    )
-                    self._next_step.run_step(msg)
-                except Exception as e:
-                    self._logger.critical(e, exc_info=True)
-                    if self._on_error is not None:
-                        msg = Message(
-                            competition_code=msg.competition_code,
-                            data=msg.data,
-                            source=msg.source,
-                            decoder=msg.decoder,
-                            created_at=datetime.utcnow().timestamp(),
-                            updated_at=datetime.utcnow().timestamp(),
-                            error_description=str(e),
-                            error_traceback=str(e.__traceback__),
-                        )
-                        msg.updated()
-                        self._on_error.run_step(msg)
+            if os.path.isdir(file_path):
+                # If is directory, retrieve all files in it
+                self._step_multi_files(file_path)
+            elif os.path.isfile(file_path):
+                # Otherwise, read the given file
+                self._step_single_file(file_path)
+            else:
+                # Unknown path
+                self._logger.warning('File not detected')
             first_iteration = False
 
-    def _get_path_content(self, file_path: str) -> List[str]:
+    def _step_multi_files(self, path: str) -> None:
+        """Run step with a path of files."""
+        files_paths = [os.path.join(path, f) for f in os.listdir(path)
+                       if os.path.isfile(os.path.join(path, f))]
+        for i, file_path in enumerate(files_paths):
+            input(
+                f'(Press Enter) File {i + 1} / {len(files_paths)}: {file_path}')
+            self._step_single_file(file_path)
+
+    def _step_single_file(self, file_path: str) -> None:
+        """Run step with a single file."""
+        content, message_source = self._get_path_content(file_path)
+        for data in content:
+            try:
+                msg = Message(
+                    competition_code=self._competition_code,
+                    data=data,
+                    source=message_source,
+                    created_at=datetime.utcnow().timestamp(),
+                    updated_at=datetime.utcnow().timestamp(),
+                )
+                self._next_step.run_step(msg)
+            except Exception as e:
+                self._logger.critical(e, exc_info=True)
+                if self._on_error is not None:
+                    msg = Message(
+                        competition_code=msg.competition_code,
+                        data=msg.data,
+                        source=msg.source,
+                        decoder=msg.decoder,
+                        created_at=datetime.utcnow().timestamp(),
+                        updated_at=datetime.utcnow().timestamp(),
+                        error_description=str(e),
+                        error_traceback=traceback.format_exc(),
+                    )
+                    msg.updated()
+                    self._on_error.run_step(msg)
+
+    def _get_path_content(
+            self,
+            file_path: str) -> Tuple[List[str], MessageSource]:
         """Read the content of a single file or a whole directory."""
         if self._single_file:
             if not os.path.exists(file_path):
                 self._logger.error(f'File does not exist: {file_path}')
-                return []
+                return [], self._message_source
             with open(file_path, 'r') as fp:
-                data = fp.read()
-                return [data]
+                raw_data = fp.read()
+                if self._is_json:
+                    json_data = json.loads(raw_data)
+                    message_source = MessageSource(json_data['source'])
+                    data = json_data['data']
+                else:
+                    message_source = self._message_source
+                    data = raw_data
+                return [data], message_source
         else:
             raise NotImplementedError  # TODO
 
@@ -192,7 +230,7 @@ class WebsocketListenerStep(StartStep):
                     created_at=datetime.utcnow().timestamp(),
                     updated_at=datetime.utcnow().timestamp(),
                     error_description=str(e),
-                    error_traceback=str(e.__traceback__),
+                    error_traceback=traceback.format_exc(),
                 )
                 msg.updated()
                 self._on_error.run_step(msg)

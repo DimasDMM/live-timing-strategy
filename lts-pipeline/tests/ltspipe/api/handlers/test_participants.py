@@ -158,11 +158,11 @@ class TestUpdateDriverHandler(DatabaseTest):
             auth_data=auth_data,
             competitions=competitions)
         notification = handler.handle(update_data_1)
-        assert ([d.dict(exclude={'id': True}) for d in info.drivers]
-                == [d.dict(exclude={'id': True}) for d in expected_drivers_1])
+        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
+                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_1])  # noqa: E501, LN001
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification_1.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification_1.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
         # Clear driver in update model, so we force to refresh it
         model = self._find_driver(
@@ -176,11 +176,11 @@ class TestUpdateDriverHandler(DatabaseTest):
             competitions=competitions)
         update_data_2.id = model.id
         notification = handler.handle(update_data_2)
-        assert ([d.dict(exclude={'id': True}) for d in info.drivers]
-                == [d.dict(exclude={'id': True}) for d in expected_drivers_2])
+        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
+                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_2])  # noqa: E501, LN001
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification_2.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification_2.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
     def _find_driver(
             self,
@@ -307,11 +307,11 @@ class TestUpdateTeamHandler(DatabaseTest):
             auth_data=auth_data,
             competitions=competitions)
         notification = handler.handle(update_data_1)
-        assert ([d.dict(exclude={'id': True}) for d in info.teams]
-                == [d.dict(exclude={'id': True}) for d in expected_teams_1])
+        assert ([d.model_dump(exclude={'id': True}) for d in info.teams]
+                == [d.model_dump(exclude={'id': True}) for d in expected_teams_1])  # noqa: E501, LN001
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification_1.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification_1.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
         # Clear team in update model, so we force to refresh it
         model = self._find_team(
@@ -325,11 +325,11 @@ class TestUpdateTeamHandler(DatabaseTest):
             competitions=competitions)
         update_data_2.id = model.id
         notification = handler.handle(update_data_2)
-        assert ([d.dict(exclude={'id': True}) for d in info.teams]
-                == [d.dict(exclude={'id': True}) for d in expected_teams_2])
+        assert ([d.model_dump(exclude={'id': True}) for d in info.teams]
+                == [d.model_dump(exclude={'id': True}) for d in expected_teams_2])  # noqa: E501, LN001
         assert notification is not None
-        assert (notification.dict(exclude={'data': {'id': True}})
-                == expected_notification_2.dict(exclude={'data': {'id': True}}))
+        assert (notification.model_dump(exclude={'data': {'id': True}})
+                == expected_notification_2.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
 
     def _find_team(
             self,

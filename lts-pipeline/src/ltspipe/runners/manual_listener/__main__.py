@@ -11,6 +11,8 @@ from ltspipe.configs import (
     DEFAULT_VERBOSITY,
 )
 
+DEFAULT_MESSAGE_SOURCE = 'ws-listener'
+
 
 parser = argparse.ArgumentParser(
     conflict_handler='resolve',
@@ -39,7 +41,11 @@ parser.add_argument(
     '--message_source',
     type=str,
     help='Source of the messages to mock.',
-    required=True)
+    default=DEFAULT_MESSAGE_SOURCE)
+parser.add_argument(
+    '--is_json',
+    help=' If this flag is given, the format of the messages must be JSON.',
+    action='store_true')
 parser.add_argument(
     '--verbosity',
     help='Level of verbosity of messages.',
