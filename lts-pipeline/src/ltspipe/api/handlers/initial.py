@@ -62,7 +62,8 @@ class InitialDataHandler(ApiHandler):
         self._add_parsers_settings(info=info, settings=model.parsers_settings)
         self._add_teams(info=info, participants=model.participants)
         self._add_drivers(info=info, participants=model.participants)
-        self._update_timing(info=info, participants=model.participants)
+        self._update_timing(
+            info=info, participants=model.participants, stage=model.stage)
 
         return self._create_notification()
 
@@ -172,7 +173,8 @@ class InitialDataHandler(ApiHandler):
     def _update_timing(
             self,
             info: CompetitionInfo,
-            participants: Dict[str, Participant]) -> None:
+            participants: Dict[str, Participant],
+            stage: CompetitionStage) -> None:
         """Update timing data of the competition."""
         for p_code, participant in participants.items():
             team = self._find_team_by_code(p_code, info.teams)
@@ -207,7 +209,7 @@ class InitialDataHandler(ApiHandler):
                 number_pits=participant.number_pits,
                 pit_time=participant.pit_time,
                 position=participant.position,
-                stage=CompetitionStage.FREE_PRACTICE,  # TODO
+                stage=stage,
                 last_time=participant.last_time,
             )
 
