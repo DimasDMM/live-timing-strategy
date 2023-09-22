@@ -199,7 +199,7 @@ def update_pit_out_driver_by_id(
         bearer: str,
         competition_id: int,
         pit_out_id: int,
-        driver_id: int) -> PitIn:
+        driver_id: int) -> PitOut:
     """Update pit-out driver of a team."""
     data = {
         'driver_id': driver_id,
@@ -214,4 +214,4 @@ def update_pit_out_driver_by_id(
     if 'id' not in response:
         raise Exception(f'API unknown response: {response}')
 
-    return _build_pit_in(response)
+    return _build_pit_out(response)
