@@ -262,7 +262,7 @@ class TimingManager:
                 previous_model=previous_model)
 
         # Update best time if given
-        if (isinstance(timing, (UpdateTiming, UpdateTimingLastTime))):
+        if (isinstance(timing, UpdateTimingLastTime)):
             timing = self.__override_best_time(  # type: ignore
                 timing, previous_model)
 

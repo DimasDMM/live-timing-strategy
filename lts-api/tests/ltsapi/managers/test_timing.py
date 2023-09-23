@@ -420,7 +420,7 @@ class TestTimingManager(DatabaseTest):
                     'participant_code': 'team-1',
                     'position': 1,
                     'last_time': 58400,
-                    'best_time': 58400,
+                    'best_time': 58500,
                     'lap': 2,
                     'gap': 0,
                     'gap_unit': LengthUnit.MILLIS.value,
