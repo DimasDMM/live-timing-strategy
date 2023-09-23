@@ -108,7 +108,7 @@ class StrategyPitsStatsParser(Parser):
         best_time = None
         for x in timing_history:
             if best_time is None or x.last_time < best_time:
-                best_time = x.best_time
+                best_time = x.last_time
 
         top_times = [x.last_time for x in timing_history[:top_avg_times]]
         avg_time = int(st.mean(top_times))
