@@ -44,14 +44,16 @@ class InitialDataParser(InitialParser):
         },
     }
     FILTER_STAGES = {
-        'CRONO': CompetitionStage.QUALIFYING,
-        'QUALIFYING': CompetitionStage.QUALIFYING,
-        'QUALY': CompetitionStage.QUALIFYING,
-        'QUALI': CompetitionStage.QUALIFYING,
-        'RACE': CompetitionStage.RACE,
-        'CARRERA': CompetitionStage.RACE,
-        'RESISTENCIA': CompetitionStage.RACE,
-        'ENDURANCE': CompetitionStage.RACE,
+        (r'^CRONO', CompetitionStage.QUALIFYING),
+        (r'^Entrenos crono', CompetitionStage.QUALIFYING),
+        (r'^QUALIFYING', CompetitionStage.QUALIFYING),
+        (r'^QUALY', CompetitionStage.QUALIFYING),
+        (r'^QUALI', CompetitionStage.QUALIFYING),
+        (r'^SUPER-POLE', CompetitionStage.QUALIFYING),
+        (r'^RACE', CompetitionStage.RACE),
+        (r'^CARRERA', CompetitionStage.RACE),
+        (r'^RESISTENCIA', CompetitionStage.RACE),
+        (r'^ENDURANCE', CompetitionStage.RACE),
     }
 
     # The following regex matches the following samples:
@@ -118,8 +120,10 @@ class InitialDataParser(InitialParser):
 
     def _parse_stage(self, raw: str) -> CompetitionStage:
         """Parse competition stage."""
-        for stage_filter, stage in self.FILTER_STAGES.items():
-            if raw.startswith(stage_filter):
+        for stage_filter in self.FILTER_STAGES:
+            stage_regex = stage_filter[0]
+            stage = stage_filter[1]
+            if re.match(stage_regex, raw):
                 return stage
         raise Exception(f'Unknown stage: {raw}')
 
@@ -146,27 +150,28 @@ class InitialDataParser(InitialParser):
         """Parse headers from the first row."""
         header_data = {}
         items = re.findall(
-            r'<td[^>]*data-type="([^"]+)"[^>]*>(.*?)</td>',
+            r'<td[^>]*data-id="c(\d+)"[^>]*data-type="([^"]+)"[^>]*>(.*?)</td>',
             first_row,
             flags=re.S)
-        for i, item in enumerate(items):
+        for item in items:
+            i = int(item[0])
             id_match = self.__get_by_key(
-                item[0], self.FILTER_HEADERS['by_id'])
+                item[1], self.FILTER_HEADERS['by_id'])
             name_match = self.__get_by_key(
-                item[1], self.FILTER_HEADERS['by_name'])
+                item[2], self.FILTER_HEADERS['by_name'])
 
             if id_match is None and name_match is None:
                 continue
             if id_match is not None and name_match is None:
-                header_data[id_match] = f'c{i + 1}'
+                header_data[id_match] = f'c{i}'
             elif id_match is None and name_match is not None:
-                header_data[name_match] = f'c{i + 1}'
+                header_data[name_match] = f'c{i}'
             elif (id_match is not None
                     and name_match is not None
                     and id_match == name_match):
-                header_data[id_match] = f'c{i + 1}'
+                header_data[id_match] = f'c{i}'
             else:
-                raise Exception(f'Cannot parse column {i + 1} of headers '
+                raise Exception(f'Cannot parse column {i} of headers '
                                 f'({id_match} != {name_match}).')
 
         return header_data
@@ -292,7 +297,7 @@ class InitialDataParser(InitialParser):
                 fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
             number_pits=self._cast_number(
-                fields.get(ParserSettings.TIMING_NUMBER_PITS, None),
+                fields.get(ParserSettings.TIMING_NUMBER_PITS, 0),
                 default=0),
             participant_code=participant_code,
             position=self._cast_number(position, default=0),
