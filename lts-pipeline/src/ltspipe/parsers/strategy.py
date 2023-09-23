@@ -144,8 +144,8 @@ class StrategyPitsStatsParser(Parser):
         previous_pit_in = None
         for x in pits_in:
             if (previous_pit_in is None or (
-                    previous_pit_in.lap > max_lap and
-                    previous_pit_in.id != data.id)):
+                    x.lap > previous_pit_in.lap and
+                    x.id != data.id)):
                 previous_pit_in = x
 
         if previous_pit_in is None or previous_pit_in.lap == 0:
