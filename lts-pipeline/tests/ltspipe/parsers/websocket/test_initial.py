@@ -178,6 +178,84 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action], bool]:
     return (in_data, [out_action], True)
 
 
+def _build_init_qualy_2() -> Tuple[Message, List[Action], bool]:
+    in_data = load_raw_message('init_qualy_2.txt')
+    out_action = Action(
+        type=ActionType.INITIALIZE,
+        data=InitialData(
+            competition_code=TEST_COMPETITION_CODE,
+            stage=CompetitionStage.QUALIFYING.value,
+            status=CompetitionStatus.PAUSED.value,
+            remaining_length=DiffLap(
+                value=1200000,
+                unit=LengthUnit.MILLIS,
+            ),
+            parsers_settings={
+                ParserSettings.TIMING_POSITION: 'c3',
+                ParserSettings.TIMING_KART_NUMBER: 'c4',
+                ParserSettings.TIMING_NAME: 'c5',
+                ParserSettings.TIMING_LAST_TIME: 'c6',
+                ParserSettings.TIMING_BEST_TIME: 'c7',
+                ParserSettings.TIMING_GAP: 'c8',
+                ParserSettings.TIMING_LAP: 'c9',
+                ParserSettings.TIMING_PIT_TIME: 'c11',
+                ParserSettings.TIMING_NUMBER_PITS: 'c12',
+            },
+            participants={
+                'r5625': Participant(
+                    best_time=64882,  # 1:04.882
+                    driver_name=None,
+                    gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    kart_number=1,
+                    laps=0,
+                    last_time=65142,  # 1:05.142
+                    number_pits=0,
+                    participant_code='r5625',
+                    pit_time=None,
+                    position=1,
+                    team_name='CKM 1',
+                ),
+                'r5626': Participant(
+                    best_time=64890,  # 1:04.890
+                    driver_name=None,
+                    gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                    kart_number=2,
+                    laps=0,
+                    last_time=65460,  # 1:05.460
+                    number_pits=1,
+                    participant_code='r5626',
+                    pit_time=None,
+                    position=2,
+                    team_name='CKM 2',
+                ),
+                'r5627': Participant(
+                    best_time=64941,  # 1:04.941
+                    driver_name=None,
+                    gap=DiffLap(
+                        value=1,  # 1 lap
+                        unit=LengthUnit.LAPS.value,
+                    ),
+                    interval=DiffLap(
+                        value=12293,  # 12.293
+                        unit=LengthUnit.MILLIS.value,
+                    ),
+                    kart_number=3,
+                    laps=0,
+                    last_time=65411,  # 1:05.411
+                    number_pits=2,
+                    participant_code='r5627',
+                    pit_time=54000,  # 54.
+                    position=3,
+                    team_name='CKM 3',
+                ),
+            },
+        ),
+    )
+    return (in_data, [out_action], True)
+
+
 def _build_init_race() -> Tuple[Message, List[Action], bool]:
     in_data = load_raw_message('init_endurance.txt')
     out_action = Action(
@@ -246,6 +324,7 @@ class TestInitialDataParser:
     @pytest.mark.parametrize(
         'in_data, expected_actions, expected_is_parsed',
         [
+            #_build_init_qualy_2(),
             _build_non_init(),
             _build_init_qualy(),
             _build_init_qualy_with_times(),
