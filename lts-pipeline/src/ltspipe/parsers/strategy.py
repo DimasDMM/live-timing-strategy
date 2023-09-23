@@ -105,10 +105,7 @@ class StrategyPitsStatsParser(Parser):
         timing_history = sorted(
             timing_history, key=lambda x: x.last_time, reverse=False)
 
-        best_time = None
-        for x in timing_history:
-            if best_time is None or x.last_time < best_time:
-                best_time = x.last_time
+        best_time = timing_history[0].last_time
 
         top_times = [x.last_time for x in timing_history[:top_avg_times]]
         avg_time = int(st.mean(top_times))
@@ -149,6 +146,7 @@ class StrategyPitsStatsParser(Parser):
         for x in pits_in:
             if x.id != data.id:
                 previous_pit_in = x
+                break
 
         if previous_pit_in is None or previous_pit_in.lap == 0:
             # Cannot determine when was the previous pit-in
@@ -159,7 +157,7 @@ class StrategyPitsStatsParser(Parser):
         timing_history = [x for x in timing_history
                           if x.lap >= from_lap]  # type: ignore
 
-        if data.lap is None or data.lap > 0:
+        if data.lap is not None and data.lap > 0:
             to_lap = data.lap
             timing_history = [x for x in timing_history
                               if x.lap < to_lap]  # type: ignore
