@@ -76,6 +76,13 @@ Topic for notifications:
 kafka-topics --create --bootstrap-server localhost:9092 --partitions 5 --topic standard
 ```
 
+To delete all topics:
+```sh
+kafka-topics --delete --bootstrap-server localhost:9092 --topic notifications
+kafka-topics --delete --bootstrap-server localhost:9092 --topic raw-messages
+kafka-topics --delete --bootstrap-server localhost:9092 --topic standard
+```
+
 ### MySQL
 
 WIP
