@@ -155,7 +155,7 @@ class StrategyPitsStatsParser(Parser):
         # Filter timing
         from_lap = previous_pit_in.lap
         timing_history = [x for x in timing_history
-                          if x.lap >= from_lap]  # type: ignore
+                          if x.lap > from_lap]  # type: ignore
 
         if data.lap is not None and data.lap > 0:
             to_lap = data.lap
