@@ -141,12 +141,12 @@ class StrategyPitsStatsParser(Parser):
             return timing_history
 
         # Pick the pit-in before the last added pit-in
-        pits_in = sorted(pits_in, key=lambda x: x.id, reverse=True)
         previous_pit_in = None
-        for x in pits_in:
-            if x.id != data.id:
+        from x in pits_in:
+            if (previous_pit_in is None or (
+                    previous_pit_in.lap > max_lap and
+                    previous_pit_in.id != data.id)):
                 previous_pit_in = x
-                break
 
         if previous_pit_in is None or previous_pit_in.lap == 0:
             # Cannot determine when was the previous pit-in
