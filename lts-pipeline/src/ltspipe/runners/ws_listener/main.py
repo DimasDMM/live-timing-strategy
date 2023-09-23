@@ -2,13 +2,14 @@ from logging import Logger
 import msgpack  # type: ignore
 from multiprocessing import Manager, Process
 from multiprocessing.managers import DictProxy
+import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable
 
 from ltspipe.configs import WsListenerConfig
 from ltspipe.data.enum import FlagName
 from ltspipe.data.notifications import NotificationType
-from ltspipe.runners import BANNER_MSG
+from ltspipe.runners import BANNER_MSG, build_logger
 from ltspipe.steps.bulk import QueueDistributorStep, QueueForwardStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.listeners import WebsocketListenerStep
@@ -29,6 +30,9 @@ def main(config: WsListenerConfig, logger: Logger) -> None:
     logger.info(BANNER_MSG)
     logger.debug(config)
 
+    logger.info(f'Create path if it does not exist: {config.errors_path}')
+    os.makedirs(config.errors_path, exist_ok=True)
+
     logger.info(f'Competition code: {config.competition_code}')
     logger.debug(f'Topic producer: {config.kafka_produce}')
 
@@ -36,22 +40,29 @@ def main(config: WsListenerConfig, logger: Logger) -> None:
         logger.info('Init script...')
         flags = manager.dict()
         queue = manager.dict()
-        ws_listener = _build_websocket_process(
-            config, logger, flags, queue)
-        notification_listener = _build_notifications_process(
-            config, logger, flags, queue)
-
-        logger.info('Start notifications listener...')
-        p_not = _create_process(
-            target=notification_listener.start_step, args=())
-        p_not.start()
 
         logger.info('Start websocket listener...')
-        p_ws = _create_process(target=ws_listener.start_step, args=())
+        p_ws = _create_process(
+            target=_run_ws_listener,
+            args=(config, flags, queue))
         p_ws.start()
 
-        processes = {'notifications': p_not, 'websocket': p_ws}
+        processes = {'websocket': p_ws}
         _join_processes(logger, processes)
+
+
+def _run_ws_listener(
+        config: WsListenerConfig,
+        flags: DictProxy,
+        queue: DictProxy) -> None:
+    """Run process with the ws data listener."""
+    logger = build_logger(__package__, config.verbosity)
+    logger.info('Create ws listener...')
+    ws_listener = _build_websocket_process(
+        config, logger, flags, queue)
+
+    logger.info('Start ws listener...')
+    ws_listener.start_step()
 
 
 def _create_process(target: Callable, args: Iterable[Any]) -> Process:
@@ -84,51 +95,6 @@ def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
 
     if process_died:
         exit(1)
-
-
-def _build_notifications_process(
-        config: WsListenerConfig,
-        logger: Logger,
-        flags: DictProxy,
-        queue: DictProxy) -> KafkaConsumerStep:
-    """Build process with notifications listener."""
-    kafka_raw = KafkaProducerStep(
-        logger,
-        bootstrap_servers=config.kafka_servers,
-        topic=config.kafka_produce,
-        value_serializer=msgpack.dumps,
-    )
-    queue_forward = QueueForwardStep(
-        logger=logger,
-        queue=queue,  # type: ignore
-        queue_step=kafka_raw,
-    )
-    flag_modifier = FlagModifierStep(
-        logger=logger,
-        flags=flags,  # type: ignore
-        flag_name=FlagName.WAIT_INIT,
-        flag_value=False,
-        next_step=queue_forward,
-    )
-    mapper = NotificationMapperStep(
-        logger=logger,
-        map_notification={
-            NotificationType.INIT_FINISHED: flag_modifier,
-        },
-    )
-    errors_storage = MessageStorageStep(
-        logger=logger,
-        output_path=config.errors_path,
-    )
-    kafka_consumer = KafkaConsumerStep(  # Without group ID
-        logger=logger,
-        bootstrap_servers=config.kafka_servers,
-        topics=[config.kafka_notifications],
-        value_deserializer=msgpack.loads,
-        next_step=mapper,
-        on_error=errors_storage,
-    )
-    return kafka_consumer
 
 
 def _build_websocket_process(

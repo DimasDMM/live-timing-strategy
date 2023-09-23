@@ -24,6 +24,9 @@ def main(
     logger.info(f'Create path if it does not exist: {config.output_path}')
     os.makedirs(config.output_path, exist_ok=True)
 
+    logger.info(f'Create path if it does not exist: {config.errors_path}')
+    os.makedirs(config.errors_path, exist_ok=True)
+
     logger.debug(f'Topic consumer: {config.kafka_consume}')
 
     logger.info('Init processes...')
