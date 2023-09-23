@@ -142,7 +142,7 @@ class StrategyPitsStatsParser(Parser):
 
         # Pick the pit-in before the last added pit-in
         previous_pit_in = None
-        from x in pits_in:
+        for x in pits_in:
             if (previous_pit_in is None or (
                     previous_pit_in.lap > max_lap and
                     previous_pit_in.id != data.id)):
