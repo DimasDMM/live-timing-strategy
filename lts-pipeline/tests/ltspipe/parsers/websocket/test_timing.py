@@ -55,7 +55,7 @@ class TestTimingBestTimeParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -141,20 +141,6 @@ class TestTimingBestTimeParser:
                     'endurance_timing_best_time.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_best_time.txt'),  # in_data
-                'Column for timing-best-time not found',  # expected_exception
-            ),
         ],
     )
     def test_parse_raises_exception(
@@ -187,7 +173,7 @@ class TestTimingLapParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -305,7 +291,7 @@ class TestTimingLastTimeParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -392,20 +378,6 @@ class TestTimingLastTimeParser:
                     'endurance_timing_last_time.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_last_time.txt'),  # in_data
-                'Column for timing-last-time not found',  # expected_exception
-            ),
         ],
     )
     def test_parse_raises_exception(
@@ -438,7 +410,7 @@ class TestTimingNumberPitsParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -524,20 +496,6 @@ class TestTimingNumberPitsParser:
                     'endurance_timing_number_pits.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_number_pits.txt'),  # in_data
-                'Column for timing-number-pits not found',  # expected_exception
-            ),
         ],
     )
     def test_parse_raises_exception(
@@ -570,7 +528,7 @@ class TestPitTimeParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -601,7 +559,7 @@ class TestPitTimeParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -719,7 +677,7 @@ class TestTimingPositionParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -805,20 +763,6 @@ class TestTimingPositionParser:
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
-                load_raw_message(
-                    'endurance_timing_position.txt'),  # in_data
-                'Column for timing-position not found',  # expected_exception
             ),
         ],
     )

@@ -47,7 +47,7 @@ class TestDriverNameParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -81,7 +81,7 @@ class TestDriverNameParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -125,7 +125,7 @@ class TestDriverNameParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -169,7 +169,7 @@ class TestDriverNameParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -304,7 +304,7 @@ class TestTeamNameParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -319,7 +319,7 @@ class TestTeamNameParser:
                             id=1,
                             competition_code=TEST_COMPETITION_CODE,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ),

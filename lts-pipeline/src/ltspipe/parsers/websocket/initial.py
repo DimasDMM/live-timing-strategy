@@ -12,6 +12,7 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.data.enum import ParserSettings
 from ltspipe.parsers.base import InitialParser
+from ltspipe.parsers.websocket.base import _time_to_millis
 
 
 class InitialDataParser(InitialParser):
@@ -136,7 +137,7 @@ class InitialDataParser(InitialParser):
             )
         elif type == 'text':
             return DiffLap(
-                value=self._time_to_millis(raw, default=0),
+                value=_time_to_millis(raw, default=0),
                 unit=LengthUnit.MILLIS,
             )
         elif type == 'countdown':
@@ -150,7 +151,7 @@ class InitialDataParser(InitialParser):
         """Parse headers from the first row."""
         header_data = {}
         items = re.findall(
-            r'<td[^>]*data-id="c(\d+)"[^>]*data-type="([^"]+)"[^>]*>(.*?)</td>',
+            r'<td[^>]*data-id="c(\d+)"[^>]*data-type="([^"]*)"[^>]*>(.*?)</td>',
             first_row,
             flags=re.S)
         for item in items:
@@ -182,17 +183,22 @@ class InitialDataParser(InitialParser):
             rows: List[str]) -> Dict[str, Participant]:
         """Parse participants details."""
         participants = {}
-        for row in rows:
+        for index, row in enumerate(rows):
             items_raw = re.findall(
                 r'<td.+?data-id="([^"]+)(c\d+)"[^>]*>(.*?)</td>',
                 row,
                 flags=re.S)
             items = {item[1]: item for item in items_raw}
 
+            # Check if the row has the team name or the driver name
+            has_driver_name = re.match(r'.+drteam.+', row, re.S) is not None
+
             fields: Dict[ParserSettings, str] = {}
             for field_name, field_column in headers.items():
                 item = items[field_column]
                 field_value = self._remove_html_tags(item[2])
+                if field_name == ParserSettings.TIMING_NAME:
+                    field_value = self._clean_participant_name(field_value)
                 if field_value != '':
                     fields[field_name] = field_value
 
@@ -205,34 +211,30 @@ class InitialDataParser(InitialParser):
             position = None if match is None else str(match[1])
 
             participants[participant_code] = self._create_participant(
+                index=index,
                 participant_code=participant_code,
                 position=position,
                 fields=fields,
+                has_driver_name=has_driver_name,
             )
 
         return participants
 
+    def _clean_participant_name(self, text: str) -> str:
+        """
+        Clean the name of the participant.
+        
+        Given "DIMAS [1:00]", it removes the time.
+        """
+        matches = re.match(
+            r'^(.+?)( \[\d+:\d+\])?$', text)
+        if matches is None:
+            return ''
+        return matches[1]
+
     def _remove_html_tags(self, text: str) -> str:
         """Remove HTML tags from a string."""
         return re.sub('<[^>]+>', '', text)
-
-    def _time_to_millis(
-            self,
-            lap_time: Optional[str],
-            default: Optional[int] = None) -> Optional[int]:
-        """Transform a lap time into milliseconds."""
-        if lap_time is None:
-            return default
-        lap_time = lap_time.strip()
-        match = re.search(self.REGEX_TIME, lap_time)
-        if match is None:
-            return default
-        else:
-            parts = [int(p) if p else 0 for p in match.groups()]
-            return (parts[0] * 3600000
-                + parts[1] * 60000
-                + parts[2] * 1000
-                + parts[3])
 
     def _parse_diff_lap(
             self,
@@ -240,6 +242,8 @@ class InitialDataParser(InitialParser):
             default: Optional[int] = None) -> Optional[DiffLap]:
         """Parse the difference between laps."""
         if diff_lap is None:
+            if default is None:
+                return None
             return DiffLap(
                 value=default,
                 unit=LengthUnit.MILLIS,
@@ -254,7 +258,7 @@ class InitialDataParser(InitialParser):
                 unit=LengthUnit.LAPS,
             )
 
-        diff_value = self._time_to_millis(diff_lap, default=default)
+        diff_value = _time_to_millis(diff_lap, default=default)
         if diff_value is not None:
             return DiffLap(
                 value=diff_value,
@@ -272,28 +276,37 @@ class InitialDataParser(InitialParser):
 
     def _create_participant(
             self,
+            index: int,
             participant_code: str,
             position: Optional[str],
-            fields: Dict[ParserSettings, str]) -> Participant:
+            fields: Dict[ParserSettings, str],
+            has_driver_name: bool) -> Participant:
         """Create instance of participant."""
+        if has_driver_name:
+            team_name = f'Team {index + 1}'
+            driver_name = fields.get(ParserSettings.TIMING_NAME, None)
+        else:
+            team_name = fields.get(ParserSettings.TIMING_NAME, None)
+            driver_name = None
+
         return Participant(
-            best_time=self._time_to_millis(
+            best_time=_time_to_millis(
                 fields.get(ParserSettings.TIMING_BEST_TIME, None),
                 default=0),
-            driver_name=None,
+            driver_name=driver_name,
             gap=self._parse_diff_lap(
                 fields.get(ParserSettings.TIMING_GAP, None),
                 default=0),
             interval=self._parse_diff_lap(
                 fields.get(ParserSettings.TIMING_INTERVAL, None),
-                default=0),
+                default=None),
             kart_number=self._cast_number(
                 fields.get(ParserSettings.TIMING_KART_NUMBER, None),
                 default=0),
             laps=self._cast_number(
                 fields.get(ParserSettings.TIMING_LAP, None),
                 default=0),
-            last_time=self._time_to_millis(
+            last_time=_time_to_millis(
                 fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
             number_pits=self._cast_number(
@@ -301,8 +314,8 @@ class InitialDataParser(InitialParser):
                 default=0),
             participant_code=participant_code,
             position=self._cast_number(position, default=0),
-            team_name=fields.get(ParserSettings.TIMING_NAME, None),
-            pit_time=self._time_to_millis(
+            team_name=team_name,
+            pit_time=_time_to_millis(
                 fields.get(ParserSettings.TIMING_PIT_TIME, None),
                 default=None),
         )

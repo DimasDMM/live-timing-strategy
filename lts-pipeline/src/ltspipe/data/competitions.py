@@ -1,29 +1,15 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
 
-from ltspipe.base import BaseModel, EnumBase
+from ltspipe.base import BaseModel
 from ltspipe.data.enum import (
+    CompetitionStage,
+    CompetitionStatus,
     KartStatus,
     LengthUnit,
     ParserSettings,
 )
 from ltspipe.base import DictModel
-
-
-class CompetitionStatus(str, EnumBase):
-    """Status of a competition."""
-
-    PAUSED = 'paused'
-    ONGOING = 'ongoing'
-    FINISHED = 'finished'
-
-
-class CompetitionStage(str, EnumBase):
-    """Stage of a competition."""
-
-    FREE_PRACTICE = 'free-practice'
-    QUALIFYING = 'qualifying'
-    RACE = 'race'
 
 
 class Driver(DictModel):
@@ -93,7 +79,6 @@ class Participant(DictModel):
 
     best_time: int
     gap: DiffLap
-    interval: DiffLap
     kart_number: int
     laps: int
     last_time: int
@@ -101,6 +86,7 @@ class Participant(DictModel):
     participant_code: str
     position: int
     driver_name: Optional[str] = Field(default=None)
+    interval: Optional[DiffLap] = Field(default=None)
     team_name: Optional[str] = Field(default=None)
     pit_time: Optional[int] = Field(default=None)
 
@@ -217,7 +203,6 @@ class CompetitionInfo(BaseModel):
     parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
     drivers: List[Driver] = Field(default_factory=list)
     teams: List[Team] = Field(default_factory=list)
-    timing: Dict[str, ParticipantTiming] = Field(default_factory=dict)
 
 
 class CompetitionMetadata(DictModel):

@@ -37,7 +37,7 @@ class TestPitInParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],
@@ -151,7 +151,7 @@ class TestPitOutParser:
                             Team(
                                 id=1,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ],

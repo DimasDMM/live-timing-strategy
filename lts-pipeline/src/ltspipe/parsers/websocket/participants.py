@@ -68,6 +68,7 @@ class DriverNameParser(Parser):
             data: str) -> Optional[UpdateDriver]:
         """Parse driver name."""
         data = data.strip()
+        # TODO: Update stint time too
         matches = re.match(
             r'^(.+?)(c\d+)\|drteam\|(.+?)( \[\d+:\d+\])?$', data)
         if matches is None:

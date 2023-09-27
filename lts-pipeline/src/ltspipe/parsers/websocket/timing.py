@@ -81,7 +81,8 @@ class TimingBestTimeParser(Parser):
                 self._competitions,
                 competition_code,
                 column_id,
-                ParserSettings.TIMING_BEST_TIME):
+                ParserSettings.TIMING_BEST_TIME,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
@@ -246,7 +247,8 @@ class TimingLastTimeParser(Parser):
                 self._competitions,
                 competition_code,
                 column_id,
-                ParserSettings.TIMING_LAST_TIME):
+                ParserSettings.TIMING_LAST_TIME,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
@@ -266,6 +268,87 @@ class TimingLastTimeParser(Parser):
             team_id=team.id,
             last_time=timing_last_time,
             auto_best_time=True,
+        )
+        return updated_timing
+
+
+class TimingNumberPitsParser(Parser):
+    """
+    Parse the number of pits in the timing of a team.
+
+    Sample messages:
+    > r5625c12|in|2
+    """
+
+    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+        """Construct."""
+        self._competitions = competitions
+
+    def parse(
+            self,
+            competition_code: str,
+            data: Any) -> Tuple[List[Action], bool]:
+        """
+        Analyse and/or parse a given data.
+
+        Params:
+            competition_code (str): Code of the competition.
+            data (Any): Data to parse.
+
+        Returns:
+            List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
+        """
+        if competition_code not in self._competitions:
+            raise Exception(f'Unknown competition with code={competition_code}')
+        elif not isinstance(data, str):
+            return [], False
+
+        parsed_data = self._parse_timing_number_pits(competition_code, data)
+        if parsed_data is None:
+            return [], False
+
+        action = Action(
+            type=ActionType.UPDATE_TIMING_NUMBER_PITS,
+            data=parsed_data,
+        )
+        return [action], True
+
+    def _parse_timing_number_pits(
+            self,
+            competition_code: str,
+            data: str) -> Optional[UpdateTimingNumberPits]:
+        """Parse driver name."""
+        data = data.strip()
+        matches = re.match(
+            r'^(.+?)(c\d+)\|in\|(\d+)$', data)
+        if matches is None:
+            return None
+
+        column_id = matches[2]
+        if not _is_column_parser_setting(
+                self._competitions,
+                competition_code,
+                column_id,
+                ParserSettings.TIMING_NUMBER_PITS,
+                raise_exception=False):
+            return None
+
+        participant_code = matches[1]
+        number_pits = int(matches[3])
+
+        # The team must be already initialized
+        team = _find_team_by_code(
+            self._competitions,
+            competition_code,
+            team_code=participant_code)
+        if team is None:
+            raise Exception(f'Unknown team with code={participant_code}')
+
+        updated_timing = UpdateTimingNumberPits(
+            competition_code=competition_code,
+            team_id=team.id,
+            number_pits=number_pits,
         )
         return updated_timing
 
@@ -328,7 +411,8 @@ class TimingPitTimeParser(Parser):
                 self._competitions,
                 competition_code,
                 column_id,
-                ParserSettings.TIMING_PIT_TIME):
+                ParserSettings.TIMING_PIT_TIME,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
@@ -409,7 +493,8 @@ class TimingPositionParser(Parser):
                 self._competitions,
                 competition_code,
                 column_id,
-                ParserSettings.TIMING_POSITION):
+                ParserSettings.TIMING_POSITION,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
@@ -428,85 +513,5 @@ class TimingPositionParser(Parser):
             team_id=team.id,
             position=timing_position,
             auto_other_positions=True,
-        )
-        return updated_timing
-
-
-class TimingNumberPitsParser(Parser):
-    """
-    Parse the number of pits in the timing of a team.
-
-    Sample messages:
-    > r5625c12|in|2
-    """
-
-    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
-        """Construct."""
-        self._competitions = competitions
-
-    def parse(
-            self,
-            competition_code: str,
-            data: Any) -> Tuple[List[Action], bool]:
-        """
-        Analyse and/or parse a given data.
-
-        Params:
-            competition_code (str): Code of the competition.
-            data (Any): Data to parse.
-
-        Returns:
-            List[Action]: list of actions and their respective parsed data.
-            bool: indicates whether the data has been parsed or not.
-        """
-        if competition_code not in self._competitions:
-            raise Exception(f'Unknown competition with code={competition_code}')
-        elif not isinstance(data, str):
-            return [], False
-
-        parsed_data = self._parse_timing_number_pits(competition_code, data)
-        if parsed_data is None:
-            return [], False
-
-        action = Action(
-            type=ActionType.UPDATE_TIMING_NUMBER_PITS,
-            data=parsed_data,
-        )
-        return [action], True
-
-    def _parse_timing_number_pits(
-            self,
-            competition_code: str,
-            data: str) -> Optional[UpdateTimingNumberPits]:
-        """Parse driver name."""
-        data = data.strip()
-        matches = re.match(
-            r'^(.+?)(c\d+)\|in\|(\d+)$', data)
-        if matches is None:
-            return None
-
-        column_id = matches[2]
-        if not _is_column_parser_setting(
-                self._competitions,
-                competition_code,
-                column_id,
-                ParserSettings.TIMING_NUMBER_PITS):
-            return None
-
-        participant_code = matches[1]
-        number_pits = int(matches[3])
-
-        # The team must be already initialized
-        team = _find_team_by_code(
-            self._competitions,
-            competition_code,
-            team_code=participant_code)
-        if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
-
-        updated_timing = UpdateTimingNumberPits(
-            competition_code=competition_code,
-            team_id=team.id,
-            number_pits=number_pits,
         )
         return updated_timing

@@ -160,7 +160,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=0,
                                         participant_code='r5625',
                                         position=1,
-                                        team_name='CKM 1',
+                                        team_name='Team 1',
                                     ),
                                     'r5626': Participant(
                                         best_time=64890,  # 1:04.890
@@ -174,7 +174,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         number_pits=1,
                                         participant_code='r5626',
                                         position=2,
-                                        team_name='CKM 2',
+                                        team_name='Team 2',
                                     ),
                                     'r5627': Participant(
                                         best_time=64941,  # 1:04.941
@@ -193,7 +193,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                         participant_code='r5627',
                                         pit_time=54000,  # 54.
                                         position=3,
-                                        team_name='CKM 3',
+                                        team_name='Team 3',
                                     ),
                                 },
                             ),
@@ -375,7 +375,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                                 id=1,
                                 competition_code=TEST_COMPETITION_CODE,
                                 participant_code='r5625',
-                                name='CKM 1',
+                                name='Team 1',
                                 number=41,
                             ),
                         ),
@@ -606,7 +606,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -683,7 +683,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -760,7 +760,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -838,7 +838,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -915,7 +915,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -992,7 +992,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
                         Team(
                             id=1,
                             participant_code='r5625',
-                            name='CKM 1',
+                            name='Team 1',
                             number=41,
                         ),
                     ],
@@ -1331,7 +1331,7 @@ def _mock_response_get_teams(api_url: str) -> List[MapRequestItem]:
                 'id': 1,
                 'competition_id': 1,
                 'participant_code': 'r5625',
-                'name': 'CKM 1',
+                'name': 'Team 1',
                 'number': 41,
                 'drivers': [],
                 'insert_date': '2023-04-20T01:30:48',

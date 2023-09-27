@@ -88,7 +88,9 @@ def update_timing_by_team(
         number_pits: int,
         pit_time: Optional[int],
         position: int,
-        stage: CompetitionStage) -> ParticipantTiming:
+        stage: CompetitionStage,
+        auto_best_time: bool = True,
+        auto_other_positions: bool = True) -> ParticipantTiming:
     """Update timing data of a team."""
     data = {
         'best_time': best_time,
@@ -96,14 +98,16 @@ def update_timing_by_team(
         'fixed_kart_status': (None if fixed_kart_status is None
                               else fixed_kart_status.value),
         'kart_status': kart_status.value,
-        'interval': interval.value,
-        'interval_unit': interval.unit.value,
+        'interval': None if interval is None else interval.value,
+        'interval_unit': None if interval is None else interval.unit.value,
         'lap': lap,
         'last_time': last_time,
         'number_pits': number_pits,
         'pit_time': pit_time,
         'position': position,
         'stage': stage.value,
+        'auto_best_time': auto_best_time,
+        'auto_other_positions': auto_other_positions,
     }
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}'
     r = requests.put(

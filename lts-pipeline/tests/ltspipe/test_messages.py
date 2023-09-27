@@ -115,7 +115,7 @@ class TestMessage:
                                 number_pits=2,
                                 participant_code='r5625',
                                 position=1,
-                                team_name='CKM 1',
+                                team_name='Team 1',
                             ),
                         },
                     ),

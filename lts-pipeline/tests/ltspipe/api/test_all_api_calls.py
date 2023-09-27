@@ -53,7 +53,7 @@ class TestAllApiCalls(DatabaseTest):
     PARTICIPANTS = [
         Participant(
             best_time=64882,  # 1:04.882
-            driver_name='CKM 1 Driver 1',
+            driver_name='Team 1 Driver 1',
             gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
             kart_number=41,
@@ -63,11 +63,11 @@ class TestAllApiCalls(DatabaseTest):
             participant_code='r5625',
             pit_time=None,
             position=1,
-            team_name='CKM 1',
+            team_name='Team 1',
         ),
         Participant(
             best_time=64890,  # 1:04.890
-            driver_name='CKM 1 Driver 2',
+            driver_name='Team 1 Driver 2',
             gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
             kart_number=41,
@@ -77,11 +77,11 @@ class TestAllApiCalls(DatabaseTest):
             participant_code='r5625',
             pit_time=None,
             position=1,
-            team_name='CKM 1',
+            team_name='Team 1',
         ),
         Participant(
             best_time=64941,  # 1:04.941
-            driver_name='CKM 2 Driver 1',
+            driver_name='Team 2 Driver 1',
             gap=DiffLap(
                 value=1,  # 1 lap
                 unit=LengthUnit.LAPS.value,
@@ -97,7 +97,7 @@ class TestAllApiCalls(DatabaseTest):
             participant_code='r5626',
             pit_time=54000,  # 54.
             position=2,
-            team_name='CKM 2',
+            team_name='Team 2',
         ),
     ]
 

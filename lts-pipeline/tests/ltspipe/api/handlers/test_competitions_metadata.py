@@ -1,4 +1,5 @@
 import pytest
+from typing import Dict
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.competitions_base import build_competition_info
@@ -7,6 +8,7 @@ from ltspipe.api.handlers.competitions_metadata import (
     UpdateCompetitionMetadataStatusHandler,
 )
 from ltspipe.data.competitions import (
+    CompetitionInfo,
     CompetitionMetadata,
     CompetitionStage,
     CompetitionStatus,
@@ -16,8 +18,12 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS
-from tests.helpers import DatabaseTest
+from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.helpers import (
+    DatabaseTest,
+    DatabaseContent,
+    TableContent,
+)
 
 
 class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
@@ -29,12 +35,65 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('competition_code', 'update_data', 'expected_notification'),
+        ('database_content, in_competitions, update_data,'
+         'expected_notification, expected_database'),
         [
             (
-                'south-endurance-2023-03-26',  # competition_code
+                DatabaseContent(  # database_content
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_index',
+                            columns=[
+                                'track_id',
+                                'competition_code',
+                                'name',
+                                'description',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    TEST_COMPETITION_CODE,
+                                    'Endurance North 26-02-2023',
+                                    'Endurance in Karting North',
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
                 UpdateCompetitionMetadataRemaining(  # update_data
-                    competition_code='south-endurance-2023-03-26',
+                    competition_code=TEST_COMPETITION_CODE,
                     remaining_length=DiffLap(
                         value=1200000,
                         unit=LengthUnit.MILLIS,
@@ -51,30 +110,60 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                         ),
                     ),
                 ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    1200000,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
             ),
         ],
     )
     def test_handle(
             self,
-            competition_code: str,
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo],
             update_data: UpdateCompetitionMetadataRemaining,
-            expected_notification: Notification) -> None:
+            expected_notification: Notification,
+            expected_database: DatabaseContent) -> None:
         """Test handle method."""
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        info = build_competition_info(
-            REAL_API_LTS,
-            bearer=auth_data.bearer,
-            competition_code=competition_code)
-        competitions = {competition_code: info}
 
         # Handle method
         handler = UpdateCompetitionMetadataRemainingHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
+            competitions=in_competitions)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
+
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump() ==
+                expected_database.model_dump())
 
 
 class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
@@ -86,12 +175,65 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('competition_code', 'update_data', 'expected_notification'),
+        ('database_content, in_competitions, update_data,'
+         'expected_notification, expected_database'),
         [
             (
-                'south-endurance-2023-03-26',  # competition_code
+                DatabaseContent(  # database_content
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_index',
+                            columns=[
+                                'track_id',
+                                'competition_code',
+                                'name',
+                                'description',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    TEST_COMPETITION_CODE,
+                                    'Endurance North 26-02-2023',
+                                    'Endurance in Karting North',
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
                 UpdateCompetitionMetadataStatus(  # update_data
-                    competition_code='south-endurance-2023-03-26',
+                    competition_code=TEST_COMPETITION_CODE,
                     status=CompetitionStatus.ONGOING,
                 ),
                 Notification(  # expected_notification
@@ -100,16 +242,95 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         stage=CompetitionStage.FREE_PRACTICE,
                         status=CompetitionStatus.ONGOING,
                         remaining_length=DiffLap(
-                            value=1200000,
+                            value=0,
                             unit=LengthUnit.MILLIS,
                         ),
                     ),
                 ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'ongoing',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
             ),
             (
-                'south-endurance-2023-03-26',  # competition_code
+                DatabaseContent(  # database_content
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_index',
+                            columns=[
+                                'track_id',
+                                'competition_code',
+                                'name',
+                                'description',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    TEST_COMPETITION_CODE,
+                                    'Endurance North 26-02-2023',
+                                    'Endurance in Karting North',
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
                 UpdateCompetitionMetadataStatus(  # update_data
-                    competition_code='south-endurance-2023-03-26',
+                    competition_code=TEST_COMPETITION_CODE,
                     status=CompetitionStatus.FINISHED,
                 ),
                 Notification(  # expected_notification
@@ -123,27 +344,57 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         ),
                     ),
                 ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'finished',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
             ),
         ],
     )
     def test_handle(
             self,
-            competition_code: str,
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo],
             update_data: UpdateCompetitionMetadataStatus,
-            expected_notification: Notification) -> None:
+            expected_notification: Notification,
+            expected_database: DatabaseContent) -> None:
         """Test handle method."""
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        info = build_competition_info(
-            REAL_API_LTS,
-            bearer=auth_data.bearer,
-            competition_code=competition_code)
-        competitions = {competition_code: info}
 
         # Handle method
         handler = UpdateCompetitionMetadataStatusHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
+            competitions=in_competitions)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
+
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump() ==
+                expected_database.model_dump())

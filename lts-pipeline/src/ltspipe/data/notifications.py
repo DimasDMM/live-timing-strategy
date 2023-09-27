@@ -19,6 +19,7 @@ class NotificationType(str, EnumBase):
     DUMMY = 'dummy'  # for testing purposes
     INIT_ONGOING = 'init-ongoing'
     INIT_FINISHED = 'init-finished'
+    INITIALIZED_COMPETITION = 'initialized-competition'
     ADDED_PIT_IN = 'added-pit-in'
     ADDED_PIT_OUT = 'added-pit-out'
     ADDED_STRATEGY_PITS_STATS = 'added-strategy-pits-stats'
@@ -38,6 +39,7 @@ _factory: Dict[NotificationType, Optional[Type[DictModel]]] = {
     NotificationType.DUMMY: None,
     NotificationType.INIT_ONGOING: None,
     NotificationType.INIT_FINISHED: None,
+    NotificationType.INITIALIZED_COMPETITION: None,
     NotificationType.ADDED_PIT_IN: PitIn,
     NotificationType.ADDED_PIT_OUT: PitOut,
     NotificationType.ADDED_STRATEGY_PITS_STATS: StrategyPitsStats,
@@ -78,7 +80,7 @@ class Notification(DictModel):
             raw_data: Any) -> Any:
         """Transform the raw data into a model."""
         if type not in _factory:
-            raise Exception(f'Unknown action type: {type}')
+            raise Exception(f'Unknown notification type: {type}')
         elif _factory[type] is None:
             return raw_data
 

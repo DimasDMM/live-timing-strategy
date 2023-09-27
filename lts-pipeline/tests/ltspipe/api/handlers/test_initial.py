@@ -19,7 +19,11 @@ from ltspipe.data.enum import (
 )
 from ltspipe.data.notifications import Notification, NotificationType
 from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
-from tests.helpers import DatabaseTest, create_competition
+from tests.helpers import (
+    DatabaseTest,
+    DatabaseContent,
+    TableContent,
+)
 
 
 class TestInitialDataHandler(DatabaseTest):
@@ -31,12 +35,65 @@ class TestInitialDataHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('initial_data_1', 'initial_data_2', 'expected_teams_1',
-         'expected_teams_2', 'expected_drivers_1', 'expected_drivers_2',
-         'expected_settings_1', 'expected_settings_2',
-         'expected_notification_1', 'expected_notification_2'),
+        ('database_content, in_competitions, initial_data_1, initial_data_2,'
+         'expected_teams_1, expected_teams_2, expected_drivers_1,'
+         'expected_drivers_2, expected_settings_1, expected_settings_2,'
+         'expected_notification_1, expected_notification_2, expected_database'),
         [
             (
+                DatabaseContent(  # database_content
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_index',
+                            columns=[
+                                'track_id',
+                                'competition_code',
+                                'name',
+                                'description',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    TEST_COMPETITION_CODE,
+                                    'Endurance North 26-02-2023',
+                                    'Endurance in Karting North',
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
                 InitialData(  # initial_data_1
                     competition_code=TEST_COMPETITION_CODE,
                     stage=CompetitionStage.QUALIFYING,
@@ -48,7 +105,7 @@ class TestInitialDataHandler(DatabaseTest):
                     participants={
                         'r5625': Participant(
                             best_time=64890,  # 1:04.890
-                            driver_name='CKM 1 Driver 1',
+                            driver_name='Team 1 Driver 1',
                             gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             kart_number=41,
@@ -58,11 +115,11 @@ class TestInitialDataHandler(DatabaseTest):
                             participant_code='r5625',
                             pit_time=None,
                             position=1,
-                            team_name='CKM 1',
+                            team_name='Team 1',
                         ),
                         'r5626': Participant(
                             best_time=64941,  # 1:04.941
-                            driver_name='CKM 2 Driver 1',
+                            driver_name='Team 2 Driver 1',
                             gap=DiffLap(
                                 value=1,  # 1 lap
                                 unit=LengthUnit.LAPS.value,
@@ -78,7 +135,7 @@ class TestInitialDataHandler(DatabaseTest):
                             participant_code='r5626',
                             pit_time=54000,  # 54.
                             position=2,
-                            team_name='CKM 2',
+                            team_name='Team 2',
                         ),
                     },
                     parsers_settings={
@@ -104,7 +161,7 @@ class TestInitialDataHandler(DatabaseTest):
                     participants={
                         'r5625': Participant(
                             best_time=51000,
-                            driver_name='CKM 1 Driver 1',
+                            driver_name='Team 1 Driver 1',
                             gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             kart_number=41,
@@ -114,11 +171,11 @@ class TestInitialDataHandler(DatabaseTest):
                             participant_code='r5625',
                             pit_time=0,
                             position=1,
-                            team_name='CKM 1',
+                            team_name='Team 1',
                         ),
                         'r5626': Participant(
                             best_time=52000,
-                            driver_name='CKM 2 Driver 2 New',
+                            driver_name='Team 2 Driver 2 New',
                             gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
                             kart_number=42,
@@ -128,7 +185,7 @@ class TestInitialDataHandler(DatabaseTest):
                             participant_code='r5626',
                             pit_time=0,
                             position=2,
-                            team_name='CKM 2',
+                            team_name='Team 2',
                         ),
                         'r5627': Participant(
                             best_time=53000,
@@ -142,7 +199,7 @@ class TestInitialDataHandler(DatabaseTest):
                             participant_code='r5627',
                             pit_time=0,
                             position=3,
-                            team_name='CKM 3',
+                            team_name='Team 3',
                         ),
                     },
                 ),
@@ -150,13 +207,13 @@ class TestInitialDataHandler(DatabaseTest):
                     Team(
                         id=0,
                         participant_code='r5625',
-                        name='CKM 1',
+                        name='Team 1',
                         number=41,
                     ),
                     Team(
                         id=0,
                         participant_code='r5626',
-                        name='CKM 2',
+                        name='Team 2',
                         number=42,
                     ),
                 ],
@@ -164,19 +221,19 @@ class TestInitialDataHandler(DatabaseTest):
                     Team(
                         id=0,
                         participant_code='r5625',
-                        name='CKM 1',
+                        name='Team 1',
                         number=41,
                     ),
                     Team(
                         id=0,
                         participant_code='r5626',
-                        name='CKM 2',
+                        name='Team 2',
                         number=42,
                     ),
                     Team(
                         id=0,
                         participant_code='r5627',
-                        name='CKM 3',
+                        name='Team 3',
                         number=43,
                     ),
                 ],
@@ -185,7 +242,7 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         team_id=0,
                         participant_code='r5625',
-                        name='CKM 1 Driver 1',
+                        name='Team 1 Driver 1',
                         number=41,
                         total_driving_time=0,
                         partial_driving_time=0,
@@ -194,7 +251,7 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         team_id=0,
                         participant_code='r5626',
-                        name='CKM 2 Driver 1',
+                        name='Team 2 Driver 1',
                         number=42,
                         total_driving_time=0,
                         partial_driving_time=0,
@@ -205,7 +262,7 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         team_id=0,
                         participant_code='r5625',
-                        name='CKM 1 Driver 1',
+                        name='Team 1 Driver 1',
                         number=41,
                         total_driving_time=0,
                         partial_driving_time=0,
@@ -214,7 +271,7 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         team_id=0,
                         participant_code='r5626',
-                        name='CKM 2 Driver 1',
+                        name='Team 2 Driver 1',
                         number=42,
                         total_driving_time=0,
                         partial_driving_time=0,
@@ -223,7 +280,7 @@ class TestInitialDataHandler(DatabaseTest):
                         id=0,
                         team_id=0,
                         participant_code='r5626',
-                        name='CKM 2 Driver 2 New',
+                        name='Team 2 Driver 2 New',
                         number=42,
                         total_driving_time=0,
                         partial_driving_time=0,
@@ -242,16 +299,137 @@ class TestInitialDataHandler(DatabaseTest):
                 },
                 {},  # expected_settings_2
                 Notification(  # expected_notification_1
-                    type=NotificationType.INIT_FINISHED,
+                    type=NotificationType.INITIALIZED_COMPETITION,
                 ),
                 Notification(  # expected_notification_2
-                    type=NotificationType.INIT_FINISHED,
+                    type=NotificationType.INITIALIZED_COMPETITION,
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'ongoing',
+                                    'qualifying',
+                                    9,
+                                    'laps'
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1', 41, None],
+                                [1, 'r5626', 'Team 2', 42, None],
+                                [1, 'r5627', 'Team 3', 43, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='timing_current',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'driver_id',
+                                'position',
+                                'last_time',
+                                'best_time',
+                                'lap',
+                                'gap',
+                                'gap_unit',
+                                'interval',
+                                'interval_unit',
+                                'stage',
+                                'pit_time',
+                                'kart_status',
+                                'fixed_kart_status',
+                                'number_pits',
+                            ],
+                            content=[
+                                [
+                                    1,  # competition_id
+                                    1,  # team_id
+                                    1,  # driver_id
+                                    1,  # position
+                                    61000,  # last_time
+                                    51000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'unknown',  # kart_status
+                                    None,  # fixed_kart_status
+                                    2,  # number_pits
+                                ],
+                                [
+                                    1,  # competition_id
+                                    2,  # team_id
+                                    3,  # driver_id
+                                    2,  # position
+                                    62000,  # last_time
+                                    52000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'unknown',  # kart_status
+                                    None,  # fixed_kart_status
+                                    0,  # number_pits
+                                ],
+                                [
+                                    1,  # competition_id
+                                    3,  # team_id
+                                    None,  # driver_id
+                                    3,  # position
+                                    63000,  # last_time
+                                    53000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'unknown',  # kart_status
+                                    None,  # fixed_kart_status
+                                    0,  # number_pits
+                                ],
+                            ],
+                        ),
+                    ],
                 ),
             ),
         ],
     )
     def test_handle(
             self,
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo],
             initial_data_1: InitialData,
             initial_data_2: InitialData,
             expected_teams_1: List[Team],
@@ -261,25 +439,19 @@ class TestInitialDataHandler(DatabaseTest):
             expected_settings_1: Dict[ParserSettings, str],
             expected_settings_2: Dict[ParserSettings, str],
             expected_notification_1: Notification,
-            expected_notification_2: Notification) -> None:
+            expected_notification_2: Notification,
+            expected_database: DatabaseContent) -> None:
         """Test handle method."""
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        competition_id = create_competition(
-            REAL_API_LTS, bearer=auth_data.bearer)
-        competitions = {
-            TEST_COMPETITION_CODE: CompetitionInfo(
-                id=competition_id,
-                competition_code=TEST_COMPETITION_CODE,
-            ),
-        }
 
         # First call to handle method
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
+            competitions=in_competitions)
         notification = handler.handle(initial_data_1)
-        info = competitions[TEST_COMPETITION_CODE]
+        info = in_competitions[TEST_COMPETITION_CODE]
         self._add_team_id_to_drivers(info, expected_drivers_1)
         assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
                 == [t.model_dump(exclude={'id': True}) for t in expected_teams_1])  # noqa: E501, LN001
@@ -293,7 +465,7 @@ class TestInitialDataHandler(DatabaseTest):
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
+            competitions=in_competitions)
         notification = handler.handle(initial_data_2)
         self._add_team_id_to_drivers(info, expected_drivers_2)
         assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
@@ -304,10 +476,15 @@ class TestInitialDataHandler(DatabaseTest):
         assert notification is not None
         assert notification == expected_notification_2
 
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump() ==
+                expected_database.model_dump())
+
     def test_handle_raises_exception_id_none(self) -> None:
         """Test handle method raise exception about ID None."""
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        competitions = {
+        in_competitions = {
             TEST_COMPETITION_CODE: CompetitionInfo(
                 id=None,
                 competition_code=TEST_COMPETITION_CODE,
@@ -324,7 +501,7 @@ class TestInitialDataHandler(DatabaseTest):
             participants={
                 'r5625': Participant(
                     best_time=59000,
-                    driver_name='CKM 1 Driver 1',
+                    driver_name='Team 1 Driver 1',
                     gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
                     interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
                     kart_number=41,
@@ -334,7 +511,7 @@ class TestInitialDataHandler(DatabaseTest):
                     participant_code='r5625',
                     pits=2,
                     position=1,
-                    team_name='CKM 1',
+                    team_name='Team 1',
                 ),
             },
         )
@@ -344,14 +521,77 @@ class TestInitialDataHandler(DatabaseTest):
             handler = InitialDataHandler(
                 api_url=REAL_API_LTS,
                 auth_data=auth_data,
-                competitions=competitions)
+                competitions=in_competitions)
             handler.handle(initial_data)
 
         exception: Exception = e_info.value
         assert (str(exception) == 'ID of the competition cannot '
                                   f'be None: {TEST_COMPETITION_CODE}')
 
-    def test_handle_raises_exception_unknown_team(self) -> None:
+    @pytest.mark.parametrize(
+        'database_content, in_competitions',
+        [
+            (
+                DatabaseContent(  # database_content
+                    tables_content=[
+                        TableContent(
+                            table_name='competitions_index',
+                            columns=[
+                                'track_id',
+                                'competition_code',
+                                'name',
+                                'description',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    TEST_COMPETITION_CODE,
+                                    'Endurance North 26-02-2023',
+                                    'Endurance in Karting North',
+                                ],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='competitions_metadata_current',
+                            columns=[
+                                'competition_id',
+                                'reference_time',
+                                'reference_current_offset',
+                                'status',
+                                'stage',
+                                'remaining_length',
+                                'remaining_length_unit',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    None,
+                                    None,
+                                    'paused',
+                                    'free-practice',
+                                    0,
+                                    'millis'
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[],
+                        teams=[],
+                    ),
+                },
+            ),
+        ],
+    )
+    def test_handle_raises_exception_unknown_team(
+            self,
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo]) -> None:
         """
         Test handle method raise exception about unkown team.
 
@@ -359,15 +599,9 @@ class TestInitialDataHandler(DatabaseTest):
         a driver without team. It should return in an error since the driver
         needs that a team exists.
         """
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        competition_id = create_competition(
-            REAL_API_LTS, bearer=auth_data.bearer)
-        competitions = {
-            TEST_COMPETITION_CODE: CompetitionInfo(
-                id=competition_id,
-                competition_code=TEST_COMPETITION_CODE,
-            ),
-        }
+
         initial_data = InitialData(
             competition_code=TEST_COMPETITION_CODE,
             stage=CompetitionStage.QUALIFYING,
@@ -379,7 +613,7 @@ class TestInitialDataHandler(DatabaseTest):
             participants={
                 'r5625': Participant(
                     best_time=0,
-                    driver_name='CKM 1 Driver 1',
+                    driver_name='Team 1 Driver 1',
                     gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
                     interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
                     kart_number=41,
@@ -399,7 +633,7 @@ class TestInitialDataHandler(DatabaseTest):
             handler = InitialDataHandler(
                 api_url=REAL_API_LTS,
                 auth_data=auth_data,
-                competitions=competitions)
+                competitions=in_competitions)
             handler.handle(initial_data)
 
         exception: Exception = e_info.value

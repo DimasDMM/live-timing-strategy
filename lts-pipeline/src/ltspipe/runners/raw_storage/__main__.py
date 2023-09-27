@@ -8,8 +8,6 @@ from ltspipe.configs import RawStorageConfig
 from ltspipe.configs import (
     DEFAULT_RAW_DATA_PATH,
     DEFAULT_RAW_ERRORS_PATH,
-    DEFAULT_RAW_MESSAGES_TOPIC,
-    DEFAULT_RAW_STORAGE_GROUP,
     DEFAULT_VERBOSITY,
 )
 
@@ -23,20 +21,10 @@ parser.add_argument(
     help='Path to store errors on running time.',
     default=DEFAULT_RAW_ERRORS_PATH)
 parser.add_argument(
-    '--kafka_consume',
-    type=str,
-    help='Kafka topic to consume.',
-    default=DEFAULT_RAW_MESSAGES_TOPIC)
-parser.add_argument(
     '--kafka_servers',
     nargs='+',
     help='List of Kafka brokers separated by commas.',
     required=True)
-parser.add_argument(
-    '--kafka_group',
-    type=str,
-    help='Suscribe to the topic with a specific group name.',
-    default=DEFAULT_RAW_STORAGE_GROUP)
 parser.add_argument(
     '--output_path',
     type=str,

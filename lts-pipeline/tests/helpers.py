@@ -2,6 +2,7 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 import os
 import pathlib
+from pydantic import BaseModel
 import requests
 from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
@@ -63,31 +64,39 @@ def load_raw_message(filename: str) -> str:
         return fp.read()
 
 
-def create_competition(api_lts: str, bearer: str) -> int:
-    """Create a new competition for testing purposes."""
-    data = {
-        'track_id': 1,
-        'competition_code': TEST_COMPETITION_CODE,
-        'name': 'Functional test',
-        'description': 'This is a functional test.',
-        'settings': {
-            'length': 0,
-            'length_unit': LengthUnit.LAPS.value,
-            'pit_time': 0,
-            'min_number_pits': 0,
-        },
-    }
-    uri = f'{api_lts}/v1/c/'
-    r = requests.post(
-        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
-    if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+class TableQuery(BaseModel):
+    """Query to a database table."""
 
-    response: dict = r.json()  # type: ignore
-    if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+    table_name: str
+    columns: List[str]
 
-    return response['id']
+
+class DatabaseQuery(BaseModel):
+    """Query to the database."""
+
+    tables_query: List[TableQuery]
+
+
+class TableContent(BaseModel):
+    """Content of a database table."""
+
+    table_name: str
+    columns: List[str]
+    content: list
+
+
+class DatabaseContent(BaseModel):
+    """Content of the database."""
+
+    tables_content: List[TableContent]
+
+    def to_query(self) -> DatabaseQuery:
+        """Transform into a DatabaseQuery instance."""
+        tables_query: List[TableQuery] = []
+        for t in self.tables_content:
+            tables_query.append(
+                TableQuery(table_name=t.table_name, columns=t.columns))
+        return DatabaseQuery(tables_query=tables_query)
 
 
 class DatabaseTest:
@@ -100,7 +109,6 @@ class DatabaseTest:
 
     DATABASE_NAME = os.environ.get('DB_DATABASE')
     INIT_DATA_FILE = '../lts-api/data/init.sql'
-    SAMPLE_DATA_FILE = '../lts-api/data/sample.sql'
     SCHEMA_FILE = '../lts-api/data/schema.sql'
 
     def setup_method(self, method: Any) -> None:  # noqa: U100
@@ -110,6 +118,29 @@ class DatabaseTest:
     def teardown_method(self, method: Any) -> None:  # noqa: U100
         """Reset state of the database."""
         pass
+
+    def set_database_content(self, database: DatabaseContent) -> None:
+        """Set content of the database."""
+        cnx, cursor = DatabaseTest._build_db_connection(use_database=True)
+        for table in database.tables_content:
+            for row in table.content:
+                DatabaseTest._insert_model(
+                    cnx, cursor, table.table_name, table.columns, row)
+        cnx.commit()
+
+    def get_database_content(
+            self,
+            database_query: DatabaseQuery) -> DatabaseContent:
+        """Get content from the database."""
+        _, cursor = DatabaseTest._build_db_connection(use_database=True)
+
+        tables_content: List[TableContent] = []
+        for table in database_query.tables_query:
+            t = DatabaseTest._query_models(
+                cursor, table.table_name, table.columns)
+            tables_content.append(t)
+
+        return DatabaseContent(tables_content=tables_content)
 
     @staticmethod
     def reset_database() -> None:
@@ -121,7 +152,8 @@ class DatabaseTest:
         cnx.close()
 
     @staticmethod
-    def _build_db_connection() -> Tuple[MySQLConnection, MySQLCursor]:
+    def _build_db_connection(
+            use_database: bool = False) -> Tuple[MySQLConnection, MySQLCursor]:
         """Build connection with the database."""
         cnx = MySQLConnection(
             host=os.environ.get('DB_HOST', None),
@@ -131,7 +163,70 @@ class DatabaseTest:
         cnx.autocommit = False
         cursor = cnx.cursor()
         cursor.execute('SET NAMES "utf8";')
+        if use_database:
+            cursor.execute(f'USE `{DatabaseTest.DATABASE_NAME}`')
         return cnx, cursor
+
+    @staticmethod
+    def _insert_model(
+            cnx: MySQLConnection,
+            cursor: MySQLCursor,
+            table_name: str,
+            columns: List[str],
+            row: list) -> Optional[int]:
+        """
+        Insert a row into the database.
+
+        Params:
+            cnx (MySQLConnection): Connection to the database.
+            cursor (MySQLCursor): Connection cursor.
+            table_name (str): Name of the table.
+            columns (List[str]): List of columns
+            row (list): Row data.
+
+        Returns:
+            int | None: ID of inserted row.
+        """
+        fields = {k: v for k, v in zip(columns, row) if v is not None}
+        headers, params = list(fields.keys()), list(fields.values())
+        placeholders = ', '.join(['%s'] * len(headers))
+        stmt_head = ', '.join([f'`{h}`' for h in headers])
+        stmt = f'''
+            INSERT INTO `{table_name}` ({stmt_head}) VALUES ({placeholders})'''
+        try:
+            cursor.execute(stmt, tuple(params))
+            return cursor.lastrowid
+        except Exception as e:
+            cnx.rollback()
+            raise e
+
+    @staticmethod
+    def _query_models(
+            cursor: MySQLCursor,
+            table_name: str,
+            columns: List[str]) -> DatabaseContent:
+        """
+        Run the given query and retrieve zero or many instances of the model.
+
+        Params:
+            cnx (MySQLConnection): Connection to the database.
+            cursor (MySQLCursor): Connection cursor.
+            table_name (str): Name of the table.
+            columns (List[str]): List of columns to retrieve.
+
+        Returns:
+            TableContent: Content of the table.
+        """
+        columns_str = ', '.join([f'`{c}`' for c in columns])
+        query = f'SELECT {columns_str} FROM {table_name}'
+        print('>> ', query)
+
+        cursor.execute(query)
+        content: list = cursor.fetchall()  # type: ignore
+        content = [list(row) for row in content]
+
+        return TableContent(
+            table_name=table_name, columns=columns, content=content)
 
     @staticmethod
     def _import_sql_file(cursor: MySQLCursor, filepath: str) -> None:
@@ -164,8 +259,6 @@ class DatabaseTest:
 
             DatabaseTest._import_sql_file(
                 cursor, DatabaseTest.INIT_DATA_FILE)
-            DatabaseTest._import_sql_file(
-                cursor, DatabaseTest.SAMPLE_DATA_FILE)
             cnx.commit()
         except Exception as e:
             DatabaseTest._drop_database(cnx, cursor)

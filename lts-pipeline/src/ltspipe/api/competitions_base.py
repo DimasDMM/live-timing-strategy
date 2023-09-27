@@ -26,8 +26,7 @@ def _build_competition_metadata(raw: dict) -> CompetitionMetadata:
 def build_competition_info(
         api_url: str,
         bearer: str,
-        competition_code: str,
-        with_timing: bool = False) -> CompetitionInfo:
+        competition_code: str) -> CompetitionInfo:
     """
     Initialize information of competition.
 
@@ -44,10 +43,6 @@ def build_competition_info(
     parser_settings = get_parsers_settings(api_url, bearer, competition_id)
     drivers = get_all_drivers(api_url, bearer, competition_id, team_id=None)
     teams = get_all_teams(api_url, bearer, competition_id)
-    if with_timing:
-        timing = get_all_timing(api_url, bearer, competition_id)
-    else:
-        timing = {}
 
     return CompetitionInfo(
         id=competition_id,
@@ -55,7 +50,6 @@ def build_competition_info(
         parser_settings=parser_settings,
         drivers=drivers,
         teams=teams,
-        timing=timing,
     )
 
 

@@ -42,93 +42,19 @@ poetry lock --no-update
 
 ## Pipeline
 
-### Pipeline: Websocket
+### Pipeline: Websocket Parser
 
-The websocket step is composed by two parallel processes:
-- On the one hand, one process reads the new messages from the websocket. If
-  there is an initializer message, it sends a notification to all steps, so they
-  wait until the initialization is completed.
-- On the other hand, there is a process that reads the notifications and waits
-  for the completion of the initialization.
-
-```mermaid
-graph TD;
-  A[Websocket] --> B[Has wait_init as true?];
-  B -- Yes --> F[Add message to queue]
-  B -- No --> C[Is init message?]
-  C -- Yes --> D[Set wait_init as true]
-  D --> E[Create notification: 'init-ongoing']
-  E --> L[Kafka producer: notifications]
-  D --> G[Kafka producer: raw-messages]
-  C -- No --> G
-
-  H[Kafka consumer: notifications] --> I[Is 'init-finished'?]
-  I -- Yes --> J[Set wait_init as false]
-  J --> K[Send messages in queue]
-
-  F -. Shared memory .- K
-```
-
-Local Python command:
-```sh
-python -m ltspipe.runners.ws_listener \
-  --competition_code my-competition \
-  --kafka_servers localhost:9092 \
-  --websocket_uri ws://www.apex-timing.com:8092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--competition_code`: (**mandatory**) Code of the competition.
-- `--errors_path`: (optional) Path to store errors in running time. By default,
-  it is `artifacts/websocket/errors/`.
-- `--kafka_notifications`: (optional) Topic of Kafka to read and write
-  notifications. By default, it is `notifications`.
-- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
-  it is `raw-messages`.
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
-- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
-  Example: `ws://www.apex-timing.com:8092`.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
-
-### Pipeline: Messages parser
-
-The script of messages parsing is composed by two processes:
-- One handles the notifications, such as the initialization, so it modifies the
-  overall behaviour of parsing.
+The script of messages parsing for websocket is composed by two processes:
+- One handles the notifications.
 - The other is the one that parses the message data and transform it into
   something that we can store in the database.
 
 Additionally, this script might connect to the API REST to get information, such
 as settings to parse the data.
 
-```mermaid
-graph TD;
-  A[Kafka consumer: raw-messages]
-  A --> M[Is init message?]
-  M -- No --> B[Has wait_init as true?]
-  B -- Yes --> E[Add message to queue]
-  B -- No --> C[API: Get info of competition]
-  C --> N[Parse data]
-  M -- Yes --> N
-  N --> D[Kafka producer: standard]
-
-  F[Kafka consumer: notifications]
-  F -- 'init-finished' --> H[API: Get info of competition]
-  H --> I[Set wait_init as false]
-  I --> J[Parse data in queue]
-  J --> K[Kafka producer: standard]
-  F -- 'init-ongoing' --> L[Set wait_init as true]
-
-  E -. Shared memory .- J
-```
-
 Local Python command:
 ```sh
-python -m ltspipe.runners.parser \
+python -m ltspipe.runners.ws_parser \
   --api_lts http://localhost:8090 \
   --kafka_servers localhost:9092 \
   --verbosity 1
@@ -136,12 +62,9 @@ python -m ltspipe.runners.parser \
 
 Arguments:
 - `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--competition_code`: (**mandatory**) Code of the competition.
 - `--errors_path`: (optional) Path to store errors during parsing. By default,
-  it is `artifacts/parser/errors/`.
-- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
-  `raw-messages`.
-- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
-  By default, it is `messages-parser`.
+  it is `artifacts/ws-parser/errors/`.
 - `--kafka_notifications`: (optional) Topic of Kafka to read and write
   notifications. By default, it is `notifications`.
 - `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
@@ -149,56 +72,9 @@ Arguments:
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
 - `--unknowns_path`: (optional) Path to store unknown data (i.e. not recognized
-  by any parser). By default, it is `artifacts/parser/unknowns/`.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
-
-### Pipeline: API Sender
-
-Similarly to the previous scripts, there are two parallel processes:
-- One takes all the messages from the topic "standard" and sends them to the
-  API REST (using the appropiate request). After it sends the data to the API,
-  it might generate a notification. For example, after initialize the data,
-  it generates a notification of type "init-finished".
-- The other is listening for notifications. Since there might be several scripts
-  of this kind, all of them must have the latest data of each competition.
-
-Note that this script does not have any flag (locker) like the previous scripts.
-
-```mermaid
-graph TD;
-  A[Kafka consumer: standard]
-  A --> B[Send data to API REST]
-  B -- Message contains action: X --> D[Create notification: 'X']
-  D --> E[Kafka producer: notifications]
-
-  F[Kafka consumer: notifications]
-  F -- 'init-finished' --> H[API: Get info of competition]
-
-  B -. Shared memory .- H
-```
-
-Local Python command:
-```sh
-python -m ltspipe.runners.api_sender \
-  --api_lts http://localhost:8090 \
-  --kafka_servers localhost:9092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--api_lts`: (**mandatory**) URI of API REST of LTS app.
-- `--errors_path`: (optional) Path to store errors in running time. By default,
-  it is `artifacts/api/errors/`.
-- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
-  `standard`.
-- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
-  By default, it is `api-sender`.
-- `--kafka_notifications`: (optional) Topic of Kafka to read and write
-  notifications. By default, it is `notifications`.
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
+  by any parser). By default, it is `artifacts/ws-parser/unknowns/`.
+- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
+  Example: `ws://www.apex-timing.com:8092`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
@@ -254,10 +130,6 @@ Arguments:
   it is `artifacts/raw/errors/`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
-- `--kafka_consume`: (optional) Topic of Kafka to consume. By default, it is
-  `raw-messages`.
-- `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
-  By default, it is `raw-storage`.
 - `--output_path`: (optional) Path to store the raw data. By default, it is
   `artifacts/raw/data/`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
@@ -321,7 +193,6 @@ Check that Kafka works correctly with a local dummy consumer:
 python -m ltspipe.runners.kafka_check \
   --kafka_servers localhost:9092 \
   --kafka_topic test-topic \
-  --kafka_group test-group \
   --test_mode consumer \
   --verbosity 1
 ```

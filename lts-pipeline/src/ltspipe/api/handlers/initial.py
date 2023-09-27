@@ -70,7 +70,7 @@ class InitialDataHandler(ApiHandler):
     def _create_notification(self) -> Notification:
         """Create notification of handler."""
         return Notification(
-            type=NotificationType.INIT_FINISHED,
+            type=NotificationType.INITIALIZED_COMPETITION,
         )
 
     def _add_parsers_settings(
@@ -211,6 +211,8 @@ class InitialDataHandler(ApiHandler):
                 position=participant.position,
                 stage=stage,
                 last_time=participant.last_time,
+                auto_best_time=False,
+                auto_other_positions=False,
             )
 
     def _find_team_by_code(
