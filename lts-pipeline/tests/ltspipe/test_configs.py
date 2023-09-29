@@ -2,14 +2,16 @@ from ltspipe.configs import (
     KafkaCheckConfig,
     KafkaMode,
     NotificationsListenerConfig,
-    RawStorageConfig,
+    WsRawStorageConfig,
     WsParserConfig,
     DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH,
     DEFAULT_NOTIFICATIONS_LISTENER_GROUP,
-    DEFAULT_RAW_DATA_PATH,
-    DEFAULT_RAW_ERRORS_PATH,
     DEFAULT_VERBOSITY,
+    DEFAULT_WS_PARSER_ERRORS_PATH,
+    DEFAULT_WS_PARSER_UNKNOWNS_PATH,
+    DEFAULT_WS_RAW_DATA_PATH,
+    DEFAULT_WS_RAW_ERRORS_PATH,
 )
 from tests.fixtures import (
     MOCK_API_LTS,
@@ -48,28 +50,36 @@ def test_notifications_listener_config() -> None:
     assert config.verbosity == DEFAULT_VERBOSITY
 
 
-def test_raw_storage_config() -> None:
-    """Test ltspipe.configs.RawStorageConfig."""
-    kafka_servers = ['localhost:9092']
-    raw_storage_config = RawStorageConfig(kafka_servers=kafka_servers)
-    assert raw_storage_config.errors_path == DEFAULT_RAW_ERRORS_PATH
-    assert raw_storage_config.kafka_servers == kafka_servers
-    assert raw_storage_config.output_path == DEFAULT_RAW_DATA_PATH
-    assert raw_storage_config.verbosity == DEFAULT_VERBOSITY
-
-
 def test_ws_parser_config() -> None:
     """Test ltspipe.configs.WsParserConfig."""
-    ws_parser_config = WsParserConfig(
+    config = WsParserConfig(
         api_lts=MOCK_API_LTS,
         competition_code=TEST_COMPETITION_CODE,
         kafka_servers=MOCK_KAFKA,
         websocket_uri=MOCK_WS,
     )
-    assert ws_parser_config.api_lts == MOCK_API_LTS
-    assert ws_parser_config.competition_code == TEST_COMPETITION_CODE
-    assert ws_parser_config.errors_path == DEFAULT_WS_ERRORS_PATH
-    assert ws_parser_config.kafka_notifications == DEFAULT_NOTIFICATIONS_TOPIC
-    assert ws_parser_config.kafka_servers == MOCK_KAFKA
-    assert ws_parser_config.websocket_uri == MOCK_WS
-    assert ws_parser_config.verbosity == DEFAULT_VERBOSITY
+    assert config.api_lts == MOCK_API_LTS
+    assert config.competition_code == TEST_COMPETITION_CODE
+    assert config.errors_path == DEFAULT_WS_PARSER_ERRORS_PATH
+    assert config.unknowns_path == DEFAULT_WS_PARSER_UNKNOWNS_PATH
+    assert config.kafka_notifications == DEFAULT_NOTIFICATIONS_TOPIC
+    assert config.kafka_servers == MOCK_KAFKA
+    assert config.websocket_path is None
+    assert config.websocket_uri == MOCK_WS
+    assert config.verbosity == DEFAULT_VERBOSITY
+
+
+def test_ws_raw_storage_config() -> None:
+    """Test ltspipe.configs.WsRawStorageConfig."""
+    kafka_servers = ['localhost:9092']
+    config = WsRawStorageConfig(
+        competition_code=TEST_COMPETITION_CODE,
+        kafka_servers=kafka_servers,
+        websocket_uri=MOCK_WS,
+    )
+    assert config.competition_code == TEST_COMPETITION_CODE
+    assert config.errors_path == DEFAULT_WS_RAW_ERRORS_PATH
+    assert config.kafka_servers == kafka_servers
+    assert config.output_path == DEFAULT_WS_RAW_DATA_PATH
+    assert config.websocket_uri == MOCK_WS
+    assert config.verbosity == DEFAULT_VERBOSITY

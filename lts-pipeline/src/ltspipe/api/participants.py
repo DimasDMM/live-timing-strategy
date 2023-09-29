@@ -139,38 +139,6 @@ def get_driver_by_id(
     return _build_driver(response)
 
 
-def get_team_driver_by_name(
-        api_url: str,
-        bearer: str,
-        competition_id: int,
-        team_id: int,
-        driver_name: str) -> Optional[Driver]:
-    """
-    Get a single driver by its name.
-
-    Params:
-        api_url (str): Base URL of the API REST.
-        bearer (str): Bearer token.
-        competition_id (int): ID of the competition.
-        team_id (int): ID of the team.
-        driver_name (str): Name of the driver.
-
-    Returns:
-        Optional[Driver]: Instance of the driver.
-    """
-    uri = (f'{api_url}/v1/c/{competition_id}/teams/{team_id}'
-           f'/drivers/filter/name/{driver_name}')
-    r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
-    if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
-
-    response: dict = r.json()  # type: ignore
-    if not response:
-        return None
-
-    return _build_driver(response)
-
-
 def get_team(
         api_url: str,
         bearer: str,

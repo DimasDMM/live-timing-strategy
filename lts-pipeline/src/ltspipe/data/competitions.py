@@ -78,7 +78,7 @@ class Participant(DictModel):
     """Details of a participant."""
 
     best_time: int
-    gap: DiffLap
+    gap: Optional[DiffLap]
     kart_number: int
     laps: int
     last_time: int

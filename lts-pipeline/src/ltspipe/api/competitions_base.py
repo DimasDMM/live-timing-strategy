@@ -5,7 +5,6 @@ from ltspipe.api.participants import (
     get_all_drivers,
     get_all_teams,
 )
-from ltspipe.api.timing import get_all_timing
 from ltspipe.data.enum import ParserSettings
 from ltspipe.data.competitions import (
     CompetitionInfo,

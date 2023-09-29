@@ -148,9 +148,9 @@ class CompetitionInfoInitStep(MidStep):
 
     def _init_competition_info(self, competition_code: str) -> None:
         """Initialize competition info."""
-        if ((self._flag_name in self._flags and self._flags[self._flag_name]) or
-                self._force_update or
-                competition_code not in self._competitions):
+        if ((self._flag_name in self._flags and self._flags[self._flag_name])
+                or self._force_update
+                or competition_code not in self._competitions):
             self._logger.debug(
                 f'Init competition info of {competition_code}...')
             info = build_competition_info(

@@ -97,7 +97,7 @@ class TestMain(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -166,22 +166,22 @@ class TestMain(DatabaseTest):
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.ADDED_PIT_OUT,  # noqa: E501, LN001
-                            data=PitOut(
-                                id=1,
-                                driver_id=None,
-                                team_id=1,
-                                kart_status=KartStatus.UNKNOWN,
-                                fixed_kart_status=None,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.ADDED_PIT_OUT,
+                                data=PitOut(
+                                    id=1,
+                                    driver_id=None,
+                                    team_id=1,
+                                    kart_status=KartStatus.UNKNOWN,
+                                    fixed_kart_status=None,
+                                ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database

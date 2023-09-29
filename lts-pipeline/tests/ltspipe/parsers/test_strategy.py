@@ -28,7 +28,7 @@ PARSERS_SETTINGS: Dict[ParserSettings, str] = {}
 
 
 def _build_timing_one_stint() -> DatabaseContent:
-    """Timing with a team and a single stint."""
+    """Build timing with a team and a single stint."""
     return DatabaseContent(
         tables_content=[
             TableContent(
@@ -67,7 +67,7 @@ def _build_timing_one_stint() -> DatabaseContent:
                         'ongoing',
                         'race',
                         3600000,
-                        'millis'
+                        'millis',
                     ],
                 ],
             ),
@@ -222,7 +222,7 @@ def _build_timing_one_stint() -> DatabaseContent:
 
 
 def _build_timing_two_stints() -> DatabaseContent:
-    """Timing with a team and two stints."""
+    """Build timing with a team and two stints."""
     return DatabaseContent(
         tables_content=[
             TableContent(
@@ -261,7 +261,7 @@ def _build_timing_two_stints() -> DatabaseContent:
                         'ongoing',
                         'race',
                         3600000,
-                        'millis'
+                        'millis',
                     ],
                 ],
             ),

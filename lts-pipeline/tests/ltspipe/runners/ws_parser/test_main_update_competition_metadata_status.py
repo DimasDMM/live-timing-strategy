@@ -102,7 +102,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -125,7 +125,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -140,23 +140,23 @@ class TestMain(DatabaseTest):
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,  # noqa: E501, LN001
-                            data=CompetitionMetadata(
-                                stage=CompetitionStage.RACE,
-                                status=CompetitionStatus.FINISHED,
-                                remaining_length=DiffLap(
-                                    value=0,
-                                    unit=LengthUnit.MILLIS,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.UPDATED_COMPETITION_METADATA_STATUS,  # noqa: E501, LN001
+                                data=CompetitionMetadata(
+                                    stage=CompetitionStage.RACE,
+                                    status=CompetitionStatus.FINISHED,
+                                    remaining_length=DiffLap(
+                                        value=0,
+                                        unit=LengthUnit.MILLIS,
+                                    ),
                                 ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database
@@ -180,7 +180,7 @@ class TestMain(DatabaseTest):
                                     'finished',
                                     'race',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -203,7 +203,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                                 [
                                     1,
@@ -212,7 +212,7 @@ class TestMain(DatabaseTest):
                                     'finished',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                                 [
                                     1,
@@ -221,7 +221,7 @@ class TestMain(DatabaseTest):
                                     'finished',
                                     'race',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),

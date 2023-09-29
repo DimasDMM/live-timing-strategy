@@ -1,8 +1,7 @@
 import pytest
-from typing import List
+from typing import Dict, List
 
 from ltspipe.api.auth import refresh_bearer
-from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.handlers.participants import (
     UpdateDriverHandler,
     UpdateTeamHandler,
@@ -15,8 +14,137 @@ from ltspipe.data.competitions import (
     UpdateTeam,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS
-from tests.helpers import DatabaseTest
+from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.helpers import (
+    DatabaseTest,
+    DatabaseContent,
+    TableContent,
+)
+
+
+def _build_competition_table_content() -> List[TableContent]:
+    """Build basic list of TableContent to have a competition."""
+    return [
+        TableContent(
+            table_name='competitions_index',
+            columns=[
+                'track_id',
+                'competition_code',
+                'name',
+                'description',
+            ],
+            content=[
+                [
+                    1,
+                    TEST_COMPETITION_CODE,
+                    'Endurance North 26-02-2023',
+                    'Endurance in Karting North',
+                ],
+            ],
+        ),
+        TableContent(
+            table_name='competitions_metadata_current',
+            columns=[
+                'competition_id',
+                'reference_time',
+                'reference_current_offset',
+                'status',
+                'stage',
+                'remaining_length',
+                'remaining_length_unit',
+            ],
+            content=[
+                [
+                    1,
+                    None,
+                    None,
+                    'paused',
+                    'free-practice',
+                    0,
+                    'millis',
+                ],
+            ],
+        ),
+        TableContent(
+            table_name='participants_teams',
+            columns=[
+                'competition_id',
+                'participant_code',
+                'name',
+                'number',
+                'reference_time_offset',
+            ],
+            content=[
+                [1, 'r5625', 'Team 1', 41, None],
+            ],
+        ),
+        TableContent(
+            table_name='participants_drivers',
+            columns=[
+                'competition_id',
+                'team_id',
+                'participant_code',
+                'name',
+                'number',
+                'total_driving_time',
+                'partial_driving_time',
+                'reference_time_offset',
+            ],
+            content=[
+                [
+                    1,
+                    1,
+                    'r5625',
+                    'Team 1 Driver 1',
+                    41,
+                    0,
+                    0,
+                    None,
+                ],
+            ],
+        ),
+        TableContent(
+            table_name='timing_current',
+            columns=[
+                'competition_id',
+                'team_id',
+                'driver_id',
+                'position',
+                'last_time',
+                'best_time',
+                'lap',
+                'gap',
+                'gap_unit',
+                'interval',
+                'interval_unit',
+                'stage',
+                'pit_time',
+                'kart_status',
+                'fixed_kart_status',
+                'number_pits',
+            ],
+            content=[
+                [
+                    1,  # competition_id
+                    1,  # team_id
+                    1,  # driver_id
+                    1,  # position
+                    61000,  # last_time
+                    51000,  # best_time
+                    3,  # lap
+                    None,  # gap
+                    None,  # gap_unit
+                    0,  # interval
+                    'millis',  # interval_unit
+                    'qualifying',  # stage
+                    0,  # pit_time
+                    'unknown',  # kart_status
+                    None,  # fixed_kart_status
+                    2,  # number_pits
+                ],
+            ],
+        ),
+    ]
 
 
 class TestUpdateDriverHandler(DatabaseTest):
@@ -28,170 +156,269 @@ class TestUpdateDriverHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('competition_code', 'update_data_1', 'update_data_2',
-         'expected_drivers_1', 'expected_drivers_2',
-         'expected_notification_1', 'expected_notification_2'),
+        ('database_content, in_competitions, update_data, expected_drivers,'
+         'expected_notification, expected_database'),
         [
             (
-                'south-endurance-2023-03-26',  # competition_code
-                UpdateDriver(  # update_data_1
+                # Case: update unexisting driver, so add it to the database
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[
+                            Driver(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1 Driver 1',
+                                number=41,
+                                team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
+                            ),
+                        ],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                UpdateDriver(  # update_data
                     id=None,
-                    competition_code='south-endurance-2023-03-26',
-                    participant_code='team-1',
-                    name='Team 1 Driver 3',
+                    competition_code=TEST_COMPETITION_CODE,
+                    participant_code='r5625',
+                    name='Team 1 Driver 2',
                     number=41,
-                    team_id=6,
+                    team_id=1,
                 ),
-                UpdateDriver(  # update_data_2
-                    id=None,
-                    competition_code='south-endurance-2023-03-26',
-                    participant_code='team-1',
-                    name='Team 1 Driver 3',
-                    number=51,
-                    team_id=6,
-                ),
-                [  # expected_drivers_1
+                [  # expected_drivers
                     Driver(
-                        id=0,
-                        participant_code='team-1',
+                        id=1,
+                        participant_code='r5625',
                         name='Team 1 Driver 1',
                         number=41,
-                        team_id=6,
+                        team_id=1,
                         total_driving_time=0,
                         partial_driving_time=0,
                     ),
                     Driver(
-                        id=0,
-                        participant_code='team-1',
+                        id=2,
+                        participant_code='r5625',
                         name='Team 1 Driver 2',
                         number=41,
-                        team_id=6,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                    ),
-                    Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 3',
-                        number=41,
-                        team_id=6,
+                        team_id=1,
                         total_driving_time=0,
                         partial_driving_time=0,
                     ),
                 ],
-                [  # expected_drivers_2
-                    Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 1',
-                        number=41,
-                        team_id=6,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                    ),
-                    Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 2',
-                        number=41,
-                        team_id=6,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                    ),
-                    Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 3',
-                        number=51,
-                        team_id=6,
-                        total_driving_time=0,
-                        partial_driving_time=0,
-                    ),
-                ],
-                Notification(  # expected_notification_1
+                Notification(  # expected_notification
                     type=NotificationType.UPDATED_DRIVER,
                     data=Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 3',
+                        id=2,
+                        participant_code='r5625',
+                        name='Team 1 Driver 2',
                         number=41,
-                        team_id=6,
+                        team_id=1,
                         total_driving_time=0,
                         partial_driving_time=0,
                     ),
                 ),
-                Notification(  # expected_notification_2
-                    type=NotificationType.UPDATED_DRIVER,
-                    data=Driver(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1 Driver 3',
-                        number=51,
-                        team_id=6,
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1',
+                                    41,
+                                    0,
+                                    0,
+                                    None,
+                                ],
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 2',
+                                    41,
+                                    0,
+                                    0,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            (
+                # Case: update existing driver
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[
+                            Driver(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1 Driver 1',
+                                number=41,
+                                team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
+                            ),
+                        ],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                UpdateDriver(  # update_data
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    participant_code='r5625',
+                    name='Team 1 Driver 1 Updated',
+                    number=41,
+                    team_id=1,
+                ),
+                [  # expected_drivers
+                    Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1 Updated',
+                        number=41,
+                        team_id=1,
                         total_driving_time=0,
                         partial_driving_time=0,
                     ),
+                ],
+                Notification(  # expected_notification
+                    type=NotificationType.UPDATED_DRIVER,
+                    data=Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1 Updated',
+                        number=41,
+                        team_id=1,
+                        total_driving_time=0,
+                        partial_driving_time=0,
+                    ),
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1 Updated',
+                                    41,
+                                    0,
+                                    0,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
                 ),
             ),
         ],
     )
     def test_handle(
             self,
-            competition_code: str,
-            update_data_1: UpdateDriver,
-            update_data_2: UpdateDriver,
-            expected_drivers_1: List[Driver],
-            expected_drivers_2: List[Driver],
-            expected_notification_1: Notification,
-            expected_notification_2: Notification) -> None:
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo],
+            update_data: UpdateDriver,
+            expected_drivers: List[Driver],
+            expected_notification: Notification,
+            expected_database: DatabaseContent) -> None:
         """Test handle method."""
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        info = build_competition_info(
-            REAL_API_LTS,
-            bearer=auth_data.bearer,
-            competition_code=competition_code)
-        competitions = {competition_code: info}
 
-        # First call to handle method
+        # Call to handle method
         handler = UpdateDriverHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
-        notification = handler.handle(update_data_1)
-        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
-                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_1])  # noqa: E501, LN001
+            competitions=in_competitions)
+        notification = handler.handle(update_data)
+        info = in_competitions[TEST_COMPETITION_CODE]
+
+        assert ([d.model_dump() for d in info.drivers]
+                == [d.model_dump() for d in expected_drivers])
         assert notification is not None
-        assert (notification.model_dump(exclude={'data': {'id': True}})
-                == expected_notification_1.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
+        assert notification.model_dump() == expected_notification.model_dump()
 
-        # Clear driver in update model, so we force to refresh it
-        model = self._find_driver(
-            info, update_data_2.participant_code, update_data_2.name)
-        info.drivers = [d for d in info.drivers if d.id != model.id]
-
-        # Second call to handle method
-        handler = UpdateDriverHandler(
-            api_url=REAL_API_LTS,
-            auth_data=auth_data,
-            competitions=competitions)
-        update_data_2.id = model.id
-        notification = handler.handle(update_data_2)
-        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
-                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_2])  # noqa: E501, LN001
-        assert notification is not None
-        assert (notification.model_dump(exclude={'data': {'id': True}})
-                == expected_notification_2.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
-
-    def _find_driver(
-            self,
-            info: CompetitionInfo,
-            participant_code: str,
-            driver_name: str) -> Driver:
-        """Find a driver in the competition info."""
-        for d in info.drivers:
-            if d.name == driver_name and d.participant_code == participant_code:
-                return d
-        raise Exception(f'Driver "{driver_name}" not found')
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())
 
 
 class TestUpdateTeamHandler(DatabaseTest):
@@ -203,140 +430,234 @@ class TestUpdateTeamHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('competition_code', 'update_data_1', 'update_data_2',
-         'expected_teams_1', 'expected_teams_2',
-         'expected_notification_1', 'expected_notification_2'),
+        ('database_content, in_competitions, update_data,'
+         'expected_teams, expected_notification, expected_database'),
         [
             (
-                'north-endurance-2023-03-25',  # competition_code
-                UpdateTeam(  # update_data_1
-                    id=None,
-                    competition_code='north-endurance-2023-03-25',
-                    participant_code='team-3',
-                    name='Team 3',
-                    number=43,
+                # Case: update existing team, but the ID is not given
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
                 ),
-                UpdateTeam(  # update_data_2
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[
+                            Driver(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1 Driver 1',
+                                number=41,
+                                team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
+                            ),
+                        ],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                UpdateTeam(  # update_data
                     id=None,
-                    competition_code='north-endurance-2023-03-25',
-                    participant_code='team-3',
-                    name='Team 3 Updated',
-                    number=53,
+                    competition_code=TEST_COMPETITION_CODE,
+                    participant_code='r5625',
+                    name='Team 1 Updated',
+                    number=41,
                 ),
-                [  # expected_teams_1
+                [  # expected_teams
                     Team(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1',
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Updated',
                         number=41,
-                    ),
-                    Team(
-                        id=0,
-                        participant_code='team-2',
-                        name='Team 2',
-                        number=42,
-                    ),
-                    Team(
-                        id=0,
-                        participant_code='team-3',
-                        name='Team 3',
-                        number=43,
-                    ),
-                ],
-                [  # expected_teams_2
-                    Team(
-                        id=0,
-                        participant_code='team-1',
-                        name='Team 1',
-                        number=41,
-                    ),
-                    Team(
-                        id=0,
-                        participant_code='team-2',
-                        name='Team 2',
-                        number=42,
-                    ),
-                    Team(
-                        id=0,
-                        participant_code='team-3',
-                        name='Team 3 Updated',
-                        number=53,
                     ),
                 ],
                 Notification(  # expected_notification_1
                     type=NotificationType.UPDATED_TEAM,
                     data=Team(
-                        id=0,
-                        participant_code='team-3',
-                        name='Team 3',
-                        number=43,
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Updated',
+                        number=41,
                     ),
                 ),
-                Notification(  # expected_notification_2
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1 Updated', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1',
+                                    41,
+                                    0,
+                                    0,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            (
+                # Case: update existing team
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                {  # in_competitions
+                    TEST_COMPETITION_CODE: CompetitionInfo(
+                        id=1,
+                        competition_code=TEST_COMPETITION_CODE,
+                        parser_settings={},
+                        drivers=[
+                            Driver(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1 Driver 1',
+                                number=41,
+                                team_id=1,
+                                total_driving_time=0,
+                                partial_driving_time=0,
+                            ),
+                        ],
+                        teams=[
+                            Team(
+                                id=1,
+                                participant_code='r5625',
+                                name='Team 1',
+                                number=41,
+                            ),
+                        ],
+                    ),
+                },
+                UpdateTeam(  # update_data
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    participant_code='r5625',
+                    name='Team 1 Updated',
+                    number=41,
+                ),
+                [  # expected_teams
+                    Team(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Updated',
+                        number=41,
+                    ),
+                ],
+                Notification(  # expected_notification_1
                     type=NotificationType.UPDATED_TEAM,
                     data=Team(
-                        id=0,
-                        participant_code='team-3',
-                        name='Team 3 Updated',
-                        number=53,
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Updated',
+                        number=41,
                     ),
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1 Updated', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1',
+                                    41,
+                                    0,
+                                    0,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
                 ),
             ),
         ],
     )
     def test_handle(
             self,
-            competition_code: str,
-            update_data_1: UpdateTeam,
-            update_data_2: UpdateTeam,
-            expected_teams_1: List[Team],
-            expected_teams_2: List[Team],
-            expected_notification_1: Notification,
-            expected_notification_2: Notification) -> None:
+            database_content: DatabaseContent,
+            in_competitions: Dict[str, CompetitionInfo],
+            update_data: UpdateTeam,
+            expected_teams: List[Team],
+            expected_notification: Notification,
+            expected_database: DatabaseContent) -> None:
         """Test handle method."""
+        self.set_database_content(database_content)
         auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        info = build_competition_info(
-            REAL_API_LTS,
-            bearer=auth_data.bearer,
-            competition_code=competition_code)
-        competitions = {competition_code: info}
 
         # First call to handle method
         handler = UpdateTeamHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=competitions)
-        notification = handler.handle(update_data_1)
-        assert ([d.model_dump(exclude={'id': True}) for d in info.teams]
-                == [d.model_dump(exclude={'id': True}) for d in expected_teams_1])  # noqa: E501, LN001
+            competitions=in_competitions)
+        notification = handler.handle(update_data)
+        info = in_competitions[TEST_COMPETITION_CODE]
+
+        assert ([d.model_dump() for d in info.teams]
+                == [d.model_dump() for d in expected_teams])
         assert notification is not None
-        assert (notification.model_dump(exclude={'data': {'id': True}})
-                == expected_notification_1.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
+        assert (notification.model_dump()
+                == expected_notification.model_dump())
 
-        # Clear team in update model, so we force to refresh it
-        model = self._find_team(
-            info, update_data_2.participant_code)
-        info.teams = [t for t in info.teams if t.id != model.id]
-
-        # Second call to handle method
-        handler = UpdateTeamHandler(
-            api_url=REAL_API_LTS,
-            auth_data=auth_data,
-            competitions=competitions)
-        update_data_2.id = model.id
-        notification = handler.handle(update_data_2)
-        assert ([d.model_dump(exclude={'id': True}) for d in info.teams]
-                == [d.model_dump(exclude={'id': True}) for d in expected_teams_2])  # noqa: E501, LN001
-        assert notification is not None
-        assert (notification.model_dump(exclude={'data': {'id': True}})
-                == expected_notification_2.model_dump(exclude={'data': {'id': True}}))  # noqa: E501, LN001
-
-    def _find_team(
-            self,
-            info: CompetitionInfo,
-            participant_code: str) -> Team:
-        """Find a team in the competition info."""
-        for t in info.teams:
-            if t.participant_code == participant_code:
-                return t
-        raise Exception(f'Team "{participant_code}" not found')
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())

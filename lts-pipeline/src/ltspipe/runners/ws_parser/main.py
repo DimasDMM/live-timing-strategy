@@ -28,6 +28,7 @@ from ltspipe.api.handlers.timing import (
 from ltspipe.configs import WsParserConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
+from ltspipe.messages import MessageSource
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.competitions_metadata import (
     CompetitionMetadataRemainingParser,
@@ -52,7 +53,7 @@ from ltspipe.steps.api import CompetitionInfoInitStep, ApiActionStep
 from ltspipe.steps.base import MidStep, StartStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
-from ltspipe.steps.listeners import WebsocketListenerStep
+from ltspipe.steps.listeners import FileListenerStep, WebsocketListenerStep
 from ltspipe.steps.mappers import NotificationMapperStep, WsParsersStep
 
 
@@ -149,11 +150,11 @@ def _run_raw_listener(
         flags: DictProxy) -> None:
     """Run process with the raw data listener."""
     logger = build_logger(__package__, config.verbosity)
-    logger.info('Create raw listener...')
+    logger.info('Create websocket listener...')
     rawe_listener = _build_raw_process(
         config, logger, auth_data, competitions, flags)
 
-    logger.info('Start raw listener...')
+    logger.info('Start websocket listener...')
     rawe_listener.start_step()
 
 
@@ -196,14 +197,26 @@ def _build_raw_process(
         logger=logger,
         output_path=config.errors_path,
     )
-    ws_listener = WebsocketListenerStep(
-        logger,
-        competition_code=config.competition_code,
-        uri=config.websocket_uri,
-        next_step=competition_init,
-        on_error=errors_storage,
-    )
 
+    ws_listener: StartStep
+    if config.websocket_uri is not None:
+        ws_listener = WebsocketListenerStep(
+            logger,
+            competition_code=config.competition_code,
+            uri=config.websocket_uri,
+            next_step=competition_init,
+            on_error=errors_storage,
+        )
+    else:
+        ws_listener = FileListenerStep(
+            logger=logger,
+            competition_code=config.competition_code,
+            single_file=False,
+            infinite_loop=True,
+            message_source=MessageSource.SOURCE_WS_LISTENER,
+            is_json=False,
+            next_step=competition_init,
+        )
     return ws_listener
 
 
@@ -264,6 +277,7 @@ def _build_parsers_pipe(
         on_unknown=unknowns_storage,
     )
     return parser_step
+
 
 def _build_action_handlers(
         config: WsParserConfig,

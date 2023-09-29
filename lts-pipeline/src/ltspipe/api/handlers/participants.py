@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 from ltspipe.api.handlers import (
+    _find_driver_by_id,
     _find_driver_by_name,
     _find_team_by_code,
 )
@@ -8,8 +9,6 @@ from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.participants import (
     add_driver,
     add_team,
-    get_team_driver_by_name,
-    get_team_by_code,
     update_driver,
     update_team,
 )
@@ -50,13 +49,15 @@ class UpdateDriverHandler(ApiHandler):
 
         competition_code = model.competition_code
         info = self._competitions[competition_code]
-        old_driver = _find_driver_by_name(
-            info, model.participant_code, model.name)
 
-        if old_driver is None:
-            # Check if the driver exists in the API
-            old_driver = self._update_driver_in_info(
-                info, model.team_id, model.name)
+        if model.id is None:
+            old_driver = _find_driver_by_name(
+                info, model.participant_code, model.name)
+        else:
+            old_driver = _find_driver_by_id(
+                info, model.participant_code, model.id)
+            if old_driver is None:
+                raise Exception(f'Unknown driver to update: {model}')
 
         if old_driver is None:
             # Add new driver
@@ -143,24 +144,6 @@ class UpdateDriverHandler(ApiHandler):
                 driver_id=driver_id,
             )
 
-    def _update_driver_in_info(
-            self,
-            info: CompetitionInfo,
-            team_id: int,
-            driver_name: str) -> Optional[Driver]:
-        """Update driver by its name in the competition info."""
-        driver = get_team_driver_by_name(
-            self._api_url,
-            self._auth_data.bearer,
-            info.id,  # type: ignore
-            team_id,
-            driver_name)
-        if driver is None:
-            return None
-
-        info.drivers.append(driver)
-        return driver
-
 
 class UpdateTeamHandler(ApiHandler):
     """Handle UpdateTeam instances."""
@@ -186,11 +169,6 @@ class UpdateTeamHandler(ApiHandler):
             info, participant_code=model.participant_code)
 
         if old_team is None:
-            # Check if the team exists in the API
-            old_team = self._update_team_in_info(
-                info, model.participant_code)
-
-        if old_team is None:
             # Add new team
             current_team = add_team(
                 api_url=self._api_url,
@@ -207,7 +185,7 @@ class UpdateTeamHandler(ApiHandler):
                 self._api_url,
                 bearer=self._auth_data.bearer,
                 competition_id=info.id,  # type: ignore
-                team_id=model.id,  # type: ignore
+                team_id=old_team.id,
                 participant_code=model.participant_code,
                 name=model.name,
                 number=model.number,
@@ -226,19 +204,3 @@ class UpdateTeamHandler(ApiHandler):
             type=NotificationType.UPDATED_TEAM,
             data=team,
         )
-
-    def _update_team_in_info(
-            self,
-            info: CompetitionInfo,
-            participant_code: str) -> Optional[Team]:
-        """Update team by its name in the competition info."""
-        team = get_team_by_code(
-            self._api_url,
-            self._auth_data.bearer,
-            info.id,  # type: ignore
-            participant_code)
-        if team is None:
-            return None
-
-        info.teams.append(team)
-        return team

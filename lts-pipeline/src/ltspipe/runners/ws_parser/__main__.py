@@ -3,13 +3,12 @@
 import argparse
 
 from ltspipe.runners import build_logger
-from ltspipe.runners.parser.main import main
+from ltspipe.runners.ws_parser.main import main
 from ltspipe.configs import WsParserConfig
 from ltspipe.configs import (
     DEFAULT_NOTIFICATIONS_TOPIC,
-    DEFAULT_PARSER_ERRORS_PATH,
-    DEFAULT_PARSER_UNKNOWNS_PATH,
-    DEFAULT_STD_MESSAGES_TOPIC,
+    DEFAULT_WS_PARSER_ERRORS_PATH,
+    DEFAULT_WS_PARSER_UNKNOWNS_PATH,
     DEFAULT_VERBOSITY,
 )
 
@@ -41,17 +40,22 @@ parser.add_argument(
     '--errors_path',
     type=str,
     help='Path to store errors on running time.',
-    default=DEFAULT_PARSER_ERRORS_PATH)
+    default=DEFAULT_WS_PARSER_ERRORS_PATH)
 parser.add_argument(
     '--unknowns_path',
     type=str,
     help='Path to store unknown messages during parsing.',
-    default=DEFAULT_PARSER_UNKNOWNS_PATH)
+    default=DEFAULT_WS_PARSER_UNKNOWNS_PATH)
+parser.add_argument(
+    '--websocket_path',
+    type=str,
+    help='Path with websocket files to reproduce a competition.',
+    default=None)
 parser.add_argument(
     '--websocket_uri',
     type=str,
     help='URI of websocket to listen for incoming data.',
-    required=True)
+    default=None)
 parser.add_argument(
     '--verbosity',
     help='Level of verbosity of messages.',

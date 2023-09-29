@@ -79,7 +79,7 @@ class TestInitialDataHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -325,7 +325,7 @@ class TestInitialDataHandler(DatabaseTest):
                                     'ongoing',
                                     'qualifying',
                                     9,
-                                    'laps'
+                                    'laps',
                                 ],
                             ],
                         ),
@@ -373,8 +373,8 @@ class TestInitialDataHandler(DatabaseTest):
                                     61000,  # last_time
                                     51000,  # best_time
                                     3,  # lap
-                                    None,  # gap
-                                    None,  # gap_unit
+                                    0,  # gap
+                                    'millis',  # gap_unit
                                     0,  # interval
                                     'millis',  # interval_unit
                                     'qualifying',  # stage
@@ -391,8 +391,8 @@ class TestInitialDataHandler(DatabaseTest):
                                     62000,  # last_time
                                     52000,  # best_time
                                     3,  # lap
-                                    None,  # gap
-                                    None,  # gap_unit
+                                    0,  # gap
+                                    'millis',  # gap_unit
                                     0,  # interval
                                     'millis',  # interval_unit
                                     'qualifying',  # stage
@@ -409,8 +409,8 @@ class TestInitialDataHandler(DatabaseTest):
                                     63000,  # last_time
                                     53000,  # best_time
                                     3,  # lap
-                                    None,  # gap
-                                    None,  # gap_unit
+                                    0,  # gap
+                                    'millis',  # gap_unit
                                     0,  # interval
                                     'millis',  # interval_unit
                                     'qualifying',  # stage
@@ -478,8 +478,8 @@ class TestInitialDataHandler(DatabaseTest):
 
         # Validate database content
         query = expected_database.to_query()
-        assert (self.get_database_content(query).model_dump() ==
-                expected_database.model_dump())
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())
 
     def test_handle_raises_exception_id_none(self) -> None:
         """Test handle method raise exception about ID None."""
@@ -570,7 +570,7 @@ class TestInitialDataHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),

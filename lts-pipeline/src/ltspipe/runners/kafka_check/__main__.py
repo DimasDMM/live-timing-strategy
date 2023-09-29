@@ -6,8 +6,7 @@ from ltspipe.runners import build_logger
 from ltspipe.runners.kafka_check.main import main
 from ltspipe.configs import KafkaCheckConfig
 from ltspipe.configs import (
-    DEFAULT_TEST_GROUP,
-    DEFAULT_TEST_TOPIC,
+    DEFAULT_NOTIFICATIONS_TOPIC,
     DEFAULT_VERBOSITY,
 )
 
@@ -16,15 +15,10 @@ parser = argparse.ArgumentParser(
     conflict_handler='resolve',
     description='Arguments of the test kafka script.')
 parser.add_argument(
-    '--kafka_consume',
+    '--kafka_topic',
     type=str,
     help='Kafka topic to consume.',
-    default=DEFAULT_TEST_TOPIC)
-parser.add_argument(
-    '--kafka_group',
-    type=str,
-    help='Suscribe to the topic with a specific group name.',
-    default=DEFAULT_TEST_GROUP)
+    default=DEFAULT_NOTIFICATIONS_TOPIC)
 parser.add_argument(
     '--kafka_servers',
     nargs='+',

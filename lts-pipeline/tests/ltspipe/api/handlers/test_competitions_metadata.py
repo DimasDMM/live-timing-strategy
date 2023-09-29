@@ -2,7 +2,6 @@ import pytest
 from typing import Dict
 
 from ltspipe.api.auth import refresh_bearer
-from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.handlers.competitions_metadata import (
     UpdateCompetitionMetadataRemainingHandler,
     UpdateCompetitionMetadataStatusHandler,
@@ -77,7 +76,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -131,7 +130,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     1200000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -162,8 +161,8 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
 
         # Validate database content
         query = expected_database.to_query()
-        assert (self.get_database_content(query).model_dump() ==
-                expected_database.model_dump())
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())
 
 
 class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
@@ -217,7 +216,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -268,7 +267,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                                     'ongoing',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -314,7 +313,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -365,7 +364,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                                     'finished',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -396,5 +395,5 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
 
         # Validate database content
         query = expected_database.to_query()
-        assert (self.get_database_content(query).model_dump() ==
-                expected_database.model_dump())
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())

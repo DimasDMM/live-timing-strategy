@@ -95,7 +95,7 @@ class TestMain(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -142,7 +142,7 @@ class TestMain(DatabaseTest):
                                     'paused',
                                     'race',
                                     10791671,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -254,7 +254,7 @@ class TestMain(DatabaseTest):
         """
         Test main method.
 
-        Test case: it receives an action with data to initialize in the API REST.
+        Test case: it receives an action with data to initialize in the API.
         After it sends the data to the API, it should generate a notification.
         """
         with tempfile.TemporaryDirectory() as tmp_path:
@@ -284,8 +284,8 @@ class TestMain(DatabaseTest):
 
             # Validate database content
             query = expected_database.to_query()
-            assert (self.get_database_content(query).model_dump() ==
-                    expected_database.model_dump())
+            assert (self.get_database_content(query).model_dump()
+                    == expected_database.model_dump())
 
     def _raw_to_dict(self, raw: List[str]) -> List[dict]:
         """Transform messages into dictionaries."""

@@ -21,7 +21,6 @@ def main(
     logger.debug(config)
 
     logger.info(f'Test mode: {config.test_mode}')
-    logger.info(f'Group ID: {config.kafka_group}')
     logger.info(f'Topic: {config.kafka_topic}')
 
     if config.test_mode == KafkaMode.MODE_CONSUMER:
@@ -33,7 +32,6 @@ def main(
             bootstrap_servers=config.kafka_servers,
             topics=[config.kafka_topic],
             value_deserializer=msgpack.loads,
-            group_id=config.kafka_group,
             next_step=null_step,
         )
         logger.info('Start consumer...')

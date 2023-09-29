@@ -104,7 +104,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -229,33 +229,33 @@ class TestMain(DatabaseTest):
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.UPDATED_TIMING_NUMBER_PITS,
-                            data=ParticipantTiming(
-                                best_time=66000,
-                                driver_id=None,
-                                fixed_kart_status=None,
-                                gap=DiffLap(
-                                    value=0, unit=LengthUnit.MILLIS),
-                                interval=DiffLap(
-                                    value=0, unit=LengthUnit.MILLIS),
-                                kart_status=KartStatus.GOOD,
-                                lap=5,
-                                last_time=67000,
-                                number_pits=2,
-                                participant_code='r5625',
-                                pit_time=0,
-                                position=1,
-                                stage=CompetitionStage.RACE,
-                                team_id=1,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.UPDATED_TIMING_NUMBER_PITS,  # noqa: E501, LN001
+                                data=ParticipantTiming(
+                                    best_time=66000,
+                                    driver_id=None,
+                                    fixed_kart_status=None,
+                                    gap=DiffLap(
+                                        value=0, unit=LengthUnit.MILLIS),
+                                    interval=DiffLap(
+                                        value=0, unit=LengthUnit.MILLIS),
+                                    kart_status=KartStatus.GOOD,
+                                    lap=5,
+                                    last_time=67000,
+                                    number_pits=2,
+                                    participant_code='r5625',
+                                    pit_time=0,
+                                    position=1,
+                                    stage=CompetitionStage.RACE,
+                                    team_id=1,
+                                ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database

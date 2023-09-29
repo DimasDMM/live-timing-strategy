@@ -96,7 +96,7 @@ class TestMain(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -180,21 +180,21 @@ class TestMain(DatabaseTest):
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.UPDATED_TEAM,  # noqa: E501, LN001
-                            data=Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.UPDATED_TEAM,
+                                data=Team(
+                                    id=1,
+                                    participant_code='r5625',
+                                    name='Team 1',
+                                    number=41,
+                                ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database

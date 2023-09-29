@@ -97,7 +97,7 @@ class TestMain(DatabaseTest):
                                     'paused',
                                     'free-practice',
                                     0,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -166,25 +166,25 @@ class TestMain(DatabaseTest):
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.ADDED_PIT_IN,  # noqa: E501, LN001
-                            data=PitIn(
-                                id=1,
-                                driver_id=None,
-                                team_id=1,
-                                lap=5,
-                                pit_time=0,
-                                kart_status=KartStatus.GOOD,
-                                fixed_kart_status=None,
-                                has_pit_out=False,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.ADDED_PIT_IN,
+                                data=PitIn(
+                                    id=1,
+                                    driver_id=None,
+                                    team_id=1,
+                                    lap=5,
+                                    pit_time=0,
+                                    kart_status=KartStatus.GOOD,
+                                    fixed_kart_status=None,
+                                    has_pit_out=False,
+                                ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database

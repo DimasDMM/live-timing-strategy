@@ -2,16 +2,12 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 import os
 import pathlib
-from pydantic import BaseModel
-import requests
 from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
 
 from ltspipe.base import BaseModel, DictModel
 from ltspipe.data.actions import Action, ActionType
-from ltspipe.data.enum import LengthUnit
 from ltspipe.parsers.base import Parser
-from tests.fixtures import TEST_COMPETITION_CODE
 
 BASE_PATH = 'tests/data/messages'
 
@@ -112,11 +108,11 @@ class DatabaseTest:
     SCHEMA_FILE = '../lts-api/data/schema.sql'
 
     def setup_method(self, method: Any) -> None:  # noqa: U100
-        """Set up."""
+        """Set up test."""
         DatabaseTest.reset_database()
 
     def teardown_method(self, method: Any) -> None:  # noqa: U100
-        """Reset state of the database."""
+        """Reset state of the test."""
         pass
 
     def set_database_content(self, database: DatabaseContent) -> None:
@@ -219,7 +215,6 @@ class DatabaseTest:
         """
         columns_str = ', '.join([f'`{c}`' for c in columns])
         query = f'SELECT {columns_str} FROM {table_name}'
-        print('>> ', query)
 
         cursor.execute(query)
         content: list = cursor.fetchall()  # type: ignore

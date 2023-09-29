@@ -102,7 +102,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -125,7 +125,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -135,28 +135,29 @@ class TestMain(DatabaseTest):
                     DEFAULT_NOTIFICATIONS_TOPIC: [],
                 },
                 [  # in_websocket
-                    load_raw_message('endurance_stage_remaining_time_countdown.txt'),
+                    load_raw_message(
+                        'endurance_stage_remaining_time_countdown.txt'),
                 ],
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
-                        competition_code=TEST_COMPETITION_CODE,
-                        data=Notification(
-                            type=NotificationType.UPDATED_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
-                            data=CompetitionMetadata(
-                                stage=CompetitionStage.RACE,
-                                status=CompetitionStatus.ONGOING,
-                                remaining_length=DiffLap(
-                                    value=10761515,
-                                    unit=LengthUnit.MILLIS,
+                            competition_code=TEST_COMPETITION_CODE,
+                            data=Notification(
+                                type=NotificationType.UPDATED_COMPETITION_METADATA_REMAINING,  # noqa: E501, LN001
+                                data=CompetitionMetadata(
+                                    stage=CompetitionStage.RACE,
+                                    status=CompetitionStatus.ONGOING,
+                                    remaining_length=DiffLap(
+                                        value=10761515,
+                                        unit=LengthUnit.MILLIS,
+                                    ),
                                 ),
                             ),
-                        ),
-                        source=MessageSource.SOURCE_WS_LISTENER,
-                        created_at=datetime.utcnow().timestamp(),
-                        updated_at=datetime.utcnow().timestamp(),
-                        decoder=MessageDecoder.NOTIFICATION,
-                    ).encode(),
+                            source=MessageSource.SOURCE_WS_LISTENER,
+                            created_at=datetime.utcnow().timestamp(),
+                            updated_at=datetime.utcnow().timestamp(),
+                            decoder=MessageDecoder.NOTIFICATION,
+                        ).encode(),
                     ],
                 },
                 DatabaseContent(  # expected_database
@@ -180,7 +181,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     10761515,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),
@@ -203,7 +204,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     3600000,
-                                    'millis'
+                                    'millis',
                                 ],
                                 [
                                     1,
@@ -212,7 +213,7 @@ class TestMain(DatabaseTest):
                                     'ongoing',
                                     'race',
                                     10761515,
-                                    'millis'
+                                    'millis',
                                 ],
                             ],
                         ),

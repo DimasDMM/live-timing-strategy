@@ -223,7 +223,7 @@ class InitialDataParser(InitialParser):
     def _clean_participant_name(self, text: str) -> str:
         """
         Clean the name of the participant.
-        
+
         Given "DIMAS [1:00]", it removes the time.
         """
         matches = re.match(
@@ -282,11 +282,12 @@ class InitialDataParser(InitialParser):
             fields: Dict[ParserSettings, str],
             has_driver_name: bool) -> Participant:
         """Create instance of participant."""
+        default_name = f'Team {index + 1}'
         if has_driver_name:
-            team_name = f'Team {index + 1}'
+            team_name = default_name
             driver_name = fields.get(ParserSettings.TIMING_NAME, None)
         else:
-            team_name = fields.get(ParserSettings.TIMING_NAME, None)
+            team_name = fields.get(ParserSettings.TIMING_NAME, default_name)
             driver_name = None
 
         return Participant(
@@ -296,7 +297,7 @@ class InitialDataParser(InitialParser):
             driver_name=driver_name,
             gap=self._parse_diff_lap(
                 fields.get(ParserSettings.TIMING_GAP, None),
-                default=0),
+                default=None),
             interval=self._parse_diff_lap(
                 fields.get(ParserSettings.TIMING_INTERVAL, None),
                 default=None),
@@ -310,7 +311,7 @@ class InitialDataParser(InitialParser):
                 fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
             number_pits=self._cast_number(
-                fields.get(ParserSettings.TIMING_NUMBER_PITS, 0),
+                fields.get(ParserSettings.TIMING_NUMBER_PITS, '0'),
                 default=0),
             participant_code=participant_code,
             position=self._cast_number(position, default=0),

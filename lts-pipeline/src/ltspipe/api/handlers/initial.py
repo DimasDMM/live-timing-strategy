@@ -202,6 +202,7 @@ class InitialDataHandler(ApiHandler):
                 team_id=team.id,
                 driver_id=driver_id,
                 best_time=participant.best_time,
+                gap=participant.gap,
                 fixed_kart_status=None,
                 interval=participant.interval,
                 kart_status=KartStatus.UNKNOWN,
