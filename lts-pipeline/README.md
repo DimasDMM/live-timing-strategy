@@ -42,43 +42,6 @@ poetry lock --no-update
 
 ## Pipeline
 
-### Pipeline: Websocket Parser
-
-The script of messages parsing for websocket is composed by two processes:
-- One handles the notifications.
-- The other is the one that parses the message data and transform it into
-  something that we can store in the database.
-
-Additionally, this script might connect to the API REST to get information, such
-as settings to parse the data.
-
-Local Python command:
-```sh
-python -m ltspipe.runners.ws_parser \
-  --api_lts http://localhost:8090 \
-  --kafka_servers localhost:9092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--api_lts`: (**mandatory**) URI of API REST of LTS app.
-- `--competition_code`: (**mandatory**) Code of the competition.
-- `--errors_path`: (optional) Path to store errors during parsing. By default,
-  it is `artifacts/ws-parser/errors/`.
-- `--kafka_notifications`: (optional) Topic of Kafka to read and write
-  notifications. By default, it is `notifications`.
-- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
-  it is `standard`.
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
-- `--unknowns_path`: (optional) Path to store unknown data (i.e. not recognized
-  by any parser). By default, it is `artifacts/ws-parser/unknowns/`.
-- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
-  Example: `ws://www.apex-timing.com:8092`.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
-
 ### Pipeline: Notification Listener
 
 This script has a single process that listens in the topic of Kafka where the
@@ -116,33 +79,68 @@ Arguments:
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
 
-### Pipeline: Raw storage
+### Pipeline: Websocket Parser
+
+The script of messages parsing for websocket is composed by two processes:
+- One handles the notifications.
+- The other is the one that parses the message data and transform it into
+  something that we can store in the database.
+
+Additionally, this script might connect to the API REST to get information, such
+as settings to parse the data.
 
 Local Python command:
 ```sh
-python -m ltspipe.runners.raw_storage \
+python -m ltspipe.runners.ws_parser \
+  --api_lts http://localhost:8090 \
+  --kafka_servers localhost:9092 \
+  --websocket_uri ws://www.apex-timing.com:8092 \
+  --verbosity 1
+```
+
+Arguments:
+- `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--competition_code`: (**mandatory**) Code of the competition.
+- `--errors_path`: (optional) Path to store errors during parsing. By default,
+  it is `artifacts/ws-parser/errors/`.
+- `--kafka_notifications`: (optional) Topic of Kafka to read and write
+  notifications. By default, it is `notifications`.
+- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
+  it is `standard`.
+- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
+  Example: `localhost:9092,localhost:9093`.
+- `--unknowns_path`: (optional) Path to store unknown data (i.e. not recognized
+  by any parser). By default, it is `artifacts/ws-parser/unknowns/`.
+- `--websocket_path`: (**mandatory** if `websocket_uri` is empty) Path with
+  websocket files to reproduce a competition.
+- `--websocket_uri`: (**mandatory** if `websocket_path` is empty) Websocket URI
+  to listen for incoming data. Example: `ws://www.apex-timing.com:8092`.
+- `--verbosity`: (optional) Level of verbosity of messages. The values can be
+  `0` to disable messages, `1` for debug (or greater), `2` for info (or
+  greater), ... and `5` for critical. By default, it is `2`.
+
+### Pipeline: Websocket Raw storage
+
+Local Python command:
+```sh
+python -m ltspipe.runners.ws_raw_storage \
   --kafka_servers localhost:9092 \
   --verbosity 1
 ```
 
 Arguments:
+- `--competition_code`: (**mandatory**) Code of the competition.
 - `--errors_path`: (optional) Path to store errors in running time. By default,
-  it is `artifacts/raw/errors/`.
+  it is `artifacts/ws-raw/errors/`.
 - `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
   Example: `localhost:9092,localhost:9093`.
 - `--output_path`: (optional) Path to store the raw data. By default, it is
-  `artifacts/raw/data/`.
+  `artifacts/ws-raw/data/`.
+- `--websocket_uri`: (**mandatory**) Websocket URI to listen for incoming data.
+  Example: `ws://www.apex-timing.com:8092`.
 - `--verbosity`: (optional) Level of verbosity of messages. The values can be
   `0` to disable messages, `1` for debug (or greater), `2` for info (or
   greater), ... and `5` for critical. By default, it is `2`.
-
-> Local GO command (WIP):
-> ```sh
-> go run . \
->   -mode raw_storage \
->   -output_path ./artifacts \
->   -bootstrap_servers localhost:9092
-> ```
 
 ### Pipeline: Metrics computation
 
