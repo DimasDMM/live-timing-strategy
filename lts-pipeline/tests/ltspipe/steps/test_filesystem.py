@@ -48,8 +48,8 @@ class TestMessageStorageStep:
             with open(expected_file, 'r') as fp:
                 content = fp.read()
                 found_message: Message = Message.decode(content)  # type: ignore
-                assert (found_message.dict(exclude=EXCLUDED_KEYS)
-                        == sample_message.dict(exclude=EXCLUDED_KEYS))
+                assert (found_message.model_dump(exclude=EXCLUDED_KEYS)
+                        == sample_message.model_dump(exclude=EXCLUDED_KEYS))
 
             # Also, check that the get_children method returns the mocks
             children = step.get_children()

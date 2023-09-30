@@ -133,7 +133,7 @@ def update_timing_driver_by_team(
         driver_id: Optional[int]) -> ParticipantTiming:
     """Update timing driver of a team."""
     data = {
-        'driver': driver_id,
+        'driver_id': driver_id,
     }
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/driver'
     r = requests.put(

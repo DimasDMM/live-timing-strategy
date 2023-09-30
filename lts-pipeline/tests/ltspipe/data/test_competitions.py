@@ -9,4 +9,4 @@ class TestDiffLap:
         """Test dict method."""
         diff_lap = DiffLap(value=10, unit=LengthUnit.LAPS)
         expected = {'value': 10, 'unit': 'laps'}
-        assert dict(diff_lap.dict()) == expected
+        assert dict(diff_lap.model_dump()) == expected
