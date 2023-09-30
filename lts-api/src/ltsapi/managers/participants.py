@@ -184,7 +184,7 @@ class DriversManager:
                         f'(team={team_id}) already exists.',
                 status_code=400)
 
-        model_data = driver.dict()
+        model_data = driver.model_dump()
         model_data['competition_id'] = competition_id
         model_data['team_id'] = team_id
         item_id = insert_model(
@@ -198,7 +198,7 @@ class DriversManager:
         # because they were created along the team).
         if team_id is None:
             initial_model = self._initial_timing(driver_id=item_id)
-            initial_data = initial_model.dict()
+            initial_data = initial_model.model_dump()
             initial_data['competition_id'] = competition_id
             _ = insert_model(
                 self._db,
@@ -245,7 +245,7 @@ class DriversManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            driver.dict(),
+            driver.model_dump(),
             key_name='id',
             key_value=driver_id,
             commit=commit)
@@ -359,7 +359,7 @@ class DriversManager:
             interval=None,
             interval_unit=None,
             stage=CompetitionStage.FREE_PRACTICE,
-            pits=0,
+            pit_time=0,
             kart_status=KartStatus.UNKNOWN,
             fixed_kart_status=None,
             number_pits=0,
@@ -492,7 +492,7 @@ class TeamsManager:
                         f'(competition={competition_id}) already exists.',
                 status_code=400)
 
-        model_data = team.dict()
+        model_data = team.model_dump()
         model_data['competition_id'] = competition_id
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
@@ -501,7 +501,7 @@ class TeamsManager:
 
         # Additional information required when we create a new team.
         initial_model = self._initial_timing(team_id=item_id)
-        initial_data = initial_model.dict()
+        initial_data = initial_model.model_dump()
         initial_data['competition_id'] = competition_id
         _ = insert_model(
             self._db,
@@ -539,7 +539,7 @@ class TeamsManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            team.dict(),
+            team.model_dump(),
             key_name='id',
             key_value=team_id,
             commit=commit)
@@ -569,7 +569,7 @@ class TeamsManager:
             interval=None,
             interval_unit=None,
             stage=CompetitionStage.FREE_PRACTICE,
-            pits=0,
+            pit_time=0,
             kart_status=KartStatus.UNKNOWN,
             fixed_kart_status=None,
             number_pits=0,

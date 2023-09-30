@@ -67,7 +67,7 @@ class TracksManager:
             int: ID of inserted model.
         """
         item_id = insert_model(
-            self._db, self.TABLE_NAME, track.dict(), commit=commit)
+            self._db, self.TABLE_NAME, track.model_dump(), commit=commit)
         if item_id is None:
             raise ApiError('No data was inserted or updated.')
         return item_id
@@ -92,7 +92,7 @@ class TracksManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            track.dict(),
+            track.model_dump(),
             key_name='id',
             key_value=track_id,
             commit=commit)

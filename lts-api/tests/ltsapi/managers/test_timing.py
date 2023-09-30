@@ -89,7 +89,7 @@ class TestTimingManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_current_all_by_id."""
         manager = TimingManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDE)
+        dict_items = [x.model_dump(exclude=self.EXCLUDE)
                       for x in manager.get_current_all_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -158,7 +158,7 @@ class TestTimingManager(DatabaseTest):
             competition_id, team_id=team_id, driver_id=driver_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -286,7 +286,7 @@ class TestTimingManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_history_by_id."""
         manager = TimingManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDE)
+        dict_items = [x.model_dump(exclude=self.EXCLUDE)
                       for x in manager.get_history_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -349,7 +349,7 @@ class TestTimingManager(DatabaseTest):
         manager = TimingManager(db=db_context, logger=fake_logger)
         items = manager.get_current_between_positions(
             competition_id, start_position, end_position)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -784,7 +784,7 @@ class TestTimingManager(DatabaseTest):
         after_item = manager.get_current_single_by_id(
             competition_id, team_id=team_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -792,7 +792,7 @@ class TestTimingManager(DatabaseTest):
 
         # Validate history
         history = manager.get_history_by_id(competition_id, team_id=team_id)
-        dict_item = history[-1].dict(exclude=self.EXCLUDE)
+        dict_item = history[-1].model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -1477,11 +1477,11 @@ class TestTimingManager(DatabaseTest):
         # Validate that the current timing has been updated
         items = manager.get_current_all_by_id(competition_id)
         assert items is not None
-        current_timing = [x.dict(exclude=self.EXCLUDE) for x in items]
+        current_timing = [x.model_dump(exclude=self.EXCLUDE) for x in items]
         assert current_timing == expected_current
 
         # Validate that the history timing contains the latest information
         items = manager.get_history_by_id(competition_id=competition_id)
         assert items is not None
-        history_timing = [x.dict(exclude=self.EXCLUDE) for x in items]
+        history_timing = [x.model_dump(exclude=self.EXCLUDE) for x in items]
         assert history_timing == expected_history

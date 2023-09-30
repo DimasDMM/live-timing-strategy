@@ -86,7 +86,7 @@ class TestPitsInManager(DatabaseTest):
         """Test method get_by_competition_id."""
         manager = PitsInManager(db=db_context, logger=fake_logger)
         db_items = manager.get_by_competition_id(competition_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -137,7 +137,7 @@ class TestPitsInManager(DatabaseTest):
             pit_in_id=pit_in_id, competition_id=competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -171,7 +171,7 @@ class TestPitsInManager(DatabaseTest):
         """Test method get_by_team_id."""
         manager = PitsInManager(db=db_context, logger=fake_logger)
         db_items = manager.get_by_team_id(competition_id, team_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -205,7 +205,7 @@ class TestPitsInManager(DatabaseTest):
         db_item = manager.get_last_by_team_id(competition_id, team_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -249,7 +249,7 @@ class TestPitsInManager(DatabaseTest):
         db_item = manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -392,7 +392,7 @@ class TestPitsInManager(DatabaseTest):
         after_item = manager.get_by_id(
             pit_in_id=pit_in_id, competition_id=competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -441,7 +441,7 @@ class TestPitsOutManager(DatabaseTest):
         """Test method get_by_competition_id."""
         manager = PitsOutManager(db=db_context, logger=fake_logger)
         db_items = manager.get_by_competition_id(competition_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -486,7 +486,7 @@ class TestPitsOutManager(DatabaseTest):
             pit_out_id=pit_out_id, competition_id=competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -517,7 +517,7 @@ class TestPitsOutManager(DatabaseTest):
         """Test method get_by_team_id."""
         manager = PitsOutManager(db=db_context, logger=fake_logger)
         db_items = manager.get_by_team_id(competition_id, team_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -548,7 +548,7 @@ class TestPitsOutManager(DatabaseTest):
         db_item = manager.get_last_by_team_id(competition_id, team_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -607,7 +607,7 @@ class TestPitsOutManager(DatabaseTest):
         db_item = manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -697,7 +697,7 @@ class TestPitsOutManager(DatabaseTest):
         after_item = manager.get_by_id(
             pit_out_id=pit_out_id, competition_id=competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -779,7 +779,7 @@ class TestPitsInOutManager(DatabaseTest):
         db_item = pin_manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_pin
 
         # Insert pit-out
@@ -790,13 +790,13 @@ class TestPitsInOutManager(DatabaseTest):
         db_item = pout_manager.get_by_id(item_id, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_pout
 
         # Validate that the pit-in has the flag 'has_pit_out' to true
         db_item = pin_manager.get_last_by_team_id(competition_id, team_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         expected_pin['has_pit_out'] = True
         assert dict_item == expected_pin

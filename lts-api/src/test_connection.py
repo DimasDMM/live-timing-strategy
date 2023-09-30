@@ -3,6 +3,7 @@ from typing import List
 from ltsapi import _build_logger
 from ltsapi.router import _build_db_connection
 from ltsapi.models.competitions import GetCompetition
+from ltsapi.models.tracks import GetTrack
 
 
 if __name__ == '__main__':
@@ -31,13 +32,13 @@ if __name__ == '__main__':
         for row in raw_data:
             item = GetCompetition(
                 id=row['cidx_id'],
-                track={
-                    'id': row['tracks_id'],
-                    'name': row['tracks_name'],
-                    'insert_date': row['tracks_insert_date'],
-                    'update_date': row['tracks_update_date'],
-                },
-                code=row['cidx_code'],
+                track=GetTrack(
+                    id=row['tracks_id'],
+                    name=row['tracks_name'],
+                    insert_date=row['tracks_insert_date'],
+                    update_date=row['tracks_update_date'],
+                ),
+                competition_code=row['cidx_code'],
                 name=row['cidx_name'],
                 description=row['cidx_description'],
                 insert_date=row['cidx_insert_date'],

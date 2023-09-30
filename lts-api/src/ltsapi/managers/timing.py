@@ -271,7 +271,7 @@ class TimingManager:
         update_model(
             self._db,
             self.CURRENT_TABLE,
-            timing.dict(exclude=self.EXCLUDE_ON_UPDATE),
+            timing.model_dump(exclude=self.EXCLUDE_ON_UPDATE),
             key_name=key_name,
             key_value=key_value,
             commit=False)
@@ -319,7 +319,7 @@ class TimingManager:
             update_model(
                 self._db,
                 self.CURRENT_TABLE,
-                p.dict(exclude=self.EXCLUDE_ON_UPDATE),
+                p.model_dump(exclude=self.EXCLUDE_ON_UPDATE),
                 key_name=key_name,
                 key_value=key_value,
                 commit=False)
@@ -351,8 +351,9 @@ class TimingManager:
             new_model: BaseModel,
             commit: bool = True) -> None:
         """Insert record in the history table."""
-        previous_data = previous_model.dict(exclude=self.EXCLUDE_ON_UPDATE)
-        new_data = new_model.dict(exclude=self.EXCLUDE_ON_UPDATE)
+        previous_data = previous_model.model_dump(
+            exclude=self.EXCLUDE_ON_UPDATE)
+        new_data = new_model.model_dump(exclude=self.EXCLUDE_ON_UPDATE)
 
         for field_name, _ in previous_data.items():
             if field_name in new_data:

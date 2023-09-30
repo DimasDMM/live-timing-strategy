@@ -94,7 +94,7 @@ class ParsersSettingsManager:
                         f'(competition={competition_id}) already exists.',
                 status_code=400)
 
-        model_data = setting.dict()
+        model_data = setting.model_dump()
         model_data['competition_id'] = competition_id
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=commit)
@@ -125,7 +125,7 @@ class ParsersSettingsManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            setting.dict(),
+            setting.model_dump(),
             key_name=key_name,
             key_value=key_value,
             commit=commit)

@@ -35,7 +35,7 @@ class TestAuthManager(DatabaseTest):
         db_item = manager.get_by_key(key)
         assert db_item is not None
 
-        dict_item = db_item.dict()
+        dict_item = db_item.model_dump()
         assert dict_item == expected_item
 
     def test_refresh_bearer_when_batch_role(
@@ -99,5 +99,5 @@ class TestAuthManager(DatabaseTest):
         db_item = manager.get_by_bearer(bearer)
         assert db_item is not None
 
-        dict_item = db_item.dict()
+        dict_item = db_item.model_dump()
         assert dict_item == expected_item

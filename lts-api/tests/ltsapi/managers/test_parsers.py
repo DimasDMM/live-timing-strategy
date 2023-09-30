@@ -44,7 +44,7 @@ class TestParsersSettingsManager(DatabaseTest):
         db_item = manager.get_by_name(setting_name, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -72,7 +72,7 @@ class TestParsersSettingsManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_by_competition."""
         manager = ParsersSettingsManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDE)
+        dict_items = [x.model_dump(exclude=self.EXCLUDE)
                       for x in manager.get_by_competition(competition_id)]
         assert dict_items == expected_items
 
@@ -105,7 +105,7 @@ class TestParsersSettingsManager(DatabaseTest):
         db_item = manager.get_by_name(model.name, competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -147,7 +147,7 @@ class TestParsersSettingsManager(DatabaseTest):
         after_item = manager.get_by_name(
             setting_name=setting_name, competition_id=competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date

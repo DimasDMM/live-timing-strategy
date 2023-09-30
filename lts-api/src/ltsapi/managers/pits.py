@@ -172,7 +172,7 @@ class PitsInManager:
         Returns:
             int: ID of inserted model.
         """
-        model_data = pit_in.dict()
+        model_data = pit_in.model_dump()
         model_data['competition_id'] = competition_id
 
         item_id = insert_model(
@@ -206,7 +206,7 @@ class PitsInManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            pit_in.dict(),
+            pit_in.model_dump(),
             key_name='id',
             key_value=pit_in_id,
             commit=commit)
@@ -366,7 +366,7 @@ class PitsOutManager:
         elif pit_out.team_id is None:
             raise ApiError('A team ID must be provided.')
 
-        model_data = pit_out.dict()
+        model_data = pit_out.model_dump()
         model_data['competition_id'] = competition_id
 
         item_id = insert_model(
@@ -416,7 +416,7 @@ class PitsOutManager:
         update_model(
             self._db,
             self.PITS_OUT_TABLE,
-            pit_out.dict(),
+            pit_out.model_dump(),
             key_name='id',
             key_value=pit_out_id,
             commit=commit)
@@ -428,7 +428,7 @@ class PitsOutManager:
             commit: bool) -> None:
         """Add relation between a pit-in and pit-out."""
         model = AddPitInOut(pit_in_id=pit_in_id, pit_out_id=pit_out_id)
-        model_data = model.dict()
+        model_data = model.model_dump()
         item_id = insert_model(
             self._db, self.PITS_IN_OUT_TABLE, model_data, commit=commit)
         if item_id is None:

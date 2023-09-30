@@ -88,7 +88,7 @@ class StrategyPitsKartsManager:
         item_ids: List[int] = []
         for item in items:
             item_id = insert_model(
-                self._db, self.TABLE_NAME, item.dict(), commit=False)
+                self._db, self.TABLE_NAME, item.model_dump(), commit=False)
             if item_id is None:
                 raise ApiError('No data was inserted or updated.')
             item_ids.append(item_id)
@@ -170,7 +170,7 @@ class StrategyPitsStatsManager:
             int: ID of inserted model.
         """
         item_id = insert_model(
-            self._db, self.TABLE_NAME, item.dict(), commit=commit)
+            self._db, self.TABLE_NAME, item.model_dump(), commit=commit)
         if item_id is None:
             raise ApiError('No data was inserted or updated.')
         return item_id

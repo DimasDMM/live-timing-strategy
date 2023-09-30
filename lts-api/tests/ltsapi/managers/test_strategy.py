@@ -139,7 +139,7 @@ class TestStrategyPitsKartsManager(DatabaseTest):
         """Test method get_strategy_by_pit_in."""
         manager = StrategyPitsKartsManager(db=db_context, logger=fake_logger)
         db_items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
     @pytest.mark.parametrize(
@@ -230,7 +230,7 @@ class TestStrategyPitsKartsManager(DatabaseTest):
             expected_item['id'] = item_id
 
         db_items = manager.get_strategy_by_pit_in(competition_id, pit_in_id)
-        dict_items = [x.dict(exclude=self.EXCLUDE) for x in db_items]
+        dict_items = [x.model_dump(exclude=self.EXCLUDE) for x in db_items]
         assert dict_items == expected_items
 
 
@@ -267,7 +267,7 @@ class TestStrategyPitsStatsManager(DatabaseTest):
         db_item = manager.get_last_by_pit_in(pit_in_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -301,5 +301,5 @@ class TestStrategyPitsStatsManager(DatabaseTest):
         db_item = manager.get_last_by_pit_in(model.pit_in_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item

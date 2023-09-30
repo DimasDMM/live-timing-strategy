@@ -59,7 +59,7 @@ class TestCMetadataManager(DatabaseTest):
         db_item = manager.get_current_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -97,7 +97,7 @@ class TestCMetadataManager(DatabaseTest):
             fake_logger: FakeLogger) -> None:
         """Test method get_history_by_id."""
         manager = CMetadataManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDE)
+        dict_items = [x.model_dump(exclude=self.EXCLUDE)
                       for x in manager.get_history_by_id(competition_id)]
         assert dict_items == expected_items
 
@@ -172,7 +172,7 @@ class TestCMetadataManager(DatabaseTest):
 
         after_item = manager.get_current_by_id(competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -180,7 +180,7 @@ class TestCMetadataManager(DatabaseTest):
 
         # Validate history
         history = manager.get_history_by_id(competition_id)
-        dict_item = history[-1].dict(exclude=self.EXCLUDE)
+        dict_item = history[-1].model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
 
@@ -217,7 +217,7 @@ class TestCSettingsManager(DatabaseTest):
         db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -257,7 +257,7 @@ class TestCSettingsManager(DatabaseTest):
 
         after_item = manager.get_by_id(competition_id)
         assert after_item is not None
-        dict_item = after_item.dict(exclude=self.EXCLUDE)
+        dict_item = after_item.model_dump(exclude=self.EXCLUDE)
 
         assert dict_item == expected_item
         assert before_item.insert_date == after_item.insert_date
@@ -300,7 +300,7 @@ class TestCIndexManager(DatabaseTest):
             self, db_context: DBContext, fake_logger: FakeLogger) -> None:
         """Test method get_all."""
         manager = CIndexManager(db=db_context, logger=fake_logger)
-        dict_items = [x.dict(exclude=self.EXCLUDE)
+        dict_items = [x.model_dump(exclude=self.EXCLUDE)
                       for x in manager.get_all()]
         assert dict_items == self.ALL_COMPETITIONS
 
@@ -330,7 +330,7 @@ class TestCIndexManager(DatabaseTest):
         db_item = manager.get_by_id(competition_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -359,7 +359,7 @@ class TestCIndexManager(DatabaseTest):
         db_item = manager.get_by_code(competition_code)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
     @pytest.mark.parametrize(
@@ -401,7 +401,7 @@ class TestCIndexManager(DatabaseTest):
         db_item = manager.get_by_id(item_id)
         assert db_item is not None
 
-        dict_item = db_item.dict(exclude=self.EXCLUDE)
+        dict_item = db_item.model_dump(exclude=self.EXCLUDE)
         assert dict_item == expected_item
 
         # Check that additional tables are filled too

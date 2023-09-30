@@ -26,6 +26,7 @@ from ltsapi.models.enum import (
     CompetitionStatus,
     LengthUnit,
 )
+from ltsapi.models.tracks import GetTrack
 
 # Alias of all fields that we may update in competition metadata
 TypeUpdateMetadata = Union[UpdateCompetitionMetadata, UpdateStatus,
@@ -90,7 +91,7 @@ class CSettingsManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            settings.dict(),
+            settings.model_dump(),
             key_name='competition_id',
             key_value=competition_id,
             commit=commit)
@@ -189,14 +190,14 @@ class CMetadataManager:
         update_model(
             self._db,
             self.CURRENT_TABLE,
-            metadata.dict(),
+            metadata.model_dump(),
             key_name='competition_id',
             key_value=competition_id,
             commit=False)
 
         # Insert record in the history table
-        new_data = metadata.dict()
-        previous_data = previous_model.dict(exclude={
+        new_data = metadata.model_dump()
+        previous_data = previous_model.model_dump(exclude={
             'insert_date': True, 'update_date': True})
         for field_name, _ in previous_data.items():
             if field_name in new_data:
@@ -304,20 +305,20 @@ class CIndexManager:
                     f'There is already a competition with the code "{code}".'),
                 status_code=400)
 
-        model_data = competition.dict(exclude={'settings': True})
+        model_data = competition.model_dump(exclude={'settings': True})
         item_id = insert_model(
             self._db, self.TABLE_NAME, model_data, commit=False)
         if item_id is None:
             raise ApiError('No data was inserted or updated.')
 
         # Create settings of the competition
-        model_data = competition.settings.dict()
+        model_data = competition.settings.model_dump()
         model_data['competition_id'] = item_id
         _ = insert_model(
             self._db, CSettingsManager.TABLE_NAME, model_data, commit=False)
 
         # Create metadata of the competition
-        model_data = self._initial_metadata().dict()
+        model_data = self._initial_metadata().model_dump()
         model_data['competition_id'] = item_id
         _ = insert_model(
             self._db, CMetadataManager.CURRENT_TABLE, model_data, commit=False)
@@ -339,12 +340,12 @@ class CIndexManager:
         """Build an instance of GetCompetition."""
         return GetCompetition(
             id=row['cidx_id'],
-            track={
-                'id': row['tracks_id'],
-                'name': row['tracks_name'],
-                'insert_date': row['tracks_insert_date'],
-                'update_date': row['tracks_update_date'],
-            },
+            track=GetTrack(
+                id=row['tracks_id'],
+                name=row['tracks_name'],
+                insert_date=row['tracks_insert_date'],
+                update_date=row['tracks_update_date'],
+            ),
             competition_code=row['cidx_competition_code'],
             name=row['cidx_name'],
             description=row['cidx_description'],

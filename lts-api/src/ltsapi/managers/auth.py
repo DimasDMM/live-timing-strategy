@@ -98,7 +98,7 @@ class AuthManager:
         update_model(
             self._db,
             self.TABLE_NAME,
-            new_model.dict(),
+            new_model.model_dump(),
             key_name='key',
             key_value=key,
             commit=commit)

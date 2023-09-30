@@ -176,22 +176,22 @@ class TestStrategyRouter(DatabaseTest):
         """Test POST /v1/c/<competition_id>/strategy/pits/karts."""
         response: Response = self.API.post(
             '/v1/c/3/strategy/pits/karts',
-            json=[x.dict() for x in add_models],
+            json=[x.model_dump() for x in add_models],
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
             response_models = [expected_type(**x) for x in data]
-            response_list = [x.dict(exclude=self.EXCLUDE)
+            response_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in response_models]
-            expected_list = [x.dict(exclude=self.EXCLUDE)
+            expected_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in expected_response]
             assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
-            response_dict = response_model.dict(exclude=self.EXCLUDE)
-            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+            expected_dict = expected_response.model_dump(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
@@ -360,15 +360,15 @@ class TestStrategyRouter(DatabaseTest):
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
             response_models = [expected_type(**x) for x in data]
-            response_list = [x.dict(exclude=self.EXCLUDE)
+            response_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in response_models]
-            expected_list = [x.dict(exclude=self.EXCLUDE)
+            expected_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in expected_response]
             assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
-            response_dict = response_model.dict(exclude=self.EXCLUDE)
-            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+            expected_dict = expected_response.model_dump(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
@@ -433,14 +433,15 @@ class TestStrategyRouter(DatabaseTest):
         """Test POST /v1/c/<competition_id>/strategy/pits/stats."""
         response: Response = self.API.post(
             '/v1/c/2/strategy/pits/stats',
-            json=add_model.dict(),
+            json=add_model.model_dump(),
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('headers, pit_in_id, expected_status_code,'
@@ -492,6 +493,7 @@ class TestStrategyRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))

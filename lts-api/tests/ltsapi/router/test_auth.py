@@ -32,8 +32,9 @@ class TestCompetitionsRouter(DatabaseTest):
 
         expected_response = GetHealth(status='ok')
         response_model = GetHealth(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         'add_model, expected_status_code, expected_response, expected_type',
@@ -67,13 +68,14 @@ class TestCompetitionsRouter(DatabaseTest):
         """Test POST /v1/auth."""
         response: Response = self.API.post(
             '/v1/auth',
-            json=add_model.dict())
+            json=add_model.model_dump())
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
         # Bearer token is generated randomly, thus this test only checks that
         # it is set
@@ -126,6 +128,7 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))

@@ -49,7 +49,7 @@ async def api_error_handler(
     """Handle and display error messages."""
     return JSONResponse(
         status_code=exc.get_status_code(),
-        content=exc.to_error_response().dict(),
+        content=exc.to_error_response().model_dump(),
     )
 
 
@@ -118,7 +118,10 @@ async def auth_middleware(request: Request, call_next: Callable) -> Response:
                     ),
                 },
             )
-        return JSONResponse(content=error.dict(), status_code=error.status_code)
+        return JSONResponse(
+            content=error.model_dump(),
+            status_code=error.status_code,
+        )
 
 
 def _build_response_403() -> Response:
@@ -126,7 +129,7 @@ def _build_response_403() -> Response:
     content = ErrorResponse(message='Invalid authentication.', status_code=403)
     return Response(
         status_code=403,
-        content=json.dumps(content.dict()),
+        content=json.dumps(content.model_dump()),
     )
 
 

@@ -118,15 +118,15 @@ class TestCompetitionsRouter(DatabaseTest):
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
             response_models = [expected_type(**x) for x in data]
-            response_list = [x.dict(exclude=self.EXCLUDE)
+            response_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in response_models]
-            expected_list = [x.dict(exclude=self.EXCLUDE)
+            expected_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in expected_response]
             assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
-            response_dict = response_model.dict(exclude=self.EXCLUDE)
-            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+            expected_dict = expected_response.model_dump(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
@@ -219,14 +219,15 @@ class TestCompetitionsRouter(DatabaseTest):
         """Test POST /v1/c."""
         response: Response = self.API.post(
             '/v1/c',
-            json=add_model.dict(),
+            json=add_model.model_dump(),
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('headers, competition_id, expected_status_code,'
@@ -284,9 +285,10 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('headers, competition_id, expected_status_code,'
@@ -338,9 +340,10 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('url, headers, update_model,'
@@ -459,14 +462,15 @@ class TestCompetitionsRouter(DatabaseTest):
         """Test PUT /v1/c/<competition_id>/metadata."""
         response: Response = self.API.put(
             url,
-            json=update_model.dict(),
+            json=update_model.model_dump(),
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('headers, competition_id, expected_status_code,'
@@ -538,15 +542,15 @@ class TestCompetitionsRouter(DatabaseTest):
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
             response_models = [expected_type(**x) for x in data]
-            response_list = [x.dict(exclude=self.EXCLUDE)
+            response_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in response_models]
-            expected_list = [x.dict(exclude=self.EXCLUDE)
+            expected_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in expected_response]
             assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
-            response_dict = response_model.dict(exclude=self.EXCLUDE)
-            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+            expected_dict = expected_response.model_dump(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
@@ -599,9 +603,10 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
 
     @pytest.mark.parametrize(
         ('headers, competition_id, update_model, expected_status_code,'
@@ -672,22 +677,22 @@ class TestCompetitionsRouter(DatabaseTest):
         """Test PUT /v1/c/<competition_id>/settings."""
         response: Response = self.API.put(
             f'/v1/c/{competition_id}/settings',
-            json=update_model.dict(),
+            json=update_model.model_dump(),
             headers=headers)
         assert response.status_code == expected_status_code, response.content
 
         if isinstance(expected_response, list):
             data: list = response.json()  # type: ignore
             response_models = [expected_type(**x) for x in data]
-            response_list = [x.dict(exclude=self.EXCLUDE)
+            response_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in response_models]
-            expected_list = [x.dict(exclude=self.EXCLUDE)
+            expected_list = [x.model_dump(exclude=self.EXCLUDE)
                              for x in expected_response]
             assert response_list == expected_list
         else:
             response_model = expected_type(**response.json())
-            response_dict = response_model.dict(exclude=self.EXCLUDE)
-            expected_dict = expected_response.dict(exclude=self.EXCLUDE)
+            response_dict = response_model.model_dump(exclude=self.EXCLUDE)
+            expected_dict = expected_response.model_dump(exclude=self.EXCLUDE)
             assert response_dict == expected_dict
 
     @pytest.mark.parametrize(
@@ -746,6 +751,7 @@ class TestCompetitionsRouter(DatabaseTest):
         assert response.status_code == expected_status_code, response.content
 
         response_model = expected_type(**response.json())
-        response_dict = response_model.dict(exclude=self.EXCLUDE)
+        response_dict = response_model.model_dump(exclude=self.EXCLUDE)
 
-        assert response_dict == expected_response.dict(exclude=self.EXCLUDE)
+        assert (response_dict
+                == expected_response.model_dump(exclude=self.EXCLUDE))
