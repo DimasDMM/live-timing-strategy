@@ -5,10 +5,11 @@ from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
     CompetitionStatus,
     CompetitionInfo,
-    LengthUnit,
+    DiffLap,
     UpdateCompetitionMetadataRemaining,
     UpdateCompetitionMetadataStatus,
 )
+from ltspipe.data.enum import LengthUnit
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.base import _time_to_millis
 
@@ -71,18 +72,19 @@ class CompetitionMetadataRemainingParser(Parser):
         if matches[1] == 'countdown':
             return UpdateCompetitionMetadataRemaining(
                 competition_code=competition_code,
-                remaining_length={
-                    'value': int(remaining_length_value),
-                    'unit': LengthUnit.MILLIS,
-                },
+                remaining_length=DiffLap(
+                    value=int(remaining_length_value),
+                    unit=LengthUnit.MILLIS,
+                ),
             )
         elif matches[1] == 'text':
             return UpdateCompetitionMetadataRemaining(
                 competition_code=competition_code,
-                remaining_length={
-                    'value': _time_to_millis(remaining_length_value, default=0),
-                    'unit': LengthUnit.MILLIS,
-                },
+                remaining_length=DiffLap(
+                    value=_time_to_millis(  # type: ignore
+                        remaining_length_value, default=0),
+                    unit=LengthUnit.MILLIS,
+                ),
             )
         else:
             raise Exception(

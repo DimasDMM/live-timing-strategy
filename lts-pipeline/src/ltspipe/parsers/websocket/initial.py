@@ -137,7 +137,7 @@ class InitialDataParser(InitialParser):
             )
         elif type == 'text':
             return DiffLap(
-                value=_time_to_millis(raw, default=0),
+                value=_time_to_millis(raw, default=0),  # type: ignore
                 unit=LengthUnit.MILLIS,
             )
         elif type == 'countdown':
@@ -291,7 +291,7 @@ class InitialDataParser(InitialParser):
             driver_name = None
 
         return Participant(
-            best_time=_time_to_millis(
+            best_time=_time_to_millis(  # type: ignore
                 fields.get(ParserSettings.TIMING_BEST_TIME, None),
                 default=0),
             driver_name=driver_name,
@@ -301,20 +301,22 @@ class InitialDataParser(InitialParser):
             interval=self._parse_diff_lap(
                 fields.get(ParserSettings.TIMING_INTERVAL, None),
                 default=None),
-            kart_number=self._cast_number(
+            kart_number=self._cast_number(  # type: ignore
                 fields.get(ParserSettings.TIMING_KART_NUMBER, None),
                 default=0),
-            laps=self._cast_number(
+            laps=self._cast_number(  # type: ignore
                 fields.get(ParserSettings.TIMING_LAP, None),
                 default=0),
-            last_time=_time_to_millis(
+            last_time=_time_to_millis(  # type: ignore
                 fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
-            number_pits=self._cast_number(
+            number_pits=self._cast_number(  # type: ignore
                 fields.get(ParserSettings.TIMING_NUMBER_PITS, '0'),
                 default=0),
             participant_code=participant_code,
-            position=self._cast_number(position, default=0),
+            position=self._cast_number(  # type: ignore
+                position,
+                default=0),
             team_name=team_name,
             pit_time=_time_to_millis(
                 fields.get(ParserSettings.TIMING_PIT_TIME, None),

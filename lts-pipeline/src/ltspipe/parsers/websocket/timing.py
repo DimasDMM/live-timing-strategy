@@ -96,7 +96,9 @@ class TimingBestTimeParser(Parser):
         if team is None:
             raise Exception(f'Unknown team with code={participant_code}')
 
-        timing_best_time = _time_to_millis(raw_timing_best_time, default=0)
+        timing_best_time: int = _time_to_millis(  # type: ignore
+            raw_timing_best_time,
+            default=0)
         updated_timing = UpdateTimingBestTime(
             competition_code=competition_code,
             team_id=team.id,
@@ -262,7 +264,9 @@ class TimingLastTimeParser(Parser):
         if team is None:
             raise Exception(f'Unknown team with code={participant_code}')
 
-        timing_last_time = _time_to_millis(raw_timing_last_time, default=0)
+        timing_last_time: int = _time_to_millis(  # type: ignore
+            raw_timing_last_time,
+            default=0)
         updated_timing = UpdateTimingLastTime(
             competition_code=competition_code,
             team_id=team.id,
@@ -418,7 +422,9 @@ class TimingPitTimeParser(Parser):
         participant_code = matches[1]
         raw_pit_time = matches[3]
 
-        timing_pit_time = _time_to_millis(raw_pit_time, default=0)
+        timing_pit_time: int = _time_to_millis(  # type: ignore
+            raw_pit_time,
+            default=0)
 
         # The team must be already initialized
         team = _find_team_by_code(
