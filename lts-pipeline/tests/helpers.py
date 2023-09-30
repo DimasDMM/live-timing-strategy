@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 from ltspipe.base import BaseModel, DictModel
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.parsers.base import Parser
+from tests.fixtures import AUTH_BEARER, AUTH_KEY
 
 BASE_PATH = 'tests/data/messages'
 
@@ -104,12 +105,26 @@ class DatabaseTest:
     """
 
     DATABASE_NAME = os.environ.get('DB_DATABASE')
-    INIT_DATA_FILE = '../lts-api/data/init.sql'
     SCHEMA_FILE = '../lts-api/data/schema.sql'
+    BASIC_DATA = DatabaseContent(
+        tables_content=[
+            TableContent(
+                table_name='tracks',
+                columns=['name'],
+                content=[['Karting North'], ['Karting South']],
+            ),
+            TableContent(
+                table_name='api_auth',
+                columns=['key', 'bearer', 'name', 'role'],
+                content=[[AUTH_KEY, AUTH_BEARER, 'Test batch', 'batch']],
+            ),
+        ],
+    )
 
     def setup_method(self, method: Any) -> None:  # noqa: U100
         """Set up test."""
-        DatabaseTest.reset_database()
+        self.reset_database()
+        self.set_database_content(self.BASIC_DATA)
 
     def teardown_method(self, method: Any) -> None:  # noqa: U100
         """Reset state of the test."""
@@ -117,10 +132,10 @@ class DatabaseTest:
 
     def set_database_content(self, database: DatabaseContent) -> None:
         """Set content of the database."""
-        cnx, cursor = DatabaseTest._build_db_connection(use_database=True)
+        cnx, cursor = self._build_db_connection(use_database=True)
         for table in database.tables_content:
             for row in table.content:
-                DatabaseTest._insert_model(
+                self._insert_model(
                     cnx, cursor, table.table_name, table.columns, row)
         cnx.commit()
 
@@ -128,27 +143,26 @@ class DatabaseTest:
             self,
             database_query: DatabaseQuery) -> DatabaseContent:
         """Get content from the database."""
-        _, cursor = DatabaseTest._build_db_connection(use_database=True)
+        _, cursor = self._build_db_connection(use_database=True)
 
         tables_content: List[TableContent] = []
         for table in database_query.tables_query:
-            t = DatabaseTest._query_models(
+            t = self._query_models(
                 cursor, table.table_name, table.columns)
             tables_content.append(t)
 
         return DatabaseContent(tables_content=tables_content)
 
-    @staticmethod
-    def reset_database() -> None:
+    def reset_database(self) -> None:
         """Reset (remove and create) the database."""
-        cnx, cursor = DatabaseTest._build_db_connection()
-        DatabaseTest._drop_database(cnx, cursor)
-        DatabaseTest._init_database(cnx, cursor)
+        cnx, cursor = self._build_db_connection()
+        self._drop_database(cnx, cursor)
+        self._init_database(cnx, cursor)
         cursor.close()
         cnx.close()
 
-    @staticmethod
     def _build_db_connection(
+            self,
             use_database: bool = False) -> Tuple[MySQLConnection, MySQLCursor]:
         """Build connection with the database."""
         cnx = MySQLConnection(
@@ -160,11 +174,11 @@ class DatabaseTest:
         cursor = cnx.cursor()
         cursor.execute('SET NAMES "utf8";')
         if use_database:
-            cursor.execute(f'USE `{DatabaseTest.DATABASE_NAME}`')
+            cursor.execute(f'USE `{self.DATABASE_NAME}`')
         return cnx, cursor
 
-    @staticmethod
     def _insert_model(
+            self,
             cnx: MySQLConnection,
             cursor: MySQLCursor,
             table_name: str,
@@ -196,8 +210,8 @@ class DatabaseTest:
             cnx.rollback()
             raise e
 
-    @staticmethod
     def _query_models(
+            self,
             cursor: MySQLCursor,
             table_name: str,
             columns: List[str]) -> DatabaseContent:
@@ -223,8 +237,7 @@ class DatabaseTest:
         return TableContent(
             table_name=table_name, columns=columns, content=content)
 
-    @staticmethod
-    def _import_sql_file(cursor: MySQLCursor, filepath: str) -> None:
+    def _import_sql_file(self, cursor: MySQLCursor, filepath: str) -> None:
         """Initialize the schema and some sample data."""
         filepath = os.path.join(pathlib.Path().resolve(), filepath)
         with open(filepath, 'r', encoding='UTF-8') as fp:
@@ -233,29 +246,23 @@ class DatabaseTest:
             for s in statements:
                 cursor.execute(s)
 
-    @staticmethod
-    def _drop_database(cnx: MySQLConnection, cursor: MySQLCursor) -> None:
+    def _drop_database(self, cnx: MySQLConnection, cursor: MySQLCursor) -> None:
         """Run the statement to remove a database."""
         cursor.execute(
-            f'DROP DATABASE IF EXISTS `{DatabaseTest.DATABASE_NAME}`')
+            f'DROP DATABASE IF EXISTS `{self.DATABASE_NAME}`')
         cnx.commit()
 
-    @staticmethod
-    def _init_database(cnx: MySQLConnection, cursor: MySQLCursor) -> None:
+    def _init_database(self, cnx: MySQLConnection, cursor: MySQLCursor) -> None:
         """Initialize a database and some sample content."""
         try:
-            cursor.execute(f'CREATE DATABASE `{DatabaseTest.DATABASE_NAME}`')
-            cursor.execute(f'USE `{DatabaseTest.DATABASE_NAME}`')
+            cursor.execute(f'CREATE DATABASE `{self.DATABASE_NAME}`')
+            cursor.execute(f'USE `{self.DATABASE_NAME}`')
             cnx.commit()
 
-            DatabaseTest._import_sql_file(
-                cursor, DatabaseTest.SCHEMA_FILE)
-            cnx.commit()
-
-            DatabaseTest._import_sql_file(
-                cursor, DatabaseTest.INIT_DATA_FILE)
+            self._import_sql_file(
+                cursor, self.SCHEMA_FILE)
             cnx.commit()
         except Exception as e:
-            DatabaseTest._drop_database(cnx, cursor)
+            self._drop_database(cnx, cursor)
             cnx.commit()
             raise e
