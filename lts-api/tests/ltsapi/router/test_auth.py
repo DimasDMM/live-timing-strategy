@@ -42,8 +42,8 @@ class TestCompetitionsRouter(DatabaseTest):
                 SendAuthKey(key=AUTH_KEY_BATCH),
                 200,  # expected_status_code
                 GetAuth(
-                    bearer='',
-                    name='Test batch without bearer',
+                    bearer=AUTH_BEARER,
+                    name='Test batch',
                     role=AuthRole.BATCH,
                 ),
                 GetAuth,  # expected_type
@@ -88,7 +88,7 @@ class TestCompetitionsRouter(DatabaseTest):
                 AUTH_BEARER,  # bearer
                 200,  # expected_status_code
                 ValidateAuth(  # expected_response
-                    name='Test batch with bearer',
+                    name='Test batch',
                     role=AuthRole.BATCH,
                 ),
                 ValidateAuth,  # expected_type

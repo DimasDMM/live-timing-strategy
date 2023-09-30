@@ -17,8 +17,8 @@ class TestAuthManager(DatabaseTest):
             (
                 AUTH_KEY_BATCH,  # key
                 {
-                    'bearer': None,
-                    'name': 'Test batch without bearer',
+                    'bearer': AUTH_BEARER,
+                    'name': 'Test batch',
                     'role': 'batch',
                 },
             ),
@@ -82,7 +82,7 @@ class TestAuthManager(DatabaseTest):
             (
                 f'Bearer {AUTH_BEARER}',
                 {
-                    'name': 'Test batch with bearer',
+                    'name': 'Test batch',
                     'role': 'batch',
                 },
             ),

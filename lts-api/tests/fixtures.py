@@ -12,7 +12,7 @@ TEST_COMPETITION_CODE = 'sample-code'
 AUTH_BEARER = 'e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9'
 
 # API key included in the sample data that still has not a bearer token
-AUTH_KEY_BATCH = '912ec803b2ce49e4a541068d495ab570'
+AUTH_KEY_BATCH = '6a204bd89f3c8348afd5c77c717a097a'
 
 # API key included in the sample data associated with the role viewer
 AUTH_KEY_VIEWER = 'd265aed699f7409ac0ec6fe07ee9cb11'

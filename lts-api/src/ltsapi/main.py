@@ -109,7 +109,13 @@ async def auth_middleware(request: Request, call_next: Callable) -> Response:
                 status_code=500,
                 extra_data={
                     'exception': str(e),
-                    'traceback': str(e.__traceback__),
+                    'traceback': ''.join(
+                        traceback.format_exception(
+                            type(e),
+                            value=e,
+                            tb=e.__traceback__,
+                        ),
+                    ),
                 },
             )
         return JSONResponse(content=error.dict(), status_code=error.status_code)

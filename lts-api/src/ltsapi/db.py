@@ -45,7 +45,8 @@ class DBContext:
             password=self._password,
             database=self._database)
         self._cnx.set_charset_collation('utf8mb4', 'utf8mb4_unicode_ci')
-        c: MySQLCursorDict = self._cnx.cursor(dictionary=True)  # type: ignore
+        c: MySQLCursorDict = self._cnx.cursor(  # type: ignore
+            buffered=True, dictionary=True)
         c.execute('SET NAMES utf8;')
         self._cursor = c
         return c
