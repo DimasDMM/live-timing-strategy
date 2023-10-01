@@ -7,14 +7,14 @@ Retrieves and analyses the data that comes from a live timing application.
 ## Setup for development
 
 For development, we also need to install these tools:
-- Python 3.9: https://www.python.org/
+- Python 3.9 or greater: https://www.python.org/
 - (Optional) Visual Studio: https://code.visualstudio.com/
 
 Linux:
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install tox==3.28 poetry==1.4.2
+python -m pip install tox==4.11 poetry==1.6.1
 poetry config virtualenvs.create false
 ```
 
@@ -22,7 +22,7 @@ Windows:
 ```sh
 python -m venv .venv
 .\.venv\Scripts\activate
-python -m pip install tox==3.28 poetry==1.4.2
+python -m pip install tox==4.11 poetry==1.6.1
 poetry config virtualenvs.create false
 ```
 
