@@ -7,7 +7,7 @@ Retrieves and analyses the data that comes from a live timing application.
 ## Setup for development
 
 For development, we also need to install these tools:
-- Python 3.9 or greater: https://www.python.org/
+- Python 3.10 or greater: https://www.python.org/
 - (Optional) Visual Studio: https://code.visualstudio.com/
 
 Linux:

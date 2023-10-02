@@ -7,7 +7,7 @@ API REST to manage and read the data from the database.
 ## Setup for development
 
 For development, we also need to install these tools:
-- Python 3.9 or greater: https://www.python.org/
+- Python 3.10 or greater: https://www.python.org/
 - (Optional) MySQL Workbench: https://www.mysql.com/products/workbench/
 - (Optional) Visual Studio: https://code.visualstudio.com/
 
@@ -70,7 +70,7 @@ docker run \
   --network lts-network \
   -p ${DB_PORT}:3306 \
   -e MYSQL_ROOT_PASSWORD=root \
-  mysql:8.0.32
+  mysql:8.1.0
 ```
 
 Then, access to the database (we may use the MySQL workbench for this purpose)

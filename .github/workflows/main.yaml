@@ -29,7 +29,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Load environment variables
       uses: cardinalby/export-env-action@v2
@@ -49,7 +49,7 @@ jobs:
 
     - name: Start MySQL
       run: |
-        docker run -d --name lts-mysql --network lts-network -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
+        docker run -d --name lts-mysql --network lts-network -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.1.0
 
     - name: Install dependencies
       run: |
@@ -69,7 +69,7 @@ jobs:
     - name: Run tests
       run: |
         cd lts-pipeline
-        tox -e 'py39-test'
+        tox -e 'py310-test'
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -104,7 +104,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
@@ -114,7 +114,7 @@ jobs:
     - name: Run linter
       run: |
         cd lts-pipeline
-        tox -e 'py39-lint'
+        tox -e 'py310-lint'
 
   mypy-lts-pipeline:
     runs-on: ubuntu-latest
@@ -127,7 +127,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
@@ -137,7 +137,7 @@ jobs:
     - name: Run MyPy
       run: |
         cd lts-pipeline
-        tox -e 'py{39, 310, 311}-mypy'
+        tox -e 'py310-mypy'
 
   test-lts-api:
     runs-on: ubuntu-latest
@@ -150,7 +150,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Load environment variables
       uses: cardinalby/export-env-action@v2
@@ -160,7 +160,7 @@ jobs:
 
     - name: Start MySQL
       run: |
-        docker run -d --name lts-mysql -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.32
+        docker run -d --name lts-mysql -p ${{ env.DB_PORT }}:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.1.0
 
     - name: Install dependencies
       run: |
@@ -176,7 +176,7 @@ jobs:
     - name: Run tests
       run: |
         cd lts-api
-        tox -e 'py39-test'
+        tox -e 'py310-test'
         poetry run coverage-badge -o "docs/coverage.svg" -f
 
     - name: Verify Changed files
@@ -211,7 +211,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
@@ -221,7 +221,7 @@ jobs:
     - name: Run linter
       run: |
         cd lts-api
-        tox -e 'py39-lint'
+        tox -e 'py310-lint'
 
   mypy-lts-api:
     runs-on: ubuntu-latest
@@ -234,7 +234,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
@@ -244,7 +244,7 @@ jobs:
     - name: Run MyPy
       run: |
         cd lts-api
-        tox -e 'py{39, 310, 311}-mypy'
+        tox -e 'py310-mypy'
 
   post-clean-badge:
     runs-on: ubuntu-latest
