@@ -40,7 +40,7 @@ class MessageStorageStep(MidStep):
         file_name = f'{time.time()}.msg.txt'
         file_path = os.path.join(self._output_path, file_name)
         self._logger.debug(f'Save message into "{file_path}"...')
-        with open(file_path, 'w') as fp:
+        with open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(str(msg))
 
         if self._next_step is not None:
@@ -81,7 +81,7 @@ class RawStorageStep(MidStep):
         file_name = f'{time.time()}.raw.txt'
         file_path = os.path.join(self._output_path, file_name)
         self._logger.debug(f'Save message into "{file_path}"...')
-        with open(file_path, 'w') as fp:
+        with open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(str(msg.data))
 
         if self._next_step is not None:
