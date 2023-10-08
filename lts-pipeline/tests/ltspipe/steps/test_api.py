@@ -23,7 +23,7 @@ from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.api import (
     ApiActionStep,
-    CompetitionInfoInitStep,
+    CompetitionInfoRefreshStep,
 )
 from ltspipe.steps.base import MidStep
 from tests.conftest import mock_requests
@@ -150,8 +150,8 @@ class TestApiActionStep:
         return step
 
 
-class TestParserSettingsGetterStep:
-    """Test ltspipe.steps.api.ParserSettingsGetterStep class."""
+class TestCompetitionInfoRefreshStep:
+    """Test ltspipe.steps.api.CompetitionInfoRefreshStep class."""
 
     EXPECTED_COMPETITIONS = {
         TEST_COMPETITION_CODE: CompetitionInfo(
@@ -208,12 +208,11 @@ class TestParserSettingsGetterStep:
         # Create step
         in_competitions: Dict[str, CompetitionInfo] = {}
         fake_logger = FakeLogger()
-        step = CompetitionInfoInitStep(
+        step = CompetitionInfoRefreshStep(
             logger=fake_logger,
             api_lts=MOCK_API_LTS,
             auth_data=sample_auth_data,
             competitions=in_competitions,
-            flags={},
             next_step=next_step,
         )
 

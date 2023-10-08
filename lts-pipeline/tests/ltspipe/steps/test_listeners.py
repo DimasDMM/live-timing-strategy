@@ -1,4 +1,3 @@
-from pytest_mock import MockerFixture
 import tempfile
 from unittest.mock import MagicMock
 
@@ -11,13 +10,12 @@ from tests.mocks.logging import FakeLogger
 class TestFileListenerStep:
     """Test ltspipe.steps.listeners.FileListenerStep class."""
 
-    def test_start_step(self, mocker: MockerFixture) -> None:
+    def test_start_step(self) -> None:
         """Test method run_step."""
         with tempfile.TemporaryDirectory() as tmp_path:
             # Apply mock to input() function
             sample_data = 'Hello, World!'
-            file_path = self._create_sample_file(tmp_path, sample_data)
-            mocker.patch('builtins.input', return_value=file_path)
+            files_path = self._create_sample_file(tmp_path, sample_data)
 
             # Create a mock of the next step
             next_step = MagicMock()
@@ -30,10 +28,8 @@ class TestFileListenerStep:
             step = FileListenerStep(
                 logger=fake_logger,
                 competition_code=TEST_COMPETITION_CODE,
-                single_file=True,
-                infinite_loop=False,
+                files_path=files_path,
                 message_source=MessageSource.SOURCE_DUMMY,
-                is_json=False,
                 next_step=next_step,
                 on_error=on_error,
             )
@@ -49,11 +45,10 @@ class TestFileListenerStep:
             children = step.get_children()
             assert children == [next_step, on_error]
 
-    def test_start_step_without_file(self, mocker: MockerFixture) -> None:
+    def test_start_step_without_file(self) -> None:
         """Test method run_step."""
-        # Apply mock to input() function
-        file_path = 'unknown/file.txt'
-        mocker.patch('builtins.input', return_value=file_path)
+        # Set up an unknown path
+        files_path = 'unknown/path/here'
 
         # Create a mock of the next step
         next_step = MagicMock()
@@ -64,10 +59,8 @@ class TestFileListenerStep:
         step = FileListenerStep(
             logger=fake_logger,
             competition_code=TEST_COMPETITION_CODE,
-            single_file=True,
-            infinite_loop=False,
+            files_path=files_path,
             message_source=MessageSource.SOURCE_DUMMY,
-            is_json=False,
             next_step=next_step,
         )
 
@@ -82,7 +75,7 @@ class TestFileListenerStep:
 
     def _create_sample_file(self, path: str, content: str) -> str:
         """Create a file with some sample content."""
-        file_path = f'{path}/myfile.txy'
+        file_path = f'{path}/myfile.txt'
         with open(file_path, 'w') as fp:
             fp.write(content)
         return file_path

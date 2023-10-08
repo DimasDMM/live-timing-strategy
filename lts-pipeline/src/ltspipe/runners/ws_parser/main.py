@@ -6,6 +6,7 @@ import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable, List
 
+from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.handlers.competitions_metadata import (
     UpdateCompetitionMetadataRemainingHandler,
@@ -28,6 +29,7 @@ from ltspipe.api.handlers.timing import (
 from ltspipe.configs import WsParserConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
+from ltspipe.data.notifications import NotificationType
 from ltspipe.messages import MessageSource
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.competitions_metadata import (
@@ -49,7 +51,7 @@ from ltspipe.parsers.websocket.timing import (
     TimingPositionParser,
 )
 from ltspipe.runners import BANNER_MSG, build_logger, do_auth
-from ltspipe.steps.api import CompetitionInfoInitStep, ApiActionStep
+from ltspipe.steps.api import CompetitionInfoRefreshStep, ApiActionStep
 from ltspipe.steps.base import MidStep, StartStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
@@ -59,7 +61,7 @@ from ltspipe.steps.mappers import NotificationMapperStep, WsParsersStep
 
 def main(config: WsParserConfig, logger: Logger) -> None:
     """
-    Process to parse raw messages.
+    Process to parse raw websocket messages.
 
     Params:
         config (WsParserConfig): configuration to run the method.
@@ -82,22 +84,32 @@ def main(config: WsParserConfig, logger: Logger) -> None:
     with Manager() as manager:
         logger.info('Init shared-memory...')
         competitions = manager.dict()
-        flags = manager.dict()
+
+        info = build_competition_info(
+            config.api_lts,
+            bearer=auth_data.bearer,
+            competition_code=config.competition_code)
+        if info is None:
+            raise Exception(
+                f'Competition does not exist: {config.competition_code}')
+        competitions[config.competition_code] = info
 
         logger.info('Init processes...')
+
+        process_logger = build_logger(__package__, config.verbosity)
         p_not = _create_process(
             target=_run_notifications_listener,
-            args=(config,))
-        p_raw = _create_process(
-            target=_run_raw_listener,
-            args=(config, auth_data, competitions, flags))
+            args=(config, process_logger, auth_data, competitions))
+        p_ws = _create_process(
+            target=_run_ws_listener,
+            args=(config, process_logger, auth_data, competitions))
         logger.info('Processes created')
 
         p_not.start()
-        p_raw.start()
+        p_ws.start()
         logger.info('Processes started')
 
-        processes = {'notifications': p_not, 'raw': p_raw}
+        processes = {'notifications': p_not, 'ws': p_ws}
         _join_processes(logger, processes)
 
 
@@ -133,37 +145,39 @@ def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
         exit(1)
 
 
-def _run_notifications_listener(config: WsParserConfig) -> None:
+def _run_notifications_listener(
+        config: WsParserConfig,
+        logger: Logger,
+        auth_data: AuthData,
+        competitions: DictProxy) -> None:
     """Run process with the notifications listener."""
-    logger = build_logger(__package__, config.verbosity)
     logger.info('Create input listener...')
-    notification_listener = _build_notifications_process(config, logger)
+    notification_listener = _build_notifications_process(
+        config, logger, auth_data, competitions)
 
     logger.info('Start input listener...')
     notification_listener.start_step()
 
 
-def _run_raw_listener(
-        config: WsParserConfig,
-        auth_data: AuthData,
-        competitions: DictProxy,
-        flags: DictProxy) -> None:
-    """Run process with the raw data listener."""
-    logger = build_logger(__package__, config.verbosity)
-    logger.info('Create websocket listener...')
-    rawe_listener = _build_raw_process(
-        config, logger, auth_data, competitions, flags)
-
-    logger.info('Start websocket listener...')
-    rawe_listener.start_step()
-
-
-def _build_raw_process(
+def _run_ws_listener(
         config: WsParserConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy,
-        flags: DictProxy) -> StartStep:
+        competitions: DictProxy) -> None:
+    """Run process with the raw data listener."""
+    logger.info('Create websocket listener...')
+    ws_listener = _build_ws_process(
+        config, logger, auth_data, competitions)
+
+    logger.info('Start websocket listener...')
+    ws_listener.start_step()
+
+
+def _build_ws_process(
+        config: WsParserConfig,
+        logger: Logger,
+        auth_data: AuthData,
+        competitions: DictProxy) -> StartStep:
     """Build process that consumes the raw data."""
     kafka_notifications = KafkaProducerStep(
         logger,
@@ -183,16 +197,6 @@ def _build_raw_process(
     parsers_pipe = _build_parsers_pipe(
         config, logger, competitions, api_actions)
 
-    competition_init = CompetitionInfoInitStep(
-        logger=logger,
-        api_lts=config.api_lts,
-        auth_data=auth_data,
-        competitions=competitions,  # type: ignore
-        flags=flags,  # type: ignore
-        force_update=False,
-        next_step=parsers_pipe,
-    )
-
     errors_storage = MessageStorageStep(
         logger=logger,
         output_path=config.errors_path,
@@ -204,29 +208,39 @@ def _build_raw_process(
             logger,
             competition_code=config.competition_code,
             uri=config.websocket_uri,
-            next_step=competition_init,
+            next_step=parsers_pipe,
             on_error=errors_storage,
         )
-    else:
+    elif config.websocket_path is not None:
         ws_listener = FileListenerStep(
             logger=logger,
             competition_code=config.competition_code,
-            single_file=False,
-            infinite_loop=True,
+            files_path=config.websocket_path,
             message_source=MessageSource.SOURCE_WS_LISTENER,
-            is_json=False,
-            next_step=competition_init,
+            next_step=parsers_pipe,
         )
+    else:
+        raise Exception('It must be provided a path or a websocket URI')
+
     return ws_listener
 
 
 def _build_notifications_process(
         config: WsParserConfig,
-        logger: Logger) -> StartStep:
+        logger: Logger,
+        auth_data: AuthData,
+        competitions: DictProxy) -> StartStep:
     """Build process with notifications listener."""
     mapper = NotificationMapperStep(
         logger=logger,
-        map_notification={},
+        map_notification={
+            NotificationType: CompetitionInfoRefreshStep(
+                logger=logger,
+                api_lts=config.api_lts,
+                auth_data=auth_data,
+                competitions=competitions,  # type: ignore
+            ),
+        },
     )
     errors_storage = MessageStorageStep(
         logger=logger,

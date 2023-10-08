@@ -15,7 +15,7 @@ from ltspipe.configs import NotificationsListenerConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import NotificationType
-from ltspipe.steps.api import ApiActionStep, CompetitionInfoInitStep
+from ltspipe.steps.api import ApiActionStep, CompetitionInfoRefreshStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
 from ltspipe.steps.mappers import NotificationMapperStep
@@ -149,7 +149,7 @@ def _build_notifications_mapper_step(
         next_step=None,
     )
 
-    strategy_pits_stats = CompetitionInfoInitStep(
+    strategy_pits_stats = CompetitionInfoRefreshStep(
         logger=logger,
         api_lts=config.api_lts,
         auth_data=auth_data,

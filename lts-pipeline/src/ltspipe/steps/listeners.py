@@ -1,5 +1,4 @@
 from datetime import datetime
-import json
 import logging
 import os
 import time
@@ -20,10 +19,8 @@ class FileListenerStep(StartStep):
             self,
             logger: logging.Logger,
             competition_code: str,
-            single_file: bool,
-            infinite_loop: bool,
+            files_path: str,
             message_source: MessageSource,
-            is_json: bool,
             next_step: MidStep,
             on_error: Optional[MidStep] = None) -> None:
         """
@@ -32,24 +29,16 @@ class FileListenerStep(StartStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             competition_code (str): Verbose code to identify the competition.
-            single_file (bool): If true, it asks for a path of a file.
-                Otherwise, it asks for a path of files.
-            infinite_loop (bool): If true, it will keep asking for directory or
-                file paths until the process is killed.
+            files_path (str): Path of files to read.
             message_source (MessageSource): Message source to mock.
-            is_json (bool): If this flag is given, the format of the messages
-                must be JSON and it should be same like the Raw Storage works.
-                Note: The value message source is ignored with this option.
             next_step (MidStep): The next step to apply to the message.
             on_error (MidStep | None): Optionally, apply another step to the
                 message if there is any error on running time.
         """
         self._logger = logger
         self._competition_code = competition_code
-        self._single_file = single_file
-        self._infinite_loop = infinite_loop
+        self._files_path = files_path
         self._message_source = message_source
-        self._is_json = is_json
         self._next_step = next_step
         self._on_error = on_error
 
@@ -61,22 +50,16 @@ class FileListenerStep(StartStep):
         return children
 
     def start_step(self) -> None:
-        """Start listening the console input."""
-        prompt_txt = ('Introduce the file path: ' if self._single_file
-                      else 'Introduce the path of files: ')
-        first_iteration = True
-        while self._infinite_loop or first_iteration:
-            file_path = input(prompt_txt)
-            if os.path.isdir(file_path):
-                # If is directory, retrieve all files in it
-                self._step_multi_files(file_path)
-            elif os.path.isfile(file_path):
-                # Otherwise, read the given file
-                self._step_single_file(file_path)
-            else:
-                # Unknown path
-                self._logger.warning('File not detected')
-            first_iteration = False
+        """Start listening."""
+        if os.path.isdir(self._files_path):
+            # If is directory, retrieve all files in it
+            self._step_multi_files(self._files_path)
+        elif os.path.isfile(self._files_path):
+            # Otherwise, read the given file
+            self._step_single_file(self._files_path)
+        else:
+            # Unknown path
+            self._logger.warning('File(s) not detected')
 
     def _step_multi_files(self, path: str) -> None:
         """Run step with a path of files."""
@@ -117,23 +100,14 @@ class FileListenerStep(StartStep):
     def _get_path_content(
             self,
             file_path: str) -> Tuple[List[str], MessageSource]:
-        """Read the content of a single file or a whole directory."""
-        if self._single_file:
-            if not os.path.exists(file_path):
-                self._logger.error(f'File does not exist: {file_path}')
-                return [], self._message_source
-            with open(file_path, 'r') as fp:
-                raw_data = fp.read()
-                if self._is_json:
-                    json_data = json.loads(raw_data)
-                    message_source = MessageSource(json_data['source'])
-                    data = json_data['data']
-                else:
-                    message_source = self._message_source
-                    data = raw_data
-                return [data], message_source
-        else:
-            raise NotImplementedError  # TODO
+        """Read the content of a single file."""
+        if not os.path.isfile(file_path):
+            self._logger.error(f'File does not exist: {file_path}')
+            return [], self._message_source
+        with open(file_path, 'r') as fp:
+            raw_data = fp.read()
+            message_source = self._message_source
+            return [raw_data], message_source
 
 
 class WebsocketListenerStep(StartStep):

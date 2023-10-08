@@ -17,13 +17,6 @@ class CompetitionStage(str, EnumBase):
     RACE = 'race'
 
 
-class FlagName(str, EnumBase):
-    """Name of flags."""
-
-    REFRESH_COMPETITION = 'refresh-competition'
-    WAIT_INIT = 'wait-init'
-
-
 class KartStatus(str, EnumBase):
     """Status of a kart."""
 
