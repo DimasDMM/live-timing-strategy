@@ -48,8 +48,6 @@ This script has a single process that listens in the topic of Kafka where the
 notifications are written. Then, depending on the notification, it might
 trigger some computation of strategies.
 
-Note that this script does not have any flag (locker) like the previous scripts.
-
 ```mermaid
 graph TD;
   A[Kafka consumer: standard]
@@ -92,6 +90,7 @@ as settings to parse the data.
 Local Python command:
 ```sh
 python -m ltspipe.runners.ws_parser \
+  --competition_code competition-test \
   --api_lts http://localhost:8090 \
   --kafka_servers localhost:9092 \
   --websocket_uri ws://www.apex-timing.com:8092 \
@@ -207,36 +206,6 @@ python -m ltspipe.runners.kafka_check \
 Note that, if we are using a different Kafka, we may need to replace the
 value of `--kafka_servers` with our list of Kafka brokers (separated) by
 commas.
-
-### Pipeline: Manual listener
-
-It is common that we want to introduce the input manually so we validate that
-the whole pipeline is working correctly.
-
-Local Python command:
-```sh
-python -m src.ltspipe.runners.manual_listener \
-  --competition_code test-competition \
-  --message_source ws-listener \
-  --kafka_servers localhost:9092 \
-  --verbosity 1
-```
-
-Arguments:
-- `--competition_code`: (**mandatory**) Code of the competition.
-- `--kafka_notifications`: (optional) Topic of Kafka to read and write
-  notifications. By default, it is `notifications`.
-- `--kafka_produce`: (optional) Topic of Kafka to write messages. By default,
-  it is `raw-messages`.
-- `--kafka_servers`: (**mandatory**) List of Kafka brokers separated by commas.
-  Example: `localhost:9092,localhost:9093`.
-- `--message_source`: (optional) Source of the messages to mock.
-- `--is_json`: (optional, flag) If this flag is given, the format of the
-  messages must be JSON and it should be same like the Raw Storage works.
-  **Note**: The value message source is ignored with this option.
-- `--verbosity`: (optional) Level of verbosity of messages. The values can be
-  `0` to disable messages, `1` for debug (or greater), `2` for info (or
-  greater), ... and `5` for critical. By default, it is `2`.
 
 # TO DO
 
