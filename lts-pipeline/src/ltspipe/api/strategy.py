@@ -1,6 +1,7 @@
 import requests
 
 from ltspipe.data.strategy import StrategyPitsStats
+from ltspipe.exceptions import LtsError
 
 
 def _build_strategy_pit_stats(raw: dict) -> StrategyPitsStats:
@@ -42,10 +43,10 @@ def add_strategy_pit_stats(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_strategy_pit_stats(response)  # type: ignore

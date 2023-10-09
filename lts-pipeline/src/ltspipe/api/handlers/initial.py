@@ -27,6 +27,7 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.data.enum import KartStatus, ParserSettings
 from ltspipe.data.notifications import Notification, NotificationType
+from ltspipe.exceptions import LtsError
 
 
 class InitialDataHandler(ApiHandler):
@@ -45,7 +46,7 @@ class InitialDataHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Initialize the data of a competition."""
         if not isinstance(model, InitialData):
-            raise Exception('The model must be an instance of InitialData.')
+            raise LtsError('The model must be an instance of InitialData.')
 
         update_competition_metadata(
             api_url=self._api_url,
@@ -177,7 +178,7 @@ class InitialDataHandler(ApiHandler):
                 participant_code=p_code,
             )
             if team is None:
-                raise Exception(
+                raise LtsError(
                     f'Team with code={p_code} could not be found.')
 
             if participant.driver_name is not None:
@@ -188,7 +189,7 @@ class InitialDataHandler(ApiHandler):
                 )
                 if driver is None:
                     driver_name = participant.driver_name
-                    raise Exception(
+                    raise LtsError(
                         f'Driver with name={driver_name} could not be found.')
                 driver_id = driver.id
             else:

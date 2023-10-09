@@ -15,6 +15,7 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataRemaining,
     UpdateCompetitionMetadataStatus,
 )
+from ltspipe.exceptions import LtsError
 
 
 class UpdateCompetitionMetadataRemainingHandler(ApiHandler):
@@ -33,7 +34,7 @@ class UpdateCompetitionMetadataRemainingHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
         if not isinstance(model, UpdateCompetitionMetadataRemaining):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of '
                 'CompetitionMetadataRemaining.')
 
@@ -73,7 +74,7 @@ class UpdateCompetitionMetadataStatusHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
         if not isinstance(model, UpdateCompetitionMetadataStatus):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of CompetitionMetadataStatus.')
 
         competition_metadata = update_competition_metadata_status(

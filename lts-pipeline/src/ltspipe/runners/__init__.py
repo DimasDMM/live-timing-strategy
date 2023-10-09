@@ -7,6 +7,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.data.auth import AuthData
+from ltspipe.exceptions import LtsError
 
 
 BANNER_MSG = ('\n'
@@ -69,6 +70,6 @@ def do_auth(api_url: str) -> AuthData:
     """Do authentication."""
     key = os.environ.get('API_KEY', None)
     if key is None:
-        raise Exception('It is necessary to set the the environment variable '
-                        '"API_KEY" in order to authenticate in the API REST.')
+        raise LtsError('It is necessary to set the the environment variable '
+                       '"API_KEY" in order to authenticate in the API REST.')
     return refresh_bearer(api_url, key)

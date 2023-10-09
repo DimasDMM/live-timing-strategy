@@ -13,6 +13,7 @@ from ltspipe.data.competitions import (
     CompetitionStatus,
 )
 from ltspipe.data.competitions import DiffLap
+from ltspipe.exceptions import LtsError
 
 
 def _build_competition_metadata(raw: dict) -> CompetitionMetadata:
@@ -36,7 +37,7 @@ def build_competition_info(
     response = r.json()
 
     if not response or 'id' not in response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     competition_id = response['id']
     parser_settings = get_parsers_settings(api_url, bearer, competition_id)
@@ -61,11 +62,11 @@ def get_competition_metadata(
     r = requests.get(
         url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return _build_competition_metadata(response)
 
@@ -88,7 +89,7 @@ def update_competition_metadata(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
 
 def update_competition_metadata_remaining(
@@ -105,11 +106,11 @@ def update_competition_metadata_remaining(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not isinstance(response, dict):
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return _build_competition_metadata(response)
 
@@ -127,11 +128,11 @@ def update_competition_metadata_status(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not isinstance(response, dict):
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return _build_competition_metadata(response)
 
@@ -151,7 +152,7 @@ def add_parsers_settings(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
 
 def delete_parsers_settings(
@@ -162,7 +163,7 @@ def delete_parsers_settings(
     uri = f'{api_url}/v1/c/{competition_id}/parsers/settings'
     r = requests.delete(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
 
 def get_parsers_settings(
@@ -173,16 +174,16 @@ def get_parsers_settings(
     uri = f'{api_url}/v1/c/{competition_id}/parsers/settings'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not isinstance(response, list):
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     parser_settings: Dict[ParserSettings, str] = {}
     for item in response:
         if 'name' not in item or 'value' not in item:
-            raise Exception(f'Unknown API response: {response}')
+            raise LtsError(f'Unknown API response: {response}')
         parser_settings[ParserSettings.value_of(item['name'])] = item['value']
 
     return parser_settings
@@ -201,4 +202,4 @@ def update_parsers_settings(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')

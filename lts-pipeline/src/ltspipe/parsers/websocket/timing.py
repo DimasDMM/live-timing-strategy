@@ -12,6 +12,7 @@ from ltspipe.data.competitions import (
     UpdateTimingPosition,
 )
 from ltspipe.data.enum import ParserSettings
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.base import (
     _find_team_by_code,
@@ -87,7 +88,7 @@ class TimingBestTimeParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         timing_best_time: int = _time_to_millis(  # type: ignore
             raw_timing_best_time,
@@ -164,7 +165,7 @@ class TimingLapParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingLap(
             competition_code=self._info.competition_code,
@@ -241,7 +242,7 @@ class TimingLastTimeParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         timing_last_time: int = _time_to_millis(  # type: ignore
             raw_timing_last_time,
@@ -319,7 +320,7 @@ class TimingNumberPitsParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingNumberPits(
             competition_code=self._info.competition_code,
@@ -397,7 +398,7 @@ class TimingPitTimeParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingPitTime(
             competition_code=self._info.competition_code,
@@ -470,7 +471,7 @@ class TimingPositionParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingPosition(
             competition_code=self._info.competition_code,

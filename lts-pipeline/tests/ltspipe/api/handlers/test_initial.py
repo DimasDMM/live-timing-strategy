@@ -541,7 +541,7 @@ class TestInitialDataHandler(DatabaseTest):
             database_content: DatabaseContent,
             in_competition: CompetitionInfo) -> None:
         """
-        Test handle method raise exception about unkown team.
+        Test handle method raise LtsError about unkown team.
 
         It creates a competition without any team or driver, and tries to add
         a driver without team. It should return in an error since the driver

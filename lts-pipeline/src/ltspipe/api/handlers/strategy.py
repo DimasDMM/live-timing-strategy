@@ -10,6 +10,7 @@ from ltspipe.data.strategy import (
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import CompetitionInfo
+from ltspipe.exceptions import LtsError
 
 
 class StrategyPitsStatsHandler(ApiHandler):
@@ -28,7 +29,7 @@ class StrategyPitsStatsHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-in."""
         if not isinstance(model, AddStrategyPitsStats):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of AddStrategyPitsStats.')
 
         strategy = add_strategy_pit_stats(

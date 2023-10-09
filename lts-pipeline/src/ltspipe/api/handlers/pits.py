@@ -21,6 +21,7 @@ from ltspipe.data.competitions import (
     PitIn,
     PitOut,
 )
+from ltspipe.exceptions import LtsError
 
 
 class AddPitInHandler(ApiHandler):
@@ -39,7 +40,7 @@ class AddPitInHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-in."""
         if not isinstance(model, AddPitIn):
-            raise Exception('The model must be an instance of AddPitIn.')
+            raise LtsError('The model must be an instance of AddPitIn.')
 
         # Get latest information about the timing of the team
         last_timing = get_timing_by_team(
@@ -101,7 +102,7 @@ class AddPitOutHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-out."""
         if not isinstance(model, AddPitOut):
-            raise Exception('The model must be an instance of AddPitOut.')
+            raise LtsError('The model must be an instance of AddPitOut.')
 
         # Add pit-out
         new_pit_out = add_pit_out(

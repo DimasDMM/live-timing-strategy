@@ -6,6 +6,7 @@ from typing import Any, Optional, Union
 from ltspipe.base import EnumBase, BaseModel
 from ltspipe.data.actions import Action
 from ltspipe.data.notifications import Notification
+from ltspipe.exceptions import LtsError
 
 
 class MessageSource(EnumBase):
@@ -108,7 +109,7 @@ class Message(BaseModel):
             elif decoder == MessageDecoder.NOTIFICATION:
                 return Notification.from_dict(raw_data)
 
-        raise Exception(f'Unknown data format: {raw_data}')
+        raise LtsError(f'Unknown data format: {raw_data}')
 
     @staticmethod
     def __get_by_key(data: dict, key: str, required: bool = True) -> Any:
@@ -116,6 +117,6 @@ class Message(BaseModel):
         if key in data:
             return data[key]
         elif required:
-            raise Exception(f'Key "{key}" does not exist in: {data}')
+            raise LtsError(f'Key "{key}" does not exist in: {data}')
         else:
             return None

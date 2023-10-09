@@ -7,6 +7,7 @@ from ltspipe.data.competitions import (
     Team,
 )
 from ltspipe.data.enum import ParserSettings
+from ltspipe.exceptions import LtsError
 
 
 # The following regex matches the following samples:
@@ -65,6 +66,6 @@ def _is_column_parser_setting(
         return name_id == column_id
 
     if raise_exception:
-        raise Exception(f'Column for {parser_setting} not found')
+        raise LtsError(f'Column for {parser_setting} not found')
 
     return False

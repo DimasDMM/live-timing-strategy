@@ -1,7 +1,7 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
 
-from ltspipe.base import BaseModel
+from ltspipe.base import BaseModel, DictModel
 from ltspipe.data.enum import (
     CompetitionStage,
     CompetitionStatus,
@@ -9,7 +9,7 @@ from ltspipe.data.enum import (
     LengthUnit,
     ParserSettings,
 )
-from ltspipe.base import DictModel
+from ltspipe.exceptions import LtsError
 
 
 class Driver(DictModel):
@@ -300,7 +300,7 @@ class InitialData(DictModel):
 
         raw_participants = raw.get('participants')
         if not isinstance(raw_participants, dict):
-            raise Exception('The participants must be a dictionary.')
+            raise LtsError('The participants must be a dictionary.')
         participants = {code: Participant.from_dict(p)
                         for code, p in raw_participants.items()}
 

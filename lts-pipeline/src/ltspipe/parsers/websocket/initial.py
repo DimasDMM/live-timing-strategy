@@ -12,6 +12,7 @@ from ltspipe.data.competitions import (
     Participant,
 )
 from ltspipe.data.enum import ParserSettings
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import InitialParser
 from ltspipe.parsers.websocket.base import _time_to_millis
 
@@ -129,7 +130,7 @@ class InitialDataParser(InitialParser):
             stage = stage_filter[1]
             if re.match(stage_regex, raw):
                 return stage
-        raise Exception(f'Unknown stage: {raw}')
+        raise LtsError(f'Unknown stage: {raw}')
 
     def _parse_length(self, type: str, raw: str) -> DiffLap:
         """Parse remaining length of the competition."""
@@ -148,7 +149,7 @@ class InitialDataParser(InitialParser):
                 value=int(raw),
                 unit=LengthUnit.MILLIS,
             )
-        raise Exception(f'Unknown dyn1 (type={type}, content={raw})')
+        raise LtsError(f'Unknown dyn1 (type={type}, content={raw})')
 
     def _parse_headers(self, first_row: str) -> Dict[ParserSettings, str]:
         """Parse headers from the first row."""
@@ -175,8 +176,8 @@ class InitialDataParser(InitialParser):
                     and id_match == name_match):
                 header_data[id_match] = f'c{i}'
             else:
-                raise Exception(f'Cannot parse column {i} of headers '
-                                f'({id_match} != {name_match}).')
+                raise LtsError(f'Cannot parse column {i} of headers '
+                               f'({id_match} != {name_match}).')
 
         return header_data
 
@@ -207,7 +208,7 @@ class InitialDataParser(InitialParser):
 
             match = re.search(r'<tr[^>]*data-id="([^"]+)"', row, flags=re.S)
             if match is None:
-                raise Exception(f'Could not parse code in: {row}')
+                raise LtsError(f'Could not parse code in: {row}')
             participant_code = match[1]
 
             match = re.search(r'<tr[^>]*data-pos="([^"]+)"', row, flags=re.S)

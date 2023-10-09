@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from ltspipe.exceptions import LtsError
+
 
 DEFAULT_NOTIFICATIONS_TOPIC = 'notifications'
 DEFAULT_NOTIFICATIONS_LISTENER_GROUP = 'notifications-listener'
@@ -42,9 +44,9 @@ class WsParserConfig:
     def __post_init__(self) -> None:
         """Validate content."""
         if self.websocket_uri is None and self.websocket_path is None:
-            raise Exception('Both websocket URI and path are empty.')
+            raise LtsError('Both websocket URI and path are empty.')
         elif self.websocket_uri is not None and self.websocket_path is not None:
-            raise Exception('Cannot use websocket URI and path together.')
+            raise LtsError('Cannot use websocket URI and path together.')
 
 
 @dataclass(frozen=True)

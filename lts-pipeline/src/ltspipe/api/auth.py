@@ -1,6 +1,7 @@
 import requests
 
 from ltspipe.data.auth import AuthData
+from ltspipe.exceptions import LtsError
 
 
 def refresh_bearer(
@@ -11,7 +12,7 @@ def refresh_bearer(
     data = {'key': key}
     r = requests.post(url=uri, json=data)
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     auth_data: AuthData = AuthData.from_dict(response)  # type: ignore

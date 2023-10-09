@@ -5,6 +5,7 @@ from ltspipe.data.competitions import (
     Driver,
     Team,
 )
+from ltspipe.exceptions import LtsError
 
 
 def _build_driver(raw: dict) -> Driver:
@@ -62,11 +63,11 @@ def add_driver(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_driver(response)
 
@@ -101,11 +102,11 @@ def add_team(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_team(response)
 
@@ -130,7 +131,7 @@ def get_driver_by_id(
     uri = f'{api_url}/v1/c/{competition_id}/drivers/{driver_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
@@ -161,7 +162,7 @@ def get_team(
 
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
@@ -191,7 +192,7 @@ def get_team_by_code(
            f'filter/code/{participant_code}')
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
@@ -226,7 +227,7 @@ def get_all_drivers(
 
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
     drivers: List[Driver] = []
@@ -256,7 +257,7 @@ def get_all_teams(
 
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
     teams: List[Team] = []
@@ -300,11 +301,11 @@ def update_driver(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_driver(response)
 
@@ -342,10 +343,10 @@ def update_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_team(response)

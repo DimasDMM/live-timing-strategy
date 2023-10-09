@@ -10,6 +10,7 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.strategy import AddStrategyPitsStats
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
 from ltspipe.api.pits import get_pits_in_by_team
 from ltspipe.api.timing import get_timing_history_by_team
@@ -50,7 +51,7 @@ class StrategyPitsStatsParser(Parser):
             # Ignore notification
             return [], False
         elif not isinstance(data.data, PitIn):
-            raise Exception('Unknown data content of pit-in notification')
+            raise LtsError('Unknown data content of pit-in notification')
 
         action = self._compute_strategy(data=data.data)
 

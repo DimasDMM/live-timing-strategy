@@ -15,6 +15,7 @@ from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.data.notifications import NotificationType
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.strategy import StrategyPitsStatsParser
 from ltspipe.steps.api import ApiActionStep, CompetitionInfoRefreshStep
 from ltspipe.steps.filesystem import MessageStorageStep
@@ -47,7 +48,7 @@ def main(config: NotificationsListenerConfig, logger: Logger) -> None:
         bearer=auth_data.bearer,
         competition_code=config.competition_code)
     if info is None:
-        raise Exception(
+        raise LtsError(
             f'Competition does not exist: {config.competition_code}')
 
     logger.info('Init processes...')

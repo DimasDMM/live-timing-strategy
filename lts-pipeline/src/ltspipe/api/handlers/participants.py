@@ -27,6 +27,7 @@ from ltspipe.data.competitions import (
     UpdateDriver,
     UpdateTeam,
 )
+from ltspipe.exceptions import LtsError
 
 
 class UpdateDriverHandler(ApiHandler):
@@ -45,7 +46,7 @@ class UpdateDriverHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
         if not isinstance(model, UpdateDriver):
-            raise Exception('The model must be an instance of UpdateDriver.')
+            raise LtsError('The model must be an instance of UpdateDriver.')
 
         if model.id is None:
             old_driver = _find_driver_by_name(
@@ -54,7 +55,7 @@ class UpdateDriverHandler(ApiHandler):
             old_driver = _find_driver_by_id(
                 self._info, model.participant_code, model.id)
             if old_driver is None:
-                raise Exception(f'Unknown driver to update: {model}')
+                raise LtsError(f'Unknown driver to update: {model}')
 
         if old_driver is None:
             # Add new driver
@@ -158,7 +159,7 @@ class UpdateTeamHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a team."""
         if not isinstance(model, UpdateTeam):
-            raise Exception('The model must be an instance of UpdateTeam.')
+            raise LtsError('The model must be an instance of UpdateTeam.')
 
         old_team: Optional[Team] = _find_team_by_code(
             info=self._info,

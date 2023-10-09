@@ -10,6 +10,7 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
 )
 from ltspipe.data.enum import LengthUnit
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.base import _time_to_millis
 
@@ -84,7 +85,7 @@ class CompetitionMetadataRemainingParser(Parser):
                 ),
             )
         else:
-            raise Exception(
+            raise LtsError(
                 f'Unknown competition metadata remaining length: {data}')
 
 
@@ -150,7 +151,7 @@ class CompetitionMetadataStatusParser(Parser):
                 status=CompetitionStatus.PAUSED,
             )
         else:
-            raise Exception(
+            raise LtsError(
                 f'Unknown competition metadata status: {raw_status}')
 
         return metadata

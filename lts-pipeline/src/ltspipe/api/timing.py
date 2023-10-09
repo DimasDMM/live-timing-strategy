@@ -7,6 +7,7 @@ from ltspipe.data.competitions import (
     ParticipantTiming,
 )
 from ltspipe.data.enum import KartStatus
+from ltspipe.exceptions import LtsError
 
 
 def get_all_timing(
@@ -17,16 +18,16 @@ def get_all_timing(
     uri = f'{api_url}/v1/c/{competition_id}/timing'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not isinstance(response, list):
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     timing: Dict[str, ParticipantTiming] = {}
     for item in response:
         if 'participant_code' not in item:
-            raise Exception(f'Unknown API response: {response}')
+            raise LtsError(f'Unknown API response: {response}')
         code = item['participant_code']
         timing[code] = ParticipantTiming.from_dict(item)  # type: ignore
 
@@ -42,7 +43,7 @@ def get_timing_by_team(
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
@@ -61,7 +62,7 @@ def get_timing_history_by_team(
     uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/history'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
     timing: List[ParticipantTiming] = []
@@ -116,11 +117,11 @@ def update_timing_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -139,11 +140,11 @@ def update_timing_driver_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -162,11 +163,11 @@ def update_timing_best_time_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -185,11 +186,11 @@ def update_timing_lap_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -210,11 +211,11 @@ def update_timing_last_time_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -233,11 +234,11 @@ def update_timing_number_pits_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -256,11 +257,11 @@ def update_timing_pit_time_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore
 
@@ -281,10 +282,10 @@ def update_timing_position_by_team(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response = r.json()
     if not response:
-        raise Exception(f'Unknown API response ({uri}): {response}')
+        raise LtsError(f'Unknown API response ({uri}): {response}')
 
     return ParticipantTiming.from_dict(response)  # type: ignore

@@ -7,6 +7,7 @@ from ltspipe.data.competitions import (
     AddPitOut,
     CompetitionInfo,
 )
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.base import _find_team_by_code
 
@@ -51,7 +52,7 @@ class PitInParser(Parser):
             team_code=participant_code)
 
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         action = Action(
             type=ActionType.ADD_PIT_IN,
@@ -103,7 +104,7 @@ class PitOutParser(Parser):
             team_code=participant_code)
 
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         action = Action(
             type=ActionType.ADD_PIT_OUT,

@@ -8,6 +8,7 @@ from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.data.notifications import Notification
+from ltspipe.exceptions import LtsError
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.steps.base import MidStep
 
@@ -136,7 +137,7 @@ class CompetitionInfoRefreshStep(MidStep):
             bearer=self._auth_data.bearer,
             competition_code=competition_code)
         if new_info is None:
-            raise Exception(
+            raise LtsError(
                 f'Competition does not exist: {competition_code}')
 
         self._info.id = new_info.id

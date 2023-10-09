@@ -3,6 +3,8 @@ from enum import Enum
 from pydantic import BaseModel as _BaseModel
 from typing import Any, Dict, Tuple
 
+from ltspipe.exceptions import LtsError
+
 
 class EnumBase(Enum):
     """Enumeration that allows comparison."""
@@ -59,10 +61,10 @@ class DictModel(BaseModel, ABC):
         """Do a basic validation on the raw data."""
         for field_name, field_props in cls.model_fields.items():
             if field_props.is_required() and field_name not in raw:
-                raise Exception(f'Missing required field: {field_name}')
+                raise LtsError(f'Missing required field: {field_name}')
 
         if not ignore_unknowns:
             fields = set(cls.model_fields.keys())
             raw_fields = set(raw)
             if raw_fields.intersection(fields) != raw_fields:
-                raise Exception(f'There are unknown fields: {raw_fields}')
+                raise LtsError(f'There are unknown fields: {raw_fields}')

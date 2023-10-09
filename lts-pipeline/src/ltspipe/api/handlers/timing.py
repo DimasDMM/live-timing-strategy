@@ -26,6 +26,7 @@ from ltspipe.data.competitions import (
     UpdateTimingPitTime,
     UpdateTimingPosition,
 )
+from ltspipe.exceptions import LtsError
 
 
 class UpdateTimingBestTimeHandler(ApiHandler):
@@ -44,7 +45,7 @@ class UpdateTimingBestTimeHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingBestTime):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingBestTime.')
 
         participant_timing = update_timing_best_time_by_team(
@@ -81,7 +82,7 @@ class UpdateTimingLapHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingLap):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingLap.')
 
         participant_timing = update_timing_lap_by_team(
@@ -118,7 +119,7 @@ class UpdateTimingLastTimeHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingLastTime):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingLastTime.')
 
         participant_timing = update_timing_last_time_by_team(
@@ -156,7 +157,7 @@ class UpdateTimingNumberPitsHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingNumberPits):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingNumberPits.')
 
         participant_timing = update_timing_number_pits_by_team(
@@ -193,7 +194,7 @@ class UpdateTimingPitTimeHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingPitTime):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingPitTime.')
 
         # Update time in the last pit-in
@@ -247,7 +248,7 @@ class UpdateTimingPositionHandler(ApiHandler):
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
         if not isinstance(model, UpdateTimingPosition):
-            raise Exception(
+            raise LtsError(
                 'The model must be an instance of UpdateTimingPosition.')
 
         participant_timing = update_timing_position_by_team(

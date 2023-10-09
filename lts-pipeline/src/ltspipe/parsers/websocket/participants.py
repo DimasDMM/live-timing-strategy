@@ -9,6 +9,7 @@ from ltspipe.data.competitions import (
     UpdateTeam,
 )
 from ltspipe.data.enum import ParserSettings
+from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
 from ltspipe.parsers.websocket.base import (
     _find_driver_by_name,
@@ -85,7 +86,7 @@ class DriverNameParser(Parser):
             info=self._info,
             team_code=participant_code)
         if team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),
@@ -153,7 +154,7 @@ class TeamNameParser(Parser):
             team_code=participant_code)
 
         if old_team is None:
-            raise Exception(f'Unknown team with code={participant_code}')
+            raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_team = UpdateTeam(
             id=old_team.id,

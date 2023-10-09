@@ -11,6 +11,7 @@ from ltspipe.data.competitions import (
     Team,
 )
 from ltspipe.data.strategy import StrategyPitsStats
+from ltspipe.exceptions import LtsError
 
 
 class NotificationType(str, EnumBase):
@@ -81,11 +82,11 @@ class Notification(DictModel):
             raw_data: Any) -> Any:
         """Transform the raw data into a model."""
         if type not in _factory:
-            raise Exception(f'Unknown notification type: {type}')
+            raise LtsError(f'Unknown notification type: {type}')
         elif _factory[type] is None:
             return raw_data
 
         if not isinstance(raw_data, dict):
-            raise Exception(f'Unknown data format: {raw_data}')
+            raise LtsError(f'Unknown data format: {raw_data}')
         else:
             return _factory[type].from_dict(raw_data)  # type: ignore

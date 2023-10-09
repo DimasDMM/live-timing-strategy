@@ -20,6 +20,7 @@ from ltspipe.data.competitions import (
 from ltspipe.data.strategy import (
     AddStrategyPitsStats,
 )
+from ltspipe.exceptions import LtsError
 
 
 class ActionType(str, EnumBase):
@@ -82,7 +83,7 @@ class Action(DictModel):
     def __from_dict_data(type: ActionType, raw_data: Any) -> BaseModel:
         """Transform the raw data into a model."""
         if type not in _factory or _factory[type] is None:
-            raise Exception(f'Unknown action type: {type}')
+            raise LtsError(f'Unknown action type: {type}')
         elif not isinstance(raw_data, dict):
-            raise Exception(f'Unknown data format: {raw_data}')
+            raise LtsError(f'Unknown data format: {raw_data}')
         return _factory[type].from_dict(raw_data)

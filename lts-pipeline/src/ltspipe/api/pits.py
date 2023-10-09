@@ -6,6 +6,7 @@ from ltspipe.data.competitions import (
     PitIn,
     PitOut,
 )
+from ltspipe.exceptions import LtsError
 
 
 def _build_pit_in(raw: dict) -> PitIn:
@@ -65,11 +66,11 @@ def add_pit_in(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_pit_in(response)
 
@@ -106,11 +107,11 @@ def add_pit_out(
     r = requests.post(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_pit_out(response)
 
@@ -124,7 +125,7 @@ def get_pits_in_by_team(
     uri = f'{api_url}/v1/c/{competition_id}/pits/in/filter/team/{team_id}'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
     pits_in: List[PitIn] = []
@@ -144,7 +145,7 @@ def get_last_pit_in_by_team(
     uri = f'{api_url}/v1/c/{competition_id}/pits/in/filter/team/{team_id}/last'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
@@ -162,7 +163,7 @@ def get_last_pit_out_by_team(
     uri = f'{api_url}/v1/c/{competition_id}/pits/out/filter/team/{team_id}/last'
     r = requests.get(url=uri, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if not response:
@@ -185,11 +186,11 @@ def update_pit_in_time_by_id(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_pit_in(response)
 
@@ -208,10 +209,10 @@ def update_pit_out_driver_by_id(
     r = requests.put(
         url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
     if r.status_code != 200:
-        raise Exception(f'API error: {r.text}')
+        raise LtsError(f'API error: {r.text}')
 
     response: dict = r.json()  # type: ignore
     if 'id' not in response:
-        raise Exception(f'API unknown response: {response}')
+        raise LtsError(f'API unknown response: {response}')
 
     return _build_pit_out(response)

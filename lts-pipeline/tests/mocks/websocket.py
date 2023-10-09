@@ -1,13 +1,15 @@
 from typing import Callable, List
 import websocket
 
+from ltspipe.exceptions import LtsError
+
 
 def _default_callable(
         ws: websocket.WebSocketApp,  # noqa: U100
         *args: tuple,  # noqa: U100
         **kwargs: dict) -> None:  # noqa: U100
     """Build an empty callable for the websocket."""
-    raise Exception('Callable was not replaced.')
+    raise LtsError('Callable was not replaced.')
 
 
 class MockWebSocketApp(websocket.WebSocketApp):
