@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.pits import (
@@ -35,11 +35,11 @@ class UpdateTimingBestTimeHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -47,13 +47,10 @@ class UpdateTimingBestTimeHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingBestTime.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         participant_timing = update_timing_best_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             best_time=model.best_time,
         )
@@ -75,11 +72,11 @@ class UpdateTimingLapHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -87,13 +84,10 @@ class UpdateTimingLapHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingLap.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         participant_timing = update_timing_lap_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             lap=model.lap,
         )
@@ -115,11 +109,11 @@ class UpdateTimingLastTimeHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -127,13 +121,10 @@ class UpdateTimingLastTimeHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingLastTime.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         participant_timing = update_timing_last_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             last_time=model.last_time,
             auto_best_time=model.auto_best_time,
@@ -156,11 +147,11 @@ class UpdateTimingNumberPitsHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -168,13 +159,10 @@ class UpdateTimingNumberPitsHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingNumberPits.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         participant_timing = update_timing_number_pits_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             number_pits=model.number_pits,
         )
@@ -196,11 +184,11 @@ class UpdateTimingPitTimeHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -208,21 +196,18 @@ class UpdateTimingPitTimeHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingPitTime.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         # Update time in the last pit-in
         last_pit_in = get_last_pit_in_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
         )
         if last_pit_in is not None:
             _ = update_pit_in_time_by_id(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 pit_in_id=last_pit_in.id,
                 pit_time=model.pit_time,
             )
@@ -231,7 +216,7 @@ class UpdateTimingPitTimeHandler(ApiHandler):
         participant_timing = update_timing_pit_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             pit_time=model.pit_time,
         )
@@ -253,11 +238,11 @@ class UpdateTimingPositionHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the timing position of a participant."""
@@ -265,13 +250,10 @@ class UpdateTimingPositionHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of UpdateTimingPosition.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         participant_timing = update_timing_position_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             position=model.position,
             auto_other_positions=model.auto_other_positions,

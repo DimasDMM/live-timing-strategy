@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, List, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -19,28 +19,24 @@ class PitInParser(Parser):
     > r5625|*in|0
     """
 
-    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+    def __init__(self, info: CompetitionInfo) -> None:
         """Construct."""
-        self._competitions = competitions
+        self._info = info
 
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
             bool: indicates whether the data has been parsed or not.
         """
-        if competition_code not in self._competitions:
-            raise Exception(f'Unknown competition with code={competition_code}')
-        elif not isinstance(data, str):
+        if not isinstance(data, str):
             return [], False
 
         data = data.strip()
@@ -51,8 +47,7 @@ class PitInParser(Parser):
         participant_code = matches[1]
 
         team = _find_team_by_code(
-            self._competitions,
-            competition_code,
+            info=self._info,
             team_code=participant_code)
 
         if team is None:
@@ -61,7 +56,7 @@ class PitInParser(Parser):
         action = Action(
             type=ActionType.ADD_PIT_IN,
             data=AddPitIn(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 team_id=team.id,
             ),
         )
@@ -76,28 +71,24 @@ class PitOutParser(Parser):
     > r5625|*out|0
     """
 
-    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+    def __init__(self, info: CompetitionInfo) -> None:
         """Construct."""
-        self._competitions = competitions
+        self._info = info
 
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
             bool: indicates whether the data has been parsed or not.
         """
-        if competition_code not in self._competitions:
-            raise Exception(f'Unknown competition with code={competition_code}')
-        elif not isinstance(data, str):
+        if not isinstance(data, str):
             return [], False
 
         data = data.strip()
@@ -108,8 +99,7 @@ class PitOutParser(Parser):
         participant_code = matches[1]
 
         team = _find_team_by_code(
-            self._competitions,
-            competition_code,
+            info=self._info,
             team_code=participant_code)
 
         if team is None:
@@ -118,7 +108,7 @@ class PitOutParser(Parser):
         action = Action(
             type=ActionType.ADD_PIT_OUT,
             data=AddPitOut(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 team_id=team.id,
             ),
         )

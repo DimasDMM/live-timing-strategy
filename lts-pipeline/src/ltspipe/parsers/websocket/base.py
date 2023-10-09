@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.data.competitions import (
     CompetitionInfo,
@@ -17,11 +17,9 @@ REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
 
 
 def _find_driver_by_name(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
+        info: CompetitionInfo,
         driver_name: str) -> Optional[Driver]:
     """Find a driver in the competition info."""
-    info = competitions[competition_code]
     for d in info.drivers:
         if d.name == driver_name:
             return d
@@ -29,11 +27,9 @@ def _find_driver_by_name(
 
 
 def _find_team_by_code(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
+        info: CompetitionInfo,
         team_code: str) -> Optional[Team]:
     """Find a team in the competition info."""
-    info = competitions[competition_code]
     for t in info.teams:
         if t.participant_code == team_code:
             return t
@@ -59,13 +55,11 @@ def _time_to_millis(
 
 
 def _is_column_parser_setting(
-        competitions: Dict[str, CompetitionInfo],
-        competition_code: str,
+        info: CompetitionInfo,
         column_id: str,
         parser_setting: ParserSettings,
         raise_exception: bool = True) -> bool:
     """Validate that the column correspond to the expected data."""
-    info = competitions[competition_code]
     if parser_setting in info.parser_settings:
         name_id = info.parser_settings[parser_setting]
         return name_id == column_id

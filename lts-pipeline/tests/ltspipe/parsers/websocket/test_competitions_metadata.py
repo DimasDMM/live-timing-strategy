@@ -25,10 +25,16 @@ class TestCompetitionMetadataRemainingParser:
     """Test ltspipe.parsers.websocket.CompetitionMetadataRemainingParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_stage_remaining_time_countdown.txt'),  # in_data
                 [  # expected_actions
@@ -46,7 +52,13 @@ class TestCompetitionMetadataRemainingParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_stage_remaining_time_text.txt'),  # in_data
                 [  # expected_actions
@@ -64,7 +76,13 @@ class TestCompetitionMetadataRemainingParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_stage_remaining_time_empty.txt'),  # in_data
                 [  # expected_actions
@@ -82,13 +100,25 @@ class TestCompetitionMetadataRemainingParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -97,23 +127,29 @@ class TestCompetitionMetadataRemainingParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         parser = CompetitionMetadataRemainingParser(
-            competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+            info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_stage_remaining_time_unknown.txt'),  # in_data
                 'Unknown competition metadata remaining length: dyn1|unknown|',
@@ -122,14 +158,14 @@ class TestCompetitionMetadataRemainingParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
         parser = CompetitionMetadataRemainingParser(
-            competitions=in_competitions)
+            info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -138,10 +174,16 @@ class TestCompetitionMetadataStatusParser:
     """Test ltspipe.parsers.websocket.CompetitionMetadataStatusParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_status_paused.txt'),  # in_data
                 [  # expected_actions
                     Action(
@@ -155,7 +197,13 @@ class TestCompetitionMetadataStatusParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_status_started.txt'),  # in_data
                 [  # expected_actions
                     Action(
@@ -169,7 +217,13 @@ class TestCompetitionMetadataStatusParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_status_finished.txt'),  # in_data
                 [  # expected_actions
                     Action(
@@ -183,13 +237,25 @@ class TestCompetitionMetadataStatusParser:
                 True,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -198,22 +264,28 @@ class TestCompetitionMetadataStatusParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = CompetitionMetadataStatusParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = CompetitionMetadataStatusParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_status_unknown.txt'),  # in_data
                 'Unknown competition metadata status: unknown_status',
             ),
@@ -221,12 +293,12 @@ class TestCompetitionMetadataStatusParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = CompetitionMetadataStatusParser(competitions=in_competitions)
+        parser = CompetitionMetadataStatusParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception

@@ -1,5 +1,5 @@
 import pytest
-from typing import Dict, List
+from typing import List
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.pits import (
@@ -176,7 +176,7 @@ class TestAddPitInHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, add_data,'
+        ('database_content, in_competition, add_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -184,15 +184,13 @@ class TestAddPitInHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 AddPitIn(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -235,15 +233,13 @@ class TestAddPitInHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 AddPitIn(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=2,
@@ -286,7 +282,7 @@ class TestAddPitInHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             add_data: AddPitIn,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -298,7 +294,7 @@ class TestAddPitInHandler(DatabaseTest):
         handler = AddPitInHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(add_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -319,7 +315,7 @@ class TestAddPitOutHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, add_data,'
+        ('database_content, in_competition, add_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -343,15 +339,13 @@ class TestAddPitOutHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 AddPitOut(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=2,
@@ -394,15 +388,13 @@ class TestAddPitOutHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 AddPitOut(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=2,
@@ -445,7 +437,7 @@ class TestAddPitOutHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             add_data: AddPitOut,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -457,7 +449,7 @@ class TestAddPitOutHandler(DatabaseTest):
         handler = AddPitOutHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(add_data)
         assert notification is not None
         assert (notification.model_dump()

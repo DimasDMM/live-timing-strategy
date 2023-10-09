@@ -48,7 +48,14 @@ def build_magic_step() -> MagicMock:
 def build_magic_parser() -> Tuple[DummyParser, MagicMock]:
     """Create mock of a parser."""
     mocked = MagicMock(return_value=(
-        [Action(type=ActionType.INITIALIZE, data=DummyModel(text=None))], True))
+        [
+            Action(
+                type=ActionType.INITIALIZE,
+                data=DummyModel(text=None),
+            ),
+        ],
+        True,
+    ))
     parser = DummyParser()
     parser.parse = mocked  # type: ignore
     return parser, mocked

@@ -1,5 +1,5 @@
 import pytest
-from typing import Dict, List
+from typing import List
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.timing import (
@@ -140,22 +140,20 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingBestTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -231,7 +229,7 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingBestTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -243,7 +241,7 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
         handler = UpdateTimingBestTimeHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -264,22 +262,20 @@ class TestUpdateTimingLapHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingLap(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -355,7 +351,7 @@ class TestUpdateTimingLapHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingLap,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -367,7 +363,7 @@ class TestUpdateTimingLapHandler(DatabaseTest):
         handler = UpdateTimingLapHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -388,22 +384,20 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingLastTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -479,15 +473,13 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingLastTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -564,7 +556,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingLastTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -576,7 +568,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
         handler = UpdateTimingLastTimeHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -597,22 +589,20 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingNumberPits(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -688,7 +678,7 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingNumberPits,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -700,7 +690,7 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
         handler = UpdateTimingNumberPitsHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -721,22 +711,20 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingPitTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -812,7 +800,7 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingPitTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -824,7 +812,7 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
         handler = UpdateTimingPitTimeHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -845,22 +833,20 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateTimingPosition(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     team_id=1,
@@ -937,7 +923,7 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTimingPosition,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -949,7 +935,7 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
         handler = UpdateTimingPositionHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()

@@ -1,9 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from ltspipe.data.enum import EnumBase
-from ltspipe.messages import MessageSource
-
 
 DEFAULT_NOTIFICATIONS_TOPIC = 'notifications'
 DEFAULT_NOTIFICATIONS_LISTENER_GROUP = 'notifications-listener'
@@ -15,41 +12,12 @@ DEFAULT_WS_RAW_DATA_PATH = 'artifacts/ws-raw/data/'
 DEFAULT_WS_RAW_ERRORS_PATH = 'artifacts/ws-raw/errors/'
 
 
-class KafkaMode(EnumBase):
-    """Enumeration of Kafka modes."""
-
-    MODE_CONSUMER = 'kafka-consumer'
-    MODE_PRODUCER = 'kafka-producer'
-
-
-@dataclass(frozen=True)
-class KafkaCheckConfig:
-    """Class to store the settings of the CLI script."""
-
-    kafka_servers: List[str]
-    test_mode: KafkaMode
-    kafka_topic: str
-    verbosity: int = field(default=DEFAULT_VERBOSITY)
-
-
-@dataclass(frozen=True)
-class ManualListenerConfig:
-    """Class to store the settings of the CLI script."""
-
-    competition_code: str
-    message_source: MessageSource
-    is_json: bool
-    kafka_servers: List[str]
-    kafka_notifications: str = field(default=DEFAULT_NOTIFICATIONS_TOPIC)
-    kafka_produce: str = field(default='')  # TODO: Remove this config
-    verbosity: int = field(default=DEFAULT_VERBOSITY)
-
-
 @dataclass(frozen=True)
 class NotificationsListenerConfig:
     """Class to store the settings of the CLI script."""
 
     api_lts: str
+    competition_code: str
     kafka_servers: List[str]
     errors_path: str = field(default=DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH)
     kafka_group: str = field(default=DEFAULT_NOTIFICATIONS_LISTENER_GROUP)

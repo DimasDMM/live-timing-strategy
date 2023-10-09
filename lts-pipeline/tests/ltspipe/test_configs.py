@@ -1,6 +1,4 @@
 from ltspipe.configs import (
-    KafkaCheckConfig,
-    KafkaMode,
     NotificationsListenerConfig,
     WsRawStorageConfig,
     WsParserConfig,
@@ -21,28 +19,16 @@ from tests.fixtures import (
 )
 
 
-def test_kafka_check_config() -> None:
-    """Test ltspipe.configs.KafkaCheckConfig."""
-    kafka_servers = ['localhost:9092']
-    kafka_check_config = KafkaCheckConfig(
-        kafka_servers=kafka_servers,
-        kafka_topic='',
-        test_mode=KafkaMode.MODE_PRODUCER,
-    )
-    assert kafka_check_config.kafka_servers == kafka_servers
-    assert kafka_check_config.test_mode == KafkaMode.MODE_PRODUCER
-    assert kafka_check_config.kafka_topic == ''
-    assert kafka_check_config.verbosity == DEFAULT_VERBOSITY
-
-
 def test_notifications_listener_config() -> None:
     """Test ltspipe.configs.ApiSenderConfig."""
     config = NotificationsListenerConfig(
         api_lts=MOCK_API_LTS,
+        competition_code=TEST_COMPETITION_CODE,
         kafka_servers=MOCK_KAFKA,
     )
 
     assert config.api_lts == MOCK_API_LTS
+    assert config.competition_code == TEST_COMPETITION_CODE
     assert config.errors_path == DEFAULT_NOTIFICATIONS_LISTENER_ERRORS_PATH
     assert config.kafka_group == DEFAULT_NOTIFICATIONS_LISTENER_GROUP
     assert config.kafka_notifications == DEFAULT_NOTIFICATIONS_TOPIC

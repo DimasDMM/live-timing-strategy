@@ -35,7 +35,7 @@ class TestInitialDataHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, initial_data_1, initial_data_2,'
+        ('database_content, in_competition, initial_data_1, initial_data_2,'
          'expected_teams_1, expected_teams_2, expected_drivers_1,'
          'expected_drivers_2, expected_settings_1, expected_settings_2,'
          'expected_notification_1, expected_notification_2, expected_database'),
@@ -85,15 +85,13 @@ class TestInitialDataHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 InitialData(  # initial_data_1
                     competition_code=TEST_COMPETITION_CODE,
                     stage=CompetitionStage.QUALIFYING,
@@ -205,13 +203,13 @@ class TestInitialDataHandler(DatabaseTest):
                 ),
                 [  # expected_teams_1
                     Team(
-                        id=0,
+                        id=1,
                         participant_code='r5625',
                         name='Team 1',
                         number=41,
                     ),
                     Team(
-                        id=0,
+                        id=2,
                         participant_code='r5626',
                         name='Team 2',
                         number=42,
@@ -219,19 +217,19 @@ class TestInitialDataHandler(DatabaseTest):
                 ],
                 [  # expected_teams_2
                     Team(
-                        id=0,
+                        id=1,
                         participant_code='r5625',
                         name='Team 1',
                         number=41,
                     ),
                     Team(
-                        id=0,
+                        id=2,
                         participant_code='r5626',
                         name='Team 2',
                         number=42,
                     ),
                     Team(
-                        id=0,
+                        id=3,
                         participant_code='r5627',
                         name='Team 3',
                         number=43,
@@ -239,7 +237,7 @@ class TestInitialDataHandler(DatabaseTest):
                 ],
                 [  # expected_drivers_1
                     Driver(
-                        id=0,
+                        id=1,
                         team_id=0,
                         participant_code='r5625',
                         name='Team 1 Driver 1',
@@ -248,7 +246,7 @@ class TestInitialDataHandler(DatabaseTest):
                         partial_driving_time=0,
                     ),
                     Driver(
-                        id=0,
+                        id=2,
                         team_id=0,
                         participant_code='r5626',
                         name='Team 2 Driver 1',
@@ -259,7 +257,7 @@ class TestInitialDataHandler(DatabaseTest):
                 ],
                 [  # expected_drivers_2
                     Driver(
-                        id=0,
+                        id=1,
                         team_id=0,
                         participant_code='r5625',
                         name='Team 1 Driver 1',
@@ -268,8 +266,8 @@ class TestInitialDataHandler(DatabaseTest):
                         partial_driving_time=0,
                     ),
                     Driver(
-                        id=0,
-                        team_id=0,
+                        id=2,
+                        team_id=2,
                         participant_code='r5626',
                         name='Team 2 Driver 1',
                         number=42,
@@ -277,7 +275,7 @@ class TestInitialDataHandler(DatabaseTest):
                         partial_driving_time=0,
                     ),
                     Driver(
-                        id=0,
+                        id=3,
                         team_id=0,
                         participant_code='r5626',
                         name='Team 2 Driver 2 New',
@@ -429,7 +427,7 @@ class TestInitialDataHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             initial_data_1: InitialData,
             initial_data_2: InitialData,
             expected_teams_1: List[Team],
@@ -449,15 +447,14 @@ class TestInitialDataHandler(DatabaseTest):
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(initial_data_1)
-        info = in_competitions[TEST_COMPETITION_CODE]
-        self._add_team_id_to_drivers(info, expected_drivers_1)
-        assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
-                == [t.model_dump(exclude={'id': True}) for t in expected_teams_1])  # noqa: E501, LN001
-        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
-                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_1])  # noqa: E501, LN001
-        assert info.parser_settings == expected_settings_1
+        self._add_team_id_to_drivers(in_competition, expected_drivers_1)
+        assert ([t.model_dump() for t in in_competition.teams]
+                == [t.model_dump() for t in expected_teams_1])
+        assert ([d.model_dump() for d in in_competition.drivers]
+                == [d.model_dump() for d in expected_drivers_1])
+        assert in_competition.parser_settings == expected_settings_1
         assert notification is not None
         assert notification == expected_notification_1
 
@@ -465,14 +462,14 @@ class TestInitialDataHandler(DatabaseTest):
         handler = InitialDataHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(initial_data_2)
-        self._add_team_id_to_drivers(info, expected_drivers_2)
-        assert ([t.model_dump(exclude={'id': True}) for t in info.teams]
-                == [t.model_dump(exclude={'id': True}) for t in expected_teams_2])  # noqa: E501, LN001
-        assert ([d.model_dump(exclude={'id': True}) for d in info.drivers]
-                == [d.model_dump(exclude={'id': True}) for d in expected_drivers_2])  # noqa: E501, LN001
-        assert info.parser_settings == expected_settings_2
+        self._add_team_id_to_drivers(in_competition, expected_drivers_2)
+        assert ([t.model_dump() for t in in_competition.teams]
+                == [t.model_dump() for t in expected_teams_2])
+        assert ([d.model_dump() for d in in_competition.drivers]
+                == [d.model_dump() for d in expected_drivers_2])
+        assert in_competition.parser_settings == expected_settings_2
         assert notification is not None
         assert notification == expected_notification_2
 
@@ -481,55 +478,8 @@ class TestInitialDataHandler(DatabaseTest):
         assert (self.get_database_content(query).model_dump()
                 == expected_database.model_dump())
 
-    def test_handle_raises_exception_id_none(self) -> None:
-        """Test handle method raise exception about ID None."""
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
-        in_competitions = {
-            TEST_COMPETITION_CODE: CompetitionInfo(
-                id=None,
-                competition_code=TEST_COMPETITION_CODE,
-            ),
-        }
-        initial_data = InitialData(
-            competition_code=TEST_COMPETITION_CODE,
-            stage=CompetitionStage.QUALIFYING,
-            status=CompetitionStatus.ONGOING,
-            remaining_length=DiffLap(
-                value=9,
-                unit=LengthUnit.LAPS,
-            ),
-            participants={
-                'r5625': Participant(
-                    best_time=59000,
-                    driver_name='Team 1 Driver 1',
-                    gap=DiffLap(value=0, unit=LengthUnit.MILLIS),
-                    interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
-                    kart_number=41,
-                    laps=5,
-                    last_time=61000,
-                    number_pits=0,
-                    participant_code='r5625',
-                    pits=2,
-                    position=1,
-                    team_name='Team 1',
-                ),
-            },
-        )
-
-        # Call to handle method
-        with pytest.raises(Exception) as e_info:
-            handler = InitialDataHandler(
-                api_url=REAL_API_LTS,
-                auth_data=auth_data,
-                competitions=in_competitions)
-            handler.handle(initial_data)
-
-        exception: Exception = e_info.value
-        assert (str(exception) == 'ID of the competition cannot '
-                                  f'be None: {TEST_COMPETITION_CODE}')
-
     @pytest.mark.parametrize(
-        'database_content, in_competitions',
+        'database_content, in_competition',
         [
             (
                 DatabaseContent(  # database_content
@@ -576,22 +526,20 @@ class TestInitialDataHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
             ),
         ],
     )
     def test_handle_raises_exception_unknown_team(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo]) -> None:
+            in_competition: CompetitionInfo) -> None:
         """
         Test handle method raise exception about unkown team.
 
@@ -633,7 +581,7 @@ class TestInitialDataHandler(DatabaseTest):
             handler = InitialDataHandler(
                 api_url=REAL_API_LTS,
                 auth_data=auth_data,
-                competitions=in_competitions)
+                info=in_competition)
             handler.handle(initial_data)
 
         exception: Exception = e_info.value

@@ -63,7 +63,7 @@ class StrategyStep(MidStep):
             # Skip
             return
 
-        actions, is_parsed = parser(msg.competition_code, msg.data)
+        actions, is_parsed = parser(msg.data)
 
         if is_parsed:
             self._forward_actions(

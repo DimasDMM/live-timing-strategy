@@ -1,5 +1,5 @@
 import pytest
-from typing import Dict, List
+from typing import List
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.participants import (
@@ -156,7 +156,7 @@ class TestUpdateDriverHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data, expected_drivers,'
+        ('database_content, in_competition, update_data, expected_drivers,'
          'expected_notification, expected_database'),
         [
             (
@@ -164,32 +164,30 @@ class TestUpdateDriverHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[
-                            Driver(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1 Driver 1',
-                                number=41,
-                                team_id=1,
-                                total_driving_time=0,
-                                partial_driving_time=0,
-                            ),
-                        ],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 UpdateDriver(  # update_data
                     id=None,
                     competition_code=TEST_COMPETITION_CODE,
@@ -288,32 +286,30 @@ class TestUpdateDriverHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[
-                            Driver(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1 Driver 1',
-                                number=41,
-                                team_id=1,
-                                total_driving_time=0,
-                                partial_driving_time=0,
-                            ),
-                        ],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 UpdateDriver(  # update_data
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
@@ -393,7 +389,7 @@ class TestUpdateDriverHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateDriver,
             expected_drivers: List[Driver],
             expected_notification: Notification,
@@ -406,11 +402,10 @@ class TestUpdateDriverHandler(DatabaseTest):
         handler = UpdateDriverHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
-        info = in_competitions[TEST_COMPETITION_CODE]
 
-        assert ([d.model_dump() for d in info.drivers]
+        assert ([d.model_dump() for d in in_competition.drivers]
                 == [d.model_dump() for d in expected_drivers])
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
@@ -430,7 +425,7 @@ class TestUpdateTeamHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_teams, expected_notification, expected_database'),
         [
             (
@@ -438,32 +433,30 @@ class TestUpdateTeamHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[
-                            Driver(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1 Driver 1',
-                                number=41,
-                                team_id=1,
-                                total_driving_time=0,
-                                partial_driving_time=0,
-                            ),
-                        ],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 UpdateTeam(  # update_data
                     id=None,
                     competition_code=TEST_COMPETITION_CODE,
@@ -536,32 +529,30 @@ class TestUpdateTeamHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[
-                            Driver(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1 Driver 1',
-                                number=41,
-                                team_id=1,
-                                total_driving_time=0,
-                                partial_driving_time=0,
-                            ),
-                        ],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 UpdateTeam(  # update_data
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
@@ -634,7 +625,7 @@ class TestUpdateTeamHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateTeam,
             expected_teams: List[Team],
             expected_notification: Notification,
@@ -647,11 +638,10 @@ class TestUpdateTeamHandler(DatabaseTest):
         handler = UpdateTeamHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
-        info = in_competitions[TEST_COMPETITION_CODE]
 
-        assert ([d.model_dump() for d in info.teams]
+        assert ([d.model_dump() for d in in_competition.teams]
                 == [d.model_dump() for d in expected_teams])
         assert notification is not None
         assert (notification.model_dump()

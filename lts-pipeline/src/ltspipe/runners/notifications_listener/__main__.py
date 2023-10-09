@@ -22,6 +22,11 @@ parser.add_argument(
     help='URI of API REST of LTS app.',
     required=True)
 parser.add_argument(
+    '--competition_code',
+    type=str,
+    help='Verbose code to identify the competition.',
+    required=True)
+parser.add_argument(
     '--errors_path',
     type=str,
     help='Path to store errors on running time.',

@@ -1,5 +1,5 @@
 import statistics as st
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData
@@ -24,30 +24,26 @@ class StrategyPitsStatsParser(Parser):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
             List[Action]: list of actions and their respective parsed data.
             bool: indicates whether the data has been parsed or not.
         """
-        if competition_code not in self._competitions:
-            raise Exception(f'Unknown competition with code={competition_code}')
-        elif not isinstance(data, Notification):
+        if not isinstance(data, Notification):
             return [], False
 
         if data.type != NotificationType.ADDED_PIT_IN:
@@ -56,13 +52,7 @@ class StrategyPitsStatsParser(Parser):
         elif not isinstance(data.data, PitIn):
             raise Exception('Unknown data content of pit-in notification')
 
-        info = self._competitions[competition_code]  # type: ignore
-
-        action = self._compute_strategy(
-            competition_id=info.id,  # type: ignore
-            competition_code=info.competition_code,  # type: ignore
-            data=data.data,
-        )
+        action = self._compute_strategy(data=data.data)
 
         if action is None:
             return [], False
@@ -71,12 +61,9 @@ class StrategyPitsStatsParser(Parser):
 
     def _compute_strategy(
             self,
-            competition_id: int,
-            competition_code: str,
             data: PitIn) -> Optional[Action]:
         """Compute the strategy."""
-        timing_history = self._get_and_filter_history_timing(
-            competition_id, data)
+        timing_history = self._get_and_filter_history_timing(data)
         if len(timing_history) == 0:
             return None
 
@@ -85,7 +72,7 @@ class StrategyPitsStatsParser(Parser):
         return Action(
             type=ActionType.ADD_STRATEGY_PITS_STATS,
             data=AddStrategyPitsStats(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 pit_in_id=data.id,
                 best_time=best_time,
                 avg_time=avg_time,
@@ -114,7 +101,6 @@ class StrategyPitsStatsParser(Parser):
 
     def _get_and_filter_history_timing(
             self,
-            competition_id: int,
             data: PitIn) -> List[ParticipantTiming]:
         """Get the timing records between the last pit-in and before that."""
         if data.team_id is None:
@@ -123,13 +109,13 @@ class StrategyPitsStatsParser(Parser):
         pits_in = get_pits_in_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=competition_id,
+            competition_id=self._info.id,
             team_id=data.team_id,
         )
         timing_history = get_timing_history_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=competition_id,
+            competition_id=self._info.id,
             team_id=data.team_id,
         )
         timing_history = [

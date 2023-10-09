@@ -1,5 +1,4 @@
 import pytest
-from typing import Dict
 
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.competitions_metadata import (
@@ -34,7 +33,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -82,15 +81,13 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateCompetitionMetadataRemaining(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     remaining_length=DiffLap(
@@ -142,7 +139,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateCompetitionMetadataRemaining,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -154,7 +151,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
         handler = UpdateCompetitionMetadataRemainingHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
@@ -174,7 +171,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competitions, update_data,'
+        ('database_content, in_competition, update_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -222,15 +219,13 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateCompetitionMetadataStatus(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     status=CompetitionStatus.ONGOING,
@@ -319,15 +314,13 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings={},
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 UpdateCompetitionMetadataStatus(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
                     status=CompetitionStatus.FINISHED,
@@ -376,7 +369,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             update_data: UpdateCompetitionMetadataStatus,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -388,7 +381,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
         handler = UpdateCompetitionMetadataStatusHandler(
             api_url=REAL_API_LTS,
             auth_data=auth_data,
-            competitions=in_competitions)
+            info=in_competition)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()

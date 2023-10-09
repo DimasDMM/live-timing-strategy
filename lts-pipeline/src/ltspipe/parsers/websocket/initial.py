@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
+    CompetitionInfo,
     CompetitionStage,
     CompetitionStatus,
     DiffLap,
@@ -63,15 +64,17 @@ class InitialDataParser(InitialParser):
     # > '54.'
     REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
 
+    def __init__(self, info: CompetitionInfo) -> None:
+        """Construct."""
+        self._info = info
+
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
@@ -79,7 +82,7 @@ class InitialDataParser(InitialParser):
             bool: indicates whether the data has been parsed or not.
         """
         if self.is_initializer_data(data):
-            parsed_data = self._parse_init_data(competition_code, data)
+            parsed_data = self._parse_init_data(data)
             action = Action(
                 type=ActionType.INITIALIZE,
                 data=parsed_data,
@@ -92,7 +95,7 @@ class InitialDataParser(InitialParser):
         return (isinstance(data, str)
                 and re.match(r'^init\|', data) is not None)
 
-    def _parse_init_data(self, competition_code: str, data: str) -> InitialData:
+    def _parse_init_data(self, data: str) -> InitialData:
         """Parse content in the raw data."""
         raw_parts = re.split(r'\n+', data, flags=re.MULTILINE)
         raw_parts = [re.split(r'\|', p, flags=re.MULTILINE) for p in raw_parts]
@@ -111,7 +114,7 @@ class InitialDataParser(InitialParser):
         participants = self._parse_participants(headers, initial_rows[1:])
 
         return InitialData(
-            competition_code=competition_code,
+            competition_code=self._info.competition_code,
             stage=stage,
             status=status,
             remaining_length=remaining_length,

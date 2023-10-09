@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.api.handlers import (
     _find_driver_by_id,
@@ -36,26 +36,23 @@ class UpdateDriverHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
         if not isinstance(model, UpdateDriver):
             raise Exception('The model must be an instance of UpdateDriver.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         if model.id is None:
             old_driver = _find_driver_by_name(
-                info, model.participant_code, model.name)
+                self._info, model.participant_code, model.name)
         else:
             old_driver = _find_driver_by_id(
-                info, model.participant_code, model.id)
+                self._info, model.participant_code, model.id)
             if old_driver is None:
                 raise Exception(f'Unknown driver to update: {model}')
 
@@ -64,19 +61,19 @@ class UpdateDriverHandler(ApiHandler):
             current_driver = add_driver(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 participant_code=model.participant_code,
                 name=model.name,
                 number=model.number,
                 team_id=model.team_id,
             )
-            info.drivers.append(current_driver)
+            self._info.drivers.append(current_driver)
         elif old_driver.name != model.name or old_driver.number != model.number:
             # Update driver name if needed
             current_driver = update_driver(
                 self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 driver_id=model.id,  # type: ignore
                 participant_code=model.participant_code,
                 name=model.name,
@@ -90,12 +87,12 @@ class UpdateDriverHandler(ApiHandler):
 
         # Update driver ID in the timing and in the last pit-out
         self._update_timing_with_driver_id(
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             driver_id=current_driver.id,
         )
         self._update_pit_out_with_driver_id(
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             driver_id=current_driver.id,
         )
@@ -152,39 +149,38 @@ class UpdateTeamHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a team."""
         if not isinstance(model, UpdateTeam):
             raise Exception('The model must be an instance of UpdateTeam.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-        old_team = _find_team_by_code(
-            info, participant_code=model.participant_code)
+        old_team: Optional[Team] = _find_team_by_code(
+            info=self._info,
+            participant_code=model.participant_code)
 
         if old_team is None:
             # Add new team
             current_team = add_team(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 participant_code=model.participant_code,
                 name=model.name,
                 number=model.number,
             )
-            info.teams.append(current_team)
+            self._info.teams.append(current_team)
         elif old_team.name != model.name or old_team.number != model.number:
             # Update team name if needed
             current_team = update_team(
                 self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 team_id=old_team.id,
                 participant_code=model.participant_code,
                 name=model.name,

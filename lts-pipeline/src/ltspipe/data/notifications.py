@@ -33,6 +33,7 @@ class NotificationType(str, EnumBase):
     UPDATED_TIMING_NUMBER_PITS = 'updated-timing-number-pits'
     UPDATED_TIMING_PIT_TIME = 'updated-timing-pit-time'
     UPDATED_TIMING_POSITION = 'updated-timing-position'
+    REFRESH_INFO = 'refresh-info'
 
 
 _factory: Dict[NotificationType, Optional[Type[DictModel]]] = {

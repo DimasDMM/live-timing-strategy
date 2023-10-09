@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 from pytest_mock import MockerFixture
-from typing import Dict, List
+from typing import List
 from unittest.mock import MagicMock
 
 from ltspipe.api.handlers.base import ApiHandler
@@ -130,17 +130,15 @@ class TestApiActionStep:
             notification_step: MidStep,
             next_step: MidStep) -> ApiActionStep:
         """Build step to test."""
-        in_competitions: Dict[str, CompetitionInfo] = {
-            TEST_COMPETITION_CODE: CompetitionInfo(
-                id=None,
-                competition_code=TEST_COMPETITION_CODE,
-            ),
-        }
+        in_competition = CompetitionInfo(
+            id=1,
+            competition_code=TEST_COMPETITION_CODE,
+        )
         fake_logger = FakeLogger()
         step = ApiActionStep(
             logger=fake_logger,
             api_lts=MOCK_API_LTS,
-            competitions=in_competitions,
+            info=in_competition,
             action_handlers={
                 ActionType.INITIALIZE: handler,
             },
@@ -153,44 +151,42 @@ class TestApiActionStep:
 class TestCompetitionInfoRefreshStep:
     """Test ltspipe.steps.api.CompetitionInfoRefreshStep class."""
 
-    EXPECTED_COMPETITIONS = {
-        TEST_COMPETITION_CODE: CompetitionInfo(
-            id=1,
-            competition_code=TEST_COMPETITION_CODE,
-            drivers=[
-                Driver(
-                    id=1,
-                    team_id=1,
-                    participant_code='team-1',
-                    name='Team 1 Driver 1',
-                    number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                ),
-                Driver(
-                    id=2,
-                    team_id=1,
-                    participant_code='team-1',
-                    name='Team 1 Driver 2',
-                    number=41,
-                    total_driving_time=0,
-                    partial_driving_time=0,
-                ),
-            ],
-            teams=[
-                Team(
-                    id=1,
-                    participant_code='team-1',
-                    name='Team 1',
-                    number=41,
-                ),
-            ],
-            parser_settings={
-                ParserSettings.TIMING_NAME: 'sample-name',
-                ParserSettings.TIMING_POSITION: 'sample-position',
-            },
-        ),
-    }
+    EXPECTED_COMPETITION = CompetitionInfo(
+        id=1,
+        competition_code=TEST_COMPETITION_CODE,
+        drivers=[
+            Driver(
+                id=1,
+                team_id=1,
+                participant_code='team-1',
+                name='Team 1 Driver 1',
+                number=41,
+                total_driving_time=0,
+                partial_driving_time=0,
+            ),
+            Driver(
+                id=2,
+                team_id=1,
+                participant_code='team-1',
+                name='Team 1 Driver 2',
+                number=41,
+                total_driving_time=0,
+                partial_driving_time=0,
+            ),
+        ],
+        teams=[
+            Team(
+                id=1,
+                participant_code='team-1',
+                name='Team 1',
+                number=41,
+            ),
+        ],
+        parser_settings={
+            ParserSettings.TIMING_NAME: 'sample-name',
+            ParserSettings.TIMING_POSITION: 'sample-position',
+        },
+    )
 
     def test_run_step(
             self,
@@ -206,19 +202,25 @@ class TestCompetitionInfoRefreshStep:
         next_step.get_children.return_value = []
 
         # Create step
-        in_competitions: Dict[str, CompetitionInfo] = {}
+        in_competition = CompetitionInfo(
+            id=1,
+            competition_code=TEST_COMPETITION_CODE,
+            parser_settings={},
+            drivers=[],
+            teams=[],
+        )
         fake_logger = FakeLogger()
         step = CompetitionInfoRefreshStep(
             logger=fake_logger,
             api_lts=MOCK_API_LTS,
             auth_data=sample_auth_data,
-            competitions=in_competitions,
+            info=in_competition,
             next_step=next_step,
         )
 
         # Run step and validate that the competition info is retrieved
         step.run_step(sample_message)
-        assert in_competitions == self.EXPECTED_COMPETITIONS
+        assert in_competition == self.EXPECTED_COMPETITION
 
         assert next_step.run_step.call_count == 1
         received_msg: Message = next_step.run_step.call_args_list[0][0][0]

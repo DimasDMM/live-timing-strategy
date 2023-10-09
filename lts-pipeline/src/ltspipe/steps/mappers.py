@@ -132,7 +132,7 @@ class WsParsersStep(MidStep):
         lines = msg.data.split('\n') if split_lines else [msg.data]
         for line in lines:
             for parser in parsers:
-                actions, is_parsed = parser(msg.competition_code, line)
+                actions, is_parsed = parser(line)
                 if is_parsed:
                     parser_applied = True
                     self._forward_actions(

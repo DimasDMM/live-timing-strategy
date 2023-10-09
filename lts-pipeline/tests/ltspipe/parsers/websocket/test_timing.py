@@ -1,5 +1,5 @@
 import pytest
-from typing import Any, Dict, List
+from typing import Any, List
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -42,25 +42,23 @@ class TestTimingBestTimeParser:
     """Test ltspipe.parsers.websocket.TimingBestTimeParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_best_time.txt'),  # in_data
                 [  # expected_actions
@@ -76,29 +74,25 @@ class TestTimingBestTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -107,36 +101,28 @@ class TestTimingBestTimeParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingBestTimeParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingBestTimeParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_best_time.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_best_time.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -145,13 +131,13 @@ class TestTimingBestTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingBestTimeParser(competitions=in_competitions)
+        parser = TimingBestTimeParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -160,25 +146,23 @@ class TestTimingLapParser:
     """Test ltspipe.parsers.websocket.TimingLapParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_lap.txt'),  # in_data
                 [  # expected_actions
@@ -194,29 +178,25 @@ class TestTimingLapParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -225,36 +205,28 @@ class TestTimingLapParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingLapParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingLapParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_lap.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_lap.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -263,13 +235,13 @@ class TestTimingLapParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingLapParser(competitions=in_competitions)
+        parser = TimingLapParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -278,25 +250,23 @@ class TestTimingLastTimeParser:
     """Test ltspipe.parsers.websocket.TimingLastTimeParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_last_time.txt'),  # in_data
                 [  # expected_actions
@@ -313,29 +283,25 @@ class TestTimingLastTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -344,36 +310,28 @@ class TestTimingLastTimeParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingLastTimeParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingLastTimeParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_last_time.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_last_time.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -382,13 +340,13 @@ class TestTimingLastTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingLastTimeParser(competitions=in_competitions)
+        parser = TimingLastTimeParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -397,25 +355,23 @@ class TestTimingNumberPitsParser:
     """Test ltspipe.parsers.websocket.TimingNumberPitsParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_number_pits.txt'),  # in_data
                 [  # expected_actions
@@ -431,29 +387,25 @@ class TestTimingNumberPitsParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -462,36 +414,28 @@ class TestTimingNumberPitsParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingNumberPitsParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingNumberPitsParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_number_pits.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_number_pits.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -500,13 +444,13 @@ class TestTimingNumberPitsParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingNumberPitsParser(competitions=in_competitions)
+        parser = TimingNumberPitsParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -515,25 +459,23 @@ class TestPitTimeParser:
     """Test ltspipe.parsers.websocket.pits.PitTime."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_pit_time_seconds.txt'),  # in_data
                 [  # expected_actions
@@ -549,22 +491,20 @@ class TestPitTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_pit_time_minutes.txt'),  # in_data
                 [  # expected_actions
@@ -580,29 +520,25 @@ class TestPitTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -611,36 +547,28 @@ class TestPitTimeParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingPitTimeParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingPitTimeParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_pit_time_minutes.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_pit_time_minutes.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -649,13 +577,13 @@ class TestPitTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingPitTimeParser(competitions=in_competitions)
+        parser = TimingPitTimeParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -664,25 +592,23 @@ class TestTimingPositionParser:
     """Test ltspipe.parsers.websocket.TimingPositionParser."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
                 [  # expected_actions
@@ -699,29 +625,25 @@ class TestTimingPositionParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -730,36 +652,28 @@ class TestTimingPositionParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingPositionParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = TimingPositionParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message(
-                    'endurance_timing_position.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -768,12 +682,12 @@ class TestTimingPositionParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingPositionParser(competitions=in_competitions)
+        parser = TimingPositionParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception

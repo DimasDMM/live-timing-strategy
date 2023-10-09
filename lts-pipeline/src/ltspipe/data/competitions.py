@@ -198,7 +198,7 @@ class ParticipantTiming(DictModel):
 class CompetitionInfo(BaseModel):
     """Info of a competition."""
 
-    id: Optional[int]
+    id: int
     competition_code: str
     parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
     drivers: List[Driver] = Field(default_factory=list)

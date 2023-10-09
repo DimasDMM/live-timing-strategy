@@ -10,13 +10,11 @@ class Parser(abc.ABC):
     @abc.abstractmethod
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
@@ -27,10 +25,9 @@ class Parser(abc.ABC):
 
     def __call__(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """Forward to method Parser.parse()."""
-        return self.parse(competition_code, data)
+        return self.parse(data)
 
 
 class InitialParser(Parser, abc.ABC):

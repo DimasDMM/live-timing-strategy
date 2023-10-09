@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
@@ -23,19 +23,17 @@ class CompetitionMetadataRemainingParser(Parser):
     > dyn1|countdown|10761515
     """
 
-    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+    def __init__(self, info: CompetitionInfo) -> None:
         """Construct."""
-        self._competitions = competitions
+        self._info = info
 
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
@@ -45,7 +43,7 @@ class CompetitionMetadataRemainingParser(Parser):
         if not isinstance(data, str):
             return [], False
 
-        parsed_data = self._parse_metadata_remaining(competition_code, data)
+        parsed_data = self._parse_metadata_remaining(data)
         if parsed_data is None:
             return [], False
 
@@ -57,7 +55,6 @@ class CompetitionMetadataRemainingParser(Parser):
 
     def _parse_metadata_remaining(
             self,
-            competition_code: str,
             data: str) -> Optional[UpdateCompetitionMetadataRemaining]:
         """Parse remaining length of a competition."""
         data = data.strip()
@@ -71,7 +68,7 @@ class CompetitionMetadataRemainingParser(Parser):
 
         if matches[1] == 'countdown':
             return UpdateCompetitionMetadataRemaining(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 remaining_length=DiffLap(
                     value=int(remaining_length_value),
                     unit=LengthUnit.MILLIS,
@@ -79,7 +76,7 @@ class CompetitionMetadataRemainingParser(Parser):
             )
         elif matches[1] == 'text':
             return UpdateCompetitionMetadataRemaining(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 remaining_length=DiffLap(
                     value=_time_to_millis(  # type: ignore
                         remaining_length_value, default=0),
@@ -94,19 +91,17 @@ class CompetitionMetadataRemainingParser(Parser):
 class CompetitionMetadataStatusParser(Parser):
     """Parse the status of a competition (metadata)."""
 
-    def __init__(self, competitions: Dict[str, CompetitionInfo]) -> None:
+    def __init__(self, info: CompetitionInfo) -> None:
         """Construct."""
-        self._competitions = competitions
+        self._info = info
 
     def parse(
             self,
-            competition_code: str,
             data: Any) -> Tuple[List[Action], bool]:
         """
         Analyse and/or parse a given data.
 
         Params:
-            competition_code (str): Code of the competition.
             data (Any): Data to parse.
 
         Returns:
@@ -116,7 +111,7 @@ class CompetitionMetadataStatusParser(Parser):
         if not isinstance(data, str):
             return [], False
 
-        parsed_data = self._parse_metadata_status(competition_code, data)
+        parsed_data = self._parse_metadata_status(data)
         if parsed_data is None:
             return [], False
 
@@ -128,7 +123,6 @@ class CompetitionMetadataStatusParser(Parser):
 
     def _parse_metadata_status(
             self,
-            competition_code: str,
             data: str) -> Optional[UpdateCompetitionMetadataStatus]:
         """Parse status of a competition."""
         data = data.strip()
@@ -140,19 +134,19 @@ class CompetitionMetadataStatusParser(Parser):
         if raw_status == 'lf':
             # Finished
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 status=CompetitionStatus.FINISHED,
             )
         elif raw_status == 'lg':
             # Started or on-going
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 status=CompetitionStatus.ONGOING,
             )
         elif raw_status == 'lr':
             # Paused
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=competition_code,
+                competition_code=self._info.competition_code,
                 status=CompetitionStatus.PAUSED,
             )
         else:

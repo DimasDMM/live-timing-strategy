@@ -59,12 +59,14 @@ Local Python command:
 ```sh
 python -m ltspipe.runners.notifications_listener \
   --api_lts http://localhost:8090 \
+  --competition_code competition-test \
   --kafka_servers localhost:9092 \
   --verbosity 1
 ```
 
 Arguments:
 - `--api_lts`: (**mandatory**) URI of API REST of LTS app.
+- `--competition_code`: (**mandatory**) Code of the competition.
 - `--errors_path`: (optional) Path to store errors in running time. By default,
   it is `artifacts/notifications-listener/errors/`.
 - `--kafka_group`: (optional) Suscribe to the topic with a specific group name. 
@@ -182,30 +184,6 @@ Get-Content .env.local | foreach {
   }
 }
 ```
-
-### Pipeline: Check Kafka
-
-Check that Kafka works correctly with a local dummy consumer:
-```sh
-python -m ltspipe.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --test_mode consumer \
-  --verbosity 1
-```
-
-And a local dummy producer:
-```sh
-python -m ltspipe.runners.kafka_check \
-  --kafka_servers localhost:9092 \
-  --kafka_topic test-topic \
-  --test_mode producer \
-  --verbosity 1
-```
-
-Note that, if we are using a different Kafka, we may need to replace the
-value of `--kafka_servers` with our list of Kafka brokers (separated) by
-commas.
 
 # TO DO
 

@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.strategy import add_strategy_pit_stats
@@ -19,11 +19,11 @@ class StrategyPitsStatsHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-in."""
@@ -31,13 +31,10 @@ class StrategyPitsStatsHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of AddStrategyPitsStats.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]  # type: ignore
-
         strategy = add_strategy_pit_stats(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             pit_in_id=model.pit_in_id,
             best_time=model.best_time,
             avg_time=model.avg_time,

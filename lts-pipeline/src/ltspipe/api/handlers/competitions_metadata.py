@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.competitions_base import (
@@ -24,11 +24,11 @@ class UpdateCompetitionMetadataRemainingHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
@@ -37,13 +37,10 @@ class UpdateCompetitionMetadataRemainingHandler(ApiHandler):
                 'The model must be an instance of '
                 'CompetitionMetadataRemaining.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         competition_metadata = update_competition_metadata_remaining(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             remaining_length=model.remaining_length,
         )
 
@@ -67,11 +64,11 @@ class UpdateCompetitionMetadataStatusHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Update the data of a driver."""
@@ -79,13 +76,10 @@ class UpdateCompetitionMetadataStatusHandler(ApiHandler):
             raise Exception(
                 'The model must be an instance of CompetitionMetadataStatus.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         competition_metadata = update_competition_metadata_status(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             status=model.status,
         )
 
@@ -96,7 +90,7 @@ class UpdateCompetitionMetadataStatusHandler(ApiHandler):
             competition_metadata = update_competition_metadata_remaining(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=info.id,  # type: ignore
+                competition_id=self._info.id,
                 remaining_length=remaining_length,
             )
 

@@ -3,6 +3,7 @@ from typing import Any, List, Tuple
 
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
+    CompetitionInfo,
     CompetitionStage,
     CompetitionStatus,
     DiffLap,
@@ -480,8 +481,16 @@ class TestInitialDataParser:
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = InitialDataParser()
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = InitialDataParser(
+            info=CompetitionInfo(
+                id=1,
+                competition_code=TEST_COMPETITION_CODE,
+                parser_settings={},
+                drivers=[],
+                teams=[],
+            ),
+        )
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
@@ -489,9 +498,17 @@ class TestInitialDataParser:
     def test_parse_wrong_headers(self) -> None:
         """Test method parse with unexpected messages."""
         in_data = load_raw_message('wrong_headers.txt')
-        parser = InitialDataParser()
+        parser = InitialDataParser(
+            info=CompetitionInfo(
+                id=1,
+                competition_code=TEST_COMPETITION_CODE,
+                parser_settings={},
+                drivers=[],
+                teams=[],
+            ),
+        )
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert (str(e) == 'Cannot parse column 8 of headers '
                           '(timing-gap != timing-number-pits).')

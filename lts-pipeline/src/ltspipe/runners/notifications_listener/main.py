@@ -1,20 +1,21 @@
 from logging import Logger
 import msgpack
-from multiprocessing import Manager, Process
-from multiprocessing.managers import DictProxy
+from multiprocessing import Process
 import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable
 
+from ltspipe.api.competitions_base import build_competition_info
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.handlers.strategy import (
     StrategyPitsStatsHandler,
 )
-from ltspipe.parsers.strategy import StrategyPitsStatsParser
 from ltspipe.configs import NotificationsListenerConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
+from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.data.notifications import NotificationType
+from ltspipe.parsers.strategy import StrategyPitsStatsParser
 from ltspipe.steps.api import ApiActionStep, CompetitionInfoRefreshStep
 from ltspipe.steps.filesystem import MessageStorageStep
 from ltspipe.steps.kafka import KafkaConsumerStep, KafkaProducerStep
@@ -41,21 +42,25 @@ def main(config: NotificationsListenerConfig, logger: Logger) -> None:
 
     logger.debug(f'Topic notifications: {config.kafka_notifications}')
 
-    with Manager() as manager:
-        logger.info('Init shared-memory...')
-        competitions = manager.dict()
+    info = build_competition_info(
+        config.api_lts,
+        bearer=auth_data.bearer,
+        competition_code=config.competition_code)
+    if info is None:
+        raise Exception(
+            f'Competition does not exist: {config.competition_code}')
 
-        logger.info('Init processes...')
-        p_not = _create_process(
-            target=_run_notifications_listener,
-            args=(config, auth_data, competitions))  # type: ignore
-        logger.info('Processes created')
+    logger.info('Init processes...')
+    p_not = _create_process(
+        target=_run_notifications_listener,
+        args=(config, auth_data, info))  # type: ignore
+    logger.info('Processes created')
 
-        p_not.start()
-        logger.info('Processes started')
+    p_not.start()
+    logger.info('Processes started')
 
-        processes = {'notifications': p_not}
-        _join_processes(logger, processes)
+    processes = {'notifications': p_not}
+    _join_processes(logger, processes)
 
 
 def _create_process(target: Callable, args: Iterable[Any]) -> Process:
@@ -93,12 +98,12 @@ def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
 def _run_notifications_listener(
         config: NotificationsListenerConfig,
         auth_data: AuthData,
-        competitions: DictProxy) -> None:
+        info: CompetitionInfo) -> None:
     """Run process with the notifications listener."""
     logger = build_logger(__package__, config.verbosity)
     logger.info('Create notifications listener...')
     notification_listener = _build_notifications_process(
-        config, logger, auth_data, competitions)
+        config, logger, auth_data, info)
 
     logger.info('Start notifications listener...')
     notification_listener.start_step()
@@ -108,10 +113,10 @@ def _build_notifications_process(
         config: NotificationsListenerConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> KafkaConsumerStep:
+        info: CompetitionInfo) -> KafkaConsumerStep:
     """Build process with notifications listener."""
     mapper = _build_notifications_mapper_step(
-        config, logger, auth_data, competitions)
+        config, logger, auth_data, info)
 
     errors_storage = MessageStorageStep(
         logger=logger,
@@ -119,6 +124,7 @@ def _build_notifications_process(
     )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
         logger=logger,
+        info=info,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
@@ -132,7 +138,7 @@ def _build_notifications_mapper_step(
         config: NotificationsListenerConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> NotificationMapperStep:
+        info: CompetitionInfo) -> NotificationMapperStep:
     """Build notifications mapper step."""
     kafka_notifications = KafkaProducerStep(
         logger,
@@ -143,34 +149,31 @@ def _build_notifications_mapper_step(
     api_step = ApiActionStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
-        competitions=competitions,  # type: ignore
-        action_handlers=_build_action_handlers(config, auth_data, competitions),
+        info=info,
+        action_handlers=_build_action_handlers(config, auth_data, info),
         notification_step=kafka_notifications,
         next_step=None,
-    )
-
-    strategy_pits_stats = CompetitionInfoRefreshStep(
-        logger=logger,
-        api_lts=config.api_lts,
-        auth_data=auth_data,
-        competitions=competitions,  # type: ignore
-        force_update=True,
-        next_step=StrategyStep(
-            logger=logger,
-            parser=StrategyPitsStatsParser(
-                api_url=config.api_lts,
-                auth_data=auth_data,
-                competitions=competitions,  # type: ignore
-            ),
-            on_parsed=api_step,
-            on_unknown=None,
-        ),
     )
 
     mapper = NotificationMapperStep(
         logger=logger,
         map_notification={
-            NotificationType.ADDED_PIT_IN: strategy_pits_stats,
+            NotificationType.ADDED_PIT_IN: StrategyStep(
+                logger=logger,
+                parser=StrategyPitsStatsParser(
+                    api_url=config.api_lts,
+                    auth_data=auth_data,
+                    info=info,
+                ),
+                on_parsed=api_step,
+                on_unknown=None,
+            ),
+            NotificationType.REFRESH_INFO: CompetitionInfoRefreshStep(
+                logger=logger,
+                api_lts=config.api_lts,
+                auth_data=auth_data,
+                info=info,
+            ),
         },
     )
 
@@ -180,12 +183,12 @@ def _build_notifications_mapper_step(
 def _build_action_handlers(
         config: NotificationsListenerConfig,
         auth_data: AuthData,
-        competitions: DictProxy) -> Dict[ActionType, ApiHandler]:
+        info: CompetitionInfo) -> Dict[ActionType, ApiHandler]:
     """Build map of handlers applied to action types."""
     return {
         ActionType.ADD_STRATEGY_PITS_STATS: StrategyPitsStatsHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
     }

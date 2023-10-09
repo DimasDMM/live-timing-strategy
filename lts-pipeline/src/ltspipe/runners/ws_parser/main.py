@@ -1,7 +1,6 @@
 from logging import Logger
 import msgpack  # type: ignore
-from multiprocessing import Manager, Process
-from multiprocessing.managers import DictProxy
+from multiprocessing import Process
 import os
 from time import sleep
 from typing import Any, Callable, Dict, Iterable, List
@@ -29,6 +28,7 @@ from ltspipe.api.handlers.timing import (
 from ltspipe.configs import WsParserConfig
 from ltspipe.data.actions import ActionType
 from ltspipe.data.auth import AuthData
+from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.data.notifications import NotificationType
 from ltspipe.messages import MessageSource
 from ltspipe.parsers.base import Parser
@@ -81,36 +81,31 @@ def main(config: WsParserConfig, logger: Logger) -> None:
     logger.debug(f'Topic notifications: {config.kafka_notifications}')
     logger.debug(f'Topic servers: {config.kafka_servers}')
 
-    with Manager() as manager:
-        logger.info('Init shared-memory...')
-        competitions = manager.dict()
+    info = build_competition_info(
+        config.api_lts,
+        bearer=auth_data.bearer,
+        competition_code=config.competition_code)
+    if info is None:
+        raise Exception(
+            f'Competition does not exist: {config.competition_code}')
 
-        info = build_competition_info(
-            config.api_lts,
-            bearer=auth_data.bearer,
-            competition_code=config.competition_code)
-        if info is None:
-            raise Exception(
-                f'Competition does not exist: {config.competition_code}')
-        competitions[config.competition_code] = info
+    logger.info('Init processes...')
 
-        logger.info('Init processes...')
+    process_logger = build_logger(__package__, config.verbosity)
+    p_not = _create_process(
+        target=_run_notifications_listener,
+        args=(config, process_logger, auth_data, info))
+    p_ws = _create_process(
+        target=_run_ws_listener,
+        args=(config, process_logger, auth_data, info))
+    logger.info('Processes created')
 
-        process_logger = build_logger(__package__, config.verbosity)
-        p_not = _create_process(
-            target=_run_notifications_listener,
-            args=(config, process_logger, auth_data, competitions))
-        p_ws = _create_process(
-            target=_run_ws_listener,
-            args=(config, process_logger, auth_data, competitions))
-        logger.info('Processes created')
+    p_not.start()
+    p_ws.start()
+    logger.info('Processes started')
 
-        p_not.start()
-        p_ws.start()
-        logger.info('Processes started')
-
-        processes = {'notifications': p_not, 'ws': p_ws}
-        _join_processes(logger, processes)
+    processes = {'notifications': p_not, 'ws': p_ws}
+    _join_processes(logger, processes)
 
 
 def _create_process(target: Callable, args: Iterable[Any]) -> Process:
@@ -149,11 +144,11 @@ def _run_notifications_listener(
         config: WsParserConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> None:
+        info: CompetitionInfo) -> None:
     """Run process with the notifications listener."""
     logger.info('Create input listener...')
     notification_listener = _build_notifications_process(
-        config, logger, auth_data, competitions)
+        config, logger, auth_data, info)
 
     logger.info('Start input listener...')
     notification_listener.start_step()
@@ -163,11 +158,11 @@ def _run_ws_listener(
         config: WsParserConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> None:
+        info: CompetitionInfo) -> None:
     """Run process with the raw data listener."""
     logger.info('Create websocket listener...')
     ws_listener = _build_ws_process(
-        config, logger, auth_data, competitions)
+        config, logger, auth_data, info)
 
     logger.info('Start websocket listener...')
     ws_listener.start_step()
@@ -177,7 +172,7 @@ def _build_ws_process(
         config: WsParserConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> StartStep:
+        info: CompetitionInfo) -> StartStep:
     """Build process that consumes the raw data."""
     kafka_notifications = KafkaProducerStep(
         logger,
@@ -188,14 +183,14 @@ def _build_ws_process(
     api_actions = ApiActionStep(
         logger=logger,
         api_lts=config.api_lts.strip('/'),
-        competitions=competitions,  # type: ignore
-        action_handlers=_build_action_handlers(config, auth_data, competitions),
+        info=info,
+        action_handlers=_build_action_handlers(config, auth_data, info),
         notification_step=kafka_notifications,
         next_step=None,
     )
 
     parsers_pipe = _build_parsers_pipe(
-        config, logger, competitions, api_actions)
+        config, logger, info, api_actions)
 
     errors_storage = MessageStorageStep(
         logger=logger,
@@ -229,16 +224,16 @@ def _build_notifications_process(
         config: WsParserConfig,
         logger: Logger,
         auth_data: AuthData,
-        competitions: DictProxy) -> StartStep:
+        info: CompetitionInfo) -> StartStep:
     """Build process with notifications listener."""
     mapper = NotificationMapperStep(
         logger=logger,
         map_notification={
-            NotificationType: CompetitionInfoRefreshStep(
+            NotificationType.REFRESH_INFO: CompetitionInfoRefreshStep(
                 logger=logger,
                 api_lts=config.api_lts,
                 auth_data=auth_data,
-                competitions=competitions,  # type: ignore
+                info=info,
             ),
         },
     )
@@ -248,6 +243,7 @@ def _build_notifications_process(
     )
     kafka_consumer = KafkaConsumerStep(  # Without group ID
         logger=logger,
+        info=info,
         bootstrap_servers=config.kafka_servers,
         topics=[config.kafka_notifications],
         value_deserializer=msgpack.loads,
@@ -260,23 +256,23 @@ def _build_notifications_process(
 def _build_parsers_pipe(
         config: WsParserConfig,
         logger: Logger,
-        competitions: DictProxy,
+        info: CompetitionInfo,
         next_step: MidStep) -> WsParsersStep:  # noqa
     """Build pipe with data parsers."""
-    initial_parser = InitialDataParser()
+    initial_parser = InitialDataParser(info)
     parsers: List[Parser] = [
-        CompetitionMetadataRemainingParser(competitions),  # type: ignore
-        CompetitionMetadataStatusParser(competitions),  # type: ignore
-        DriverNameParser(competitions),  # type: ignore
-        PitInParser(competitions),  # type: ignore
-        PitOutParser(competitions),  # type: ignore
-        TeamNameParser(competitions),  # type: ignore
-        TimingBestTimeParser(competitions),  # type: ignore
-        TimingLapParser(competitions),  # type: ignore
-        TimingLastTimeParser(competitions),  # type: ignore
-        TimingNumberPitsParser(competitions),  # type: ignore
-        TimingPitTimeParser(competitions),  # type: ignore
-        TimingPositionParser(competitions),  # type: ignore
+        CompetitionMetadataRemainingParser(info),  # type: ignore
+        CompetitionMetadataStatusParser(info),  # type: ignore
+        DriverNameParser(info),  # type: ignore
+        PitInParser(info),  # type: ignore
+        PitOutParser(info),  # type: ignore
+        TeamNameParser(info),  # type: ignore
+        TimingBestTimeParser(info),  # type: ignore
+        TimingLapParser(info),  # type: ignore
+        TimingLastTimeParser(info),  # type: ignore
+        TimingNumberPitsParser(info),  # type: ignore
+        TimingPitTimeParser(info),  # type: ignore
+        TimingPositionParser(info),  # type: ignore
     ]
 
     unknowns_storage = MessageStorageStep(
@@ -296,72 +292,72 @@ def _build_parsers_pipe(
 def _build_action_handlers(
         config: WsParserConfig,
         auth_data: AuthData,
-        competitions: DictProxy) -> Dict[ActionType, ApiHandler]:
+        info: CompetitionInfo) -> Dict[ActionType, ApiHandler]:
     """Build map of handlers applied to action types."""
     return {
         ActionType.ADD_PIT_IN: AddPitInHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.ADD_PIT_OUT: AddPitOutHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.INITIALIZE: InitialDataHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_DRIVER: UpdateDriverHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_COMPETITION_METADATA_REMAINING: UpdateCompetitionMetadataRemainingHandler(  # noqa: E501, LN001
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_COMPETITION_METADATA_STATUS: UpdateCompetitionMetadataStatusHandler(  # noqa: E501, LN001
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TEAM: UpdateTeamHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_BEST_TIME: UpdateTimingBestTimeHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_LAP: UpdateTimingLapHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_LAST_TIME: UpdateTimingLastTimeHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_NUMBER_PITS: UpdateTimingNumberPitsHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_PIT_TIME: UpdateTimingPitTimeHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
         ActionType.UPDATE_TIMING_POSITION: UpdateTimingPositionHandler(
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
-            competitions=competitions,  # type: ignore
+            info=info,
         ),
     }

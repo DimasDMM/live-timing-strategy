@@ -24,25 +24,23 @@ class TestPitInParser:
     """Test ltspipe.parsers.websocket.pits.PitIn."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message('endurance_pit_in.txt'),  # in_data
                 [  # expected_actions
                     Action(
@@ -56,29 +54,25 @@ class TestPitInParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -87,35 +81,28 @@ class TestPitInParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = PitInParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = PitInParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message('endurance_pit_in.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_pit_in.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
@@ -123,13 +110,13 @@ class TestPitInParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = PitInParser(competitions=in_competitions)
+        parser = PitInParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception
 
@@ -138,25 +125,23 @@ class TestPitOutParser:
     """Test ltspipe.parsers.websocket.pits.PitOut."""
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_actions, expected_is_parsed',
+        'in_competition, in_data, expected_actions, expected_is_parsed',
         [
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[
-                            Team(
-                                id=1,
-                                participant_code='r5625',
-                                name='Team 1',
-                                number=41,
-                            ),
-                        ],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings=PARSERS_SETTINGS,
+                    drivers=[],
+                    teams=[
+                        Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    ],
+                ),
                 load_raw_message('endurance_pit_out.txt'),  # in_data
                 [  # expected_actions
                     Action(
@@ -170,29 +155,25 @@ class TestPitOutParser:
                 True,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
             ),
             (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
                 False,  # expected_is_parsed
@@ -201,35 +182,28 @@ class TestPitOutParser:
     )
     def test_parse(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = PitOutParser(competitions=in_competitions)
-        out_actions, is_parsed = parser.parse(TEST_COMPETITION_CODE, in_data)
+        parser = PitOutParser(info=in_competition)
+        out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competitions, in_data, expected_exception',
+        'in_competition, in_data, expected_exception',
         [
             (
-                {},  # in_competitions
-                load_raw_message('endurance_pit_out.txt'),  # in_data
-                f'Unknown competition with code={TEST_COMPETITION_CODE}',
-            ),
-            (
-                {  # in_competitions
-                    TEST_COMPETITION_CODE: CompetitionInfo(
-                        id=1,
-                        competition_code=TEST_COMPETITION_CODE,
-                        parser_settings=PARSERS_SETTINGS,
-                        drivers=[],
-                        teams=[],
-                    ),
-                },
+                CompetitionInfo(  # in_competition
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams=[],
+                ),
                 load_raw_message('endurance_pit_out.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
             ),
@@ -237,12 +211,12 @@ class TestPitOutParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competitions: Dict[str, CompetitionInfo],
+            in_competition: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = PitOutParser(competitions=in_competitions)
+        parser = PitOutParser(info=in_competition)
         with pytest.raises(Exception) as e_info:
-            _ = parser.parse(TEST_COMPETITION_CODE, in_data)
+            _ = parser.parse(in_data)
         e: Exception = e_info.value
         assert str(e) == expected_exception

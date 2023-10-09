@@ -1,1352 +1,978 @@
 {
 	"info": {
-		"_postman_id": "eb8610f5-2886-4515-9b4f-b74de1cd7a89",
-		"name": "Live Timing",
+		"_postman_id": "62160ee0-3748-4c42-84a6-c11a52a52775",
+		"name": "CKM Timing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11930486"
 	},
 	"item": [
 		{
-			"name": "Auth & Health",
-			"item": [
-				{
-					"name": "Refresh bearer token",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"key\": \"912ec803b2ce49e4a541068d495ab570\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/auth",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"auth"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Health",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{api_url}}/v1/health",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"health"
-							]
-						}
-					},
-					"response": []
+			"name": "Doc Yaml",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/v1/documentation",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"documentation"
+					]
 				}
-			]
+			},
+			"response": []
 		},
 		{
-			"name": "Competitions (base)",
-			"item": [
-				{
-					"name": "Get all competitions",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a competition",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"test-competition\",\r\n    \"name\": \"New Karting Competition\",\r\n    \"description\": \"Added via Postman\",\r\n    \"settings\": {\r\n        \"length\": 10,\r\n        \"length_unit\": \"laps\",\r\n        \"pit_time\": 120000,\r\n        \"min_number_pits\": 4\r\n    }\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a competition",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a competition (by code)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/filter/code/test-competition",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"filter",
-								"code",
-								"test-competition"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null,
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get the metadata",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get the metadata (history)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata/history",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata",
-								"history"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update the metadata",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"ongoing\",\r\n    \"stage\": \"qualifying\",\r\n    \"remaining_length\": 348,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update the metadata (remaining length)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"remaining_length\": 340,\r\n    \"remaining_length_unit\": \"laps\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata/remaining_length",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata",
-								"remaining_length"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update the metadata (stage)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"stage\": \"qualifying\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata/stage",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata",
-								"stage"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update the metadata (status)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"status\": \"paused\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/metadata/status",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"metadata",
-								"status"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get settings",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/settings",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"settings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update settings",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"length\": 321,\r\n    \"length_unit\": \"laps\",\r\n    \"pit_time\": null,\r\n    \"min_number_pits\": null\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/settings",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"settings"
-							]
-						}
-					},
-					"response": []
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"health"
+					]
 				}
-			]
+			},
+			"response": []
 		},
 		{
-			"name": "Misc.",
-			"item": [
-				{
-					"name": "Get all parsers settings",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/parsers/settings",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"parsers",
-								"settings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a parser setting",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"new-setting\",\r\n    \"value\": \"new-value\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/parsers/settings",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"parsers",
-								"settings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete all parsers settings",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/parsers/settings",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"parsers",
-								"settings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a parser setting",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/parsers/settings/timing-gap",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"parsers",
-								"settings",
-								"timing-gap"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update a parser setting",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"value\": \"timing-gap-value-updated\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/parsers/settings/timing-gap",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"parsers",
-								"settings",
-								"timing-gap"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all tracks",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/tracks",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"tracks"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a track",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"New track 2\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/tracks",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"tracks"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update a track",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Karting North Updated\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/tracks/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"tracks",
-								"1"
-							]
-						}
-					},
-					"response": []
+			"name": "Auth: Login",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true
 				}
-			]
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3",
+						"type": "text"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"key\": \"6a204bd89f3c8348afd5c77c717a097a\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"auth"
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"name": "Participants",
-			"item": [
-				{
-					"name": "Get all teams",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a team",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"new-team\",\r\n    \"name\": \"New team\",\r\n    \"number\": 101\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a team",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a team by participant code",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/filter/code/team-1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"filter",
-								"code",
-								"team-1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update a team",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"CKM 1 Updated\",\r\n    \"number\": 51\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all drivers in a team",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/1/drivers",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"1",
-								"drivers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a driver in a team by name",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/1/drivers/filter/name/CKM%201%20Driver%201",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"1",
-								"drivers",
-								"filter",
-								"name",
-								"CKM%201%20Driver%201"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a driver to a team",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/teams/1/drivers",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"teams",
-								"1",
-								"drivers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all drivers",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a driver (no team)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"participant_code\": \"team-1\",\r\n    \"name\": \"CKM 1 New Driver\",\r\n    \"number\": 40\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get a driver",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update a driver",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"CKM 1 Driver 1 Updated\",\r\n    \"number\": 51\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update partial driving time",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"partial_driving_time\": 34000,\r\n    \"auto_compute_total\": false\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers/1/partial_driving_time",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers",
-								"1",
-								"partial_driving_time"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update total driving time",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"total_driving_time\": 34000\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/drivers/1/total_driving_time",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"drivers",
-								"1",
-								"total_driving_time"
-							]
-						}
-					},
-					"response": []
+			"name": "Auth: Validate",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true
 				}
-			]
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3",
+						"type": "text"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/token/validate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"token",
+						"validate"
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"name": "Timing",
-			"item": [
-				{
-					"name": "Get current timing",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get current timing (by driver)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing/drivers/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing",
-								"drivers",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get history timing (by driver)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing/drivers/5/history",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing",
-								"drivers",
-								"5",
-								"history"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get current timing (by team)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing/teams/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing",
-								"teams",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update current timing (by team)",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"driver_id\": 6,\r\n    \"position\": 1,\r\n    \"last_time\": 60000,\r\n    \"best_time\": 59000,\r\n    \"lap\": 2,\r\n    \"gap\": 0,\r\n    \"gap_unit\": \"laps\",\r\n    \"interval\": 0,\r\n    \"interval_unit\": \"laps\",\r\n    \"stage\": \"race\",\r\n    \"pit_time\": 35000,\r\n    \"kart_status\": \"unknown\",\r\n    \"fixed_kart_status\": null,\r\n    \"number_pits\": 0,\r\n    \"auto_best_time\": false,\r\n    \"auto_position_others\": false\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing/teams/1",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing",
-								"teams",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get history timing (by team)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/2/timing/teams/4/history",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"2",
-								"timing",
-								"teams",
-								"4",
-								"history"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get history timing (all)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{bearer}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{api_url}}/v1/c/1/timing/history",
-							"host": [
-								"{{api_url}}"
-							],
-							"path": [
-								"v1",
-								"c",
-								"1",
-								"timing",
-								"history"
-							]
-						}
-					},
-					"response": []
+			"name": "Competitions Index",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c"
+					]
 				}
-			]
+			},
+			"response": []
+		},
+		{
+			"name": "Competitions Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Competition test\",\r\n    \"description\": \"This is a competition test\",\r\n    \"track_id\": 1,\r\n    \"competition_code\": \"competition-test\",\r\n    \"settings\": {\r\n        \"length\": 86400000,\r\n        \"length_unit\": \"millis\",\r\n        \"pit_time\": 180000,\r\n        \"min_number_pits\": 25\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Metadata",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/metadata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Metadata By Name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/metadata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Metadata By Name",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"value\": \"online\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/metadata/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"metadata",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Timing Current",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/2/timing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"2",
+						"timing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Timing Current By Team",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/timing/teams/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"timing",
+						"teams",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Timing",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"position\": 1,\r\n    \"team_name\": \"CKM Berylo\",\r\n    \"driver_name\": null,\r\n    \"time\": 66961,\r\n    \"interval\": 0,\r\n    \"interval_unit\": \"milli\",\r\n    \"lap\": 1,\r\n    \"number_stops\": 0\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/3/timing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"3",
+						"timing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Timing Kart Status",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"forced_kart_status\": \"good\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/events/Resistencia%20Los%20Santos%2026-06-2020/timing/kart-status/CKM Berylo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"events",
+						"Resistencia%20Los%20Santos%2026-06-2020",
+						"timing",
+						"kart-status",
+						"CKM Berylo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Teams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/3/teams",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"3",
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Teams",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM Berylo\",\r\n    \"number\": 10,\r\n    \"drivers\": [\r\n        {\r\n            \"name\": \"Dimas Muñoz\"\r\n        },\r\n        {\r\n            \"name\": \"Alberto Saz\"\r\n        }\r\n    ],\r\n    \"reference_time_offset\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Teams (without drivers)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM Berylo WO\",\r\n    \"number\": 10,\r\n    \"drivers\": [],\r\n    \"reference_time_offset\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Teams By Name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Teams By Name",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"CKM Berylo Updated\",\r\n    \"reference_time_offset\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Team-Drivers By Name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Team-Drivers By Name",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reference_time_offset\": 1,\r\n    \"driving_time\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/teams/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"teams",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits In",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/in",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits In By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/in/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"in",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits In By Team ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/in/filter/team/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"in",
+						"filter",
+						"team",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits In",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"team_id\": 1,\r\n    \"driver_id\": null,\r\n    \"lap\": 5,\r\n    \"pit_time\": null,\r\n    \"kart_status\": \"good\",\r\n    \"fixed_kart_status\": null\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/in",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits Out",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/out",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"out"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Pits Out",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"team_id\": 1,\r\n    \"driver_id\": null,\r\n    \"kart_status\": \"good\",\r\n    \"fixed_kart_status\": null\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/pits/out",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"pits",
+						"out"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Settings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/settings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Settings",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"length\": \"10\",\r\n    \"length_unit\": \"laps\",\r\n    \"pit_time\": 120000,\r\n    \"min_number_pits\": 4\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8090/v1/c/1/settings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"settings"
+					]
+				}
+			},
+			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -1368,11 +994,6 @@
 		}
 	],
 	"variable": [
-		{
-			"key": "api_url",
-			"value": "localhost:8090",
-			"type": "string"
-		},
 		{
 			"key": "bearer",
 			"value": "e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9",

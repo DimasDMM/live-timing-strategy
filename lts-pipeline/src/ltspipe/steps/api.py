@@ -19,7 +19,7 @@ class ApiActionStep(MidStep):
             self,
             logger: Logger,
             api_lts: str,
-            competitions: Dict[str, CompetitionInfo],
+            info: CompetitionInfo,
             action_handlers: Dict[ActionType, ApiHandler],
             notification_step: Optional[MidStep],
             next_step: Optional[MidStep] = None) -> None:
@@ -29,8 +29,7 @@ class ApiActionStep(MidStep):
         Params:
             logger (logging.Logger): Logger instance to display information.
             api_lts (str): URI of API REST.
-            competitions (Dict[str, CompetitionInfo]): Storage of
-                competitions info.
+            info (CompetitionInfo): Storage of competition info.
             action_handlers (Dict[ActionType, ApiHandler]): Handler for each
                 type of action.
             notification_step (MidStep | None): Step to send a notification when
@@ -39,7 +38,7 @@ class ApiActionStep(MidStep):
         """
         self._logger = logger
         self._api_lts = api_lts
-        self._competitions = competitions
+        self._info = info
         self._action_handlers = action_handlers
         self._notification_step = notification_step
         self._next_step = next_step
@@ -57,10 +56,6 @@ class ApiActionStep(MidStep):
     def run_step(self, msg: Message) -> None:
         """Run step."""
         if isinstance(msg.data, Action):
-            if msg.competition_code not in self._competitions:
-                raise Exception(
-                    f'Unknown competition with code {msg.competition_code}.')
-
             action = msg.data
             handler = self._action_handlers.get(action.type, None)
             if handler is not None:
@@ -101,7 +96,7 @@ class CompetitionInfoRefreshStep(MidStep):
             logger: Logger,
             api_lts: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo],
+            info: CompetitionInfo,
             next_step: Optional[MidStep] = None) -> None:
         """
         Construct.
@@ -110,14 +105,13 @@ class CompetitionInfoRefreshStep(MidStep):
             logger (logging.Logger): Logger instance to display information.
             api_lts (str): URI of API REST.
             auth_data (AuthData): Authentication data.
-            competitions (Dict[str, CompetitionInfo]): Storage of
-                competitions info.
+            info (CompetitionInfo): Storage of competition info.
             next_step (MidStep | None): Next step.
         """
         self._logger = logger
         self._api_lts = api_lts.strip('/')
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
         self._next_step = next_step
 
     def get_children(self) -> List[Any]:
@@ -129,20 +123,23 @@ class CompetitionInfoRefreshStep(MidStep):
 
     def run_step(self, msg: Message) -> None:
         """Run step."""
-        self._init_competition_info(msg.competition_code)
+        self._refresh_competition_info(msg.competition_code)
         if self._next_step is not None:
             self._next_step.run_step(msg)
 
-    def _init_competition_info(self, competition_code: str) -> None:
-        """Initialize competition info."""
+    def _refresh_competition_info(self, competition_code: str) -> None:
+        """Refresh competition info."""
         self._logger.debug(
-            f'Init competition info of {competition_code}...')
-        info = build_competition_info(
+            f'Refresh competition info of {competition_code}...')
+        new_info = build_competition_info(
             self._api_lts,
             bearer=self._auth_data.bearer,
             competition_code=competition_code)
-        if info is None:
+        if new_info is None:
             raise Exception(
                 f'Competition does not exist: {competition_code}')
-        else:
-            self._competitions[competition_code] = info
+
+        self._info.id = new_info.id
+        self._info.teams = new_info.teams
+        self._info.drivers = new_info.drivers
+        self._info.parser_settings = new_info.parser_settings

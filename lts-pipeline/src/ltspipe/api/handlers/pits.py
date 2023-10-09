@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.timing import (
@@ -30,25 +30,22 @@ class AddPitInHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-in."""
         if not isinstance(model, AddPitIn):
             raise Exception('The model must be an instance of AddPitIn.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         # Get latest information about the timing of the team
         last_timing = get_timing_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
         )
         if last_timing is None:
@@ -69,7 +66,7 @@ class AddPitInHandler(ApiHandler):
         new_pit_in = add_pit_in(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             kart_status=kart_status,
             fixed_kart_status=fixed_kart_status,
             pit_time=pit_time,
@@ -95,25 +92,22 @@ class AddPitOutHandler(ApiHandler):
             self,
             api_url: str,
             auth_data: AuthData,
-            competitions: Dict[str, CompetitionInfo]) -> None:
+            info: CompetitionInfo) -> None:
         """Construct."""
         self._api_url = api_url
         self._auth_data = auth_data
-        self._competitions = competitions
+        self._info = info
 
     def handle(self, model: BaseModel) -> Optional[Notification]:
         """Add the data of a pit-out."""
         if not isinstance(model, AddPitOut):
             raise Exception('The model must be an instance of AddPitOut.')
 
-        competition_code = model.competition_code
-        info = self._competitions[competition_code]
-
         # Add pit-out
         new_pit_out = add_pit_out(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             kart_status=KartStatus.UNKNOWN,
             driver_id=None,
             team_id=model.team_id,
@@ -123,14 +117,14 @@ class AddPitOutHandler(ApiHandler):
         _ = update_timing_driver_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             driver_id=None,
         )
         _ = update_timing_pit_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=info.id,  # type: ignore
+            competition_id=self._info.id,
             team_id=model.team_id,
             pit_time=None,
         )

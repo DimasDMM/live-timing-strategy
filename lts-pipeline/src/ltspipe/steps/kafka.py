@@ -9,6 +9,7 @@ from kafka.producer.future import FutureRecordMetadata  # type: ignore
 import traceback
 from typing import Any, Callable, List, Optional
 
+from ltspipe.data.competitions import CompetitionInfo
 from ltspipe.messages import Message
 from ltspipe.steps.base import StartStep, MidStep
 
@@ -19,6 +20,7 @@ class KafkaConsumerStep(StartStep):
     def __init__(
             self,
             logger: Logger,
+            info: CompetitionInfo,
             bootstrap_servers: List[str],
             topics: List[str],
             value_deserializer: Callable,
@@ -30,6 +32,7 @@ class KafkaConsumerStep(StartStep):
 
         Params:
             logger (Logger): Logger instance to display information.
+            info (CompetitionInfo): Storage of competition info.
             bootstrap_servers (List[str]): list of 'host[:port]' strings that
                 the consumer should contact to bootstrap initial cluster
                 metadata. This does not have to be the full node list.
@@ -45,6 +48,7 @@ class KafkaConsumerStep(StartStep):
                 message if there is any error on running time.
         """
         self._logger = logger
+        self._info = info
         self._next_step = next_step
         self._on_error = on_error
         self._consumer = self._build_kafka_consumer(
@@ -65,9 +69,13 @@ class KafkaConsumerStep(StartStep):
         for data in self._consumer:
             try:
                 msg: Message = Message.decode(data.value)
-                self._logger.info(f'Kafka data: {msg}')
-                msg.updated()
-                self._next_step.run_step(msg)
+                if msg.competition_code == self._info.competition_code:
+                    self._logger.info(f'Kafka message: {msg}')
+                    msg.updated()
+                    self._next_step.run_step(msg)
+                else:
+                    # Ignore message due to competition code is different
+                    self._logger.debug(f'Ignore message: {msg}')
             except Exception as e:
                 self._logger.critical(e, exc_info=True)
                 if self._on_error is not None:
