@@ -326,6 +326,9 @@ class UpdateDriver(DictModel):
     name: str
     number: int
     team_id: int
+    partial_driving_time: Optional[int] = Field(default=None)
+    total_driving_time: Optional[int] = Field(default=None)
+    auto_compute_total: bool = Field(default=False)
 
     @classmethod
     def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
@@ -338,6 +341,9 @@ class UpdateDriver(DictModel):
             name=raw.get('name'),
             number=raw.get('number'),
             team_id=raw.get('team_id'),
+            partial_driving_time=raw.get('partial_driving_time', None),
+            total_driving_time=raw.get('total_driving_time', None),
+            auto_compute_total=raw.get('auto_compute_total', False),
         )
 
 

@@ -56,13 +56,13 @@ def find_team_by_id(
 
 
 def time_to_millis(
-        lap_time: Optional[str],
+        str_time: Optional[str],
         default: Optional[int] = None) -> Optional[int]:
     """Transform a lap time into milliseconds."""
-    if lap_time is None:
+    if str_time is None:
         return default
-    lap_time = lap_time.strip()
-    match = re.search(REGEX_TIME, lap_time)
+    str_time = str_time.strip()
+    match = re.search(REGEX_TIME, str_time)
     if match is None:
         return default
     else:

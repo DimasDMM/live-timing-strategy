@@ -50,6 +50,39 @@ class UpdateDriverHandler(ApiHandler):
         if not isinstance(model, UpdateDriver):
             raise LtsError('The model must be an instance of UpdateDriver.')
 
+        driver = self._add_or_update_driver(model)
+        if driver is None:
+            return None
+
+        # Update related items to the driver
+        if model.partial_driving_time is not None:
+            driver = self._update_driver_partial_driving_time(
+                driver_id=driver.id,
+                partial_driving_time=model.partial_driving_time,
+                auto_compute_total=model.auto_compute_total,
+            )
+        self._update_timing_with_driver_id(
+            team_id=model.team_id,
+            driver_id=driver.id,
+        )
+        self._update_pit_out_with_driver_id(
+            team_id=model.team_id,
+            driver_id=driver.id,
+        )
+
+        return self._create_notification(driver)
+
+    def _create_notification(self, driver: Driver) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.UPDATED_DRIVER,
+            data=driver,
+        )
+
+    def _add_or_update_driver(
+            self,
+            model: UpdateDriver) -> Optional[Driver]:
+        """Add or update the driver."""
         if model.id is None:
             old_driver = find_driver_by_name(
                 self._info, model.participant_code, model.name)
@@ -88,37 +121,39 @@ class UpdateDriverHandler(ApiHandler):
             # Ignore driver
             return None
 
-        # Update driver ID in the timing and in the last pit-out
-        self._update_timing_with_driver_id(
+        return current_driver
+
+    def _update_driver_partial_driving_time(
+            self,
+            driver_id: int,
+            partial_driving_time: int,
+            auto_compute_total: bool) -> Driver:
+        """Update partial driving time of the driver."""
+        current_driver = update_driver_partial_driving_time(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
             competition_id=self._info.id,
-            team_id=model.team_id,
-            driver_id=current_driver.id,
-        )
-        self._update_pit_out_with_driver_id(
-            competition_id=self._info.id,
-            team_id=model.team_id,
-            driver_id=current_driver.id,
+            driver_id=driver_id,
+            partial_driving_time=partial_driving_time,
+            auto_compute_total=auto_compute_total,
         )
 
-        return self._create_notification(current_driver)
+        old_driver: Driver = find_driver_by_id(  # type: ignore
+            info=self._info, driver_id=driver_id)
+        old_driver.total_driving_time = current_driver.total_driving_time
+        old_driver.partial_driving_time = current_driver.partial_driving_time
 
-    def _create_notification(self, driver: Driver) -> Notification:
-        """Create notification of handler."""
-        return Notification(
-            type=NotificationType.UPDATED_DRIVER,
-            data=driver,
-        )
+        return current_driver
 
     def _update_timing_with_driver_id(
             self,
-            competition_id: int,
             team_id: int,
             driver_id: int) -> None:
         """Update the timing of the team with the Driver ID."""
         timing = update_timing_driver_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=competition_id,
+            competition_id=self._info.id,
             team_id=team_id,
             driver_id=driver_id,
         )
@@ -126,21 +161,20 @@ class UpdateDriverHandler(ApiHandler):
 
     def _update_pit_out_with_driver_id(
             self,
-            competition_id: int,
             team_id: int,
             driver_id: int) -> None:
         """Update the last pit-out of the team with the Driver ID."""
         last_pit_out = get_last_pit_out_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
-            competition_id=competition_id,
+            competition_id=self._info.id,
             team_id=team_id,
         )
         if last_pit_out is not None:
             _ = update_pit_out_driver_by_id(
                 api_url=self._api_url,
                 bearer=self._auth_data.bearer,
-                competition_id=competition_id,
+                competition_id=self._info.id,
                 pit_out_id=last_pit_out.id,
                 driver_id=driver_id,
             )

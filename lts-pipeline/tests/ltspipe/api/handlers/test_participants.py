@@ -321,6 +321,9 @@ class TestUpdateDriverHandler(DatabaseTest):
                     name='Team 1 Driver 1 Updated',
                     number=41,
                     team_id=1,
+                    total_driving_time=None,
+                    partial_driving_time=70000,
+                    auto_compute_total=False,
                 ),
                 [  # expected_drivers
                     Driver(
@@ -330,7 +333,7 @@ class TestUpdateDriverHandler(DatabaseTest):
                         number=41,
                         team_id=1,
                         total_driving_time=0,
-                        partial_driving_time=0,
+                        partial_driving_time=70000,
                     ),
                 ],
                 Notification(  # expected_notification
@@ -342,7 +345,7 @@ class TestUpdateDriverHandler(DatabaseTest):
                         number=41,
                         team_id=1,
                         total_driving_time=0,
-                        partial_driving_time=0,
+                        partial_driving_time=70000,
                     ),
                 ),
                 DatabaseContent(  # expected_database
@@ -380,7 +383,7 @@ class TestUpdateDriverHandler(DatabaseTest):
                                     'Team 1 Driver 1 Updated',
                                     41,
                                     0,
-                                    0,
+                                    70000,
                                     None,
                                 ],
                             ],

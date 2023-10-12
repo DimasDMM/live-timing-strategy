@@ -67,9 +67,8 @@ class DriverNameParser(Parser):
             data: str) -> Optional[UpdateDriver]:
         """Parse driver name."""
         data = data.strip()
-        # TODO: Update stint time too
         matches = re.match(
-            r'^(.+?)(c\d+)\|drteam\|(.+?)( \[\d+:\d+\])?$', data)
+            r'^(.+?)(c\d+)\|drteam\|(.+?)(?: \[(\d+:\d+)\])?$', data)
         if matches is None:
             return None
 
@@ -94,6 +93,13 @@ class DriverNameParser(Parser):
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
+        # Extract partial driving time if given
+        partial_driving_time: Optional[int] = None
+        if matches[4] is not None:
+            partial_driving_time = time_to_millis(
+                matches[4].strip(),
+                default=0)
+
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),
             competition_code=self._info.competition_code,
@@ -101,6 +107,9 @@ class DriverNameParser(Parser):
             name=driver_name,
             number=team.number,
             team_id=team.id,
+            partial_driving_time=partial_driving_time,
+            total_driving_time=None,
+            auto_compute_total=False,
         )
         return updated_driver
 
@@ -167,7 +176,7 @@ class DriverPartialDrivingTimeParser(Parser):
         participant_code = matches[1]
         raw_pit_time = matches[3]
 
-        driving_time: int = time_to_millis(  # type: ignore
+        partial_driving_time: int = time_to_millis(  # type: ignore
             raw_pit_time,
             default=0)
 
@@ -183,7 +192,7 @@ class DriverPartialDrivingTimeParser(Parser):
         updated_timing = UpdateDriverPartialDrivingTime(
             id=timing.driver_id,
             competition_code=self._info.competition_code,
-            partial_driving_time=driving_time,
+            partial_driving_time=partial_driving_time,
             auto_compute_total=False,
         )
         return updated_timing, True
