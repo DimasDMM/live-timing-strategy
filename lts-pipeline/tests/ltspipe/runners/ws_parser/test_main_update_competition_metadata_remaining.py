@@ -53,7 +53,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 class TestMain(DatabaseTest):
     """
-    Functional test of ltspipe.runners.ws_parser.main.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.

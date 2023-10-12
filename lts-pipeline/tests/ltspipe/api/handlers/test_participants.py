@@ -4,6 +4,7 @@ from typing import List
 from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.participants import (
     UpdateDriverHandler,
+    UpdateDriverPartialDrivingTimeHandler,
     UpdateTeamHandler,
 )
 from ltspipe.data.competitions import (
@@ -11,6 +12,7 @@ from ltspipe.data.competitions import (
     Driver,
     Team,
     UpdateDriver,
+    UpdateDriverPartialDrivingTime,
     UpdateTeam,
 )
 from ltspipe.data.notifications import Notification, NotificationType
@@ -149,14 +151,14 @@ def _build_competition_table_content() -> List[TableContent]:
 
 class TestUpdateDriverHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateDriverHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data, expected_drivers,'
+        ('database_content, info, update_data, expected_drivers,'
          'expected_notification, expected_database'),
         [
             (
@@ -164,7 +166,7 @@ class TestUpdateDriverHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -287,7 +289,7 @@ class TestUpdateDriverHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -391,7 +393,7 @@ class TestUpdateDriverHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateDriver,
             expected_drivers: List[Driver],
             expected_notification: Notification,
@@ -404,10 +406,258 @@ class TestUpdateDriverHandler(DatabaseTest):
         handler = UpdateDriverHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
 
-        assert ([d.model_dump() for d in in_competition.drivers]
+        assert ([d.model_dump() for d in info.drivers]
+                == [d.model_dump() for d in expected_drivers])
+        assert notification is not None
+        assert notification.model_dump() == expected_notification.model_dump()
+
+        # Validate database content
+        query = expected_database.to_query()
+        assert (self.get_database_content(query).model_dump()
+                == expected_database.model_dump())
+
+
+class TestUpdateDriverPartialDrivingTimeHandler(DatabaseTest):
+    """
+    Functional test.
+
+    Important: Since these tests are functional, they require that there are
+    a database and an API REST running.
+    """
+
+    @pytest.mark.parametrize(
+        ('database_content, info, update_data, expected_drivers,'
+         'expected_notification, expected_database'),
+        [
+            (
+                # Case: update driver partial driving time with auto-update
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                CompetitionInfo(  # info
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams={
+                        'r5625': Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    },
+                    timing={},
+                ),
+                UpdateDriverPartialDrivingTime(  # update_data
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    partial_driving_time=70000,
+                    auto_compute_total=True,
+                ),
+                [  # expected_drivers
+                    Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1',
+                        number=41,
+                        team_id=1,
+                        total_driving_time=70000,
+                        partial_driving_time=70000,
+                    ),
+                ],
+                Notification(  # expected_notification
+                    type=NotificationType.UPDATED_DRIVER_PARTIAL_DRIVING_TIME,
+                    data=Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1',
+                        number=41,
+                        team_id=1,
+                        total_driving_time=70000,
+                        partial_driving_time=70000,
+                    ),
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1',
+                                    41,
+                                    70000,
+                                    70000,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            (
+                # Case: update driver partial driving time without auto-update
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                CompetitionInfo(  # info
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[
+                        Driver(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1 Driver 1',
+                            number=41,
+                            team_id=1,
+                            total_driving_time=0,
+                            partial_driving_time=0,
+                        ),
+                    ],
+                    teams={
+                        'r5625': Team(
+                            id=1,
+                            participant_code='r5625',
+                            name='Team 1',
+                            number=41,
+                        ),
+                    },
+                    timing={},
+                ),
+                UpdateDriverPartialDrivingTime(  # update_data
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    partial_driving_time=70000,
+                    auto_compute_total=False,
+                ),
+                [  # expected_drivers
+                    Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1',
+                        number=41,
+                        team_id=1,
+                        total_driving_time=0,
+                        partial_driving_time=70000,
+                    ),
+                ],
+                Notification(  # expected_notification
+                    type=NotificationType.UPDATED_DRIVER_PARTIAL_DRIVING_TIME,
+                    data=Driver(
+                        id=1,
+                        participant_code='r5625',
+                        name='Team 1 Driver 1',
+                        number=41,
+                        team_id=1,
+                        total_driving_time=0,
+                        partial_driving_time=70000,
+                    ),
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='participants_teams',
+                            columns=[
+                                'competition_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 'r5625', 'Team 1', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'total_driving_time',
+                                'partial_driving_time',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [
+                                    1,
+                                    1,
+                                    'r5625',
+                                    'Team 1 Driver 1',
+                                    41,
+                                    0,
+                                    70000,
+                                    None,
+                                ],
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )
+    def test_handle(
+            self,
+            database_content: DatabaseContent,
+            info: CompetitionInfo,
+            update_data: UpdateDriver,
+            expected_drivers: List[Driver],
+            expected_notification: Notification,
+            expected_database: DatabaseContent) -> None:
+        """Test handle method."""
+        self.set_database_content(database_content)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
+
+        # Call to handle method
+        handler = UpdateDriverPartialDrivingTimeHandler(
+            api_url=API_LTS,
+            auth_data=auth_data,
+            info=info)
+        notification = handler.handle(update_data)
+
+        assert ([d.model_dump() for d in info.drivers]
                 == [d.model_dump() for d in expected_drivers])
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
@@ -420,14 +670,14 @@ class TestUpdateDriverHandler(DatabaseTest):
 
 class TestUpdateTeamHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTeamHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_teams, expected_notification, expected_database'),
         [
             (
@@ -435,7 +685,7 @@ class TestUpdateTeamHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -532,7 +782,7 @@ class TestUpdateTeamHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -629,7 +879,7 @@ class TestUpdateTeamHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTeam,
             expected_teams: List[Team],
             expected_notification: Notification,
@@ -642,10 +892,10 @@ class TestUpdateTeamHandler(DatabaseTest):
         handler = UpdateTeamHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
 
-        assert ([t.model_dump() for _, t in in_competition.teams.items()]
+        assert ([t.model_dump() for _, t in info.teams.items()]
                 == [t.model_dump() for t in expected_teams])
         assert notification is not None
         assert (notification.model_dump()

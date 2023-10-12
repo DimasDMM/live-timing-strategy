@@ -28,14 +28,14 @@ from tests.helpers import (
 
 class TestInitialDataHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.InitialDataHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, initial_data_1, initial_data_2,'
+        ('database_content, info, initial_data_1, initial_data_2,'
          'expected_teams_1, expected_teams_2, expected_drivers_1,'
          'expected_drivers_2, expected_settings_1, expected_settings_2,'
          'expected_notification_1, expected_notification_2, expected_database'),
@@ -85,7 +85,7 @@ class TestInitialDataHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -428,7 +428,7 @@ class TestInitialDataHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             initial_data_1: InitialData,
             initial_data_2: InitialData,
             expected_teams_1: List[Team],
@@ -448,14 +448,14 @@ class TestInitialDataHandler(DatabaseTest):
         handler = InitialDataHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(initial_data_1)
-        self._add_team_id_to_drivers(in_competition, expected_drivers_1)
-        assert ([t.model_dump() for _, t in in_competition.teams.items()]
+        self._add_team_id_to_drivers(info, expected_drivers_1)
+        assert ([t.model_dump() for _, t in info.teams.items()]
                 == [t.model_dump() for t in expected_teams_1])
-        assert ([d.model_dump() for d in in_competition.drivers]
+        assert ([d.model_dump() for d in info.drivers]
                 == [d.model_dump() for d in expected_drivers_1])
-        assert in_competition.parser_settings == expected_settings_1
+        assert info.parser_settings == expected_settings_1
         assert notification is not None
         assert notification == expected_notification_1
 
@@ -463,14 +463,14 @@ class TestInitialDataHandler(DatabaseTest):
         handler = InitialDataHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(initial_data_2)
-        self._add_team_id_to_drivers(in_competition, expected_drivers_2)
-        assert ([t.model_dump() for _, t in in_competition.teams.items()]
+        self._add_team_id_to_drivers(info, expected_drivers_2)
+        assert ([t.model_dump() for _, t in info.teams.items()]
                 == [t.model_dump() for t in expected_teams_2])
-        assert ([d.model_dump() for d in in_competition.drivers]
+        assert ([d.model_dump() for d in info.drivers]
                 == [d.model_dump() for d in expected_drivers_2])
-        assert in_competition.parser_settings == expected_settings_2
+        assert info.parser_settings == expected_settings_2
         assert notification is not None
         assert notification == expected_notification_2
 
@@ -480,7 +480,7 @@ class TestInitialDataHandler(DatabaseTest):
                 == expected_database.model_dump())
 
     @pytest.mark.parametrize(
-        'database_content, in_competition',
+        'database_content, info',
         [
             (
                 DatabaseContent(  # database_content
@@ -527,7 +527,7 @@ class TestInitialDataHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -541,7 +541,7 @@ class TestInitialDataHandler(DatabaseTest):
     def test_handle_raises_exception_unknown_team(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo) -> None:
+            info: CompetitionInfo) -> None:
         """
         Test handle method raise LtsError about unkown team.
 
@@ -583,7 +583,7 @@ class TestInitialDataHandler(DatabaseTest):
             handler = InitialDataHandler(
                 api_url=API_LTS,
                 auth_data=auth_data,
-                info=in_competition)
+                info=info)
             handler.handle(initial_data)
 
         exception: Exception = e_info.value

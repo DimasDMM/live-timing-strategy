@@ -8,7 +8,7 @@ from ltspipe.configs import (
     WsParserConfig,
     DEFAULT_NOTIFICATIONS_TOPIC,
 )
-from ltspipe.data.competitions import Team
+from ltspipe.data.competitions import Driver
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.runners.ws_parser.main import main
@@ -47,7 +47,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 class TestMain(DatabaseTest):
     """
-    Functional test of ltspipe.runners.ws_parser.main.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
@@ -125,7 +125,21 @@ class TestMain(DatabaseTest):
                                 'reference_time_offset',
                             ],
                             content=[
-                                [1, 'r5625', 'Sample Team Name', 41, None],
+                                [1, 'r5625', 'Team 1', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='participants_drivers',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'participant_code',
+                                'name',
+                                'number',
+                                'reference_time_offset',
+                            ],
+                            content=[
+                                [1, 1, 'r5625', 'Sample Driver Name', 41, None],
                             ],
                         ),
                         TableContent(
@@ -152,7 +166,7 @@ class TestMain(DatabaseTest):
                                 [
                                     1,  # competition_id
                                     1,  # team_id
-                                    None,  # driver_id
+                                    1,  # driver_id
                                     1,  # position
                                     60000,  # last_time
                                     59000,  # best_time
@@ -175,19 +189,22 @@ class TestMain(DatabaseTest):
                     DEFAULT_NOTIFICATIONS_TOPIC: [],
                 },
                 [  # in_websocket
-                    load_raw_message('endurance_display_team_name.txt'),
+                    load_raw_message('endurance_display_driver_name.txt'),
                 ],
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
                             competition_code=TEST_COMPETITION_CODE,
                             data=Notification(
-                                type=NotificationType.UPDATED_TEAM,
-                                data=Team(
-                                    id=1,
+                                type=NotificationType.UPDATED_DRIVER,
+                                data=Driver(
+                                    id=2,
                                     participant_code='r5625',
-                                    name='Team 1',
+                                    name='DIMAS MUNOZ',
                                     number=41,
+                                    team_id=1,
+                                    total_driving_time=0,
+                                    partial_driving_time=0,
                                 ),
                             ),
                             source=MessageSource.SOURCE_WS_LISTENER,
@@ -200,16 +217,59 @@ class TestMain(DatabaseTest):
                 DatabaseContent(  # expected_database
                     tables_content=[
                         TableContent(
-                            table_name='participants_teams',
+                            table_name='participants_drivers',
                             columns=[
                                 'competition_id',
+                                'team_id',
                                 'participant_code',
                                 'name',
                                 'number',
                                 'reference_time_offset',
                             ],
                             content=[
-                                [1, 'r5625', 'Team 1', 41, None],
+                                [1, 1, 'r5625', 'Sample Driver Name', 41, None],
+                                [1, 1, 'r5625', 'DIMAS MUNOZ', 41, None],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='timing_current',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'driver_id',
+                                'position',
+                                'last_time',
+                                'best_time',
+                                'lap',
+                                'gap',
+                                'gap_unit',
+                                'interval',
+                                'interval_unit',
+                                'stage',
+                                'pit_time',
+                                'kart_status',
+                                'fixed_kart_status',
+                                'number_pits',
+                            ],
+                            content=[
+                                [
+                                    1,  # competition_id
+                                    1,  # team_id
+                                    2,  # driver_id
+                                    1,  # position
+                                    60000,  # last_time
+                                    59000,  # best_time
+                                    5,  # lap
+                                    0,  # gap
+                                    'laps',  # gap_unit
+                                    0,  # interval
+                                    'laps',  # interval_unit
+                                    'race',  # stage
+                                    0,  # pit_time
+                                    'good',  # kart_status
+                                    None,  # fixed_kart_status
+                                    0,  # number_pits
+                                ],
                             ],
                         ),
                     ],

@@ -6,6 +6,7 @@ from ltspipe.data.competitions import (
     CompetitionInfo,
     Team,
     UpdateDriver,
+    UpdateDriverPartialDrivingTime,
     UpdateTeam,
 )
 from ltspipe.data.enum import ParserSettings
@@ -15,6 +16,7 @@ from ltspipe.utils import (
     find_driver_by_name,
     find_team_by_code,
     is_column_parser_setting,
+    time_to_millis,
 )
 
 
@@ -101,6 +103,90 @@ class DriverNameParser(Parser):
             team_id=team.id,
         )
         return updated_driver
+
+
+class DriverPartialDrivingTimeParser(Parser):
+    """
+    Parse the time a driver has been driving in the stint.
+
+    Sample messages:
+    > r5625c11|in|1:05
+    > r5625c11|in|0:10
+
+    Note: Do not confuse this message with the 'pit time'.
+    """
+
+    def __init__(self, info: CompetitionInfo) -> None:
+        """Construct."""
+        self._info = info
+
+    def parse(
+            self,
+            data: Any) -> Tuple[List[Action], bool]:
+        """
+        Analyse and/or parse a given data.
+
+        Params:
+            data (Any): Data to parse.
+
+        Returns:
+            List[Action]: list of actions and their respective parsed data.
+            bool: indicates whether the data has been parsed or not.
+        """
+        if not isinstance(data, str):
+            return [], False
+
+        parsed_data, is_parsed = self._parse_timing_pit_time(data)
+        if parsed_data is None:
+            return [], is_parsed
+
+        action = Action(
+            type=ActionType.UPDATE_DRIVER_PARTIAL_DRIVING_TIME,
+            data=parsed_data,
+        )
+        return [action], True
+
+    def _parse_timing_pit_time(
+            self,
+            data: str) -> Tuple[Optional[UpdateDriverPartialDrivingTime], bool]:
+        """Parse driver name."""
+        data = data.strip()
+        matches = re.match(r'^(.+?)(c\d+)\|in\|((?:\d+:)?\d+)$', data)
+        if matches is None:
+            return None, False
+
+        # Note: The driving time is in the same column like the pit time
+        column_id = matches[2]
+        if not is_column_parser_setting(
+                self._info,
+                column_id,
+                ParserSettings.TIMING_PIT_TIME,
+                raise_exception=False):
+            return None, False
+
+        participant_code = matches[1]
+        raw_pit_time = matches[3]
+
+        driving_time: int = time_to_millis(  # type: ignore
+            raw_pit_time,
+            default=0)
+
+        # The driver must be already initialized
+        timing = self._info.timing.get(participant_code, None)
+        if timing is None:
+            raise LtsError(
+                f'Unknown participant timing with code={participant_code}')
+
+        if timing.driver_id is None:
+            return None, True
+
+        updated_timing = UpdateDriverPartialDrivingTime(
+            id=timing.driver_id,
+            competition_code=self._info.competition_code,
+            partial_driving_time=driving_time,
+            auto_compute_total=False,
+        )
+        return updated_timing, True
 
 
 class TeamNameParser(Parser):

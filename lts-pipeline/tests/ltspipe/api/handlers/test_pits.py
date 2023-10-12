@@ -169,14 +169,14 @@ def _build_competition_table_content() -> List[TableContent]:
 
 class TestAddPitInHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.AddPitInHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, add_data,'
+        ('database_content, info, add_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -184,7 +184,7 @@ class TestAddPitInHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -234,7 +234,7 @@ class TestAddPitInHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -284,7 +284,7 @@ class TestAddPitInHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             add_data: AddPitIn,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -296,7 +296,7 @@ class TestAddPitInHandler(DatabaseTest):
         handler = AddPitInHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(add_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -310,14 +310,14 @@ class TestAddPitInHandler(DatabaseTest):
 
 class TestAddPitOutHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.AddPitOutHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, add_data,'
+        ('database_content, info, add_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -341,7 +341,7 @@ class TestAddPitOutHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -391,7 +391,7 @@ class TestAddPitOutHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -441,7 +441,7 @@ class TestAddPitOutHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             add_data: AddPitOut,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -453,7 +453,7 @@ class TestAddPitOutHandler(DatabaseTest):
         handler = AddPitOutHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(add_data)
         assert notification is not None
         assert (notification.model_dump()

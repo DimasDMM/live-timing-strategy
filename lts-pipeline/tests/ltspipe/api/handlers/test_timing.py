@@ -133,21 +133,21 @@ def _build_competition_table_content() -> List[TableContent]:
 
 class TestUpdateTimingBestTimeHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingBestTimeHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -230,7 +230,7 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingBestTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -242,7 +242,7 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
         handler = UpdateTimingBestTimeHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -256,21 +256,21 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
 
 class TestUpdateTimingLapHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingLapHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -353,7 +353,7 @@ class TestUpdateTimingLapHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingLap,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -365,7 +365,7 @@ class TestUpdateTimingLapHandler(DatabaseTest):
         handler = UpdateTimingLapHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -379,21 +379,21 @@ class TestUpdateTimingLapHandler(DatabaseTest):
 
 class TestUpdateTimingLastTimeHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingLastTimeHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -476,7 +476,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -560,7 +560,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingLastTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -572,7 +572,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
         handler = UpdateTimingLastTimeHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -586,21 +586,21 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
 
 class TestUpdateTimingNumberPitsHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingNumberPitsHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -683,7 +683,7 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingNumberPits,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -695,7 +695,7 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
         handler = UpdateTimingNumberPitsHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -709,21 +709,21 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
 
 class TestUpdateTimingPitTimeHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingPitTimeHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -806,7 +806,7 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingPitTime,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -818,7 +818,7 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
         handler = UpdateTimingPitTimeHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()
@@ -832,21 +832,21 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
 
 class TestUpdateTimingPositionHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateTimingPositionHandler.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
                 DatabaseContent(  # database_content
                     tables_content=_build_competition_table_content(),
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -930,7 +930,7 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateTimingPosition,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -942,7 +942,7 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
         handler = UpdateTimingPositionHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert (notification.model_dump()

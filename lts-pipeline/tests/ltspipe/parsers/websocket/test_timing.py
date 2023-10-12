@@ -42,10 +42,10 @@ class TestTimingBestTimeParser:
     """Test ltspipe.parsers.websocket.TimingBestTimeParser."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -75,7 +75,7 @@ class TestTimingBestTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -88,7 +88,7 @@ class TestTimingBestTimeParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -104,22 +104,22 @@ class TestTimingBestTimeParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingBestTimeParser(info=in_competition)
+        parser = TimingBestTimeParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -135,11 +135,11 @@ class TestTimingBestTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingBestTimeParser(info=in_competition)
+        parser = TimingBestTimeParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value
@@ -150,10 +150,10 @@ class TestTimingLapParser:
     """Test ltspipe.parsers.websocket.TimingLapParser."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -183,7 +183,7 @@ class TestTimingLapParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -196,7 +196,7 @@ class TestTimingLapParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -212,22 +212,22 @@ class TestTimingLapParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingLapParser(info=in_competition)
+        parser = TimingLapParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -243,11 +243,11 @@ class TestTimingLapParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingLapParser(info=in_competition)
+        parser = TimingLapParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value
@@ -258,10 +258,10 @@ class TestTimingLastTimeParser:
     """Test ltspipe.parsers.websocket.TimingLastTimeParser."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -292,7 +292,7 @@ class TestTimingLastTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -305,7 +305,7 @@ class TestTimingLastTimeParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -321,22 +321,22 @@ class TestTimingLastTimeParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingLastTimeParser(info=in_competition)
+        parser = TimingLastTimeParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -352,11 +352,11 @@ class TestTimingLastTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingLastTimeParser(info=in_competition)
+        parser = TimingLastTimeParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value
@@ -367,10 +367,10 @@ class TestTimingNumberPitsParser:
     """Test ltspipe.parsers.websocket.TimingNumberPitsParser."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -400,7 +400,7 @@ class TestTimingNumberPitsParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -413,7 +413,7 @@ class TestTimingNumberPitsParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -429,22 +429,22 @@ class TestTimingNumberPitsParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingNumberPitsParser(info=in_competition)
+        parser = TimingNumberPitsParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -460,11 +460,11 @@ class TestTimingNumberPitsParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingNumberPitsParser(info=in_competition)
+        parser = TimingNumberPitsParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value
@@ -475,10 +475,10 @@ class TestPitTimeParser:
     """Test ltspipe.parsers.websocket.pits.PitTime."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -508,7 +508,7 @@ class TestPitTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -538,7 +538,7 @@ class TestPitTimeParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -551,7 +551,7 @@ class TestPitTimeParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -567,22 +567,22 @@ class TestPitTimeParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingPitTimeParser(info=in_competition)
+        parser = TimingPitTimeParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -598,11 +598,11 @@ class TestPitTimeParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingPitTimeParser(info=in_competition)
+        parser = TimingPitTimeParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value
@@ -613,10 +613,10 @@ class TestTimingPositionParser:
     """Test ltspipe.parsers.websocket.TimingPositionParser."""
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_actions, expected_is_parsed',
+        'info, in_data, expected_actions, expected_is_parsed',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -647,7 +647,7 @@ class TestTimingPositionParser:
                 True,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -660,7 +660,7 @@ class TestTimingPositionParser:
                 False,  # expected_is_parsed
             ),
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -676,22 +676,22 @@ class TestTimingPositionParser:
     )
     def test_parse(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
-        parser = TimingPositionParser(info=in_competition)
+        parser = TimingPositionParser(info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -707,11 +707,11 @@ class TestTimingPositionParser:
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        parser = TimingPositionParser(info=in_competition)
+        parser = TimingPositionParser(info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value

@@ -10,6 +10,7 @@ from ltspipe.api.participants import (
     add_driver,
     add_team,
     update_driver,
+    update_driver_partial_driving_time,
     update_team,
 )
 from ltspipe.api.pits import (
@@ -25,6 +26,7 @@ from ltspipe.data.competitions import (
     Driver,
     Team,
     UpdateDriver,
+    UpdateDriverPartialDrivingTime,
     UpdateTeam,
 )
 from ltspipe.exceptions import LtsError
@@ -142,6 +144,51 @@ class UpdateDriverHandler(ApiHandler):
                 pit_out_id=last_pit_out.id,
                 driver_id=driver_id,
             )
+
+
+class UpdateDriverPartialDrivingTimeHandler(ApiHandler):
+    """Handle UpdateDriverPartialDrivingTime instances."""
+
+    def __init__(
+            self,
+            api_url: str,
+            auth_data: AuthData,
+            info: CompetitionInfo) -> None:
+        """Construct."""
+        self._api_url = api_url
+        self._auth_data = auth_data
+        self._info = info
+
+    def handle(self, model: BaseModel) -> Optional[Notification]:
+        """Update the data of a driver."""
+        if not isinstance(model, UpdateDriverPartialDrivingTime):
+            raise LtsError('The model must be an instance of '
+                           'UpdateDriverPartialDrivingTime.')
+
+        new_driver = update_driver_partial_driving_time(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+            driver_id=model.id,
+            partial_driving_time=model.partial_driving_time,
+            auto_compute_total=model.auto_compute_total,
+        )
+
+        old_driver = find_driver_by_id(info=self._info, driver_id=model.id)
+        if old_driver is None:
+            self._info.drivers.append(new_driver)
+        else:
+            old_driver.partial_driving_time = new_driver.partial_driving_time
+            old_driver.total_driving_time = new_driver.total_driving_time
+
+        return self._create_notification(new_driver)
+
+    def _create_notification(self, driver: Driver) -> Notification:
+        """Create notification of handler."""
+        return Notification(
+            type=NotificationType.UPDATED_DRIVER_PARTIAL_DRIVING_TIME,
+            data=driver,
+        )
 
 
 class UpdateTeamHandler(ApiHandler):

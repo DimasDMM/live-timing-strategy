@@ -366,7 +366,7 @@ class UpdateTeam(DictModel):
 class UpdateDriverPartialDrivingTime(DictModel):
     """Info to update of a driver data."""
 
-    id: Optional[int]
+    id: int
     competition_code: str
     partial_driving_time: int
     auto_compute_total: bool

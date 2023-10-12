@@ -14,6 +14,7 @@ from ltspipe.api.handlers.competitions_metadata import (
 from ltspipe.api.handlers.initial import InitialDataHandler
 from ltspipe.api.handlers.participants import (
     UpdateDriverHandler,
+    UpdateDriverPartialDrivingTimeHandler,
     UpdateTeamHandler,
 )
 from ltspipe.api.handlers.pits import AddPitInHandler, AddPitOutHandler
@@ -40,6 +41,7 @@ from ltspipe.parsers.websocket.competitions_metadata import (
 from ltspipe.parsers.websocket.initial import InitialDataParser
 from ltspipe.parsers.websocket.participants import (
     DriverNameParser,
+    DriverPartialDrivingTimeParser,
     TeamNameParser,
 )
 from ltspipe.parsers.websocket.pits import PitInParser, PitOutParser
@@ -263,18 +265,19 @@ def _build_parsers_pipe(
     """Build pipe with data parsers."""
     initial_parser = InitialDataParser(info)
     parsers: List[Parser] = [
-        CompetitionMetadataRemainingParser(info),  # type: ignore
-        CompetitionMetadataStatusParser(info),  # type: ignore
-        DriverNameParser(info),  # type: ignore
-        PitInParser(info),  # type: ignore
-        PitOutParser(info),  # type: ignore
-        TeamNameParser(info),  # type: ignore
-        TimingBestTimeParser(info),  # type: ignore
-        TimingLapParser(info),  # type: ignore
-        TimingLastTimeParser(info),  # type: ignore
-        TimingNumberPitsParser(info),  # type: ignore
-        TimingPitTimeParser(info),  # type: ignore
-        TimingPositionParser(info),  # type: ignore
+        CompetitionMetadataRemainingParser(info),
+        CompetitionMetadataStatusParser(info),
+        DriverNameParser(info),
+        DriverPartialDrivingTimeParser(info),
+        PitInParser(info),
+        PitOutParser(info),
+        TeamNameParser(info),
+        TimingBestTimeParser(info),
+        TimingLapParser(info),
+        TimingLastTimeParser(info),
+        TimingNumberPitsParser(info),
+        TimingPitTimeParser(info),
+        TimingPositionParser(info),
     ]
 
     unknowns_storage = MessageStorageStep(
@@ -313,6 +316,11 @@ def _build_action_handlers(
             info=info,
         ),
         ActionType.UPDATE_DRIVER: UpdateDriverHandler(
+            api_url=config.api_lts.strip('/'),
+            auth_data=auth_data,
+            info=info,
+        ),
+        ActionType.UPDATE_DRIVER_PARTIAL_DRIVING_TIME: UpdateDriverPartialDrivingTimeHandler(  # noqa: E501, LN001
             api_url=config.api_lts.strip('/'),
             auth_data=auth_data,
             info=info,

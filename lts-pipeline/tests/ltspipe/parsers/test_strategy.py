@@ -660,13 +660,13 @@ class TestStrategyPitsStatsParser(DatabaseTest):
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, in_data,'
+        ('database_content, info, in_data,'
          'expected_actions, expected_is_parsed'),
         [
             (
                 # Case: timing with a single stint and one team
                 _build_timing_one_stint(),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -703,7 +703,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
             (
                 # Case: timing with two stints for a team
                 _build_timing_two_stints(),  # database_content
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -741,7 +741,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                 # Case: timing with a two stints and one team, but the pit-in
                 # does not have a lap defined
                 _build_timing_two_stints(),  # database_content
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -781,7 +781,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     tables_content=[
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=200000,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
@@ -809,7 +809,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=[],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -825,7 +825,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                 DatabaseContent(  # database_content
                     tables_content=[],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -845,7 +845,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
     def test_parse(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_actions: List[Action],
             expected_is_parsed: bool) -> None:
@@ -855,17 +855,17 @@ class TestStrategyPitsStatsParser(DatabaseTest):
         parser = StrategyPitsStatsParser(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         out_actions, is_parsed = parser.parse(in_data)
         assert ([x.model_dump() for x in out_actions]
                 == [x.model_dump() for x in expected_actions])
         assert is_parsed == expected_is_parsed
 
     @pytest.mark.parametrize(
-        'in_competition, in_data, expected_exception',
+        'info, in_data, expected_exception',
         [
             (
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -883,7 +883,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
     )
     def test_parse_raises_exception(
             self,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
@@ -891,7 +891,7 @@ class TestStrategyPitsStatsParser(DatabaseTest):
         parser = StrategyPitsStatsParser(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         with pytest.raises(Exception) as e_info:
             _ = parser.parse(in_data)
         e: Exception = e_info.value

@@ -26,14 +26,14 @@ from tests.helpers import (
 
 class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateCompetitionMetadataRemainin...
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -81,7 +81,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -140,7 +140,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateCompetitionMetadataRemaining,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -152,7 +152,7 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
         handler = UpdateCompetitionMetadataRemainingHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()
@@ -165,14 +165,14 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
 
 class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
     """
-    Functional test of ltspipe.api.handlers.UpdateCompetitionMetadataStatusHa...
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
     """
 
     @pytest.mark.parametrize(
-        ('database_content, in_competition, update_data,'
+        ('database_content, info, update_data,'
          'expected_notification, expected_database'),
         [
             (
@@ -220,7 +220,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -316,7 +316,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                         ),
                     ],
                 ),
-                CompetitionInfo(  # in_competition
+                CompetitionInfo(  # info
                     id=1,
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
@@ -372,7 +372,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
     def test_handle(
             self,
             database_content: DatabaseContent,
-            in_competition: CompetitionInfo,
+            info: CompetitionInfo,
             update_data: UpdateCompetitionMetadataStatus,
             expected_notification: Notification,
             expected_database: DatabaseContent) -> None:
@@ -384,7 +384,7 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
         handler = UpdateCompetitionMetadataStatusHandler(
             api_url=API_LTS,
             auth_data=auth_data,
-            info=in_competition)
+            info=info)
         notification = handler.handle(update_data)
         assert notification is not None
         assert notification.model_dump() == expected_notification.model_dump()

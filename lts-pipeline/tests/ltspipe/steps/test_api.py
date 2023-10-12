@@ -129,7 +129,7 @@ class TestApiActionStep:
             notification_step: MidStep,
             next_step: MidStep) -> ApiActionStep:
         """Build step to test."""
-        in_competition = CompetitionInfo(
+        info = CompetitionInfo(
             id=1,
             competition_code=TEST_COMPETITION_CODE,
             parser_settings={},
@@ -141,7 +141,7 @@ class TestApiActionStep:
         step = ApiActionStep(
             logger=fake_logger,
             api_lts=API_LTS,
-            info=in_competition,
+            info=info,
             action_handlers={
                 ActionType.INITIALIZE: handler,
             },
@@ -368,7 +368,7 @@ class TestCompetitionInfoRefreshStep(DatabaseTest):
         next_step.get_children.return_value = []
 
         # Create step
-        in_competition = CompetitionInfo(
+        info = CompetitionInfo(
             id=1,
             competition_code=TEST_COMPETITION_CODE,
             parser_settings={},
@@ -381,13 +381,13 @@ class TestCompetitionInfoRefreshStep(DatabaseTest):
             logger=fake_logger,
             api_lts=API_LTS,
             auth_data=auth_data,
-            info=in_competition,
+            info=info,
             next_step=next_step,
         )
 
         # Run step and validate that the competition info is retrieved
         step.run_step(sample_message)
-        assert in_competition == self.EXPECTED_COMPETITION
+        assert info == self.EXPECTED_COMPETITION
 
         assert next_step.run_step.call_count == 1
         received_msg: Message = next_step.run_step.call_args_list[0][0][0]

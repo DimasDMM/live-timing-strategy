@@ -8,7 +8,7 @@ from ltspipe.configs import (
     WsParserConfig,
     DEFAULT_NOTIFICATIONS_TOPIC,
 )
-from ltspipe.data.competitions import Driver
+from ltspipe.data.competitions import Team
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.messages import Message, MessageDecoder, MessageSource
 from ltspipe.runners.ws_parser.main import main
@@ -47,7 +47,7 @@ def _mock_multiprocessing_process(mocker: MockerFixture) -> None:
 
 class TestMain(DatabaseTest):
     """
-    Functional test of ltspipe.runners.ws_parser.main.
+    Functional test.
 
     Important: Since these tests are functional, they require that there are
     a database and an API REST running.
@@ -125,20 +125,7 @@ class TestMain(DatabaseTest):
                                 'reference_time_offset',
                             ],
                             content=[
-                                [1, 'r5625', 'Team 1', 41, None],
-                            ],
-                        ),
-                        TableContent(
-                            table_name='participants_drivers',
-                            columns=[
-                                'competition_id',
-                                'participant_code',
-                                'name',
-                                'number',
-                                'reference_time_offset',
-                            ],
-                            content=[
-                                [1, 'r5625', 'Sample Driver Name', 41, None],
+                                [1, 'r5625', 'Sample Team Name', 41, None],
                             ],
                         ),
                         TableContent(
@@ -188,22 +175,19 @@ class TestMain(DatabaseTest):
                     DEFAULT_NOTIFICATIONS_TOPIC: [],
                 },
                 [  # in_websocket
-                    load_raw_message('endurance_display_driver_name.txt'),
+                    load_raw_message('endurance_display_team_name.txt'),
                 ],
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
                             competition_code=TEST_COMPETITION_CODE,
                             data=Notification(
-                                type=NotificationType.UPDATED_DRIVER,
-                                data=Driver(
-                                    id=2,
+                                type=NotificationType.UPDATED_TEAM,
+                                data=Team(
+                                    id=1,
                                     participant_code='r5625',
-                                    name='DIMAS MUNOZ',
+                                    name='Team 1',
                                     number=41,
-                                    team_id=1,
-                                    total_driving_time=0,
-                                    partial_driving_time=0,
                                 ),
                             ),
                             source=MessageSource.SOURCE_WS_LISTENER,
@@ -216,7 +200,7 @@ class TestMain(DatabaseTest):
                 DatabaseContent(  # expected_database
                     tables_content=[
                         TableContent(
-                            table_name='participants_drivers',
+                            table_name='participants_teams',
                             columns=[
                                 'competition_id',
                                 'participant_code',
@@ -225,8 +209,7 @@ class TestMain(DatabaseTest):
                                 'reference_time_offset',
                             ],
                             content=[
-                                [1, 'r5625', 'Sample Driver Name', 41, None],
-                                [1, 'r5625', 'DIMAS MUNOZ', 41, None],
+                                [1, 'r5625', 'Team 1', 41, None],
                             ],
                         ),
                     ],

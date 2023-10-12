@@ -311,6 +311,47 @@ def update_driver(
     return _build_driver(response)
 
 
+def update_driver_partial_driving_time(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        driver_id: int,
+        partial_driving_time: int,
+        auto_compute_total: bool,
+) -> Driver:
+    """
+    Update the partial driving time of a driver.
+
+    Params:
+        api_url (str): Base URL of the API REST.
+        bearer (str): Bearer token.
+        competition_id (int): ID of the competition.
+        driver_id (int): ID of the driver.
+        partial_driving_time (int): Partial driving time.
+        auto_compute_total (bool): Auto-update total driving time.
+
+    Returns:
+        Driver: Updated driver instance.
+    """
+    data = {
+        'partial_driving_time': partial_driving_time,
+        'auto_compute_total': auto_compute_total,
+    }
+
+    uri = (f'{api_url}/v1/c/{competition_id}/drivers/'
+           f'{driver_id}/partial_driving_time')
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise LtsError(f'API error: {r.text}')
+
+    response: dict = r.json()  # type: ignore
+    if 'id' not in response:
+        raise LtsError(f'API unknown response: {response}')
+
+    return _build_driver(response)
+
+
 def update_team(
         api_url: str,
         bearer: str,
