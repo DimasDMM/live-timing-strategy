@@ -94,7 +94,6 @@ class TimingBestTimeParser(Parser):
             raw_timing_best_time,
             default=0)
         updated_timing = UpdateTimingBestTime(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             best_time=timing_best_time,
         )
@@ -168,7 +167,6 @@ class TimingLapParser(Parser):
             raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingLap(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             lap=timing_lap,
         )
@@ -248,7 +246,6 @@ class TimingLastTimeParser(Parser):
             raw_timing_last_time,
             default=0)
         updated_timing = UpdateTimingLastTime(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             last_time=timing_last_time,
             auto_best_time=True,
@@ -323,7 +320,6 @@ class TimingNumberPitsParser(Parser):
             raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingNumberPits(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             number_pits=number_pits,
         )
@@ -403,7 +399,6 @@ class TimingPitTimeParser(Parser):
             raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingPitTime(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             pit_time=timing_pit_time,
         )
@@ -476,7 +471,6 @@ class TimingPositionParser(Parser):
             raise LtsError(f'Unknown team with code={participant_code}')
 
         updated_timing = UpdateTimingPosition(
-            competition_code=self._info.competition_code,
             team_id=team.id,
             position=timing_position,
             auto_other_positions=True,

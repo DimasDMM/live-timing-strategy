@@ -154,7 +154,6 @@ class CompetitionMetadata(DictModel):
 class UpdateCompetitionMetadataRemaining(DictModel):
     """Remaining length of a competition metadata."""
 
-    competition_code: str
     remaining_length: DiffLap
 
     @classmethod
@@ -176,7 +175,6 @@ class UpdateCompetitionMetadataRemaining(DictModel):
             }
 
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             remaining_length=DiffLap.from_dict(remaining_length),
         )
 
@@ -184,7 +182,6 @@ class UpdateCompetitionMetadataRemaining(DictModel):
 class UpdateCompetitionMetadataStatus(DictModel):
     """Status of a competition metadata."""
 
-    competition_code: str
     status: CompetitionStatus
 
     @classmethod
@@ -192,7 +189,6 @@ class UpdateCompetitionMetadataStatus(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             status=CompetitionStatus(raw.get('status')),
         )
 
@@ -200,7 +196,6 @@ class UpdateCompetitionMetadataStatus(DictModel):
 class InitialData(DictModel):
     """Details about the initial data of a competition."""
 
-    competition_code: str
     stage: CompetitionStage
     status: CompetitionStatus
     remaining_length: DiffLap
@@ -221,7 +216,6 @@ class InitialData(DictModel):
         parsers_settings: Dict[str, str] = raw.get('parsers_settings', {})
         remaining_length: dict = raw.get('remaining_length')  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             stage=CompetitionStage(raw.get('stage')),
             status=CompetitionStatus(raw.get('status')),
             remaining_length=DiffLap.from_dict(remaining_length),
@@ -288,7 +282,6 @@ class PitOut(DictModel):
 class AddPitIn(DictModel):
     """Info to add a pit-in."""
 
-    competition_code: str
     team_id: int
 
     @classmethod
@@ -296,7 +289,6 @@ class AddPitIn(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
         )
 
@@ -304,7 +296,6 @@ class AddPitIn(DictModel):
 class AddPitOut(DictModel):
     """Info to add a pit-out."""
 
-    competition_code: str
     team_id: int
 
     @classmethod
@@ -312,7 +303,6 @@ class AddPitOut(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
         )
 
@@ -321,7 +311,6 @@ class UpdateDriver(DictModel):
     """Info to update of a driver data."""
 
     id: Optional[int]
-    competition_code: str
     participant_code: str
     name: str
     number: int
@@ -336,7 +325,6 @@ class UpdateDriver(DictModel):
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
             id=raw.get('id'),
-            competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
@@ -351,7 +339,6 @@ class UpdateTeam(DictModel):
     """Info to update of a team data."""
 
     id: Optional[int]
-    competition_code: str
     participant_code: str
     name: str
     number: int
@@ -362,7 +349,6 @@ class UpdateTeam(DictModel):
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
             id=raw.get('id'),
-            competition_code=raw.get('competition_code'),
             participant_code=raw.get('participant_code'),
             name=raw.get('name'),
             number=raw.get('number'),
@@ -373,7 +359,6 @@ class UpdateDriverPartialDrivingTime(DictModel):
     """Info to update of a driver data."""
 
     id: int
-    competition_code: str
     partial_driving_time: int
     auto_compute_total: bool
 
@@ -383,7 +368,6 @@ class UpdateDriverPartialDrivingTime(DictModel):
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
             id=raw.get('id'),
-            competition_code=raw.get('competition_code'),
             partial_driving_time=raw.get('partial_driving_time'),
             auto_compute_total=raw.get('auto_compute_total'),
         )
@@ -468,7 +452,6 @@ class Timing(DictModel):
 class UpdateTimingBestTime(DictModel):
     """Info to update the timing best time of a team."""
 
-    competition_code: str
     team_id: int
     best_time: int
 
@@ -477,7 +460,6 @@ class UpdateTimingBestTime(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             best_time=raw.get('best_time'),
         )
@@ -486,7 +468,6 @@ class UpdateTimingBestTime(DictModel):
 class UpdateTimingLap(DictModel):
     """Info to update the timing lap of a team."""
 
-    competition_code: str
     team_id: int
     lap: int
 
@@ -495,7 +476,6 @@ class UpdateTimingLap(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             lap=raw.get('lap'),
         )
@@ -504,7 +484,6 @@ class UpdateTimingLap(DictModel):
 class UpdateTimingLastTime(DictModel):
     """Info to update the timing last time of a team."""
 
-    competition_code: str
     team_id: int
     last_time: int
     auto_best_time: bool
@@ -514,7 +493,6 @@ class UpdateTimingLastTime(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             last_time=raw.get('last_time'),
             auto_best_time=raw.get('auto_best_time'),
@@ -524,7 +502,6 @@ class UpdateTimingLastTime(DictModel):
 class UpdateTimingNumberPits(DictModel):
     """Info to update the timing number of pits of a team."""
 
-    competition_code: str
     team_id: int
     number_pits: int
 
@@ -533,7 +510,6 @@ class UpdateTimingNumberPits(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             number_pits=raw.get('number_pits'),
         )
@@ -542,7 +518,6 @@ class UpdateTimingNumberPits(DictModel):
 class UpdateTimingPitTime(DictModel):
     """Info to update the timing pit time of a team."""
 
-    competition_code: str
     team_id: int
     pit_time: int
 
@@ -551,7 +526,6 @@ class UpdateTimingPitTime(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             pit_time=raw.get('pit_time'),
         )
@@ -560,7 +534,6 @@ class UpdateTimingPitTime(DictModel):
 class UpdateTimingPosition(DictModel):
     """Info to update the timing position of a team."""
 
-    competition_code: str
     team_id: int
     position: int
     auto_other_positions: bool
@@ -570,7 +543,6 @@ class UpdateTimingPosition(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             team_id=raw.get('team_id'),
             position=raw.get('position'),
             auto_other_positions=raw.get('auto_other_positions'),

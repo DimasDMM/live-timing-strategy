@@ -115,7 +115,6 @@ class InitialDataParser(InitialParser):
         participants = self._parse_participants(headers, initial_rows[1:])
 
         return InitialData(
-            competition_code=self._info.competition_code,
             stage=stage,
             status=status,
             remaining_length=remaining_length,

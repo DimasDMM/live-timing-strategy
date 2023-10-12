@@ -57,7 +57,6 @@ class PitInParser(Parser):
         action = Action(
             type=ActionType.ADD_PIT_IN,
             data=AddPitIn(
-                competition_code=self._info.competition_code,
                 team_id=team.id,
             ),
         )
@@ -109,7 +108,6 @@ class PitOutParser(Parser):
         action = Action(
             type=ActionType.ADD_PIT_OUT,
             data=AddPitOut(
-                competition_code=self._info.competition_code,
                 team_id=team.id,
             ),
         )

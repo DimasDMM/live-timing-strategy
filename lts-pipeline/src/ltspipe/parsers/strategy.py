@@ -73,7 +73,6 @@ class StrategyPitsStatsParser(Parser):
         return Action(
             type=ActionType.ADD_STRATEGY_PITS_STATS,
             data=AddStrategyPitsStats(
-                competition_code=self._info.competition_code,
                 pit_in_id=data.id,
                 best_time=best_time,
                 avg_time=avg_time,

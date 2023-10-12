@@ -102,7 +102,6 @@ class DriverNameParser(Parser):
 
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),
-            competition_code=self._info.competition_code,
             participant_code=participant_code,
             name=driver_name,
             number=team.number,
@@ -191,7 +190,6 @@ class DriverPartialDrivingTimeParser(Parser):
 
         updated_timing = UpdateDriverPartialDrivingTime(
             id=timing.driver_id,
-            competition_code=self._info.competition_code,
             partial_driving_time=partial_driving_time,
             auto_compute_total=False,
         )
@@ -258,7 +256,6 @@ class TeamNameParser(Parser):
 
         updated_team = UpdateTeam(
             id=old_team.id,
-            competition_code=self._info.competition_code,
             participant_code=participant_code,
             name=matches[3],
             number=old_team.number,

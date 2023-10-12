@@ -5,7 +5,6 @@ from ltspipe.data.base import DictModel
 class AddStrategyPitsStats(DictModel):
     """Info of a strategy pits stats."""
 
-    competition_code: str
     pit_in_id: int
     best_time: int
     avg_time: int
@@ -15,7 +14,6 @@ class AddStrategyPitsStats(DictModel):
         """Return an instance of itself with the data in the dictionary."""
         DictModel._validate_base_dict(cls, raw)  # type: ignore
         return cls.model_construct(
-            competition_code=raw.get('competition_code'),
             pit_in_id=raw.get('pit_in_id'),
             best_time=raw.get('best_time'),
             avg_time=raw.get('avg_time'),

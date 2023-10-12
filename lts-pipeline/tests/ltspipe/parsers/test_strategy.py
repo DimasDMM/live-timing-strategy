@@ -691,7 +691,6 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     Action(
                         type=ActionType.ADD_STRATEGY_PITS_STATS,
                         data=AddStrategyPitsStats(
-                            competition_code=TEST_COMPETITION_CODE,
                             pit_in_id=1,
                             best_time=66000,
                             avg_time=67000,
@@ -728,7 +727,6 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     Action(
                         type=ActionType.ADD_STRATEGY_PITS_STATS,
                         data=AddStrategyPitsStats(
-                            competition_code=TEST_COMPETITION_CODE,
                             pit_in_id=2,
                             best_time=66000,
                             avg_time=67200,
@@ -766,7 +764,6 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     Action(
                         type=ActionType.ADD_STRATEGY_PITS_STATS,
                         data=AddStrategyPitsStats(
-                            competition_code=TEST_COMPETITION_CODE,
                             pit_in_id=2,
                             best_time=66000,
                             avg_time=67200,

@@ -69,7 +69,6 @@ class CompetitionMetadataRemainingParser(Parser):
 
         if matches[1] == 'countdown':
             return UpdateCompetitionMetadataRemaining(
-                competition_code=self._info.competition_code,
                 remaining_length=DiffLap(
                     value=int(remaining_length_value),
                     unit=LengthUnit.MILLIS,
@@ -77,7 +76,6 @@ class CompetitionMetadataRemainingParser(Parser):
             )
         elif matches[1] == 'text':
             return UpdateCompetitionMetadataRemaining(
-                competition_code=self._info.competition_code,
                 remaining_length=DiffLap(
                     value=time_to_millis(  # type: ignore
                         remaining_length_value, default=0),
@@ -135,19 +133,16 @@ class CompetitionMetadataStatusParser(Parser):
         if raw_status == 'lf':
             # Finished
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=self._info.competition_code,
                 status=CompetitionStatus.FINISHED,
             )
         elif raw_status == 'lg':
             # Started or on-going
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=self._info.competition_code,
                 status=CompetitionStatus.ONGOING,
             )
         elif raw_status == 'lr':
             # Paused
             metadata = UpdateCompetitionMetadataStatus(
-                competition_code=self._info.competition_code,
                 status=CompetitionStatus.PAUSED,
             )
         else:
