@@ -14,7 +14,7 @@ from ltspipe.data.competitions import (
     CompetitionInfo,
     CompetitionStage,
     KartStatus,
-    ParticipantTiming,
+    Timing,
     UpdateTimingBestTime,
     UpdateTimingLap,
     UpdateTimingLastTime,
@@ -23,7 +23,7 @@ from ltspipe.data.competitions import (
     UpdateTimingPosition,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     DatabaseContent,
@@ -152,7 +152,8 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingBestTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -161,7 +162,7 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_BEST_TIME,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=58000,
                         driver_id=None,
                         gap=None,
@@ -235,11 +236,11 @@ class TestUpdateTimingBestTimeHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingBestTimeHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -274,7 +275,8 @@ class TestUpdateTimingLapHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingLap(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -283,7 +285,7 @@ class TestUpdateTimingLapHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_LAP,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=59000,
                         driver_id=None,
                         gap=None,
@@ -357,11 +359,11 @@ class TestUpdateTimingLapHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingLapHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -396,7 +398,8 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingLastTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -406,7 +409,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_LAST_TIME,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=59000,
                         driver_id=None,
                         gap=None,
@@ -478,7 +481,8 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingLastTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -488,7 +492,7 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_LAST_TIME,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=58000,
                         driver_id=None,
                         gap=None,
@@ -562,11 +566,11 @@ class TestUpdateTimingLastTimeHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingLastTimeHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -601,7 +605,8 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingNumberPits(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -610,7 +615,7 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_NUMBER_PITS,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=59000,
                         driver_id=None,
                         gap=None,
@@ -684,11 +689,11 @@ class TestUpdateTimingNumberPitsHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingNumberPitsHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -723,7 +728,8 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingPitTime(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -732,7 +738,7 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_PIT_TIME,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=59000,
                         driver_id=None,
                         gap=None,
@@ -806,11 +812,11 @@ class TestUpdateTimingPitTimeHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingPitTimeHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -845,7 +851,8 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateTimingPosition(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -855,7 +862,7 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
                 ),
                 Notification(  # expected_notification
                     type=NotificationType.UPDATED_TIMING_POSITION,
-                    data=ParticipantTiming(
+                    data=Timing(
                         best_time=59000,
                         driver_id=None,
                         gap=None,
@@ -929,11 +936,11 @@ class TestUpdateTimingPositionHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTimingPositionHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)

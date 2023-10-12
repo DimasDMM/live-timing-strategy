@@ -1,5 +1,5 @@
 import requests
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from ltspipe.data.competitions import (
     Driver,
@@ -240,7 +240,7 @@ def get_all_drivers(
 def get_all_teams(
         api_url: str,
         bearer: str,
-        competition_id: int) -> List[Team]:
+        competition_id: int) -> Dict[str, Team]:
     """
     Get all teams.
 
@@ -250,7 +250,7 @@ def get_all_teams(
         competition_id (int): ID of the competition.
 
     Returns:
-        List[Team]: List of teams.
+        Dict[str, Team]: Dictionary with all teams.
     """
     # Depending on there is a team or not, the endpoint is slightly different
     uri = f'{api_url}/v1/c/{competition_id}/teams'
@@ -260,9 +260,10 @@ def get_all_teams(
         raise LtsError(f'API error: {r.text}')
 
     response: List[dict] = r.json()  # type: ignore
-    teams: List[Team] = []
+    teams: Dict[str, Team] = {}
     for item in response:
-        teams.append(_build_team(item))
+        team = _build_team(item)
+        teams[team.participant_code] = team
 
     return teams
 

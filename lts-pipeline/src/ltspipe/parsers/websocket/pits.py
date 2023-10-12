@@ -9,7 +9,7 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket.base import _find_team_by_code
+from ltspipe.utils import find_team_by_code
 
 
 class PitInParser(Parser):
@@ -47,9 +47,9 @@ class PitInParser(Parser):
 
         participant_code = matches[1]
 
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
 
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
@@ -99,9 +99,9 @@ class PitOutParser(Parser):
 
         participant_code = matches[1]
 
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
 
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')

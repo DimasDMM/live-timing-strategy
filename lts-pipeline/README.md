@@ -99,6 +99,8 @@ python -m ltspipe.runners.ws_parser \
   --verbosity 1
 ```
 
+python -m ltspipe.runners.ws_parser --competition_code competition-test --api_lts http://localhost:8090 --kafka_servers localhost:9092 --websocket_path artifacts/only-raw_santos-26h-23-09-2023 --verbosity 1
+
 Arguments:
 - `--api_lts`: (**mandatory**) URI of API REST of LTS app.
 - `--competition_code`: (**mandatory**) Code of the competition.

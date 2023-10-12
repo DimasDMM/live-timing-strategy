@@ -15,7 +15,7 @@ from ltspipe.data.competitions import (
 )
 from ltspipe.data.enum import KartStatus
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     DatabaseContent,
@@ -189,7 +189,8 @@ class TestAddPitInHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 AddPitIn(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -238,7 +239,8 @@ class TestAddPitInHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 AddPitIn(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -288,11 +290,11 @@ class TestAddPitInHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # Handle method
         handler = AddPitInHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(add_data)
@@ -344,7 +346,8 @@ class TestAddPitOutHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 AddPitOut(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -393,7 +396,8 @@ class TestAddPitOutHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 AddPitOut(  # add_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -443,11 +447,11 @@ class TestAddPitOutHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # Handle method
         handler = AddPitOutHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(add_data)

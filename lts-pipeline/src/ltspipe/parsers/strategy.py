@@ -5,8 +5,8 @@ from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import (
     CompetitionInfo,
-    ParticipantTiming,
     PitIn,
+    Timing,
 )
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.strategy import AddStrategyPitsStats
@@ -82,7 +82,7 @@ class StrategyPitsStatsParser(Parser):
 
     def _compute_times(
             self,
-            timing_history: List[ParticipantTiming],
+            timing_history: List[Timing],
             top_avg_times: int = 5) -> Tuple[int, int]:
         """
         Compute the best and the average timing.
@@ -102,7 +102,7 @@ class StrategyPitsStatsParser(Parser):
 
     def _get_and_filter_history_timing(
             self,
-            data: PitIn) -> List[ParticipantTiming]:
+            data: PitIn) -> List[Timing]:
         """Get the timing records between the last pit-in and before that."""
         if data.team_id is None:
             return []

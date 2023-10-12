@@ -6,6 +6,7 @@ from ltspipe.api.pits import (
     update_pit_in_time_by_id,
 )
 from ltspipe.api.timing import (
+    get_all_timing,
     update_timing_best_time_by_team,
     update_timing_lap_by_team,
     update_timing_last_time_by_team,
@@ -13,12 +14,12 @@ from ltspipe.api.timing import (
     update_timing_pit_time_by_team,
     update_timing_position_by_team,
 )
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (
     CompetitionInfo,
-    ParticipantTiming,
+    Timing,
     UpdateTimingBestTime,
     UpdateTimingLap,
     UpdateTimingLastTime,
@@ -48,17 +49,18 @@ class UpdateTimingBestTimeHandler(ApiHandler):
             raise LtsError(
                 'The model must be an instance of UpdateTimingBestTime.')
 
-        participant_timing = update_timing_best_time_by_team(
+        timing = update_timing_best_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
             team_id=model.team_id,
             best_time=model.best_time,
         )
+        self._info.timing[timing.participant_code] = timing
 
-        return self._create_notification(participant_timing)
+        return self._create_notification(timing)
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_BEST_TIME,
@@ -85,17 +87,18 @@ class UpdateTimingLapHandler(ApiHandler):
             raise LtsError(
                 'The model must be an instance of UpdateTimingLap.')
 
-        participant_timing = update_timing_lap_by_team(
+        timing = update_timing_lap_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
             team_id=model.team_id,
             lap=model.lap,
         )
+        self._info.timing[timing.participant_code] = timing
 
-        return self._create_notification(participant_timing)
+        return self._create_notification(timing)
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_LAP,
@@ -122,7 +125,7 @@ class UpdateTimingLastTimeHandler(ApiHandler):
             raise LtsError(
                 'The model must be an instance of UpdateTimingLastTime.')
 
-        participant_timing = update_timing_last_time_by_team(
+        timing = update_timing_last_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
@@ -130,10 +133,11 @@ class UpdateTimingLastTimeHandler(ApiHandler):
             last_time=model.last_time,
             auto_best_time=model.auto_best_time,
         )
+        self._info.timing[timing.participant_code] = timing
 
-        return self._create_notification(participant_timing)
+        return self._create_notification(timing)
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_LAST_TIME,
@@ -160,17 +164,18 @@ class UpdateTimingNumberPitsHandler(ApiHandler):
             raise LtsError(
                 'The model must be an instance of UpdateTimingNumberPits.')
 
-        participant_timing = update_timing_number_pits_by_team(
+        timing = update_timing_number_pits_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
             team_id=model.team_id,
             number_pits=model.number_pits,
         )
+        self._info.timing[timing.participant_code] = timing
 
-        return self._create_notification(participant_timing)
+        return self._create_notification(timing)
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_NUMBER_PITS,
@@ -214,17 +219,18 @@ class UpdateTimingPitTimeHandler(ApiHandler):
             )
 
         # Update time in the timing
-        participant_timing = update_timing_pit_time_by_team(
+        timing = update_timing_pit_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
             team_id=model.team_id,
             pit_time=model.pit_time,
         )
+        self._info.timing[timing.participant_code] = timing
 
-        return self._create_notification(participant_timing)
+        return self._create_notification(timing)
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_PIT_TIME,
@@ -251,7 +257,7 @@ class UpdateTimingPositionHandler(ApiHandler):
             raise LtsError(
                 'The model must be an instance of UpdateTimingPosition.')
 
-        participant_timing = update_timing_position_by_team(
+        timing = update_timing_position_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
@@ -260,9 +266,16 @@ class UpdateTimingPositionHandler(ApiHandler):
             auto_other_positions=model.auto_other_positions,
         )
 
-        return self._create_notification(participant_timing)
+        # Update all timings since there might be changes
+        self._info.timing = get_all_timing(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+        )
 
-    def _create_notification(self, data: ParticipantTiming) -> Notification:
+        return self._create_notification(timing)
+
+    def _create_notification(self, data: Timing) -> Notification:
         """Create notification of handler."""
         return Notification(
             type=NotificationType.UPDATED_TIMING_POSITION,

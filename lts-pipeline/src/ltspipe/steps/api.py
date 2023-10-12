@@ -144,3 +144,4 @@ class CompetitionInfoRefreshStep(MidStep):
         self._info.teams = new_info.teams
         self._info.drivers = new_info.drivers
         self._info.parser_settings = new_info.parser_settings
+        self._info.timing = new_info.timing

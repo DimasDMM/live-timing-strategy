@@ -1,11 +1,9 @@
 from datetime import datetime
 import pytest
-from pytest_mock import MockerFixture
-from typing import List
 from unittest.mock import MagicMock
 
+from ltspipe.api.auth import refresh_bearer
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.data.auth import AuthData
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.data.competitions import (
     CompetitionInfo,
@@ -14,9 +12,11 @@ from ltspipe.data.competitions import (
     DiffLap,
     Driver,
     InitialData,
+    KartStatus,
     Participant,
     ParserSettings,
     Team,
+    Timing,
 )
 from ltspipe.data.enum import LengthUnit
 from ltspipe.data.notifications import Notification, NotificationType
@@ -26,14 +26,13 @@ from ltspipe.steps.api import (
     CompetitionInfoRefreshStep,
 )
 from ltspipe.steps.base import MidStep
-from tests.conftest import mock_requests
-from tests.fixtures import MOCK_API_LTS, TEST_COMPETITION_CODE
-from tests.mocks.logging import FakeLogger
-from tests.mocks.requests import (
-    MapRequestItem,
-    MapRequestMethod,
-    MockResponse,
+from tests.fixtures import API_LTS, AUTH_KEY, TEST_COMPETITION_CODE
+from tests.helpers import (
+    DatabaseTest,
+    DatabaseContent,
+    TableContent,
 )
+from tests.mocks.logging import FakeLogger
 
 
 class TestApiActionStep:
@@ -133,11 +132,15 @@ class TestApiActionStep:
         in_competition = CompetitionInfo(
             id=1,
             competition_code=TEST_COMPETITION_CODE,
+            parser_settings={},
+            drivers=[],
+            teams={},
+            timing={},
         )
         fake_logger = FakeLogger()
         step = ApiActionStep(
             logger=fake_logger,
-            api_lts=MOCK_API_LTS,
+            api_lts=API_LTS,
             info=in_competition,
             action_handlers={
                 ActionType.INITIALIZE: handler,
@@ -148,9 +151,154 @@ class TestApiActionStep:
         return step
 
 
-class TestCompetitionInfoRefreshStep:
+class TestCompetitionInfoRefreshStep(DatabaseTest):
     """Test ltspipe.steps.api.CompetitionInfoRefreshStep class."""
 
+    DATABASE_CONTENT = DatabaseContent(
+        tables_content=[
+            TableContent(
+                table_name='competitions_index',
+                columns=[
+                    'track_id',
+                    'competition_code',
+                    'name',
+                    'description',
+                ],
+                content=[
+                    [
+                        1,
+                        TEST_COMPETITION_CODE,
+                        'Endurance North 26-02-2023',
+                        'Endurance in Karting North',
+                    ],
+                ],
+            ),
+            TableContent(
+                table_name='competitions_metadata_current',
+                columns=[
+                    'competition_id',
+                    'reference_time',
+                    'reference_current_offset',
+                    'status',
+                    'stage',
+                    'remaining_length',
+                    'remaining_length_unit',
+                ],
+                content=[
+                    [
+                        1,
+                        None,
+                        None,
+                        'paused',
+                        'free-practice',
+                        0,
+                        'millis',
+                    ],
+                ],
+            ),
+            TableContent(
+                table_name='parsers_settings',
+                columns=[
+                    'competition_id',
+                    'name',
+                    'value',
+                ],
+                content=[
+                    [1, 'timing-name', 'sample-name'],
+                    [1, 'timing-position', 'sample-position'],
+                ],
+            ),
+            TableContent(
+                table_name='participants_teams',
+                columns=[
+                    'competition_id',
+                    'participant_code',
+                    'name',
+                    'number',
+                    'reference_time_offset',
+                ],
+                content=[
+                    [1, 'r5625', 'Team 1', 41, None],
+                ],
+            ),
+            TableContent(
+                table_name='participants_drivers',
+                columns=[
+                    'competition_id',
+                    'team_id',
+                    'participant_code',
+                    'name',
+                    'number',
+                    'total_driving_time',
+                    'partial_driving_time',
+                    'reference_time_offset',
+                ],
+                content=[
+                    [
+                        1,
+                        1,
+                        'r5625',
+                        'Team 1 Driver 1',
+                        41,
+                        0,
+                        0,
+                        None,
+                    ],
+                    [
+                        1,
+                        1,
+                        'r5625',
+                        'Team 1 Driver 2',
+                        41,
+                        0,
+                        0,
+                        None,
+                    ],
+                ],
+            ),
+            TableContent(
+                table_name='timing_current',
+                columns=[
+                    'competition_id',
+                    'team_id',
+                    'driver_id',
+                    'position',
+                    'last_time',
+                    'best_time',
+                    'lap',
+                    'gap',
+                    'gap_unit',
+                    'interval',
+                    'interval_unit',
+                    'stage',
+                    'pit_time',
+                    'kart_status',
+                    'fixed_kart_status',
+                    'number_pits',
+                ],
+                content=[
+                    [
+                        1,  # competition_id
+                        1,  # team_id
+                        1,  # driver_id
+                        1,  # position
+                        61000,  # last_time
+                        51000,  # best_time
+                        3,  # lap
+                        None,  # gap
+                        None,  # gap_unit
+                        0,  # interval
+                        'millis',  # interval_unit
+                        'free-practice',  # stage
+                        0,  # pit_time
+                        'good',  # kart_status
+                        None,  # fixed_kart_status
+                        2,  # number_pits
+                    ],
+                ],
+            ),
+        ],
+    )
     EXPECTED_COMPETITION = CompetitionInfo(
         id=1,
         competition_code=TEST_COMPETITION_CODE,
@@ -158,7 +306,7 @@ class TestCompetitionInfoRefreshStep:
             Driver(
                 id=1,
                 team_id=1,
-                participant_code='team-1',
+                participant_code='r5625',
                 name='Team 1 Driver 1',
                 number=41,
                 total_driving_time=0,
@@ -167,34 +315,52 @@ class TestCompetitionInfoRefreshStep:
             Driver(
                 id=2,
                 team_id=1,
-                participant_code='team-1',
+                participant_code='r5625',
                 name='Team 1 Driver 2',
                 number=41,
                 total_driving_time=0,
                 partial_driving_time=0,
             ),
         ],
-        teams=[
-            Team(
+        teams={
+            'r5625': Team(
                 id=1,
-                participant_code='team-1',
+                participant_code='r5625',
                 name='Team 1',
                 number=41,
             ),
-        ],
+        },
         parser_settings={
             ParserSettings.TIMING_NAME: 'sample-name',
             ParserSettings.TIMING_POSITION: 'sample-position',
+        },
+        timing={
+            'r5625': Timing(
+                best_time=51000,
+                driver_id=1,
+                fixed_kart_status=None,
+                gap=None,
+                interval=DiffLap(value=0, unit=LengthUnit.MILLIS),
+                kart_status=KartStatus.GOOD,
+                lap=3,
+                last_time=61000,
+                number_pits=2,
+                participant_code='r5625',
+                pit_time=0,
+                position=1,
+                stage=CompetitionStage.FREE_PRACTICE,
+                team_id=1,
+            ),
         },
     )
 
     def test_run_step(
             self,
-            mocker: MockerFixture,
-            sample_auth_data: AuthData,
             sample_message: Message) -> None:
         """Test method run_step."""
-        self._apply_mock_api(mocker, MOCK_API_LTS)
+        self.set_database_content(self.DATABASE_CONTENT)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
+
         competition_code = sample_message.competition_code
 
         # Create a mock of the next step
@@ -207,13 +373,14 @@ class TestCompetitionInfoRefreshStep:
             competition_code=TEST_COMPETITION_CODE,
             parser_settings={},
             drivers=[],
-            teams=[],
+            teams={},
+            timing={},
         )
         fake_logger = FakeLogger()
         step = CompetitionInfoRefreshStep(
             logger=fake_logger,
-            api_lts=MOCK_API_LTS,
-            auth_data=sample_auth_data,
+            api_lts=API_LTS,
+            auth_data=auth_data,
             info=in_competition,
             next_step=next_step,
         )
@@ -230,126 +397,3 @@ class TestCompetitionInfoRefreshStep:
         # Also, check that the get_children method returns the mocks
         children = step.get_children()
         assert children == [next_step]
-
-    def _apply_mock_api(self, mocker: MockerFixture, api_url: str) -> None:
-        """Apply mock to API."""
-        api_url = api_url.strip('/')
-        requests_map = (
-            self._mock_response_get_competition_info(api_url)
-            + self._mock_response_get_drivers(api_url)
-            + self._mock_response_get_parser_settings(api_url)
-            + self._mock_response_get_teams(api_url))
-        mock_requests(mocker, requests_map=requests_map)
-
-    def _mock_response_get_competition_info(
-            self, api_url: str) -> List[MapRequestItem]:
-        """Get mocked response."""
-        response = MockResponse(
-            content={
-                'id': 1,
-                'track': {
-                    'id': 1,
-                    'name': 'Karting North',
-                    'insert_date': '2023-04-15T21:43:26',
-                    'update_date': '2023-04-15T21:43:26',
-                },
-                'competition_code': TEST_COMPETITION_CODE,
-                'name': 'Endurance North 26-02-2023',
-                'description': 'Endurance in Karting North',
-                'insert_date': '2023-04-15T21:43:26',
-                'update_date': '2023-04-15T21:43:26',
-            },
-        )
-        item = MapRequestItem(
-            url=(f'{api_url}/v1/c/'
-                 f'filter/code/{TEST_COMPETITION_CODE}'),
-            method=MapRequestMethod.GET,
-            responses=[response],
-        )
-        return [item]
-
-    def _mock_response_get_parser_settings(
-            self, api_url: str) -> List[MapRequestItem]:
-        """Get mocked response."""
-        response = MockResponse(
-            content=[
-                {
-                    'name': ParserSettings.TIMING_NAME.value,
-                    'value': 'sample-name',
-                    'insert_date': '2023-04-15T21:43:26',
-                    'update_date': '2023-04-15T21:43:26',
-                },
-                {
-                    'name': ParserSettings.TIMING_POSITION.value,
-                    'value': 'sample-position',
-                    'insert_date': '2023-04-15T21:43:26',
-                    'update_date': '2023-04-15T21:43:26',
-                },
-            ],
-        )
-        item = MapRequestItem(
-            url=f'{api_url}/v1/c/1/parsers/settings',
-            method=MapRequestMethod.GET,
-            responses=[response],
-        )
-        return [item]
-
-    def _mock_response_get_drivers(self, api_url: str) -> List[MapRequestItem]:
-        """Get mocked response."""
-        response = MockResponse(
-            content=[
-                {
-                    'id': 1,
-                    'competition_id': 1,
-                    'team_id': 1,
-                    'participant_code': 'team-1',
-                    'name': 'Team 1 Driver 1',
-                    'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'insert_date': '2023-04-20T00:55:35',
-                    'update_date': '2023-04-20T00:55:35',
-                },
-                {
-                    'id': 2,
-                    'competition_id': 1,
-                    'team_id': 1,
-                    'participant_code': 'team-1',
-                    'name': 'Team 1 Driver 2',
-                    'number': 41,
-                    'total_driving_time': 0,
-                    'partial_driving_time': 0,
-                    'insert_date': '2023-04-20T00:55:35',
-                    'update_date': '2023-04-20T00:55:35',
-                },
-            ],
-        )
-        item = MapRequestItem(
-            url=f'{api_url}/v1/c/1/drivers',
-            method=MapRequestMethod.GET,
-            responses=[response],
-        )
-        return [item]
-
-    def _mock_response_get_teams(self, api_url: str) -> List[MapRequestItem]:
-        """Get mocked response."""
-        response = MockResponse(
-            content=[
-                {
-                    'id': 1,
-                    'competition_id': 1,
-                    'participant_code': 'team-1',
-                    'name': 'Team 1',
-                    'number': 41,
-                    'drivers': [],
-                    'insert_date': '2023-04-20T01:30:48',
-                    'update_date': '2023-04-20T01:30:48',
-                },
-            ],
-        )
-        item = MapRequestItem(
-            url=f'{api_url}/v1/c/1/teams',
-            method=MapRequestMethod.GET,
-            responses=[response],
-        )
-        return [item]

@@ -5,10 +5,10 @@ import pathlib
 from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
 
-from ltspipe.base import BaseModel, DictModel
+from ltspipe.data.base import BaseModel, DictModel
 from ltspipe.data.actions import Action, ActionType
 from ltspipe.parsers.base import Parser
-from tests.fixtures import AUTH_BEARER, AUTH_KEY
+from tests.fixtures import AUTH_KEY
 
 BASE_PATH = 'tests/data/messages'
 
@@ -123,7 +123,7 @@ class DatabaseTest:
             TableContent(
                 table_name='api_auth',
                 columns=['key', 'bearer', 'name', 'role'],
-                content=[[AUTH_KEY, AUTH_BEARER, 'Test batch', 'batch']],
+                content=[[AUTH_KEY, '', 'Test batch', 'batch']],
             ),
         ],
     )

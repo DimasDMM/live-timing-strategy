@@ -14,10 +14,10 @@ from ltspipe.data.competitions import (
 from ltspipe.data.enum import ParserSettings
 from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket.base import (
-    _find_team_by_code,
-    _is_column_parser_setting,
-    _time_to_millis,
+from ltspipe.utils import (
+    find_team_by_code,
+    is_column_parser_setting,
+    time_to_millis,
 )
 
 
@@ -73,7 +73,7 @@ class TimingBestTimeParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_BEST_TIME,
@@ -84,13 +84,13 @@ class TimingBestTimeParser(Parser):
         raw_timing_best_time = matches[3]
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
-        timing_best_time: int = _time_to_millis(  # type: ignore
+        timing_best_time: int = time_to_millis(  # type: ignore
             raw_timing_best_time,
             default=0)
         updated_timing = UpdateTimingBestTime(
@@ -150,7 +150,7 @@ class TimingLapParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_LAP,
@@ -161,9 +161,9 @@ class TimingLapParser(Parser):
         timing_lap = int(matches[3])
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
@@ -227,7 +227,7 @@ class TimingLastTimeParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_LAST_TIME,
@@ -238,13 +238,13 @@ class TimingLastTimeParser(Parser):
         raw_timing_last_time = matches[3]
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
-        timing_last_time: int = _time_to_millis(  # type: ignore
+        timing_last_time: int = time_to_millis(  # type: ignore
             raw_timing_last_time,
             default=0)
         updated_timing = UpdateTimingLastTime(
@@ -305,7 +305,7 @@ class TimingNumberPitsParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_NUMBER_PITS,
@@ -316,9 +316,9 @@ class TimingNumberPitsParser(Parser):
         number_pits = int(matches[3])
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
@@ -337,6 +337,8 @@ class TimingPitTimeParser(Parser):
     Sample messages:
     > r5625c11|to|10.
     > r5625c11|to|1:10.
+
+    Note: Do not confuse this message with the 'driver stint time'.
     """
 
     def __init__(self, info: CompetitionInfo) -> None:
@@ -379,7 +381,7 @@ class TimingPitTimeParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_PIT_TIME,
@@ -389,14 +391,14 @@ class TimingPitTimeParser(Parser):
         participant_code = matches[1]
         raw_pit_time = matches[3]
 
-        timing_pit_time: int = _time_to_millis(  # type: ignore
+        timing_pit_time: int = time_to_millis(  # type: ignore
             raw_pit_time,
             default=0)
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
@@ -456,7 +458,7 @@ class TimingPositionParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
                 ParserSettings.TIMING_POSITION,
@@ -467,9 +469,9 @@ class TimingPositionParser(Parser):
         timing_position = int(matches[3])
 
         # The team must be already initialized
-        team = _find_team_by_code(
+        team = find_team_by_code(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 

@@ -104,6 +104,8 @@ class FileListenerStep(StartStep):
         if not os.path.isfile(file_path):
             self._logger.error(f'File does not exist: {file_path}')
             return [], self._message_source
+
+        self._logger.info(f'Read file: {file_path}')
         with open(file_path, 'r') as fp:
             raw_data = fp.read()
             message_source = self._message_source

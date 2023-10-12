@@ -1,35 +1,20 @@
 import os
 import pytest
 
-from ltspipe.data.auth import AuthData, AuthRole
 from ltspipe.messages import Message, MessageSource
 
 # Sample code of a competition for testing
 TEST_COMPETITION_CODE = 'competition-code'
 
-# Bearer token in the sample data for testing
-AUTH_BEARER = 'e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9'
-
 # API key included in the sample data
 AUTH_KEY = '6a204bd89f3c8348afd5c77c717a097a'
 
 # API, Websocket and Kafka when they are real or mocked
-REAL_API_LTS = os.environ.get('API_LTS', '')
-MOCK_API_LTS = 'http://localhost:28090'
+API_LTS = os.environ.get('API_LTS', '')
 MOCK_KAFKA = ['localhost:29092']
 MOCK_WS = 'ws://localhost:28000/ws/'
 
-assert REAL_API_LTS != '', 'Environment variable "API_LTS" must be set'
-
-
-@pytest.fixture
-def sample_auth_data() -> AuthData:
-    """Build a sample auth data."""
-    return AuthData(
-        bearer=AUTH_BEARER,
-        name='Test',
-        role=AuthRole.BATCH,
-    )
+assert API_LTS != '', 'Environment variable "API_LTS" must be set'
 
 
 @pytest.fixture

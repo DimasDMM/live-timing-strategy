@@ -14,7 +14,7 @@ from ltspipe.data.strategy import AddStrategyPitsStats
 from ltspipe.parsers.strategy import StrategyPitsStatsParser
 from tests.fixtures import (
     AUTH_KEY,
-    REAL_API_LTS,
+    API_LTS,
     TEST_COMPETITION_CODE,
 )
 from tests.helpers import (
@@ -671,7 +671,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.ADDED_PIT_IN,
@@ -707,7 +708,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.ADDED_PIT_IN,
@@ -744,7 +746,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.ADDED_PIT_IN,
@@ -783,7 +786,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.ADDED_PIT_IN,
@@ -810,7 +814,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -825,7 +830,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.INIT_FINISHED,
@@ -845,9 +851,9 @@ class TestStrategyPitsStatsParser(DatabaseTest):
             expected_is_parsed: bool) -> None:
         """Test method parse with correct messages."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
         parser = StrategyPitsStatsParser(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         out_actions, is_parsed = parser.parse(in_data)
@@ -864,7 +870,8 @@ class TestStrategyPitsStatsParser(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 Notification(  # in_data
                     type=NotificationType.ADDED_PIT_IN,
@@ -880,9 +887,9 @@ class TestStrategyPitsStatsParser(DatabaseTest):
             in_data: Any,
             expected_exception: str) -> None:
         """Test method parse with unexpected messages."""
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
         parser = StrategyPitsStatsParser(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         with pytest.raises(Exception) as e_info:

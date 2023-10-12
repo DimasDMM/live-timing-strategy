@@ -487,7 +487,8 @@ class TestInitialDataParser:
                 competition_code=TEST_COMPETITION_CODE,
                 parser_settings={},
                 drivers=[],
-                teams=[],
+                teams={},
+                timing={},
             ),
         )
         out_actions, is_parsed = parser.parse(in_data)
@@ -504,7 +505,8 @@ class TestInitialDataParser:
                 competition_code=TEST_COMPETITION_CODE,
                 parser_settings={},
                 drivers=[],
-                teams=[],
+                teams={},
+                timing={},
             ),
         )
         with pytest.raises(Exception) as e_info:

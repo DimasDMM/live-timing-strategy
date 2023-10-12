@@ -11,7 +11,7 @@ from ltspipe.configs import (
 from ltspipe.data.competitions import (
     CompetitionStage,
     DiffLap,
-    ParticipantTiming,
+    Timing,
 )
 from ltspipe.data.enum import (
     KartStatus,
@@ -26,7 +26,7 @@ from tests.conftest import (
     mock_websocket_builder,
 )
 from tests.fixtures import (
-    REAL_API_LTS,
+    API_LTS,
     MOCK_KAFKA,
     MOCK_WS,
     TEST_COMPETITION_CODE,
@@ -232,7 +232,7 @@ class TestMain(DatabaseTest):
                             competition_code=TEST_COMPETITION_CODE,
                             data=Notification(
                                 type=NotificationType.UPDATED_TIMING_LAP,
-                                data=ParticipantTiming(
+                                data=Timing(
                                     best_time=66000,
                                     driver_id=None,
                                     fixed_kart_status=None,
@@ -377,7 +377,7 @@ class TestMain(DatabaseTest):
         with tempfile.TemporaryDirectory() as tmp_path:
             self.set_database_content(database_content)
             config = WsParserConfig(
-                api_lts=REAL_API_LTS,
+                api_lts=API_LTS,
                 competition_code=TEST_COMPETITION_CODE,
                 errors_path=tmp_path,
                 kafka_servers=MOCK_KAFKA,

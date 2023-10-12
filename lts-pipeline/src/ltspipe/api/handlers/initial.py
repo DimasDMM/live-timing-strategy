@@ -6,9 +6,9 @@ from ltspipe.api.competitions_base import (
     update_competition_metadata,
 )
 from ltspipe.api.handlers.base import ApiHandler
-from ltspipe.api.handlers import (
-    _find_driver_by_name,
-    _find_team_by_code,
+from ltspipe.utils import (
+    find_driver_by_name,
+    find_team_by_code,
 )
 from ltspipe.api.participants import (
     add_driver,
@@ -16,8 +16,11 @@ from ltspipe.api.participants import (
     update_driver,
     update_team,
 )
-from ltspipe.api.timing import update_timing_by_team
-from ltspipe.base import BaseModel
+from ltspipe.api.timing import (
+    get_all_timing,
+    update_timing_by_team,
+)
+from ltspipe.data.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.competitions import (
     CompetitionInfo,
@@ -98,7 +101,7 @@ class InitialDataHandler(ApiHandler):
             if participant.driver_name is None:
                 continue
 
-            driver = _find_driver_by_name(
+            driver = find_driver_by_name(
                 info=self._info,
                 participant_code=p_code,
                 driver_name=participant.driver_name,
@@ -116,7 +119,7 @@ class InitialDataHandler(ApiHandler):
                 driver.participant_code = participant.participant_code
                 driver.name = participant.driver_name
             else:
-                team = _find_team_by_code(
+                team = find_team_by_code(
                     info=self._info,
                     participant_code=p_code,
                 )
@@ -136,7 +139,7 @@ class InitialDataHandler(ApiHandler):
             participants: Dict[str, Participant]) -> None:
         """Add new teams."""
         for p_code, participant in participants.items():
-            team = _find_team_by_code(
+            team = find_team_by_code(
                 info=self._info,
                 participant_code=p_code,
             )
@@ -165,7 +168,7 @@ class InitialDataHandler(ApiHandler):
                     name=participant.team_name,
                     number=participant.kart_number,
                 )
-                self._info.teams.append(team)
+                self._info.teams[team.participant_code] = team
 
     def _update_timing(
             self,
@@ -173,7 +176,7 @@ class InitialDataHandler(ApiHandler):
             stage: CompetitionStage) -> None:
         """Update timing data of the competition."""
         for p_code, participant in participants.items():
-            team = _find_team_by_code(
+            team = find_team_by_code(
                 info=self._info,
                 participant_code=p_code,
             )
@@ -182,7 +185,7 @@ class InitialDataHandler(ApiHandler):
                     f'Team with code={p_code} could not be found.')
 
             if participant.driver_name is not None:
-                driver = _find_driver_by_name(
+                driver = find_driver_by_name(
                     info=self._info,
                     participant_code=p_code,
                     driver_name=participant.driver_name,
@@ -215,3 +218,9 @@ class InitialDataHandler(ApiHandler):
                 auto_best_time=False,
                 auto_other_positions=False,
             )
+
+        self._info.timing = get_all_timing(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+        )

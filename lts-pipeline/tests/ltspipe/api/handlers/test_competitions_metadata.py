@@ -16,7 +16,7 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataStatus,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     DatabaseContent,
@@ -86,7 +86,8 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateCompetitionMetadataRemaining(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -145,11 +146,11 @@ class TestUpdateCompetitionMetadataRemainingHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # Handle method
         handler = UpdateCompetitionMetadataRemainingHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -224,7 +225,8 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateCompetitionMetadataStatus(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -319,7 +321,8 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 UpdateCompetitionMetadataStatus(  # update_data
                     competition_code=TEST_COMPETITION_CODE,
@@ -375,11 +378,11 @@ class TestUpdateCompetitionMetadataStatusHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # Handle method
         handler = UpdateCompetitionMetadataStatusHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)

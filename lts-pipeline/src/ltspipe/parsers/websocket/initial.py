@@ -14,7 +14,7 @@ from ltspipe.data.competitions import (
 from ltspipe.data.enum import ParserSettings
 from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import InitialParser
-from ltspipe.parsers.websocket.base import _time_to_millis
+from ltspipe.utils import time_to_millis
 
 
 class InitialDataParser(InitialParser):
@@ -141,7 +141,7 @@ class InitialDataParser(InitialParser):
             )
         elif type == 'text':
             return DiffLap(
-                value=_time_to_millis(raw, default=0),  # type: ignore
+                value=time_to_millis(raw, default=0),  # type: ignore
                 unit=LengthUnit.MILLIS,
             )
         elif type == 'countdown':
@@ -262,7 +262,7 @@ class InitialDataParser(InitialParser):
                 unit=LengthUnit.LAPS,
             )
 
-        diff_value = _time_to_millis(diff_lap, default=default)
+        diff_value = time_to_millis(diff_lap, default=default)
         if diff_value is not None:
             return DiffLap(
                 value=diff_value,
@@ -295,7 +295,7 @@ class InitialDataParser(InitialParser):
             driver_name = None
 
         return Participant(
-            best_time=_time_to_millis(  # type: ignore
+            best_time=time_to_millis(  # type: ignore
                 fields.get(ParserSettings.TIMING_BEST_TIME, None),
                 default=0),
             driver_name=driver_name,
@@ -311,7 +311,7 @@ class InitialDataParser(InitialParser):
             laps=self._cast_number(  # type: ignore
                 fields.get(ParserSettings.TIMING_LAP, None),
                 default=0),
-            last_time=_time_to_millis(  # type: ignore
+            last_time=time_to_millis(  # type: ignore
                 fields.get(ParserSettings.TIMING_LAST_TIME, None),
                 default=0),
             number_pits=self._cast_number(  # type: ignore
@@ -322,7 +322,7 @@ class InitialDataParser(InitialParser):
                 position,
                 default=0),
             team_name=team_name,
-            pit_time=_time_to_millis(
+            pit_time=time_to_millis(
                 fields.get(ParserSettings.TIMING_PIT_TIME, None),
                 default=None),
         )

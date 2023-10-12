@@ -32,14 +32,15 @@ class TestPitInParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message('endurance_pit_in.txt'),  # in_data
                 [  # expected_actions
@@ -59,7 +60,8 @@ class TestPitInParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -71,7 +73,8 @@ class TestPitInParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -101,7 +104,8 @@ class TestPitInParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_pit_in.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
@@ -133,14 +137,15 @@ class TestPitOutParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message('endurance_pit_out.txt'),  # in_data
                 [  # expected_actions
@@ -160,7 +165,8 @@ class TestPitOutParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -172,7 +178,8 @@ class TestPitOutParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -202,7 +209,8 @@ class TestPitOutParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_pit_out.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception

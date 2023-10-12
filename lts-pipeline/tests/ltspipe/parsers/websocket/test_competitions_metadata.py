@@ -33,7 +33,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_stage_remaining_time_countdown.txt'),  # in_data
@@ -57,7 +58,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_stage_remaining_time_text.txt'),  # in_data
@@ -81,7 +83,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_stage_remaining_time_empty.txt'),  # in_data
@@ -105,7 +108,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -117,7 +121,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -148,7 +153,8 @@ class TestCompetitionMetadataRemainingParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_stage_remaining_time_unknown.txt'),  # in_data
@@ -182,7 +188,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_status_paused.txt'),  # in_data
                 [  # expected_actions
@@ -202,7 +209,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_status_started.txt'),  # in_data
                 [  # expected_actions
@@ -222,7 +230,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_status_finished.txt'),  # in_data
                 [  # expected_actions
@@ -242,7 +251,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -254,7 +264,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -284,7 +295,8 @@ class TestCompetitionMetadataStatusParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message('endurance_status_unknown.txt'),  # in_data
                 'Unknown competition metadata status: unknown_status',

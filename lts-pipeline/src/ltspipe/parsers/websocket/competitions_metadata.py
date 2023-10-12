@@ -12,7 +12,7 @@ from ltspipe.data.competitions import (
 from ltspipe.data.enum import LengthUnit
 from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket.base import _time_to_millis
+from ltspipe.utils import time_to_millis
 
 
 class CompetitionMetadataRemainingParser(Parser):
@@ -79,7 +79,7 @@ class CompetitionMetadataRemainingParser(Parser):
             return UpdateCompetitionMetadataRemaining(
                 competition_code=self._info.competition_code,
                 remaining_length=DiffLap(
-                    value=_time_to_millis(  # type: ignore
+                    value=time_to_millis(  # type: ignore
                         remaining_length_value, default=0),
                     unit=LengthUnit.MILLIS,
                 ),

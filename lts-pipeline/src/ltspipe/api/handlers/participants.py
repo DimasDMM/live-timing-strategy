@@ -1,9 +1,9 @@
 from typing import Optional
 
-from ltspipe.api.handlers import (
-    _find_driver_by_id,
-    _find_driver_by_name,
-    _find_team_by_code,
+from ltspipe.utils import (
+    find_driver_by_id,
+    find_driver_by_name,
+    find_team_by_code,
 )
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.participants import (
@@ -17,7 +17,7 @@ from ltspipe.api.pits import (
     update_pit_out_driver_by_id,
 )
 from ltspipe.api.timing import update_timing_driver_by_team
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (
@@ -49,11 +49,11 @@ class UpdateDriverHandler(ApiHandler):
             raise LtsError('The model must be an instance of UpdateDriver.')
 
         if model.id is None:
-            old_driver = _find_driver_by_name(
+            old_driver = find_driver_by_name(
                 self._info, model.participant_code, model.name)
         else:
-            old_driver = _find_driver_by_id(
-                self._info, model.participant_code, model.id)
+            old_driver = find_driver_by_id(
+                self._info, model.id)
             if old_driver is None:
                 raise LtsError(f'Unknown driver to update: {model}')
 
@@ -113,13 +113,14 @@ class UpdateDriverHandler(ApiHandler):
             team_id: int,
             driver_id: int) -> None:
         """Update the timing of the team with the Driver ID."""
-        _ = update_timing_driver_by_team(
+        timing = update_timing_driver_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=competition_id,
             team_id=team_id,
             driver_id=driver_id,
         )
+        self._info.timing[timing.participant_code] = timing
 
     def _update_pit_out_with_driver_id(
             self,
@@ -161,7 +162,7 @@ class UpdateTeamHandler(ApiHandler):
         if not isinstance(model, UpdateTeam):
             raise LtsError('The model must be an instance of UpdateTeam.')
 
-        old_team: Optional[Team] = _find_team_by_code(
+        old_team: Optional[Team] = find_team_by_code(
             info=self._info,
             participant_code=model.participant_code)
 
@@ -175,7 +176,7 @@ class UpdateTeamHandler(ApiHandler):
                 name=model.name,
                 number=model.number,
             )
-            self._info.teams.append(current_team)
+            self._info.teams[current_team.participant_code] = current_team
         elif old_team.name != model.name or old_team.number != model.number:
             # Update team name if needed
             current_team = update_team(

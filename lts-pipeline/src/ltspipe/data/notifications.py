@@ -1,14 +1,14 @@
 from pydantic import Field, SerializeAsAny
 from typing import Any, Dict, Optional, Type
 
-from ltspipe.base import BaseModel, DictModel, EnumBase
+from ltspipe.data.base import BaseModel, DictModel, EnumBase
 from ltspipe.data.competitions import (
     CompetitionMetadata,
     Driver,
-    ParticipantTiming,
     PitIn,
     PitOut,
     Team,
+    Timing,
 )
 from ltspipe.data.strategy import StrategyPitsStats
 from ltspipe.exceptions import LtsError
@@ -49,12 +49,12 @@ _factory: Dict[NotificationType, Optional[Type[DictModel]]] = {
     NotificationType.UPDATED_COMPETITION_METADATA_STATUS: CompetitionMetadata,
     NotificationType.UPDATED_DRIVER: Driver,
     NotificationType.UPDATED_TEAM: Team,
-    NotificationType.UPDATED_TIMING_BEST_TIME: ParticipantTiming,
-    NotificationType.UPDATED_TIMING_LAP: ParticipantTiming,
-    NotificationType.UPDATED_TIMING_LAST_TIME: ParticipantTiming,
-    NotificationType.UPDATED_TIMING_NUMBER_PITS: ParticipantTiming,
-    NotificationType.UPDATED_TIMING_PIT_TIME: ParticipantTiming,
-    NotificationType.UPDATED_TIMING_POSITION: ParticipantTiming,
+    NotificationType.UPDATED_TIMING_BEST_TIME: Timing,
+    NotificationType.UPDATED_TIMING_LAP: Timing,
+    NotificationType.UPDATED_TIMING_LAST_TIME: Timing,
+    NotificationType.UPDATED_TIMING_NUMBER_PITS: Timing,
+    NotificationType.UPDATED_TIMING_PIT_TIME: Timing,
+    NotificationType.UPDATED_TIMING_POSITION: Timing,
 }
 
 

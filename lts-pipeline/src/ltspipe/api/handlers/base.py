@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.notifications import Notification
 
 

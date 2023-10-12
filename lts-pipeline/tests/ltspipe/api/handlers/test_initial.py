@@ -18,7 +18,7 @@ from ltspipe.data.enum import (
     ParserSettings,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     DatabaseContent,
@@ -90,7 +90,8 @@ class TestInitialDataHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 InitialData(  # initial_data_1
                     competition_code=TEST_COMPETITION_CODE,
@@ -238,7 +239,7 @@ class TestInitialDataHandler(DatabaseTest):
                 [  # expected_drivers_1
                     Driver(
                         id=1,
-                        team_id=0,
+                        team_id=1,
                         participant_code='r5625',
                         name='Team 1 Driver 1',
                         number=41,
@@ -247,7 +248,7 @@ class TestInitialDataHandler(DatabaseTest):
                     ),
                     Driver(
                         id=2,
-                        team_id=0,
+                        team_id=2,
                         participant_code='r5626',
                         name='Team 2 Driver 1',
                         number=42,
@@ -441,16 +442,16 @@ class TestInitialDataHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = InitialDataHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(initial_data_1)
         self._add_team_id_to_drivers(in_competition, expected_drivers_1)
-        assert ([t.model_dump() for t in in_competition.teams]
+        assert ([t.model_dump() for _, t in in_competition.teams.items()]
                 == [t.model_dump() for t in expected_teams_1])
         assert ([d.model_dump() for d in in_competition.drivers]
                 == [d.model_dump() for d in expected_drivers_1])
@@ -460,12 +461,12 @@ class TestInitialDataHandler(DatabaseTest):
 
         # Second call to handle method
         handler = InitialDataHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(initial_data_2)
         self._add_team_id_to_drivers(in_competition, expected_drivers_2)
-        assert ([t.model_dump() for t in in_competition.teams]
+        assert ([t.model_dump() for _, t in in_competition.teams.items()]
                 == [t.model_dump() for t in expected_teams_2])
         assert ([d.model_dump() for d in in_competition.drivers]
                 == [d.model_dump() for d in expected_drivers_2])
@@ -531,7 +532,8 @@ class TestInitialDataHandler(DatabaseTest):
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
             ),
         ],
@@ -548,7 +550,7 @@ class TestInitialDataHandler(DatabaseTest):
         needs that a team exists.
         """
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         initial_data = InitialData(
             competition_code=TEST_COMPETITION_CODE,
@@ -579,7 +581,7 @@ class TestInitialDataHandler(DatabaseTest):
         # Call to handle method
         with pytest.raises(Exception) as e_info:
             handler = InitialDataHandler(
-                api_url=REAL_API_LTS,
+                api_url=API_LTS,
                 auth_data=auth_data,
                 info=in_competition)
             handler.handle(initial_data)
@@ -592,7 +594,5 @@ class TestInitialDataHandler(DatabaseTest):
         """
         Search the drivers in CompetitionInfo and add them the ID of the team.
         """
-        code_to_team_id = {team.participant_code: team.id
-                           for team in info.teams}
         for d in drivers:
-            d.team_id = code_to_team_id[d.participant_code]
+            d.team_id = info.teams[d.participant_code].id

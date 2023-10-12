@@ -1,4 +1,4 @@
-from ltspipe.base import EnumBase
+from ltspipe.data.base import EnumBase
 
 
 class CompetitionStatus(str, EnumBase):

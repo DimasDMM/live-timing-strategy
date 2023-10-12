@@ -3,7 +3,7 @@ import json
 from pydantic import Field, SerializeAsAny
 from typing import Any, Optional, Union
 
-from ltspipe.base import EnumBase, BaseModel
+from ltspipe.data.base import EnumBase, BaseModel
 from ltspipe.data.actions import Action
 from ltspipe.data.notifications import Notification
 from ltspipe.exceptions import LtsError

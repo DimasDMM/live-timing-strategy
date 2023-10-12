@@ -1,4 +1,4 @@
-from ltspipe.base import BaseModel, DictModel, EnumBase
+from ltspipe.data.base import BaseModel, DictModel, EnumBase
 
 
 class AuthRole(str, EnumBase):

@@ -17,27 +17,45 @@ from ltspipe.exceptions import LtsError
 REGEX_TIME = r'^\+?(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+)?)?$'
 
 
-def _find_driver_by_name(
+def find_driver_by_id(
         info: CompetitionInfo,
-        driver_name: str) -> Optional[Driver]:
+        driver_id: int) -> Optional[Driver]:
     """Find a driver in the competition info."""
     for d in info.drivers:
-        if d.name == driver_name:
+        if d.id == driver_id:
             return d
     return None
 
 
-def _find_team_by_code(
+def find_driver_by_name(
         info: CompetitionInfo,
-        team_code: str) -> Optional[Team]:
+        participant_code: str,
+        driver_name: str) -> Optional[Driver]:
+    """Find a driver in the competition info."""
+    for d in info.drivers:
+        if d.name == driver_name and d.participant_code == participant_code:
+            return d
+    return None
+
+
+def find_team_by_code(
+        info: CompetitionInfo,
+        participant_code: str) -> Optional[Team]:
     """Find a team in the competition info."""
-    for t in info.teams:
-        if t.participant_code == team_code:
+    return info.teams.get(participant_code, None)
+
+
+def find_team_by_id(
+        info: CompetitionInfo,
+        team_id: int) -> Optional[Team]:
+    """Find a team in the competition info."""
+    for _, t in info.teams.items():
+        if t.id == team_id:
             return t
     return None
 
 
-def _time_to_millis(
+def time_to_millis(
         lap_time: Optional[str],
         default: Optional[int] = None) -> Optional[int]:
     """Transform a lap time into milliseconds."""
@@ -55,7 +73,7 @@ def _time_to_millis(
             + parts[3])
 
 
-def _is_column_parser_setting(
+def is_column_parser_setting(
         info: CompetitionInfo,
         column_id: str,
         parser_setting: ParserSettings,

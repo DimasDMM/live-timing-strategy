@@ -50,14 +50,15 @@ class TestTimingBestTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_best_time.txt'),  # in_data
@@ -79,7 +80,8 @@ class TestTimingBestTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -91,7 +93,8 @@ class TestTimingBestTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -121,7 +124,8 @@ class TestTimingBestTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_best_time.txt'),  # in_data
@@ -154,14 +158,15 @@ class TestTimingLapParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_lap.txt'),  # in_data
@@ -183,7 +188,8 @@ class TestTimingLapParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -195,7 +201,8 @@ class TestTimingLapParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -225,7 +232,8 @@ class TestTimingLapParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_lap.txt'),  # in_data
@@ -258,14 +266,15 @@ class TestTimingLastTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_last_time.txt'),  # in_data
@@ -288,7 +297,8 @@ class TestTimingLastTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -300,7 +310,8 @@ class TestTimingLastTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -330,7 +341,8 @@ class TestTimingLastTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_last_time.txt'),  # in_data
@@ -363,14 +375,15 @@ class TestTimingNumberPitsParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_number_pits.txt'),  # in_data
@@ -392,7 +405,8 @@ class TestTimingNumberPitsParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -404,7 +418,8 @@ class TestTimingNumberPitsParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -434,7 +449,8 @@ class TestTimingNumberPitsParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_number_pits.txt'),  # in_data
@@ -467,14 +483,15 @@ class TestPitTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_pit_time_seconds.txt'),  # in_data
@@ -496,14 +513,15 @@ class TestPitTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_pit_time_minutes.txt'),  # in_data
@@ -525,7 +543,8 @@ class TestPitTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -537,7 +556,8 @@ class TestPitTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -567,7 +587,8 @@ class TestPitTimeParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_pit_time_minutes.txt'),  # in_data
@@ -600,14 +621,15 @@ class TestTimingPositionParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data
@@ -630,7 +652,8 @@ class TestTimingPositionParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -642,7 +665,8 @@ class TestTimingPositionParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -672,7 +696,8 @@ class TestTimingPositionParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_timing_position.txt'),  # in_data

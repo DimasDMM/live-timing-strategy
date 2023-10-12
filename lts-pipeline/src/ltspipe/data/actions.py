@@ -1,7 +1,7 @@
 from pydantic import SerializeAsAny
 from typing import Any, Dict, Type
 
-from ltspipe.base import BaseModel, DictModel, EnumBase
+from ltspipe.data.base import BaseModel, DictModel, EnumBase
 from ltspipe.data.competitions import (
     AddPitIn,
     AddPitOut,
@@ -9,6 +9,7 @@ from ltspipe.data.competitions import (
     UpdateCompetitionMetadataRemaining,
     UpdateCompetitionMetadataStatus,
     UpdateDriver,
+    UpdateDriverPartialDrivingTime,
     UpdateTeam,
     UpdateTimingBestTime,
     UpdateTimingLap,
@@ -33,6 +34,7 @@ class ActionType(str, EnumBase):
     UPDATE_COMPETITION_METADATA_REMAINING = 'update-competition-metadata-remaining'  # noqa: E501, LN001
     UPDATE_COMPETITION_METADATA_STATUS = 'update-competition-metadata-status'
     UPDATE_DRIVER = 'update-driver'
+    UPDATE_DRIVER_PARTIAL_DRIVING_TIME = 'update-driver-partial-driving-time'
     UPDATE_TEAM = 'update-team'
     UPDATE_TIMING_BEST_TIME = 'update-timing-best-time'
     UPDATE_TIMING_LAP = 'update-timing-lap'
@@ -49,6 +51,7 @@ _factory: Dict[ActionType, Type[DictModel]] = {
     ActionType.UPDATE_COMPETITION_METADATA_REMAINING: UpdateCompetitionMetadataRemaining,  # noqa: E501, LN001
     ActionType.UPDATE_COMPETITION_METADATA_STATUS: UpdateCompetitionMetadataStatus,  # noqa: E501, LN001
     ActionType.UPDATE_DRIVER: UpdateDriver,
+    ActionType.UPDATE_DRIVER_PARTIAL_DRIVING_TIME: UpdateDriverPartialDrivingTime,  # noqa: E501, LN001
     ActionType.UPDATE_TEAM: UpdateTeam,
     ActionType.UPDATE_TIMING_BEST_TIME: UpdateTimingBestTime,
     ActionType.UPDATE_TIMING_LAP: UpdateTimingLap,

@@ -1,7 +1,7 @@
 from pydantic import Field, model_validator
 from typing import Any, Dict, List, Optional
 
-from ltspipe.base import BaseModel, DictModel
+from ltspipe.data.base import BaseModel, DictModel
 from ltspipe.data.enum import (
     CompetitionStage,
     CompetitionStatus,
@@ -117,92 +117,6 @@ class Participant(DictModel):
             position=raw.get('position'),
             team_name=raw.get('team_name'),
         )
-
-
-class ParticipantTiming(DictModel):
-    """Timing details of a participant."""
-
-    best_time: int
-    gap: Optional[DiffLap]
-    fixed_kart_status: Optional[KartStatus]
-    interval: Optional[DiffLap]
-    kart_status: KartStatus
-    lap: Optional[int]
-    last_time: int
-    number_pits: Optional[int]
-    participant_code: str
-    position: Optional[int]
-    stage: CompetitionStage
-    driver_id: Optional[int] = Field(default=None)
-    pit_time: Optional[int] = Field(default=None)
-    team_id: Optional[int] = Field(default=None)
-
-    @model_validator(mode='before')
-    def name_is_set(cls, values: Dict[str, Any]) -> dict:  # noqa: N805, U100
-        """Validate that at least one name is set."""
-        driver_id = values.get('driver_id')
-        team_id = values.get('team_id')
-        if driver_id is None and team_id is None:
-            raise ValueError('Both driver and team ID cannot be null.')
-        return values
-
-    @classmethod
-    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
-        """Return an instance of itself with the data in the dictionary."""
-        DictModel._validate_base_dict(
-            cls, raw, ignore_unknowns=True)  # type: ignore
-
-        # Patch gap and interval if necessary
-        if raw.get('gap') is None:
-            gap = None
-        elif 'gap_unit' in raw:
-            raw_gap = {
-                'value': raw.get('gap'),
-                'unit': raw.get('gap_unit'),
-            }
-            gap = DiffLap.from_dict(raw_gap)
-        else:
-            gap = DiffLap.from_dict(raw['gap'])
-
-        if raw.get('interval') is None:
-            interval = None
-        elif 'interval_unit' in raw:
-            raw_interval = {
-                'value': raw.get('interval'),
-                'unit': raw.get('interval_unit'),
-            }
-            interval = DiffLap.from_dict(raw_interval)
-        else:
-            interval = DiffLap.from_dict(raw['interval'])
-
-        fixed_kart_status = raw.get('fixed_kart_status')
-        return cls.model_construct(
-            best_time=raw.get('best_time'),
-            driver_id=raw.get('driver_id'),
-            fixed_kart_status=(None if fixed_kart_status is None
-                               else KartStatus(fixed_kart_status)),
-            kart_status=KartStatus(raw.get('kart_status')),
-            gap=gap,  # type: ignore
-            interval=interval,  # type: ignore
-            lap=raw.get('lap'),
-            last_time=raw.get('last_time'),
-            number_pits=raw.get('number_pits'),
-            participant_code=raw.get('participant_code'),
-            pit_time=raw.get('pit_time'),
-            position=raw.get('position'),
-            stage=CompetitionStage(raw.get('stage')),
-            team_id=raw.get('team_id'),
-        )
-
-
-class CompetitionInfo(BaseModel):
-    """Info of a competition."""
-
-    id: int
-    competition_code: str
-    parser_settings: Dict[ParserSettings, str] = Field(default_factory=dict)
-    drivers: List[Driver] = Field(default_factory=list)
-    teams: List[Team] = Field(default_factory=list)
 
 
 class CompetitionMetadata(DictModel):
@@ -449,6 +363,102 @@ class UpdateTeam(DictModel):
         )
 
 
+class UpdateDriverPartialDrivingTime(DictModel):
+    """Info to update of a driver data."""
+
+    id: Optional[int]
+    competition_code: str
+    partial_driving_time: int
+    auto_compute_total: bool
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(cls, raw)  # type: ignore
+        return cls.model_construct(
+            id=raw.get('id'),
+            competition_code=raw.get('competition_code'),
+            partial_driving_time=raw.get('partial_driving_time'),
+            auto_compute_total=raw.get('auto_compute_total'),
+        )
+
+
+class Timing(DictModel):
+    """Info about timing."""
+
+    best_time: int
+    driver_id: Optional[int]
+    fixed_kart_status: Optional[KartStatus]
+    gap: Optional[DiffLap]
+    interval: Optional[DiffLap]
+    kart_status: KartStatus
+    lap: Optional[int]
+    last_time: int
+    number_pits: Optional[int]
+    participant_code: str
+    pit_time: Optional[int]
+    position: int
+    stage: CompetitionStage
+    team_id: Optional[int]
+
+    @model_validator(mode='before')
+    def name_is_set(cls, values: Dict[str, Any]) -> dict:  # noqa: N805, U100
+        """Validate that at least one name is set."""
+        driver_id = values.get('driver_id')
+        team_id = values.get('team_id')
+        if driver_id is None and team_id is None:
+            raise ValueError('Both driver and team ID cannot be null.')
+        return values
+
+    @classmethod
+    def from_dict(cls, raw: dict) -> BaseModel:  # noqa: ANN102
+        """Return an instance of itself with the data in the dictionary."""
+        DictModel._validate_base_dict(
+            cls, raw, ignore_unknowns=True)  # type: ignore
+
+        # Patch gap and interval if necessary
+        gap: Optional[DiffLap] = None
+        if raw.get('gap') is not None:
+            if 'gap_unit' in raw:
+                raw_gap = {
+                    'value': raw.get('gap'),
+                    'unit': raw.get('gap_unit'),
+                }
+                gap = DiffLap.from_dict(raw_gap)  # type: ignore
+            else:
+                gap = DiffLap.from_dict(raw['gap'])  # type: ignore
+
+        interval: Optional[DiffLap] = None
+        if raw.get('interval') is not None:
+            if 'interval_unit' in raw:
+                raw_interval = {
+                    'value': raw.get('interval'),
+                    'unit': raw.get('interval_unit'),
+                }
+                interval = DiffLap.from_dict(raw_interval)  # type: ignore
+            else:
+                interval = DiffLap.from_dict(raw['interval'])  # type: ignore
+
+        fixed_kart_status = raw.get('fixed_kart_status')
+        return cls.model_construct(
+            best_time=raw.get('best_time'),
+            driver_id=raw.get('driver_id'),
+            fixed_kart_status=(None if fixed_kart_status is None
+                               else KartStatus(fixed_kart_status)),
+            kart_status=KartStatus(raw.get('kart_status')),
+            gap=gap,
+            interval=interval,
+            lap=raw.get('lap'),
+            last_time=raw.get('last_time'),
+            number_pits=raw.get('number_pits'),
+            participant_code=raw.get('participant_code'),
+            pit_time=raw.get('pit_time'),
+            position=raw.get('position'),
+            stage=CompetitionStage(raw.get('stage')),
+            team_id=raw.get('team_id'),
+        )
+
+
 class UpdateTimingBestTime(DictModel):
     """Info to update the timing best time of a team."""
 
@@ -559,3 +569,14 @@ class UpdateTimingPosition(DictModel):
             position=raw.get('position'),
             auto_other_positions=raw.get('auto_other_positions'),
         )
+
+
+class CompetitionInfo(BaseModel):
+    """Info of a competition."""
+
+    id: int
+    competition_code: str
+    parser_settings: Dict[ParserSettings, str]
+    drivers: List[Driver]
+    teams: Dict[str, Team]
+    timing: Dict[str, Timing]

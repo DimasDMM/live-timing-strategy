@@ -42,14 +42,15 @@ class TestDriverNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_driver_name.txt'),  # in_data
@@ -74,14 +75,15 @@ class TestDriverNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_driver_name_with_driving_time.txt'),
@@ -116,14 +118,15 @@ class TestDriverNameParser:
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_driver_name.txt'),  # in_data
@@ -158,14 +161,15 @@ class TestDriverNameParser:
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_driver_name_with_driving_time.txt'),
@@ -190,7 +194,8 @@ class TestDriverNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -202,7 +207,8 @@ class TestDriverNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -232,23 +238,12 @@ class TestDriverNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_driver_name.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
-            ),
-            (
-                CompetitionInfo(  # in_competition
-                    id=1,
-                    competition_code=TEST_COMPETITION_CODE,
-                    parser_settings={},
-                    drivers=[],
-                    teams=[],
-                ),
-                load_raw_message(
-                    'endurance_display_driver_name.txt'),  # in_data
-                'Column for timing-name not found',  # expected_exception
             ),
         ],
     )
@@ -277,14 +272,15 @@ class TestTeamNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_team_name.txt'),  # in_data
@@ -308,7 +304,8 @@ class TestTeamNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 'unknown data input',  # in_data
                 [],  # expected_actions
@@ -320,7 +317,8 @@ class TestTeamNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings={},
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 ['unknown data format'],  # in_data
                 [],  # expected_actions
@@ -350,23 +348,12 @@ class TestTeamNameParser:
                     competition_code=TEST_COMPETITION_CODE,
                     parser_settings=PARSERS_SETTINGS,
                     drivers=[],
-                    teams=[],
+                    teams={},
+                    timing={},
                 ),
                 load_raw_message(
                     'endurance_display_team_name.txt'),  # in_data
                 'Unknown team with code=r5625',  # expected_exception
-            ),
-            (
-                CompetitionInfo(  # in_competition
-                    id=1,
-                    competition_code=TEST_COMPETITION_CODE,
-                    parser_settings={},
-                    drivers=[],
-                    teams=[],
-                ),
-                load_raw_message(
-                    'endurance_display_team_name.txt'),  # in_data
-                'Column for timing-name not found',  # expected_exception
             ),
         ],
     )

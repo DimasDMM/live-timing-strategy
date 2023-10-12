@@ -11,10 +11,10 @@ from ltspipe.data.competitions import (
 from ltspipe.data.enum import ParserSettings
 from ltspipe.exceptions import LtsError
 from ltspipe.parsers.base import Parser
-from ltspipe.parsers.websocket.base import (
-    _find_driver_by_name,
-    _find_team_by_code,
-    _is_column_parser_setting,
+from ltspipe.utils import (
+    find_driver_by_name,
+    find_team_by_code,
+    is_column_parser_setting,
 )
 
 
@@ -72,19 +72,23 @@ class DriverNameParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
-                ParserSettings.TIMING_NAME):
+                ParserSettings.TIMING_NAME,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
         driver_name = matches[3]
 
-        old_driver = _find_driver_by_name(self._info, driver_name)
-        team: Optional[Team] = _find_team_by_code(
+        old_driver = find_driver_by_name(
             info=self._info,
-            team_code=participant_code)
+            participant_code=participant_code,
+            driver_name=driver_name)
+        team: Optional[Team] = find_team_by_code(
+            info=self._info,
+            participant_code=participant_code)
         if team is None:
             raise LtsError(f'Unknown team with code={participant_code}')
 
@@ -142,16 +146,17 @@ class TeamNameParser(Parser):
             return None
 
         column_id = matches[2]
-        if not _is_column_parser_setting(
+        if not is_column_parser_setting(
                 self._info,
                 column_id,
-                ParserSettings.TIMING_NAME):
+                ParserSettings.TIMING_NAME,
+                raise_exception=False):
             return None
 
         participant_code = matches[1]
-        old_team: Optional[Team] = _find_team_by_code(
+        old_team: Optional[Team] = find_team_by_code(
             self._info,
-            team_code=participant_code)
+            participant_code=participant_code)
 
         if old_team is None:
             raise LtsError(f'Unknown team with code={participant_code}')

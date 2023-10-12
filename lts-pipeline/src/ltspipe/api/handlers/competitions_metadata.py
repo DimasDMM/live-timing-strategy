@@ -5,7 +5,7 @@ from ltspipe.api.competitions_base import (
     update_competition_metadata_remaining,
     update_competition_metadata_status,
 )
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (

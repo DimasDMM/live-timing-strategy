@@ -10,7 +10,7 @@ from ltspipe.api.pits import (
     add_pit_in,
     add_pit_out,
 )
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.auth import AuthData
 from ltspipe.data.notifications import Notification, NotificationType
 from ltspipe.data.competitions import (

@@ -92,13 +92,12 @@ def main(config: WsParserConfig, logger: Logger) -> None:
 
     logger.info('Init processes...')
 
-    process_logger = build_logger(__package__, config.verbosity)
     p_not = _create_process(
         target=_run_notifications_listener,
-        args=(config, process_logger, auth_data, info))
+        args=(config, auth_data, info))
     p_ws = _create_process(
         target=_run_ws_listener,
-        args=(config, process_logger, auth_data, info))
+        args=(config, auth_data, info))
     logger.info('Processes created')
 
     p_not.start()
@@ -143,10 +142,11 @@ def _join_processes(logger: Logger, processes: Dict[str, Process]) -> None:
 
 def _run_notifications_listener(
         config: WsParserConfig,
-        logger: Logger,
         auth_data: AuthData,
         info: CompetitionInfo) -> None:
     """Run process with the notifications listener."""
+    logger = build_logger(__package__, config.verbosity)
+
     logger.info('Create input listener...')
     notification_listener = _build_notifications_process(
         config, logger, auth_data, info)
@@ -157,10 +157,11 @@ def _run_notifications_listener(
 
 def _run_ws_listener(
         config: WsParserConfig,
-        logger: Logger,
         auth_data: AuthData,
         info: CompetitionInfo) -> None:
     """Run process with the raw data listener."""
+    logger = build_logger(__package__, config.verbosity)
+
     logger.info('Create websocket listener...')
     ws_listener = _build_ws_process(
         config, logger, auth_data, info)

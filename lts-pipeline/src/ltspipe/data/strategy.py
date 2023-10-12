@@ -1,5 +1,5 @@
-from ltspipe.base import BaseModel
-from ltspipe.base import DictModel
+from ltspipe.data.base import BaseModel
+from ltspipe.data.base import DictModel
 
 
 class AddStrategyPitsStats(DictModel):

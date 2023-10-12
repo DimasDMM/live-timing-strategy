@@ -14,7 +14,7 @@ from ltspipe.data.competitions import (
     UpdateTeam,
 )
 from ltspipe.data.notifications import Notification, NotificationType
-from tests.fixtures import AUTH_KEY, REAL_API_LTS, TEST_COMPETITION_CODE
+from tests.fixtures import AUTH_KEY, API_LTS, TEST_COMPETITION_CODE
 from tests.helpers import (
     DatabaseTest,
     DatabaseContent,
@@ -179,14 +179,15 @@ class TestUpdateDriverHandler(DatabaseTest):
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 UpdateDriver(  # update_data
                     id=None,
@@ -301,14 +302,15 @@ class TestUpdateDriverHandler(DatabaseTest):
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 UpdateDriver(  # update_data
                     id=1,
@@ -396,11 +398,11 @@ class TestUpdateDriverHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # Call to handle method
         handler = UpdateDriverHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
@@ -448,14 +450,15 @@ class TestUpdateTeamHandler(DatabaseTest):
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 UpdateTeam(  # update_data
                     id=None,
@@ -544,14 +547,15 @@ class TestUpdateTeamHandler(DatabaseTest):
                             partial_driving_time=0,
                         ),
                     ],
-                    teams=[
-                        Team(
+                    teams={
+                        'r5625': Team(
                             id=1,
                             participant_code='r5625',
                             name='Team 1',
                             number=41,
                         ),
-                    ],
+                    },
+                    timing={},
                 ),
                 UpdateTeam(  # update_data
                     id=1,
@@ -632,17 +636,17 @@ class TestUpdateTeamHandler(DatabaseTest):
             expected_database: DatabaseContent) -> None:
         """Test handle method."""
         self.set_database_content(database_content)
-        auth_data = refresh_bearer(REAL_API_LTS, AUTH_KEY)
+        auth_data = refresh_bearer(API_LTS, AUTH_KEY)
 
         # First call to handle method
         handler = UpdateTeamHandler(
-            api_url=REAL_API_LTS,
+            api_url=API_LTS,
             auth_data=auth_data,
             info=in_competition)
         notification = handler.handle(update_data)
 
-        assert ([d.model_dump() for d in in_competition.teams]
-                == [d.model_dump() for d in expected_teams])
+        assert ([t.model_dump() for _, t in in_competition.teams.items()]
+                == [t.model_dump() for t in expected_teams])
         assert notification is not None
         assert (notification.model_dump()
                 == expected_notification.model_dump())

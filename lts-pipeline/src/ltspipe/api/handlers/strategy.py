@@ -2,7 +2,7 @@ from typing import Optional
 
 from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.strategy import add_strategy_pit_stats
-from ltspipe.base import BaseModel
+from ltspipe.data.base import BaseModel
 from ltspipe.data.strategy import (
     AddStrategyPitsStats,
     StrategyPitsStats,
