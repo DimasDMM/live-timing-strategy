@@ -34,6 +34,7 @@ from ltspipe.data.notifications import NotificationType
 from ltspipe.exceptions import LtsError
 from ltspipe.messages import MessageSource
 from ltspipe.parsers.base import Parser
+from ltspipe.parsers.special import IgnoreParser
 from ltspipe.parsers.websocket.competitions_metadata import (
     CompetitionMetadataRemainingParser,
     CompetitionMetadataStatusParser,
@@ -265,6 +266,7 @@ def _build_parsers_pipe(
     """Build pipe with data parsers."""
     initial_parser = InitialDataParser(info)
     parsers: List[Parser] = [
+        IgnoreParser(info),
         CompetitionMetadataRemainingParser(info),
         CompetitionMetadataStatusParser(info),
         DriverNameParser(info),

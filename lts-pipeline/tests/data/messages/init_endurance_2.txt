@@ -1,0 +1,20 @@
+init|r|
+best|hide|
+css|no1|border-bottom-color:#FF0000 !important; color:#FFFFFF !important;
+css|no2|border-bottom-color:#FFFF00 !important; color:#000000 !important;
+css|no3|border-bottom-color:#FF8000 !important; color:#FFFFFF !important;
+css|notc65408|border-bottom-color:#80FF00 !important; color:#000000 !important;
+css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center;
+effects||Mostrar Efectos
+comments||Comentarios
+title1||26H LOS SANTOS
+title2||CARRERA 26H
+dyn1|text|26:00:00
+light|lr|
+wth1||
+wth2||
+wth3||
+track||CRONOSYSTEM TIMING (1100m)
+com||
+grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="sta" data-pr="1"></td><td data-id="c2" data-type="rk" data-pr="1">Clasif.</td><td data-id="c3" data-type="no" data-pr="1">Kart</td><td data-id="c4" data-type="dr" data-pr="1" data-width="24" data-min="16">Equipo</td><td data-id="c5" data-type="llp" data-pr="2" data-width="13" data-min="7">�ltima vuelta</td><td data-id="c6" data-type="tlp" data-pr="5" data-width="5" data-min="4">Vueltas</td><td data-id="c7" data-type="gap" data-pr="1" data-width="13" data-min="8">Gap</td><td data-id="c8" data-type="int" data-pr="5" data-width="9" data-min="7">Interv.</td><td data-id="c9" data-type="blp" data-pr="6" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c10" data-type="" data-pr="6" data-width="8" data-min="6">Km/h</td><td data-id="c11" data-type="otr" data-pr="2" data-width="9" data-min="6">Tiempo en PIT</td><td data-id="c12" data-type="pit" data-pr="2" data-width="6" data-min="7">Pits</td></tr><tr data-id="r5625" data-pos="1"><td data-id="r5625c1" class="in"></td><td class="rk"><div><p data-id="r5625c2" class=""></p></div></td><td class="no"><div data-id="r5625c3" class="notc65408">41</div></td><td data-id="r5625c4" class="dr">Team 1</td><td data-id="r5625c5" class=""></td><td data-id="r5625c6" class="in"></td><td data-id="r5625c7" class="ib"></td><td data-id="r5625c8" class="in"></td><td data-id="r5625c9" class="in"></td><td data-id="r5625c10" class="in"></td><td data-id="r5625c11" class="in"></td><td data-id="r5625c12" class="in"></td></tr><tr data-id="r5626" data-pos="2"><td data-id="r5626c1" class="in"></td><td class="rk"><div><p data-id="r5626c2" class=""></p></div></td><td class="no"><div data-id="r5626c3" class="notc65408">42</div></td><td data-id="r5626c4" class="dr">Team 2</td><td data-id="r5626c5" class=""></td><td data-id="r5626c6" class="in"></td><td data-id="r5626c7" class="ib"></td><td data-id="r5626c8" class="in"></td><td data-id="r5626c9" class="in"></td><td data-id="r5626c10" class="in"></td><td data-id="r5626c11" class="in"></td><td data-id="r5626c12" class="in"></td></tr><tr data-id="r5627" data-pos="3"><td data-id="r5627c1" class="in"></td><td class="rk"><div><p data-id="r5627c2" class=""></p></div></td><td class="no"><div data-id="r5627c3" class="notc65408">43</div></td><td data-id="r5627c4" class="dr">Team 3</td><td data-id="r5627c5" class=""></td><td data-id="r5627c6" class="in"></td><td data-id="r5627c7" class="ib"></td><td data-id="r5627c8" class="in"></td><td data-id="r5627c9" class="in"></td><td data-id="r5627c10" class="in"></td><td data-id="r5627c11" class="in"></td><td data-id="r5627c12" class="in"></td></tr></tbody>
+msg||

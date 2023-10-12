@@ -23,16 +23,6 @@ class InitialDataParser(InitialParser):
     """
 
     FILTER_HEADERS = {
-        'by_id': {
-            'rk': ParserSettings.TIMING_POSITION,
-            'no': ParserSettings.TIMING_KART_NUMBER,
-            'dr': ParserSettings.TIMING_NAME,
-            'llp': ParserSettings.TIMING_LAST_TIME,
-            'blp': ParserSettings.TIMING_BEST_TIME,
-            'gap': ParserSettings.TIMING_GAP,
-            'int': ParserSettings.TIMING_INTERVAL,
-            'pit': ParserSettings.TIMING_NUMBER_PITS,
-        },
         'by_name': {
             'equipo': ParserSettings.TIMING_NAME,
             'kart': ParserSettings.TIMING_KART_NUMBER,
@@ -44,6 +34,18 @@ class InitialDataParser(InitialParser):
             'vueltas': ParserSettings.TIMING_LAP,
             'tiempo en pit': ParserSettings.TIMING_PIT_TIME,
             'pits': ParserSettings.TIMING_NUMBER_PITS,
+        },
+        'by_type': {
+            'grp': ParserSettings.IGNORE_1,
+            'sta': ParserSettings.IGNORE_2,
+            'rk': ParserSettings.TIMING_POSITION,
+            'no': ParserSettings.TIMING_KART_NUMBER,
+            'dr': ParserSettings.TIMING_NAME,
+            'llp': ParserSettings.TIMING_LAST_TIME,
+            'blp': ParserSettings.TIMING_BEST_TIME,
+            'gap': ParserSettings.TIMING_GAP,
+            'int': ParserSettings.TIMING_INTERVAL,
+            'pit': ParserSettings.TIMING_NUMBER_PITS,
         },
     }
     FILTER_STAGES = {
@@ -152,31 +154,29 @@ class InitialDataParser(InitialParser):
 
     def _parse_headers(self, first_row: str) -> Dict[ParserSettings, str]:
         """Parse headers from the first row."""
-        header_data = {}
+        header_data: Dict[ParserSettings, str] = {}
         items = re.findall(
             r'<td[^>]*data-id="c(\d+)"[^>]*data-type="([^"]*)"[^>]*>(.*?)</td>',
             first_row,
             flags=re.S)
         for item in items:
             i = int(item[0])
-            id_match = self.__get_by_key(
-                item[1], self.FILTER_HEADERS['by_id'])
+            type_match = self.__get_by_key(
+                item[1], self.FILTER_HEADERS['by_type'])
             name_match = self.__get_by_key(
                 item[2], self.FILTER_HEADERS['by_name'])
 
-            if id_match is None and name_match is None:
+            if type_match is None and name_match is None:
                 continue
-            if id_match is not None and name_match is None:
-                header_data[id_match] = f'c{i}'
-            elif id_match is None and name_match is not None:
+
+            if (type_match is not None and (
+                    name_match is None or name_match == type_match)):
+                header_data[type_match] = f'c{i}'
+            elif (name_match is not None and type_match is None):
                 header_data[name_match] = f'c{i}'
-            elif (id_match is not None
-                    and name_match is not None
-                    and id_match == name_match):
-                header_data[id_match] = f'c{i}'
             else:
                 raise LtsError(f'Cannot parse column {i} of headers '
-                               f'({id_match} != {name_match}).')
+                               f'({type_match} != {name_match}).')
 
         return header_data
 

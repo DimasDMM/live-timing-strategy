@@ -73,6 +73,10 @@ class FileListenerStep(StartStep):
         content, message_source = self._get_path_content(file_path)
         for data in content:
             try:
+                data = data.strip()
+                if not data:
+                    continue
+
                 msg = Message(
                     competition_code=self._competition_code,
                     data=data,

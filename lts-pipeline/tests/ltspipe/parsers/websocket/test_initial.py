@@ -38,6 +38,8 @@ def _build_init_qualy_1() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
+                ParserSettings.IGNORE_1: 'c1',
+                ParserSettings.IGNORE_2: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -111,6 +113,8 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
+                ParserSettings.IGNORE_1: 'c1',
+                ParserSettings.IGNORE_2: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -190,6 +194,8 @@ def _build_init_qualy_2() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
+                ParserSettings.IGNORE_1: 'c1',
+                ParserSettings.IGNORE_2: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -389,8 +395,8 @@ def _build_init_qualy_2() -> Tuple[Message, List[Action], bool]:
     return (in_data, [out_action], True)
 
 
-def _build_init_race() -> Tuple[Message, List[Action], bool]:
-    in_data = load_raw_message('init_endurance.txt')
+def _build_init_endurance_1() -> Tuple[Message, List[Action], bool]:
+    in_data = load_raw_message('init_endurance_1.txt')
     out_action = Action(
         type=ActionType.INITIALIZE,
         data=InitialData(
@@ -402,6 +408,8 @@ def _build_init_race() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
+                ParserSettings.IGNORE_1: 'c1',
+                ParserSettings.IGNORE_2: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -462,6 +470,80 @@ def _build_init_race() -> Tuple[Message, List[Action], bool]:
     return (in_data, [out_action], True)
 
 
+def _build_init_endurance_2() -> Tuple[Message, List[Action], bool]:
+    in_data = load_raw_message('init_endurance_2.txt')
+    out_action = Action(
+        type=ActionType.INITIALIZE,
+        data=InitialData(
+            competition_code=TEST_COMPETITION_CODE,
+            stage=CompetitionStage.RACE.value,
+            status=CompetitionStatus.PAUSED.value,
+            remaining_length=DiffLap(
+                value=93600000,
+                unit=LengthUnit.MILLIS,
+            ),
+            parsers_settings={
+                ParserSettings.IGNORE_2: 'c1',
+                ParserSettings.TIMING_POSITION: 'c2',
+                ParserSettings.TIMING_KART_NUMBER: 'c3',
+                ParserSettings.TIMING_NAME: 'c4',
+                ParserSettings.TIMING_LAST_TIME: 'c5',
+                ParserSettings.TIMING_LAP: 'c6',
+                ParserSettings.TIMING_GAP: 'c7',
+                ParserSettings.TIMING_INTERVAL: 'c8',
+                ParserSettings.TIMING_BEST_TIME: 'c9',
+                ParserSettings.TIMING_PIT_TIME: 'c11',
+                ParserSettings.TIMING_NUMBER_PITS: 'c12',
+            },
+            participants={
+                'r5625': Participant(
+                    best_time=0,
+                    driver_name=None,
+                    kart_number=41,
+                    gap=None,
+                    interval=None,
+                    last_time=0,
+                    laps=0,
+                    number_pits=0,
+                    participant_code='r5625',
+                    pit_time=None,
+                    position=1,
+                    team_name='Team 1',
+                ),
+                'r5626': Participant(
+                    best_time=0,
+                    driver_name=None,
+                    kart_number=42,
+                    gap=None,
+                    interval=None,
+                    last_time=0,
+                    laps=0,
+                    number_pits=0,
+                    participant_code='r5626',
+                    pit_time=None,
+                    position=2,
+                    team_name='Team 2',
+                ),
+                'r5627': Participant(
+                    best_time=0,
+                    driver_name=None,
+                    kart_number=43,
+                    gap=None,
+                    interval=None,
+                    last_time=0,
+                    laps=0,
+                    number_pits=0,
+                    participant_code='r5627',
+                    pit_time=None,
+                    position=3,
+                    team_name='Team 3',
+                ),
+            },
+        ),
+    )
+    return (in_data, [out_action], True)
+
+
 class TestInitialDataParser:
     """Test ltspipe.parsers.websocket.InitialDataParser."""
 
@@ -472,7 +554,8 @@ class TestInitialDataParser:
             _build_init_qualy_1(),
             _build_init_qualy_2(),
             _build_init_qualy_with_times(),
-            _build_init_race(),
+            _build_init_endurance_1(),
+            _build_init_endurance_2(),
         ],
     )
     def test_parse(
