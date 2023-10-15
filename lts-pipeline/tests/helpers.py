@@ -61,9 +61,9 @@ def build_magic_parser() -> Tuple[DummyParser, MagicMock]:
     return parser, mocked
 
 
-def load_raw_message(filename: str) -> str:
+def load_raw_message(filename: str, base_path: str = BASE_PATH) -> str:
     """Load a raw message."""
-    filepath = os.path.join(BASE_PATH, filename)
+    filepath = os.path.join(base_path, filename)
     with open(filepath, 'r') as fp:
         return fp.read()
 

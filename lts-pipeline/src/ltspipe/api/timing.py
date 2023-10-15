@@ -172,6 +172,54 @@ def update_timing_best_time_by_team(
     return Timing.from_dict(response)  # type: ignore
 
 
+def update_timing_fixed_kart_status_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int,
+        fixed_kart_status: Optional[KartStatus]) -> Timing:
+    """Update timing data of a team."""
+    data = {
+        'fixed_kart_status': (None if fixed_kart_status is None
+                              else fixed_kart_status.value),
+    }
+    uri = (f'{api_url}/v1/c/{competition_id}/timing/'
+           f'teams/{team_id}/fixed_kart_status')
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise LtsError(f'API error: {r.text}')
+
+    response = r.json()
+    if not response:
+        raise LtsError(f'Unknown API response ({uri}): {response}')
+
+    return Timing.from_dict(response)  # type: ignore
+
+
+def update_timing_kart_status_by_team(
+        api_url: str,
+        bearer: str,
+        competition_id: int,
+        team_id: int,
+        kart_status: KartStatus) -> Timing:
+    """Update timing data of a team."""
+    data = {
+        'kart_status': kart_status.value,
+    }
+    uri = f'{api_url}/v1/c/{competition_id}/timing/teams/{team_id}/kart_status'
+    r = requests.put(
+        url=uri, json=data, headers={'Authorization': f'Bearer {bearer}'})
+    if r.status_code != 200:
+        raise LtsError(f'API error: {r.text}')
+
+    response = r.json()
+    if not response:
+        raise LtsError(f'Unknown API response ({uri}): {response}')
+
+    return Timing.from_dict(response)  # type: ignore
+
+
 def update_timing_lap_by_team(
         api_url: str,
         bearer: str,

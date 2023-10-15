@@ -98,7 +98,8 @@ class DriverNameParser(Parser):
         if matches[4] is not None:
             partial_driving_time = time_to_millis(
                 matches[4].strip(),
-                default=0)
+                default=0,
+                offset=1)
 
         updated_driver = UpdateDriver(
             id=(None if old_driver is None else old_driver.id),

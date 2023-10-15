@@ -173,7 +173,7 @@ class TestMain(DatabaseTest):
                                     id=1,
                                     driver_id=None,
                                     team_id=1,
-                                    kart_status=KartStatus.UNKNOWN,
+                                    kart_status=KartStatus.GOOD,
                                     fixed_kart_status=None,
                                 ),
                             ),
@@ -196,7 +196,7 @@ class TestMain(DatabaseTest):
                                 'fixed_kart_status',
                             ],
                             content=[
-                                [1, 1, None, 'unknown', None],
+                                [1, 1, None, 'good', None],
                             ],
                         ),
                     ],

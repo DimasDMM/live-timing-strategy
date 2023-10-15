@@ -110,8 +110,8 @@ class TestMain(DatabaseTest):
                             content=[
                                 [
                                     1,  # competition_id
-                                    'timing-pit-time',  # name
-                                    'c11',  # value
+                                    'timing-name',  # name
+                                    'c5',  # value
                                 ],
                             ],
                         ),
@@ -145,17 +145,7 @@ class TestMain(DatabaseTest):
                                     1,
                                     1,
                                     'r5625',
-                                    'Team 1 Driver 1',
-                                    41,
-                                    0,
-                                    0,
-                                    None,
-                                ],
-                                [
-                                    1,
-                                    1,
-                                    'r5625',
-                                    'Team 1 Driver 2',
+                                    'DIMAS MUNOZ',
                                     41,
                                     0,
                                     0,
@@ -187,7 +177,7 @@ class TestMain(DatabaseTest):
                                 [
                                     1,  # competition_id
                                     1,  # team_id
-                                    2,  # driver_id
+                                    1,  # driver_id
                                     1,  # position
                                     60000,  # last_time
                                     59000,  # best_time
@@ -210,22 +200,22 @@ class TestMain(DatabaseTest):
                     DEFAULT_NOTIFICATIONS_TOPIC: [],
                 },
                 [  # in_websocket
-                    load_raw_message('endurance_timing_driver_stint_time.txt'),
+                    load_raw_message('endurance_display_driver_name_with_driving_time.txt'),  # noqa: E501, LN001
                 ],
                 {  # expected_kafka
                     DEFAULT_NOTIFICATIONS_TOPIC: [
                         Message(
                             competition_code=TEST_COMPETITION_CODE,
                             data=Notification(
-                                type=NotificationType.UPDATED_DRIVER_PARTIAL_DRIVING_TIME,  # noqa: E501, LN001
+                                type=NotificationType.UPDATED_DRIVER,  # noqa: E501, LN001
                                 data=Driver(
-                                    id=2,
+                                    id=1,
                                     participant_code='r5625',
-                                    name='Team 1 Driver 2',
+                                    name='DIMAS MUNOZ',
                                     number=41,
                                     team_id=1,
                                     total_driving_time=0,
-                                    partial_driving_time=70000,
+                                    partial_driving_time=4020000,
                                 ),
                             ),
                             source=MessageSource.SOURCE_WS_LISTENER,
@@ -254,20 +244,10 @@ class TestMain(DatabaseTest):
                                     1,
                                     1,
                                     'r5625',
-                                    'Team 1 Driver 1',
+                                    'DIMAS MUNOZ',
                                     41,
                                     0,
-                                    0,
-                                    None,
-                                ],
-                                [
-                                    1,
-                                    1,
-                                    'r5625',
-                                    'Team 1 Driver 2',
-                                    41,
-                                    0,
-                                    70000,
+                                    4020000,
                                     None,
                                 ],
                             ],

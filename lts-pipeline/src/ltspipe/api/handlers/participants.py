@@ -104,6 +104,7 @@ class UpdateDriverHandler(ApiHandler):
                 team_id=model.team_id,
             )
             self._info.drivers.append(current_driver)
+            return current_driver
         elif old_driver.name != model.name or old_driver.number != model.number:
             # Update driver name if needed
             current_driver = update_driver(
@@ -117,11 +118,10 @@ class UpdateDriverHandler(ApiHandler):
             )
             old_driver.name = current_driver.name
             old_driver.number = current_driver.number
+            return current_driver
         else:
-            # Ignore driver
-            return None
-
-        return current_driver
+            # No need to update
+            return old_driver
 
     def _update_driver_partial_driving_time(
             self,

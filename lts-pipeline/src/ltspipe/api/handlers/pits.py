@@ -4,6 +4,8 @@ from ltspipe.api.handlers.base import ApiHandler
 from ltspipe.api.timing import (
     get_timing_by_team,
     update_timing_driver_by_team,
+    update_timing_fixed_kart_status_by_team,
+    update_timing_kart_status_by_team,
     update_timing_pit_time_by_team,
 )
 from ltspipe.api.pits import (
@@ -76,7 +78,34 @@ class AddPitInHandler(ApiHandler):
             team_id=model.team_id,
         )
 
+        # Clean driver in the timing information
+        self._clean_timing_by_team(model.team_id)
+
         return self._create_notification(new_pit_in)
+
+    def _clean_timing_by_team(self, team_id: int) -> None:
+        """Clean timing information when there is a pit-in."""
+        update_timing_driver_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+            team_id=team_id,
+            driver_id=None,
+        )
+        update_timing_kart_status_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+            team_id=team_id,
+            kart_status=KartStatus.UNKNOWN,
+        )
+        update_timing_fixed_kart_status_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+            team_id=team_id,
+            fixed_kart_status=None,
+        )
 
     def _create_notification(self, pit_in: PitIn) -> Notification:
         """Create notification of handler."""
@@ -104,24 +133,34 @@ class AddPitOutHandler(ApiHandler):
         if not isinstance(model, AddPitOut):
             raise LtsError('The model must be an instance of AddPitOut.')
 
+        # If timing has the driver ID and/or kart status, pick them
+        last_timing = get_timing_by_team(
+            api_url=self._api_url,
+            bearer=self._auth_data.bearer,
+            competition_id=self._info.id,
+            team_id=model.team_id,
+        )
+        if last_timing is None:
+            driver_id = None
+            kart_status = KartStatus.UNKNOWN
+            fixed_kart_status = None
+        else:
+            driver_id = last_timing.driver_id
+            kart_status = last_timing.kart_status
+            fixed_kart_status = last_timing.fixed_kart_status
+
         # Add pit-out
         new_pit_out = add_pit_out(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,
             competition_id=self._info.id,
-            kart_status=KartStatus.UNKNOWN,
-            driver_id=None,
+            kart_status=kart_status,
+            fixed_kart_status=fixed_kart_status,
+            driver_id=driver_id,
             team_id=model.team_id,
         )
 
-        # Clean pit-time and driver in the timing information
-        _ = update_timing_driver_by_team(
-            api_url=self._api_url,
-            bearer=self._auth_data.bearer,
-            competition_id=self._info.id,
-            team_id=model.team_id,
-            driver_id=None,
-        )
+        # Clean pit-time in the timing information
         _ = update_timing_pit_time_by_team(
             api_url=self._api_url,
             bearer=self._auth_data.bearer,

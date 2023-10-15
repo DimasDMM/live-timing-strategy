@@ -30,6 +30,7 @@ class TimingBestTimeParser(Parser):
     > r5625c8|tn|1:05.739
     > r5625c8|ib|1:05.739
     > r5625c8|in|1:05.739
+    > r5625c8|ti|1:05.739
     """
 
     def __init__(self, info: CompetitionInfo) -> None:
@@ -68,7 +69,7 @@ class TimingBestTimeParser(Parser):
         """Parse driver name."""
         data = data.strip()
         matches = re.match(
-            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in)\|(.+)$', data)
+            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in|ti)\|(.+)$', data)
         if matches is None:
             return None
 
@@ -182,6 +183,7 @@ class TimingLastTimeParser(Parser):
     > r5625c8|tn|1:05.739
     > r5625c8|ib|1:05.739
     > r5625c8|in|1:05.739
+    > r5625c8|ti|1:05.739
     """
 
     def __init__(self, info: CompetitionInfo) -> None:
@@ -220,7 +222,7 @@ class TimingLastTimeParser(Parser):
         """Parse driver name."""
         data = data.strip()
         matches = re.match(
-            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in)\|(.+)$', data)
+            r'^(.+?)(c\d+)\|(?:tb|tn|ib|in|ti)\|(.+)$', data)
         if matches is None:
             return None
 

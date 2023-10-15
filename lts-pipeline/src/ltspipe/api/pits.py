@@ -80,6 +80,7 @@ def add_pit_out(
         bearer: str,
         competition_id: int,
         kart_status: KartStatus,
+        fixed_kart_status: Optional[KartStatus],
         driver_id: Optional[int] = None,
         team_id: Optional[int] = None) -> PitOut:
     """
@@ -90,6 +91,7 @@ def add_pit_out(
         bearer (str): Bearer token.
         competition_id (int): ID of the competition.
         kart_status (KartStatus): Status of the kart.
+        fixed_kart_status (KartStatus | None): Fixed status of the kart.
         driver_id (int | None): ID of the driver if there is any.
         team_id (int | None): ID of the team if there is any.
 
@@ -100,7 +102,7 @@ def add_pit_out(
         'team_id': team_id,
         'driver_id': driver_id,
         'kart_status': kart_status.value,
-        'fixed_kart_status': None,
+        'fixed_kart_status': fixed_kart_status,
     }
 
     uri = f'{api_url}/v1/c/{competition_id}/pits/out'

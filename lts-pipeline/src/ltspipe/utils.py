@@ -57,8 +57,15 @@ def find_team_by_id(
 
 def time_to_millis(
         str_time: Optional[str],
-        default: Optional[int] = None) -> Optional[int]:
-    """Transform a lap time into milliseconds."""
+        default: Optional[int] = None,
+        offset: int = 0) -> Optional[int]:
+    """
+    Transform a lap time into milliseconds.
+
+    If the largest unit is other than the hour or there are missing units, it is
+    necessary to set up the offset. For example, given "1:07" where "1" are
+    the minuts, it is necessary to define offset=1 since the 'hour' is missing.
+    """
     if str_time is None:
         return default
     str_time = str_time.strip()
@@ -67,7 +74,10 @@ def time_to_millis(
         return default
     else:
         parts = [int(p) if p else 0 for p in match.groups()]
-        return (parts[0] * 3600000
+        for _ in range(offset):
+            parts = parts[1:] + [0]
+
+        return int(parts[0] * 3600000
             + parts[1] * 60000
             + parts[2] * 1000
             + parts[3])

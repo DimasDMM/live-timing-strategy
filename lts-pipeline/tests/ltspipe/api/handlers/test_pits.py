@@ -212,6 +212,65 @@ class TestAddPitInHandler(DatabaseTest):
                 DatabaseContent(  # expected_database
                     tables_content=[
                         TableContent(
+                            table_name='timing_current',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'driver_id',
+                                'position',
+                                'last_time',
+                                'best_time',
+                                'lap',
+                                'gap',
+                                'gap_unit',
+                                'interval',
+                                'interval_unit',
+                                'stage',
+                                'pit_time',
+                                'kart_status',
+                                'fixed_kart_status',
+                                'number_pits',
+                            ],
+                            content=[
+                                [
+                                    1,  # competition_id
+                                    1,  # team_id
+                                    None,  # driver_id
+                                    1,  # position
+                                    61000,  # last_time
+                                    51000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'unknown',  # kart_status
+                                    None,  # fixed_kart_status
+                                    2,  # number_pits
+                                ],
+                                [
+                                    1,  # competition_id
+                                    2,  # team_id
+                                    None,  # driver_id
+                                    2,  # position
+                                    62000,  # last_time
+                                    52000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'bad',  # kart_status
+                                    'good',  # fixed_kart_status
+                                    1,  # number_pits
+                                ],
+                            ],
+                        ),
+                        TableContent(
                             table_name='timing_pits_in',
                             columns=[
                                 'competition_id',
@@ -261,6 +320,65 @@ class TestAddPitInHandler(DatabaseTest):
                 ),
                 DatabaseContent(  # expected_database
                     tables_content=[
+                        TableContent(
+                            table_name='timing_current',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'driver_id',
+                                'position',
+                                'last_time',
+                                'best_time',
+                                'lap',
+                                'gap',
+                                'gap_unit',
+                                'interval',
+                                'interval_unit',
+                                'stage',
+                                'pit_time',
+                                'kart_status',
+                                'fixed_kart_status',
+                                'number_pits',
+                            ],
+                            content=[
+                                [
+                                    1,  # competition_id
+                                    1,  # team_id
+                                    1,  # driver_id
+                                    1,  # position
+                                    61000,  # last_time
+                                    51000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'good',  # kart_status
+                                    None,  # fixed_kart_status
+                                    2,  # number_pits
+                                ],
+                                [
+                                    1,  # competition_id
+                                    2,  # team_id
+                                    None,  # driver_id
+                                    2,  # position
+                                    62000,  # last_time
+                                    52000,  # best_time
+                                    3,  # lap
+                                    None,  # gap
+                                    None,  # gap_unit
+                                    0,  # interval
+                                    'millis',  # interval_unit
+                                    'qualifying',  # stage
+                                    0,  # pit_time
+                                    'unknown',  # kart_status
+                                    None,  # fixed_kart_status
+                                    1,  # number_pits
+                                ],
+                            ],
+                        ),
                         TableContent(
                             table_name='timing_pits_in',
                             columns=[
@@ -359,8 +477,8 @@ class TestAddPitOutHandler(DatabaseTest):
                         id=1,
                         driver_id=None,
                         team_id=2,
-                        kart_status=KartStatus.UNKNOWN,
-                        fixed_kart_status=None,
+                        kart_status=KartStatus.BAD,
+                        fixed_kart_status=KartStatus.GOOD,
                     ),
                 ),
                 DatabaseContent(  # expected_database
@@ -375,7 +493,7 @@ class TestAddPitOutHandler(DatabaseTest):
                                 'fixed_kart_status',
                             ],
                             content=[
-                                [1, 2, None, 'unknown', None],
+                                [1, 2, None, 'bad', 'good'],
                             ],
                         ),
                         TableContent(
@@ -409,7 +527,57 @@ class TestAddPitOutHandler(DatabaseTest):
                         id=1,
                         driver_id=None,
                         team_id=2,
-                        kart_status=KartStatus.UNKNOWN,
+                        kart_status=KartStatus.BAD,
+                        fixed_kart_status=KartStatus.GOOD,
+                    ),
+                ),
+                DatabaseContent(  # expected_database
+                    tables_content=[
+                        TableContent(
+                            table_name='timing_pits_out',
+                            columns=[
+                                'competition_id',
+                                'team_id',
+                                'driver_id',
+                                'kart_status',
+                                'fixed_kart_status',
+                            ],
+                            content=[
+                                [1, 2, None, 'bad', 'good'],
+                            ],
+                        ),
+                        TableContent(
+                            table_name='timing_pits_in_out',
+                            columns=['pit_in_id', 'pit_out_id'],
+                            content=[],
+                        ),
+                    ],
+                ),
+            ),
+            (
+                # Case: Add a single pit-out and fill driver ID
+                DatabaseContent(  # database_content
+                    tables_content=_build_competition_table_content(),
+                ),
+                CompetitionInfo(  # info
+                    id=1,
+                    competition_code=TEST_COMPETITION_CODE,
+                    parser_settings={},
+                    drivers=[],
+                    teams={},
+                    timing={},
+                ),
+                AddPitOut(  # add_data
+                    competition_code=TEST_COMPETITION_CODE,
+                    team_id=1,
+                ),
+                Notification(  # expected_notification
+                    type=NotificationType.ADDED_PIT_OUT,
+                    data=PitOut(
+                        id=1,
+                        driver_id=1,
+                        team_id=1,
+                        kart_status=KartStatus.GOOD,
                         fixed_kart_status=None,
                     ),
                 ),
@@ -425,13 +593,8 @@ class TestAddPitOutHandler(DatabaseTest):
                                 'fixed_kart_status',
                             ],
                             content=[
-                                [1, 2, None, 'unknown', None],
+                                [1, 1, 1, 'good', None],
                             ],
-                        ),
-                        TableContent(
-                            table_name='timing_pits_in_out',
-                            columns=['pit_in_id', 'pit_out_id'],
-                            content=[],
                         ),
                     ],
                 ),
