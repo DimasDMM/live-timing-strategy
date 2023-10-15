@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "62160ee0-3748-4c42-84a6-c11a52a52775",
-		"name": "CKM Timing",
+		"name": "Live Timing Strategy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11930486"
 	},
@@ -12,12 +12,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8090/v1/documentation",
-					"protocol": "http",
+					"raw": "{{url}}/v1/documentation",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"documentation"
@@ -38,12 +36,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/health",
-					"protocol": "http",
+					"raw": "{{url}}/v1/health",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"health"
@@ -86,12 +82,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/auth",
-					"protocol": "http",
+					"raw": "{{url}}/v1/auth",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"auth"
@@ -122,14 +116,12 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/token/validate",
-					"protocol": "http",
+					"raw": "{{url}}/auth/validate",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
-						"token",
+						"auth",
 						"validate"
 					]
 				}
@@ -148,12 +140,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c"
@@ -188,12 +178,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c"
@@ -214,12 +202,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/metadata",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/metadata",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -242,12 +228,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/metadata",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/metadata",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -284,12 +268,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/metadata/status",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/metadata/status",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -318,16 +300,14 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/2/timing",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/timing",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
-						"2",
+						"1",
 						"timing"
 					]
 				}
@@ -351,12 +331,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/timing/teams/2",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/timing/teams/2",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -370,9 +348,9 @@
 			"response": []
 		},
 		{
-			"name": "SE Timing",
+			"name": "SE Timing Team",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "X-Request-ID",
@@ -390,24 +368,24 @@
 					"raw": "{\r\n    \"position\": 1,\r\n    \"team_name\": \"CKM Berylo\",\r\n    \"driver_name\": null,\r\n    \"time\": 66961,\r\n    \"interval\": 0,\r\n    \"interval_unit\": \"milli\",\r\n    \"lap\": 1,\r\n    \"number_stops\": 0\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/3/timing",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/timing/teams/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
-						"3",
-						"timing"
+						"1",
+						"timing",
+						"teams",
+						"1"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "SE Timing Kart Status",
+			"name": "SE Timing Team - Kart Status",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -427,19 +405,79 @@
 					"raw": "{\r\n    \"forced_kart_status\": \"good\"\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/events/Resistencia%20Los%20Santos%2026-06-2020/timing/kart-status/CKM Berylo",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/timing/teams/1/kart_status",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
-						"events",
-						"Resistencia%20Los%20Santos%2026-06-2020",
+						"c",
+						"1",
 						"timing",
-						"kart-status",
-						"CKM Berylo"
+						"teams",
+						"1",
+						"kart_status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Drivers",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v1/c/1/drivers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"drivers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Drivers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"participant_code\": \"string\",\r\n    \"name\": \"Driver Name\",\r\n    \"number\": 41\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/v1/c/1/drivers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"drivers"
 					]
 				}
 			},
@@ -457,12 +495,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/3/teams",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/3/teams",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -491,7 +527,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"CKM Berylo\",\r\n    \"number\": 10,\r\n    \"drivers\": [\r\n        {\r\n            \"name\": \"Dimas Muñoz\"\r\n        },\r\n        {\r\n            \"name\": \"Alberto Saz\"\r\n        }\r\n    ],\r\n    \"reference_time_offset\": 0\r\n}",
+					"raw": "{\r\n    \"name\": \"Team Name\",\r\n    \"number\": 10,\r\n    \"participant_code\": \"team-code\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -499,54 +535,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/teams",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
-					"path": [
-						"v1",
-						"c",
-						"1",
-						"teams"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "SE Teams (without drivers)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-Request-ID",
-						"type": "text",
-						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
-					},
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json; charset=utf-8"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"CKM Berylo WO\",\r\n    \"number\": 10,\r\n    \"drivers\": [],\r\n    \"reference_time_offset\": 0\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -569,12 +561,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/teams/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -604,7 +594,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"CKM Berylo Updated\",\r\n    \"reference_time_offset\": 1\r\n}",
+					"raw": "{\r\n    \"name\": \"Team Name\",\r\n    \"participant_code\": \"team-code\",\r\n    \"number\": 41\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -612,12 +602,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/teams/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -630,7 +618,7 @@
 			"response": []
 		},
 		{
-			"name": "SE Team-Drivers By Name",
+			"name": "SE Team - Drivers",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -641,27 +629,26 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/teams/1/drivers",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
 						"1",
 						"teams",
-						"1"
+						"1",
+						"drivers"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "SE Team-Drivers By Name",
+			"name": "SE Team - Drivers",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [
 					{
 						"key": "X-Request-ID",
@@ -676,7 +663,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"reference_time_offset\": 1,\r\n    \"driving_time\": 2\r\n}",
+					"raw": "{\r\n    \"participant_code\": \"team-code\",\r\n    \"name\": \"Driver Name\",\r\n    \"number\": 41\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -684,18 +671,17 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/teams/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/teams/1/drivers",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
 						"1",
 						"teams",
-						"1"
+						"1",
+						"drivers"
 					]
 				}
 			},
@@ -713,12 +699,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/in",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/in",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -742,12 +726,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/in/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/in/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -772,12 +754,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/in/filter/team/1",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/in/filter/team/1",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -813,12 +793,10 @@
 					"raw": "{\r\n    \"team_id\": 1,\r\n    \"driver_id\": null,\r\n    \"lap\": 5,\r\n    \"pit_time\": null,\r\n    \"kart_status\": \"good\",\r\n    \"fixed_kart_status\": null\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/in",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/in",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -842,12 +820,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/out",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/out",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -880,12 +856,10 @@
 					"raw": "{\r\n    \"team_id\": 1,\r\n    \"driver_id\": null,\r\n    \"kart_status\": \"good\",\r\n    \"fixed_kart_status\": null\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/pits/out",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/pits/out",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -898,7 +872,7 @@
 			"response": []
 		},
 		{
-			"name": "SE Settings",
+			"name": "SE Competition Settings",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -909,12 +883,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/settings",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/settings",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
@@ -926,7 +898,7 @@
 			"response": []
 		},
 		{
-			"name": "SE Settings",
+			"name": "SE Competition Settings",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -946,16 +918,41 @@
 					"raw": "{\r\n    \"length\": \"10\",\r\n    \"length_unit\": \"laps\",\r\n    \"pit_time\": 120000,\r\n    \"min_number_pits\": 4\r\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8090/v1/c/1/settings",
-					"protocol": "http",
+					"raw": "{{url}}/v1/c/1/settings",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8090",
 					"path": [
 						"v1",
 						"c",
 						"1",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SE Parsers Settings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Request-ID",
+						"type": "text",
+						"value": "f9a23e776e199b52f12f60cd1ea0dfc3"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v1/c/1/parsers/settings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v1",
+						"c",
+						"1",
+						"parsers",
 						"settings"
 					]
 				}
@@ -997,6 +994,11 @@
 		{
 			"key": "bearer",
 			"value": "e1ec4ca719196937f17f9914bf5a2a8c072ba0f9bc9225875e6a1286b2f350e9",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "http://localhost:8090",
 			"type": "string"
 		}
 	]
