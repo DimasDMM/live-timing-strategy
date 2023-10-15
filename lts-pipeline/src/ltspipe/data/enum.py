@@ -37,8 +37,8 @@ class ParserSettings(str, EnumBase):
 
     COMPETITION_REMAINING_LENGTH = 'competition-remaining-length'
     COMPETITION_STAGE = 'competition-stage'
-    IGNORE_1 = 'ignore-1'
-    IGNORE_2 = 'ignore-2'
+    IGNORE_GRP = 'ignore-1'
+    IGNORE_STA = 'ignore-2'
     TIMING_BEST_TIME = 'timing-best-time'
     TIMING_GAP = 'timing-gap'
     TIMING_INTERVAL = 'timing-interval'

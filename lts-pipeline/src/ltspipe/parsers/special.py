@@ -50,11 +50,11 @@ class IgnoreParser(Parser):
             is_column_parser_setting(
                 self._info,
                 column_id,
-                ParserSettings.IGNORE_1,
+                ParserSettings.IGNORE_GRP,
                 raise_exception=False)
             or is_column_parser_setting(
                 self._info,
                 column_id,
-                ParserSettings.IGNORE_2,
+                ParserSettings.IGNORE_STA,
                 raise_exception=False)
         )

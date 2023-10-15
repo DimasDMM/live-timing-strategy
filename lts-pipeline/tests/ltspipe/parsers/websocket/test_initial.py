@@ -38,8 +38,8 @@ def _build_init_qualy_1() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
-                ParserSettings.IGNORE_1: 'c1',
-                ParserSettings.IGNORE_2: 'c2',
+                ParserSettings.IGNORE_GRP: 'c1',
+                ParserSettings.IGNORE_STA: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -113,8 +113,8 @@ def _build_init_qualy_with_times() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
-                ParserSettings.IGNORE_1: 'c1',
-                ParserSettings.IGNORE_2: 'c2',
+                ParserSettings.IGNORE_GRP: 'c1',
+                ParserSettings.IGNORE_STA: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -194,8 +194,8 @@ def _build_init_qualy_2() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
-                ParserSettings.IGNORE_1: 'c1',
-                ParserSettings.IGNORE_2: 'c2',
+                ParserSettings.IGNORE_GRP: 'c1',
+                ParserSettings.IGNORE_STA: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -408,8 +408,8 @@ def _build_init_endurance_1() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
-                ParserSettings.IGNORE_1: 'c1',
-                ParserSettings.IGNORE_2: 'c2',
+                ParserSettings.IGNORE_GRP: 'c1',
+                ParserSettings.IGNORE_STA: 'c2',
                 ParserSettings.TIMING_POSITION: 'c3',
                 ParserSettings.TIMING_KART_NUMBER: 'c4',
                 ParserSettings.TIMING_NAME: 'c5',
@@ -483,7 +483,7 @@ def _build_init_endurance_2() -> Tuple[Message, List[Action], bool]:
                 unit=LengthUnit.MILLIS,
             ),
             parsers_settings={
-                ParserSettings.IGNORE_2: 'c1',
+                ParserSettings.IGNORE_STA: 'c1',
                 ParserSettings.TIMING_POSITION: 'c2',
                 ParserSettings.TIMING_KART_NUMBER: 'c3',
                 ParserSettings.TIMING_NAME: 'c4',

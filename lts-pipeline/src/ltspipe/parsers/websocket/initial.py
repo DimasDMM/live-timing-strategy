@@ -36,8 +36,8 @@ class InitialDataParser(InitialParser):
             'pits': ParserSettings.TIMING_NUMBER_PITS,
         },
         'by_type': {
-            'grp': ParserSettings.IGNORE_1,
-            'sta': ParserSettings.IGNORE_2,
+            'grp': ParserSettings.IGNORE_GRP,
+            'sta': ParserSettings.IGNORE_STA,
             'rk': ParserSettings.TIMING_POSITION,
             'no': ParserSettings.TIMING_KART_NUMBER,
             'dr': ParserSettings.TIMING_NAME,

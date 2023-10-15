@@ -12,8 +12,8 @@ from tests.fixtures import TEST_COMPETITION_CODE
 from tests.helpers import load_raw_message
 
 PARSERS_SETTINGS = {
-    ParserSettings.IGNORE_1: 'c1',
-    ParserSettings.IGNORE_2: 'c2',
+    ParserSettings.IGNORE_GRP: 'c1',
+    ParserSettings.IGNORE_STA: 'c2',
     ParserSettings.TIMING_POSITION: 'c3',
     ParserSettings.TIMING_KART_NUMBER: 'c4',
     ParserSettings.TIMING_NAME: 'c5',
