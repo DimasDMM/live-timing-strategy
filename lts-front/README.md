@@ -2,7 +2,7 @@
 
 ## Introduction
 
-App frontend to display timing information.
+App frontend to display all the timing information.
 
 ## Setup for development
 

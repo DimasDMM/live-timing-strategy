@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Retrieves and analyses the data that comes from a live timing application.
+Pipelines to retrieve and analyse the data coming from the live timing.
 
 ## Setup for development
 

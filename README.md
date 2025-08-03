@@ -4,7 +4,7 @@
 
 ## Introduction
 
-To do
+Full stack application for live timing analysis.
 
 ## Development
 

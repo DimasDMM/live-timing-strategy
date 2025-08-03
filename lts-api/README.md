@@ -2,7 +2,7 @@
 
 ## Introduction
 
-API REST to manage and read the data from the database.
+API REST to modify and read the data from the database.
 
 ## Setup for development
 
